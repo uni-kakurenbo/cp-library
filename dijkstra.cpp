@@ -71,7 +71,7 @@ void dijkstra(const Graph<Edge> &G, int s, vector<ll> *dists) {
 
         if((*dists)[u] < d) continue;
 
-        for(Edge &e : G[u]) {
+        for(const Edge &e : G[u]) {
             int v = e.to; ll cost = e.cost;
 
             if((*dists)[v] <= d + cost) continue;
