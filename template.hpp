@@ -1,13 +1,6 @@
-/*
- * @uni_kakurenbo
- * https://github.com/uni-kakurenbo/competitive-programming-workspace
- *
- * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
- */
-/* #language C++ GCC */
-/* #region tmplate */
-#include <bits/stdc++.h>
-using namespace std;
+#pragma once
+
+#include <iostream>
 
 #ifdef LOCAL_JUDGE
     #include<debug>
@@ -47,43 +40,15 @@ using ull = unsigned long long;
 using ld = long double;
 
 constexpr char ln = '\n';
+constexpr char spc = ' ';
+
+__attribute__((constructor)) inline void fast_io() { std::ios::sync_with_stdio(false), std::cin.tie(nullptr); }
 
 template<class T1, class T2> inline auto mod(T1 x, T2 r) { return (x%r+r)%r; }
 
 template<class T> inline bool chmax(T &a, T b) { return (a<b ? a=b, true : false); }
 template<class T> inline bool chmin(T &a, T b) { return (a>b ? a=b, true : false); }
-/* #endregion */
-struct Edge {
-    int to; ll cost;
-    Edge(int t, ll w) : to(t), cost(w) {}
-    vector<ll> _debug() { return { to, cost }; };
-};
-template <class T> using Graph = vector<vector<T>>;
 
-void dijkstra(const Graph<Edge> &G, int s, vector<ll> *dists) {
-    using State = pair<ll,int>;
-    priority_queue<State,vector<State>,greater<State>> que;
-
-    que.emplace(0, s), (*dists)[s] = 0;
-
-    while(!que.empty()) {
-        ll d; int u; tie(d, u) = que.top(), que.pop();
-
-        if((*dists)[u] < d) continue;
-
-        for(const Edge &e : G[u]) {
-            int v = e.to; ll cost = e.cost;
-
-            if((*dists)[v] <= d + cost) continue;
-
-            (*dists)[v] = d + cost;
-            que.emplace((*dists)[v], v);
-        }
-    }
-
-    return;
-}
-
-signed main() {
-    return 0;
+template<class T> auto operator<<(std::ostream &out, const T &val) -> decltype(val.val(), out)& {
+    return out << val.val();
 }
