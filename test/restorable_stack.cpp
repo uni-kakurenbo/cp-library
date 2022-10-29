@@ -2,7 +2,7 @@
 #include <string>
 
 #include "template.hpp"
-#include "structure/restorable_stack.hpp"
+#include "data_structure/restorable_stack.hpp"
 
 signed main() {
     int q; std::cin >> q;

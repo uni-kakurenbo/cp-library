@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "template.hpp"
-#include "structure/kth_element.hpp"
+#include "data_structure/kth_element.hpp"
 
 //https://yukicoder.me/problems/no/649
 

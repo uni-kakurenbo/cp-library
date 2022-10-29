@@ -1,10 +1,12 @@
+#pragma once
+
 #include <unordered_map>
 #include <memory>
 #include <optional>
 
 template<class T, class ID = int, template<class,class> class Storage = std::unordered_map>
 struct RestorableStack {
-  private:
+  protected:
     struct Node;
     using NodePtr = std::shared_ptr<Node>;
 
@@ -29,20 +31,22 @@ struct RestorableStack {
     inline T top() const {
         return node->val.value();
     }
-    template<class U> inline auto top_or(U &&v) const {
+
+    template<class U>
+    inline auto top_or(const U &&v) const {
         return node->val.value_or(v);
     }
 
-    inline void push(T x) {
+    inline void push(const T x) {
         node.reset(new Node{x, node});
     }
     inline void pop() {
         node = node->parent;
     }
-    inline void save(ID x) {
+    inline void save(const ID x) {
         storage[x] = node;
     }
-    inline void load(ID x) {
+    inline void load(const ID x) {
         node = storage[x];
     }
     inline void clear() {

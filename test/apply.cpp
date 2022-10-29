@@ -1,5 +1,5 @@
 #include "template.hpp"
-#include "apply.hpp"
+#include "utility/apply.hpp"
 
 signed main() {
     Max<int> maximum(10);

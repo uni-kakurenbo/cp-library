@@ -1,22 +1,24 @@
+#pragma once
+
 #include <vector>
 #include <functional>
 #include <queue>
 
 template<class T, class Container = std::vector<T>, class CompA = std::less<T>, class CompB = std::greater<T>>
 struct KthElement {
-  private:
-    size_t K;
+  protected:
+    size_t _k;
     std::priority_queue<T,Container,CompA> small;
     std::priority_queue<T,Container,CompB> large;
 
   public:
-    KthElement(size_t K) : K(K) {}
+    KthElement(size_t k = 0) : _k(k) {}
 
     inline T get() const { return small.top(); }
-    inline bool has() const { return small.size() == K; }
+    inline bool has() const { return small.size() == _k; }
 
     inline void push(T v) {
-        if(small.size() < K) {
+        if(small.size() < _k) {
             small.push(v);
             return;
         }

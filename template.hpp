@@ -17,20 +17,20 @@
 #define until(...) while(!(__VA_ARGS__))
 
 #define REP(i,n) for(int i=0, i##_length=int(n); i<i##_length; ++i)
-#define REPD(i,n) for(int i=(n)-1; i>=0; --i)
-#define LOOP(n) REP(_$, (n))
-#define FOR(i,l,r) for(ll i=(l), i##_last=ll(r); i<=i##_last; ++i)
-#define FORD(i,l,r) for(ll i=(l), i##_last=ll(r); i>=i##_last; --i)
+#define REPD(i,n) for(auto i=(n)-1; i>=0; --i)
+#define LOOP(n) REP($_, (n))
+#define FOR(i,l,r) for(auto i=(l), i##_last=(r); i<=i##_last; ++i)
+#define FORD(i,l,r) for(auto i=(l), i##_last=(r); i>=i##_last; --i)
 
+#define ITR(x,v) for(const auto &x : (v))
 #define ITRP(x,v) for(auto x : (v))
 #define ITRR(x,v) for(auto &x : (v))
-#define ITR(x,v) for(const auto &x : (v))
+#define ITRM(x,y,v) for(const auto [x, y] : (v))
 #define ITRMP(x,y,v) for(auto [x, y] : (v))
 #define ITRMR(x,y,v) for(auto &[x, y] : (v))
-#define ITRM(x,y,v) for(const auto [x, y] : (v))
 
-#define ALL(x) begin((x)),end((x))
-#define RALL(x) rbegin((x)),rend((x))
+#define ALL(x) std::begin((x)),std::end((x))
+#define RALL(x) std::rbegin((x)),std::rend((x))
 
 #define $F first
 #define $S second
@@ -48,7 +48,3 @@ template<class T1, class T2> inline auto mod(T1 x, T2 r) { return (x%r+r)%r; }
 
 template<class T> inline bool chmax(T &a, T b) { return (a<b ? a=b, true : false); }
 template<class T> inline bool chmin(T &a, T b) { return (a>b ? a=b, true : false); }
-
-template<class T> auto operator<<(std::ostream &out, const T &val) -> decltype(val.val(), out)& {
-    return out << val.val();
-}

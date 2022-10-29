@@ -1,3 +1,5 @@
+#pragma once
+
 #include <utility>
 #include <algorithm>
 
@@ -7,15 +9,16 @@ namespace Internal {
 }
 
 template<class T, T (*op)(T,T)> struct Apply {
-    Apply(T&& v) : _v(v) {}
+  protected:
+    T _v;
+
+  public:
+    Apply(T&& v = T{}) : _v(v) {}
     template<class U> Apply& operator<<=(U&& val) & noexcept {
         _v = op(_v, std::forward<U>(val));
         return *this;
     }
-    T val() const { return _v; }
-
-  private:
-    T _v;
+    inline T val() const { return _v; }
 };
 
 template<class T> using Max = Apply<T,Internal::max<T>>;

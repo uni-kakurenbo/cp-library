@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "template.hpp"
-#include "inverse.hpp"
+#include "iterable/inverse.hpp"
 
 signed main() {
     int n; std::cin >> n;

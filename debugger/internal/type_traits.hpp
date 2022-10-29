@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -29,16 +31,16 @@ template<> struct literal_operator<unsigned long long> { static constexpr const 
 template<class T> inline constexpr auto literal_operator_v = literal_operator<T>::value;
 
 
-template<template <class...> class Template, class Type> struct is_template : std::false_type {};
-template<template <class...> class Template, class... Args> struct is_template<Template, Template<Args...>> : std::true_type {};
+template<template<class...> class Template, class Type> struct is_template : std::false_type {};
+template<template<class...> class Template, class... Args> struct is_template<Template, Template<Args...>> : std::true_type {};
 
 
 template<class T> struct is_loggable {
-    template <class U>
+    template<class U>
     static constexpr auto External(U &&v) -> decltype(_debug(v), std::true_type());
     static constexpr std::false_type External(...);
 
-    template <class U>
+    template<class U>
     static constexpr auto Member(U &&v) -> decltype(v._debug(), std::true_type());
     static constexpr std::false_type Member(...);
 
@@ -53,20 +55,20 @@ template<class T> inline constexpr auto is_loggable_v = is_loggable<T>::value;
 
 
 template<class T> struct _has_iterator {
-    template <class U>
+    template<class U>
     static constexpr auto ADL(U &&v) -> decltype(begin(v), end(v), std::true_type());
     static constexpr std::false_type ADL(...);
 
-    template <class U>
+    template<class U>
     static constexpr auto STL(U &&v) -> decltype(std::begin(v), std::end(v), std::true_type());
     static constexpr std::false_type STL(...);
 
-    template <class U>
+    template<class U>
     static constexpr auto Member(U &&v) -> decltype(v.begin(), v.end(), std::true_type());
     static constexpr std::false_type Member(...);
 };
 
-template <class T> struct has_iterator {
+template<class T> struct has_iterator {
   struct ADL : decltype(_has_iterator<T>::ADL(std::declval<T>())) {};
   struct STL : decltype(_has_iterator<T>::STL(std::declval<T>())) {};
   struct Member : decltype(_has_iterator<T>::Member(std::declval<T>())) {};

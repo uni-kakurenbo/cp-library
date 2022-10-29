@@ -35,6 +35,8 @@ signed main() {
 
     print(0);
 
+    print(modint(10));
+
     print(1, 2, 3, 4);
     print({1, 2, 3, 4});
 

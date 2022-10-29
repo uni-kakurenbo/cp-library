@@ -9,7 +9,7 @@
 using namespace std;
 using namespace atcoder;
 
-template <class T = int> struct Matrix : vector<vector<T>> {
+template<class T = int> struct Matrix : vector<vector<T>> {
     Matrix(size_t h, size_t w, T init = T()) : vector<vector<T>> (h, vector<T> (w, init)) {}
     inline T& operator()(size_t i, size_t j) { return (*this)[i][j]; }
 };

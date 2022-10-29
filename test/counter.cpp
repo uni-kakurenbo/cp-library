@@ -2,8 +2,8 @@
 #include <vector>
 
 #include "template.hpp"
-#include "compress.hpp"
-#include "counter.hpp"
+#include "iterable/compress.hpp"
+#include "iterable/counter.hpp"
 
 signed main() {
     int n; std::cin >> n;

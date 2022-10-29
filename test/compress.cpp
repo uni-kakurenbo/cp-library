@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "template.hpp"
-#include "compress.hpp"
+#include "iterable/compress.hpp"
 
 signed main() {
     int n; std::cin >> n;

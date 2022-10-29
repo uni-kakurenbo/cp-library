@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "template.hpp"
-#include "numeric/accumulate.hpp"
+#include "iterable/accumulate.hpp"
 
 signed main() {
     int n; std::cin >> n;
