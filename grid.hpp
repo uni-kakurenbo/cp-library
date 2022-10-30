@@ -14,8 +14,10 @@
 
 namespace Internal {
 
+namespace GridLib {
+
 template<class T>
-struct IGrid {
+struct Interface {
     inline void _validate_index(__attribute__ ((unused)) const int i, __attribute__ ((unused)) const int j) const {
         dev_assert(0 <= i and i < this->height());
         dev_assert(0 <= j and j < this->width());
@@ -34,7 +36,7 @@ struct IGrid {
     virtual const T& operator()(const int, const int) const = 0;
 };
 
-template<class T> struct BasicGrid : virtual IGrid<T> {
+template<class T> struct ContainerBase : virtual Interface<T> {
   private:
     int _h, _w;
 
@@ -47,7 +49,7 @@ template<class T> struct BasicGrid : virtual IGrid<T> {
     }
 
   public:
-    BasicGrid(const int _h, const int _w) : _h(_h), _w(_w) {}
+    ContainerBase(const int _h, const int _w) : _h(_h), _w(_w) {}
 
     virtual void resize(const int h, const int w) override {
         this->_h = h, this->_w = w;
@@ -64,30 +66,31 @@ template<class T> struct BasicGrid : virtual IGrid<T> {
     }
 };
 
-template<class> struct GridCommonMixin;
-
-} // namespace Internal
-
 template<class T, class Row = std::vector<T>>
-struct Grid : std::vector<Row>, Internal::BasicGrid<T>, Internal::GridCommonMixin<T>, virtual Internal::IGrid<T> {
+struct Container : std::vector<Row>, ContainerBase<T>, virtual Interface<T> {
     using std::vector<Row>::vector;
 
-    Grid(int n = 0) : Grid(n, n) {}
-    Grid(int h, int w, T val = T{}) : std::vector<Row>(h, Row(w, val)), Internal::BasicGrid<T>(h, w) {}
+    Container(int n = 0) : Container(n, n) {}
+    Container(int h, int w, T val = T{}) : std::vector<Row>(h, Row(w, val)), ContainerBase<T>(h, w) {}
 
-    inline void assign(const Grid &source) {
+    template<class G> Container(const G &source) : Container(source.height(), source.width()) {
+        this->assign(source);
+    }
+
+    template<class G>
+    inline void assign(const G &source) {
         this->resize(source.height(), source.width());
-        this->std::vector<Row>::assign(ALL(source));
+        this->std::vector<Row>::assign(source.begin(), source.end());
     }
 
     inline void assign(const int h, const int w, const T &&val = T{}) override {
-        this->Internal::BasicGrid<T>::resize(h, w);
+        this->ContainerBase<T>::resize(h, w);
         this->std::vector<Row>::resize(h);
         ITRR(row, *this) row.assign(w, val);
     }
 
     inline void resize(const int h, const int w) override {
-        this->Internal::BasicGrid<T>::resize(h, w);
+        this->ContainerBase<T>::resize(h, w);
         this->std::vector<Row>::resize(h);
         ITRR(row, *this) row.resize(w);
     }
@@ -108,24 +111,27 @@ struct Grid : std::vector<Row>, Internal::BasicGrid<T>, Internal::GridCommonMixi
 };
 
 template<class T>
-struct UnfoldedGrid : std::vector<T>, Internal::BasicGrid<T>, Internal::GridCommonMixin<T>, virtual Internal::IGrid<T> {
+struct UnfoldedContainer : std::vector<T>, ContainerBase<T>, virtual Interface<T> {
     using std::vector<T>::vector;
 
-    UnfoldedGrid(int n = 0) : UnfoldedGrid(n, n) {}
-    UnfoldedGrid(int h, int w, T val = T{}) : std::vector<T>(h*w, val), Internal::BasicGrid<T>(h, w) {}
+    UnfoldedContainer(int n = 0) : UnfoldedContainer(n, n) {}
+    UnfoldedContainer(int h, int w, T val = T{}) : std::vector<T>(h*w, val), ContainerBase<T>(h, w) {}
 
-    inline void assign(const UnfoldedGrid &source) {
+    template<class G> UnfoldedContainer(const G &source) { this->assign(source); }
+
+    template<class G>
+    inline void assign(const G &source) {
         this->resize(source.height(), source.width());
-        this->std::vector<T>::assign(ALL(source));
+        this->std::vector<T>::assign(source.begin(), source.end());
     }
 
     inline void assign(const int h, const int w, const T &&val = T{}) override {
-        this->Internal::BasicGrid<T>::resize(h, w);
+        this->ContainerBase<T>::resize(h, w);
         this->std::vector<T>::assign(h*w, val);
     }
 
     inline void resize(const int h, const int w) override {
-        this->Internal::BasicGrid<T>::resize(h, w);
+        this->ContainerBase<T>::resize(h, w);
         this->std::vector<T>::resize(h*w);
     }
 
@@ -142,12 +148,57 @@ struct UnfoldedGrid : std::vector<T>, Internal::BasicGrid<T>, Internal::GridComm
     }
 };
 
-template<class T> struct Internal::GridCommonMixin : virtual IGrid<T> {
-    template<class U = T>
+}  // namespace Grid
+
+template<class T, class Container> struct GridCore : Container, virtual GridLib::Interface<T> {
+    using Container::Container;
+
+    enum class Direction { Vertical, Horizontal, CCW, CW };
+
+  template<class U = T>
     void inline read(std::istream *ist = &std::cin) {
         REP(i, this->height()) REP(j, this->width()) {
             U val; *ist >> val;
             (*this)(i, j) = val;
         }
     }
+
+    inline GridCore rotated(const int k) const {  // TODO: 方向
+        GridCore res = *this;
+        REP(i, k) res = res.rotated();
+        return res;
+    }
+
+    inline GridCore rotated() const {  // TODO: 方向
+        GridCore res = this->inverted();
+        return res.transposed();
+    }
+
+    template<Direction DIRECT = Direction::Vertical>
+    inline GridCore inverted() const {
+        GridCore res(this->height(), this->width());
+        REP(i, this->height()) REP(j, this->width()) {
+            if constexpr (DIRECT == Direction::Vertical) res(i,j) = (*this)(this->height()-i-1,j);
+            else if (DIRECT == Direction::Horizontal) res(i,j) = (*this)(i, this->height()-j-1);
+            // TODO: exception
+        }
+        return res;
+    }
+
+    inline GridCore transposed() const {
+        GridCore res(this->width(), this->height());
+        REP(i, this->width()) REP(j, this->height()) {
+            res(i,j) = (*this)(j,i);
+        }
+        return res;
+    }
 };
+
+} // namespace Internal
+
+
+template<class T, class Row = std::vector<T>>
+using Grid = Internal::GridCore<T,Internal::GridLib::Container<T,Row>>;
+
+template<class T>
+using UnfoldedGrid = Internal::GridCore<T,Internal::GridLib::UnfoldedContainer<T>>;

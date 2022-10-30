@@ -8,19 +8,19 @@
 
 namespace Internal {
 
-template<class T> struct IMatrix : virtual IGrid<T> {
+namespace MatrixLib {
+
+template<class T> struct Interface : virtual GridLib::Interface<T> {
     virtual int rows() const = 0;
     virtual int cols() const = 0;
 
     virtual int square() const = 0;
 };
 
-} // namespace Internal
+}
 
-template<class T, class Base = Grid<T>>
-struct Matrix : Base, virtual Internal::IMatrix<T> {
-  private:
-  public:
+template<class T, class Base>
+struct Matrix : Base, virtual MatrixLib::Interface<T> {
     using Base::Base;
 
     static inline Matrix Identity(const int n, const T &&val = { 1 }) {
@@ -28,8 +28,6 @@ struct Matrix : Base, virtual Internal::IMatrix<T> {
         REP(i, n) res(i, i) = val;
         return res;
     }
-
-    Matrix(const int h, const int w, const T &&val) : Grid<T>(h, w, val) {}
 
     inline int rows() const override { return this->height(); }
     inline int cols() const override { return this->width(); }
@@ -40,7 +38,7 @@ struct Matrix : Base, virtual Internal::IMatrix<T> {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs;
         return *this;
     }
-    template<class U> inline Matrix& operator+=(const Matrix<U> rhs) {
+    template<class ...U> inline Matrix& operator+=(const Matrix<U...> rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs(i, j);
         return *this;
     }
@@ -52,7 +50,7 @@ struct Matrix : Base, virtual Internal::IMatrix<T> {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs;
         return *this;
     }
-    template<class U> inline Matrix& operator-=(const Matrix<U> rhs) {
+    template<class ...U> inline Matrix& operator-=(const Matrix<U...> rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs(i, j);
         return *this;
     }
@@ -60,7 +58,7 @@ struct Matrix : Base, virtual Internal::IMatrix<T> {
         return Matrix(*this) -= rhs;
     }
 
-    template<class U> inline Matrix operator*(const Matrix<U> rhs) {
+    template<class ...U> inline Matrix operator*(const Matrix<U...> rhs) {
         dev_assert(this->cols() == rhs.rows());
         Matrix res(this->rows(), rhs.cols());
         REP(i, this->rows()) REP(j, rhs.cols()) REP(k, this->cols()) {
@@ -112,3 +110,8 @@ struct Matrix : Base, virtual Internal::IMatrix<T> {
         return res;
     }
 };
+
+} // namespace Internal
+
+template<class T, class Base = Grid<T>>
+using Matrix = Internal::Matrix<T,Base>;

@@ -27,12 +27,12 @@ signed main() {
     int h, w; cin >> h >> w;
     int c; cin >> c;
 
-    Grid<int> a(h, w); a.read();
+    GridBase<int> a(h, w); a.read();
 
     Min<ll> ans = INF64;
 
     auto solve = [&]() {
-        Grid<ll> dp(h+1, w+1, INF64);
+        GridBase<ll> dp(h+1, w+1, INF64);
         FOR(i, 1, h) FOR(j, 1, w) {
             if(chmin(dp(i,j), min(dp(i-1,j), dp(i,j-1)))) {
                 dp(i,j) += c;
