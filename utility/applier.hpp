@@ -8,18 +8,18 @@ namespace Internal {
     template<class T> T min(T a, T b) { return std::min(a, b); }
 }
 
-template<class T, T (*op)(T,T)> struct Apply {
+template<class T, T (*op)(T,T)> struct Applier {
   protected:
     T _v;
 
   public:
-    Apply(T&& v = T{}) : _v(v) {}
-    template<class U> Apply& operator<<=(U&& val) & noexcept {
+    Applier(T&& v = T{}) : _v(v) {}
+    template<class U> Applier& operator<<=(U&& val) & noexcept {
         _v = op(_v, std::forward<U>(val));
         return *this;
     }
     inline T val() const { return _v; }
 };
 
-template<class T> using Max = Apply<T,Internal::max<T>>;
-template<class T> using Min = Apply<T,Internal::min<T>>;
+template<class T> using Max = Applier<T,Internal::max<T>>;
+template<class T> using Min = Applier<T,Internal::min<T>>;

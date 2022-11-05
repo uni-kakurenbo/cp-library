@@ -4,15 +4,17 @@
 #include <functional>
 #include <queue>
 
+#include "internal/types.hpp"
+
 template<class T, class Container = std::vector<T>, class CompA = std::less<T>, class CompB = std::greater<T>>
 struct KthElement {
   protected:
-    size_t _k;
+    Internal::Size _k;
     std::priority_queue<T,Container,CompA> small;
     std::priority_queue<T,Container,CompB> large;
 
   public:
-    KthElement(size_t k = 0) : _k(k) {}
+    KthElement(Internal::Size k = 0) : _k(k) {}
 
     inline T get() const { return small.top(); }
     inline bool has() const { return small.size() == _k; }

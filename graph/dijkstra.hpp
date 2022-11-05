@@ -10,8 +10,8 @@
 
 template<class E>
 template<class Dist>
-void Graph<E>::dijkstra(const int s, std::vector<Dist> *dists) const {
-    using State = std::pair<Dist,int>;
+void Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
+    using State = std::pair<Dist,Vertex>;
     std::priority_queue<State,std::vector<State>,std::greater<State>> que;
 
     que.emplace(0, s), (*dists)[s] = 0;
@@ -22,7 +22,7 @@ void Graph<E>::dijkstra(const int s, std::vector<Dist> *dists) const {
         if((*dists)[u] < d) continue;
 
         ITR(e, (*this)[u]) {
-            const int v = e.to; const auto cost = e.cost;
+            const Vertex v = e.to; const auto cost = e.cost;
 
             if((*dists)[v] <= d + cost) continue;
 

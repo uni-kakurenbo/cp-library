@@ -4,8 +4,10 @@
 #include <vector>
 #include <utility>
 
-template<class I, class T = typename std::iterator_traits<I>::value_type, class C = std::vector<std::pair<T,int>>>
-struct RLE : C {
+#include "internal/types.hpp"
+
+template<class I, class T = typename std::iterator_traits<I>::value_type, class Container = std::vector<std::pair<T,Internal::Size>>>
+struct RLE : Container {
     RLE() {}
     RLE(const I first, const I last) {
         this->clear();

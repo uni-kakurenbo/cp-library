@@ -2,8 +2,9 @@
 
 #include <vector>
 
-#include "develop/dev_assert.hpp"
+#include "internal/develop/dev_assert.hpp"
 #include "grid.hpp"
+#include "val_array.hpp"
 
 
 namespace Internal {
@@ -11,91 +12,91 @@ namespace Internal {
 namespace MatrixLib {
 
 template<class T> struct Interface : virtual GridLib::Interface<T> {
-    virtual int rows() const = 0;
-    virtual int cols() const = 0;
+    virtual Size rows() const = 0;
+    virtual Size cols() const = 0;
 
-    virtual int square() const = 0;
+    virtual Size square() const = 0;
 };
 
 }
 
 template<class T, class Base>
-struct Matrix : Base, virtual MatrixLib::Interface<T> {
+struct MatrixCore : Base, virtual MatrixLib::Interface<T> {
     using Base::Base;
 
-    static inline Matrix Identity(const int n, const T &&val = { 1 }) {
-        Matrix res(n);
+    static inline MatrixCore Identity(const Size n, const T &&val = { 1 }) {
+        MatrixCore res(n);
         REP(i, n) res(i, i) = val;
         return res;
     }
 
-    inline int rows() const override { return this->height(); }
-    inline int cols() const override { return this->width(); }
+    inline Size rows() const override { return this->height(); }
+    inline Size cols() const override { return this->width(); }
 
-    inline int square() const override { return this->rows() == this->cols(); }
+    inline Size square() const override { return this->rows() == this->cols(); }
 
-    template<class U> inline Matrix& operator+=(const U rhs) {
+    template<class U> inline MatrixCore& operator+=(const U rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs;
         return *this;
     }
-    template<class ...U> inline Matrix& operator+=(const Matrix<U...> rhs) {
+    template<class ...U> inline MatrixCore& operator+=(const MatrixCore<U...> rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs(i, j);
         return *this;
     }
-    template<class U> inline Matrix operator+(const U rhs) const {
-        return Matrix(*this) += rhs;
+    template<class U> inline MatrixCore operator+(const U rhs) const {
+        return MatrixCore(*this) += rhs;
     }
 
-    template<class U> inline Matrix& operator-=(const U rhs) {
+    template<class U> inline MatrixCore& operator-=(const U rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs;
         return *this;
     }
-    template<class ...U> inline Matrix& operator-=(const Matrix<U...> rhs) {
+    template<class ...U> inline MatrixCore& operator-=(const MatrixCore<U...> rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs(i, j);
         return *this;
     }
-    template<class U> inline Matrix operator-(const U rhs) const {
-        return Matrix(*this) -= rhs;
+    template<class U> inline MatrixCore operator-(const U rhs) const {
+        return MatrixCore(*this) -= rhs;
     }
 
-    template<class ...U> inline Matrix operator*(const Matrix<U...> rhs) {
+    template<class ...U> inline MatrixCore operator*(const MatrixCore<U...> rhs) {
         dev_assert(this->cols() == rhs.rows());
-        Matrix res(this->rows(), rhs.cols());
+        MatrixCore res(this->rows(), rhs.cols());
         REP(i, this->rows()) REP(j, rhs.cols()) REP(k, this->cols()) {
             res(i, j) += (*this)(i, k) * rhs(k, j);
         }
         return res;
     }
-    template<class U> inline Matrix operator*(const U rhs) {
-        Matrix res(*this);
+    template<class U> inline MatrixCore operator*(const U rhs) {
+        MatrixCore res(*this);
         REP(i, res.rows()) REP(j, res.cols()) res(i, j) *= rhs;
         return res;
     }
-    template<class U> inline Matrix& operator*=(const U rhs) {
-        Matrix res = *this * rhs;
+    template<class U> inline MatrixCore& operator*=(const U rhs) {
+        MatrixCore res = *this * rhs;
         this->assign(res);
         return *this;
     }
 
-    template<class U> inline Matrix& operator/=(const U rhs) {
+    template<class U> inline MatrixCore& operator/=(const U rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) /= rhs;
         return *this;
     }
-    template<class U> inline Matrix operator/(const U rhs) const {
-        return Matrix(*this) /= rhs;
+    template<class U> inline MatrixCore operator/(const U rhs) const {
+        return MatrixCore(*this) /= rhs;
     }
 
-    template<class U> inline Matrix& operator%=(const U rhs) {
+    template<class U> inline MatrixCore& operator%=(const U rhs) {
         REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) %= rhs;
         return *this;
     }
-    template<class U> inline Matrix operator%(const U rhs) const {
-        return Matrix(*this) %= rhs;
+    template<class U> inline MatrixCore operator%(const U rhs) const {
+        return MatrixCore(*this) %= rhs;
     }
 
-    inline Matrix pow(ll p) {
+    inline MatrixCore pow(ll p) {
         dev_assert(this->square());
-        Matrix x = *this, res = Matrix::Identity(this->rows());
+        MatrixCore x = *this, res = MatrixCore::Identity(this->rows());
         while(p > 0) {
             if(p & 1) res *= x;
             x *= x;
@@ -103,15 +104,15 @@ struct Matrix : Base, virtual MatrixLib::Interface<T> {
         }
         return res;
     }
-
-    inline T sum() {
-        T res = T{};
-        REP(i, this->rows()) REP(j, this->cols()) res += (*this)(i, j);
-        return res;
-    }
 };
 
 } // namespace Internal
 
 template<class T, class Base = Grid<T>>
-using Matrix = Internal::Matrix<T,Base>;
+using Matrix = Internal::MatrixCore<T,Base>;
+
+template<class T>
+using ValMatrix = Internal::MatrixCore<T,UnfoldedGrid<T,ValArray<T>>>;
+
+template<class T>
+using UnfoldedMatrix = Internal::MatrixCore<T,UnfoldedGrid<T>>;

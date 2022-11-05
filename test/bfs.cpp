@@ -18,27 +18,30 @@ Output _print;
 
 // https://atcoder.jp/contests/abc151/tasks/abc151_d
 
-#include "utility/apply.hpp"
+#include "utility/applier.hpp"
 
 #include "grid.hpp"
 #include "graph.hpp"
 #include "graph/bfs.hpp"
+#include "graph/from_grid.hpp"
 
 signed main() {
     int h, w; cin >> h >> w;
 
-    Grid<char,string> grid(h, w); grid.read();
+    UnfoldedGrid<char> grid(h, w); grid.read();
     Graph<> graph;
-    grid.build_graph_as_maze(&graph);
+    graph.from_grid(&grid);
+
+    debug(grid, graph);
 
     Max<int> ans = -1;
 
     REP(si, h) REP(sj, w) {
-        if(grid[si][sj] == '#') continue;
+        if(grid(si, sj) == '#') continue;
         vector<ll> dists;
         graph.bfs(grid.id(si,sj), &dists);
         REP(gi, h) REP(gj, w) {
-            if(grid[gi][gj] == '#') continue;
+            if(grid(gi, gj) == '#') continue;
             ans <<= dists[grid.id(gi,gj)];
         }
     }

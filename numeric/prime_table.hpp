@@ -2,11 +2,13 @@
 
 #include <vector>
 
+#include "internal/types.hpp"
+
 template<class Container = std::vector<bool>> struct IsPrime : Container {
-    IsPrime(const int max) : Container(max+1, true) {
+    IsPrime(const Internal::Size max) : Container(max+1, true) {
         (*this)[0] = (*this)[1] = false;
-        for(int p=2; p*p<=max; p++) if((*this)[p]) {
-            for(int i=p*p; i<=max; i+=p) (*this)[i] = false;
+        for(Internal::Size p=2; p*p<=max; p++) if((*this)[p]) {
+            for(Internal::Size i=p*p; i<=max; i+=p) (*this)[i] = false;
         }
     }
 };
