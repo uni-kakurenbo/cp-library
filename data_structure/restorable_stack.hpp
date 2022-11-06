@@ -4,6 +4,8 @@
 #include <memory>
 #include <optional>
 
+namespace Lib {
+
 template<class T, class ID = int, template<class,class> class Storage = std::unordered_map>
 struct RestorableStack {
   protected:
@@ -53,3 +55,5 @@ struct RestorableStack {
         node.reset(new Node{});
     }
 };
+
+} // namespace Lib

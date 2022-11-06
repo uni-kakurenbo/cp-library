@@ -14,6 +14,8 @@
 #include "internal/develop/dev_env.hpp"
 #include "internal/types.hpp"
 
+namespace Lib {
+
 namespace Internal {
 
 namespace GridLib {
@@ -233,3 +235,5 @@ using Grid = Internal::GridCore<T,Internal::GridLib::Container<T,Row,Base>>;
 
 template<class T, class Base = std::vector<T>>
 using UnfoldedGrid = Internal::GridCore<T,Internal::GridLib::UnfoldedContainer<T,Base>>;
+
+} // namespace Lib

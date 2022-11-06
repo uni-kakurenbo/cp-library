@@ -8,7 +8,7 @@
 
 template<class E>
 template<class Comparer>
-bool Graph<E>::sort_topologically_with_priority(std::vector<Vertex> *sorted) const {
+bool Lib::Graph<E>::sort_topologically_with_priority(std::vector<Vertex> *sorted) const {
     sorted->clear();
 
     std::vector<Vertex> in_degs(this->size());
@@ -27,7 +27,7 @@ bool Graph<E>::sort_topologically_with_priority(std::vector<Vertex> *sorted) con
 }
 
 template<class E>
-bool Graph<E>::sort_topologically(std::vector<Vertex> *sorted) const {
+bool Lib::Graph<E>::sort_topologically(std::vector<Vertex> *sorted) const {
     sorted->clear();
 
     std::vector<Vertex> in_degs(this->size());

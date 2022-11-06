@@ -6,6 +6,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class T, class Container = std::vector<T>, class CompA = std::less<T>, class CompB = std::greater<T>>
 struct KthElement {
   protected:
@@ -41,3 +43,5 @@ struct KthElement {
         small.push(v);
     }
 };
+
+} // namespace Lib

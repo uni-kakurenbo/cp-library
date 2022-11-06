@@ -7,6 +7,8 @@
 #include "internal/develop/dev_assert.hpp"
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class Cost = ll> struct Edge {
     using cost_type = Cost;
     const Internal::Size to; const Cost cost;
@@ -49,3 +51,5 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
     template<class G, class U = char>
     void from_grid(const G&, U = '.');
 };
+
+} // namespace Lib

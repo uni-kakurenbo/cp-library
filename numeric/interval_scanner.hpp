@@ -9,6 +9,8 @@
 #include "template.hpp"
 #include "internal/exception.hpp"
 
+namespace Lib {
+
 namespace Internal {
 
 namespace IntervalScannerLib {
@@ -161,3 +163,5 @@ struct InclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
         ITRM(start, end, targets) this->scan<INVERSE,FOLLOWING,CONFIRMATION>(start, end);
     }
 };
+
+} // namespace Lib

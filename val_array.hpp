@@ -6,6 +6,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class T> struct ValArray : std::valarray<T> {
     using valarray<T>::valarray;
 
@@ -29,3 +31,5 @@ template<class T> struct ValArray : std::valarray<T> {
         std::move(begin(temp), min(end(temp), next(begin(temp), length)), begin(*this));
     }
 };
+
+} // namespace Lib

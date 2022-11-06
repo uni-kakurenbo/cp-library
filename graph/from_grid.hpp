@@ -5,7 +5,7 @@
 
 template<class E>
 template<class G, class U>
-void Graph<E>::from_grid(const G &grid, U available) {
+void Lib::Graph<E>::from_grid(const G &grid, U available) {
     using EType = typename Graph<E>::EdgeType;
 
     this->clear();

@@ -6,6 +6,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class I, class T = typename std::iterator_traits<I>::value_type, class Container = std::vector<std::pair<T,Internal::Size>>>
 struct RLE : Container {
     RLE() {}
@@ -20,3 +22,5 @@ struct RLE : Container {
         this->emplace_back(*prev(last), cnt);
     }
 };
+
+} // namespace Lib

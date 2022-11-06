@@ -8,7 +8,7 @@
 
 template<class E>
 template<class Dist>
-void Graph<E>::bfs(const Vertex s, std::vector<Dist> *dists) const {
+void Lib::Graph<E>::bfs(const Vertex s, std::vector<Dist> *dists) const {
     dists->assign(this->size(), -1);
 
     std::queue<Vertex> que;

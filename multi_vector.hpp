@@ -7,6 +7,8 @@
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
+namespace Lib {
+
 namespace Internal {
     namespace MultiVectorLib {
         template<class Container> struct Base : Container {
@@ -117,3 +119,5 @@ struct MultiVector<T,0,Container> {
 // struct UnfoldedMultiVector<T,0,Container> {
 //     static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 // };
+
+} // namespace Lib

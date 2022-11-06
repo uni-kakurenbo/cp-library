@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Lib {
+
 template<class T> struct Divisors : std::vector<T> {
     Divisors() {}
     Divisors(const T k) {
@@ -13,3 +15,5 @@ template<class T> struct Divisors : std::vector<T> {
         }
     }
 };
+
+} // namespace Lib

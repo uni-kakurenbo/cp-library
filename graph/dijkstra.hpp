@@ -10,7 +10,7 @@
 
 template<class E>
 template<class Dist>
-void Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
+void Lib::Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
     using State = std::pair<Dist,Vertex>;
     std::priority_queue<State,std::vector<State>,std::greater<State>> que;
 

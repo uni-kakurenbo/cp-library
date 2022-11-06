@@ -8,6 +8,8 @@
 #include "internal/types.hpp"
 #include "internal/develop/dev_assert.hpp"
 
+namespace Lib {
+
 template<class T, class Container = std::vector<T>>
 struct Accumulation : Container {
   protected:
@@ -33,3 +35,5 @@ struct Accumulation : Container {
         return op((*this)[right], (*this)[left]);
     }
 };
+
+} // namespace Lib

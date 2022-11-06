@@ -5,6 +5,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class T, class Container = std::unordered_map<T,Internal::Size>>
 struct Counter : Container {
     Counter() {}
@@ -12,3 +14,5 @@ struct Counter : Container {
         for(auto itr=first; itr!=last; ++itr) ++(*this)[*itr];
     }
 };
+
+} // namespace Lib

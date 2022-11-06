@@ -5,6 +5,8 @@
 
 #include "internal/develop/dev_assert.hpp"
 
+namespace Lib {
+
 template<class T> struct BoundarySeeker {
   protected:
     std::function<bool(T)> validate;
@@ -42,3 +44,5 @@ template<class T> struct BoundarySeeker {
         return this->validate(res) ? res : proxy;
     }
 };
+
+} // namespace Lib

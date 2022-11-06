@@ -7,6 +7,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class T, class Container = std::vector<T>>
 struct AdjacentDifference : Container {
   public:
@@ -19,3 +21,5 @@ struct AdjacentDifference : Container {
         if(remove_first) this->erase(begin(*this));
     }
 };
+
+} // namespace Lib

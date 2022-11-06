@@ -7,6 +7,8 @@
 #include "data_structure/range_sum.hpp"
 #include "iterable/adjacent_difference.hpp"
 
+namespace Lib {
+
 template<class T> struct RangeAddition {
   protected:
     RangeSum<T> difference;
@@ -43,3 +45,5 @@ template<class T> struct RangeAddition {
         return res;
     }
 };
+
+} // namespace Lib

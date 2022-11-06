@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+namespace Lib {
+
 template<class T, class Container = std::vector<T>>
 struct Compression : Container {
   protected:
@@ -24,3 +26,5 @@ struct Compression : Container {
         return values[val];
     }
 };
+
+} // namespace Lib

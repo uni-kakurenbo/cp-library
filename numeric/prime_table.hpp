@@ -4,6 +4,8 @@
 
 #include "internal/types.hpp"
 
+namespace Lib {
+
 template<class Container = std::vector<bool>> struct IsPrime : Container {
     IsPrime(const Internal::Size max) : Container(max+1, true) {
         (*this)[0] = (*this)[1] = false;
@@ -32,3 +34,5 @@ template<class T, class Container = std::vector<T>> struct Primes : Container {
         return is_prime[index];
     }
 };
+
+} // namespace Lib

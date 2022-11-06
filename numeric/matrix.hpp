@@ -6,6 +6,7 @@
 #include "grid.hpp"
 #include "val_array.hpp"
 
+namespace Lib {
 
 namespace Internal {
 
@@ -116,3 +117,5 @@ using ValMatrix = Internal::MatrixCore<T,UnfoldedGrid<T,ValArray<T>>>;
 
 template<class T>
 using UnfoldedMatrix = Internal::MatrixCore<T,UnfoldedGrid<T>>;
+
+} // namespace Lib

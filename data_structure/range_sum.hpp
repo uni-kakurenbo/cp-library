@@ -8,6 +8,8 @@
 #include "template.hpp"
 #include "internal/develop/dev_assert.hpp"
 
+namespace Lib {
+
 template<class T> struct RangeSum : atcoder::fenwick_tree<T> {
   protected:
     int _n;
@@ -40,3 +42,5 @@ template<class T> struct RangeSum : atcoder::fenwick_tree<T> {
         return res;
     }
 };
+
+} // namespace Lib
