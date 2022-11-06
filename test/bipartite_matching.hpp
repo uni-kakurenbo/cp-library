@@ -26,7 +26,7 @@ signed main() {
     REP(i, n) cin >> a[i] >> b[i];
     REP(i, n) cin >> c[i] >> d[i];
 
-    BipartiteMatching bm(n);
+    MaximumBipartiteMatching bm(n);
 
     REP(i, n) REP(j, n) {
         if(a[i] < c[j] and b[i] < d[j]) {

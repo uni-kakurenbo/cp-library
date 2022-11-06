@@ -5,7 +5,7 @@
 
 #include "template.hpp"
 
-struct BipartiteMatching {
+struct MaximumBipartiteMatching {
     using Vertex = int;
 
   protected:
@@ -15,7 +15,7 @@ struct BipartiteMatching {
     std::unique_ptr<MF> mf;
 
   public:
-    explicit BipartiteMatching(Vertex n = 0) : _n(n), mf(new MF{2*n+2}) {
+    MaximumBipartiteMatching(Vertex n = 0) : _n(n), mf(new MF{2*n+2}) {
         REP(i, n) {
             this->mf->add_edge(2*n, i, 1);
             this->mf->add_edge(n+i, 2*n+1, 1);

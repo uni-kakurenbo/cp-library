@@ -24,7 +24,7 @@ template<class T> struct IntervalScannerBase {
     IntervalScannerBase(std::function<bool(T)> validate) : validate(validate) {}
 
     void scan(T,T,T) {
-        static_assert(TYPE_EXCEPTION<T>, "not implemented: scan()");
+        static_assert(EXCEPTION<T>, "not implemented: scan()");
     }
 
     void split(const T first, const T last, Intervals<T> *intervals) const {

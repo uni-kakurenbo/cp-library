@@ -7,15 +7,15 @@
 
 #include "internal/types.hpp"
 
-template<class I, class T = typename std::iterator_traits<I>::value_type, class Container = std::vector<T>>
+template<class T, class Container = std::vector<T>>
 struct AdjacentDifference : Container {
   public:
     AdjacentDifference() {}
 
-    template<class Operator = std::minus<T>>
-    AdjacentDifference(const I first, const I last, const Operator op = std::minus<T>{}) {
+    template<class I, class Operator = std::minus<T>>
+    AdjacentDifference(const I first, const I last, const bool remove_first = true, const Operator op = std::minus<T>{}) {
         this->resize(distance(first, last));
         std::adjacent_difference(first, last, begin(*this), op);
-        this->erase(begin(*this));
+        if(remove_first) this->erase(begin(*this));
     }
 };

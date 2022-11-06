@@ -110,10 +110,10 @@ struct MultiVector<T,1,Container> : Internal::MultiVectorLib::Base<Container<T>>
 
 template<class T, template<class...> class Container>
 struct MultiVector<T,0,Container> {
-    static_assert(TYPE_EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
+    static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 };
 
 // template<class T, class Container>
 // struct UnfoldedMultiVector<T,0,Container> {
-//     static_assert(TYPE_EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
+//     static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 // };

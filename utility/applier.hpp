@@ -5,7 +5,12 @@
 
 namespace Internal {
     template<class T> T max(T a, T b) { return std::max(a, b); }
+    template<class T> T max(T x) { return x; }
+    template<class T> T max() { return  -std::numeric_limits<T>::min(); }
+
     template<class T> T min(T a, T b) { return std::min(a, b); }
+    template<class T> T min(T x) { return x; }
+    template<class T> T min() { return  std::numeric_limits<T>::max(); }
 }
 
 template<class T, T (*op)(T,T)> struct Applier {

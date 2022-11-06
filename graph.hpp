@@ -47,5 +47,5 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
 
     // graph/from_grid.hpp
     template<class G, class U = char>
-    void from_grid(G*, U = '.');
+    void from_grid(const G&, U = '.');
 };
