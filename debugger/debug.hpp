@@ -153,7 +153,7 @@ template<class I> std::string lit(I first, I last, Brackets brcs, std::string sp
     std::stringstream res;
     res << brcs.first << " ";
     while(first != last) {
-        if(distance(first, last)<=1) res << lit(*first) << " ";
+        if(std::distance(first, last)<=1) res << lit(*first) << " ";
         else res << lit(*first) << spl;
         ++first;
     }

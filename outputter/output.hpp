@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 template<class Stream = std::ostream, class Terminator = std::string, class Separator = std::string>
 struct Output {
