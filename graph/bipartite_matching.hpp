@@ -1,7 +1,8 @@
 #pragma once
 
-#include <atcoder/maxflow>
 #include <memory>
+
+#include <atcoder/maxflow>
 
 #include "template.hpp"
 

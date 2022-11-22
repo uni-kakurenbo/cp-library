@@ -9,7 +9,7 @@
 namespace Lib {
 
 template<class T> struct ValArray : std::valarray<T> {
-    using valarray<T>::valarray;
+    using std::valarray<T>::valarray;
 
     ValArray(const Internal::Size length, const T &&val = T{}) : std::valarray<T>(std::forward<const T>(val), length) {}
 
@@ -28,7 +28,7 @@ template<class T> struct ValArray : std::valarray<T> {
     inline void resize(const Internal::Size length, const T &&val = T{}) {
         std::valarray<T> temp = *this;
         this->assign(length, std::forward<const T>(val));
-        std::move(begin(temp), min(end(temp), next(begin(temp), length)), begin(*this));
+        std::move(begin(temp), std::min(std::end(temp), std::next(std::begin(temp), length)), begin(*this));
     }
 };
 
