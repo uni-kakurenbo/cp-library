@@ -47,6 +47,9 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
     bool sort_topologically_with_priority(std::vector<Vertex>*) const;
     bool sort_topologically(std::vector<Vertex>*) const;
 
+    // graph/minimum_paph_cover.hpp
+    Vertex minimum_paph_cover_as_dag() const;
+
     // graph/from_grid.hpp
     template<class G, class U = char>
     void from_grid(const G&, U = '.');
