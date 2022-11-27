@@ -4,26 +4,32 @@
 #include <string>
 #include <vector>
 
+#include "internal/develop/dev_resolving_rank.hpp"
+
 template<class Stream = std::ostream, class Terminator = std::string, class Separator = std::string>
 struct Output {
   private:
     template<class T>
-    int _put(bool, Stream &ost, const T &val) {
-        ost << val;
+    auto _put(Lib::Internal::Rank<2>, const T &val) -> decltype(declval<Stream>() << val, 0) {
+        *this->out << val;
         return 0;
     }
-
     template<class T>
-    auto _put(int, Stream &ost, const T &val) -> decltype(val.val(), 0) {
-        ost << val.val();
+    auto _put(Lib::Internal::Rank<1>, const T &val) -> decltype(val.val(), 0) {
+        *this->out << val.val();
+        return 0;
+    }
+    template<class T>
+    auto _put(Lib::Internal::Rank<0>, const T &val) -> decltype(std::begin(val), std::end(val), 0) {
+        (*this)(std::begin(val), std::end(val), false);
         return 0;
     }
 
   protected:
     template<class T>
-    Stream *put(Stream *ost, const T &val) {
-        _put(0, *ost, val);
-        return out;
+    Stream *put(const T &val) {
+        this->_put(Lib::Internal::Rank<2>{}, val);
+        return this->out;
     }
 
   public:
@@ -39,11 +45,11 @@ struct Output {
 
 
     template<class T> inline Output& operator<<(const T &s) {
-        put(this->out, s);
+        this->put(s);
         return *this;
     }
 
-    template<class T> inline void operator()(const T &val) {
+    template<class T = std::string> inline void operator()(const T &val = "") {
         *this << val << this->endline;
     }
 
@@ -52,10 +58,12 @@ struct Output {
         (*this)(tail...);
     }
 
-    template<class I, class = typename I::value_type> inline void operator()(const I first, const I last) {
+    template<class I, class = typename I::iterator_category> inline void operator()(const I first, const I last, const bool terminate = true) {
         for(I itr=first; itr!=last;) {
             *this << *itr;
-            if(++itr == last) *this << this->endline;
+            if(++itr == last) {
+                if(terminate) *this << this->endline;
+            }
             else *this << this->separator;
         }
     }
