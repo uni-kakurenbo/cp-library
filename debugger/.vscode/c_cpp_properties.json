@@ -8,7 +8,7 @@
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/debugger",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/outputter"
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/stream_adapter"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
