@@ -141,7 +141,7 @@ template<class... T> std::string lit(std::tuple<T...> tpl) {
     return res.str();
 }
 
-template<size_t N = 0, class T> void iterate_tuple(__attribute__ ((unused)) T val, std::stringstream &res) {
+template<size_t N, class T> void iterate_tuple(__attribute__ ((unused)) T val, std::stringstream &res) {
     if constexpr(N < std::tuple_size_v<T>) {
         res << lit(std::get<N>(val));
         if constexpr(N < std::tuple_size_v<T> - 1) res << ", ";
@@ -161,17 +161,17 @@ template<class I> std::string lit(I first, I last, Brackets brcs, std::string sp
     return res.str();
 }
 
-template<class T, std::enable_if_t<Internal::is_iterable_v<T> && !Internal::is_template<std::map,T>::value>* = nullptr>
+template<class T, std::enable_if_t<Internal::is_iterable_v<T> && !Internal::is_template<std::map,T>::value>*>
 std::string lit(T val, Brackets brcs, std::string sep) {
     return lit(Internal::iterator_resolver<T>::begin(val), Internal::iterator_resolver<T>::end(val), brcs, sep);
 }
 
-template<class T, std::enable_if_t<Internal::is_template<std::map,T>::value>* = nullptr>
+template<class T, std::enable_if_t<Internal::is_template<std::map,T>::value>*>
 std::string lit(T val, Brackets brcs, std::string sep) {
     return lit(val.begin(), val.end(), brcs, sep);
 }
 
-template<class T, std::enable_if_t<Internal::is_loggable_v<T>>* = nullptr>
+template<class T, std::enable_if_t<Internal::is_loggable_v<T>>*>
 std::string lit(T val) {
     auto res = _debug(val);
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
