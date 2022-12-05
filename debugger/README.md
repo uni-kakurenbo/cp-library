@@ -1,4 +1,4 @@
-# C++ Debugger for Competition Programming
+# C++ Debugger for Competitive Programming
 
 For use:
 ```C++
