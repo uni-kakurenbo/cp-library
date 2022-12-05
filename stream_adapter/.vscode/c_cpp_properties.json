@@ -11,7 +11,7 @@
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/stream_adapter"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/usr/bin/g++-12",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64"
