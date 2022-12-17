@@ -8,7 +8,7 @@
 #include "graph/maximum_bipartite_matching.hpp"
 
 template<class E>
-typename Lib::Graph<E>::Vertex Lib::Graph<E>::minimum_paph_cover_as_dag() const {
+typename Lib::Graph<E>::Vertex Lib::Graph<E>::minimum_paph_cover_size_as_dag() const {
     Lib::MaximumBipartiteMatching bm(this->size());
 
     REP(i, this->size()) ITR(j, (*this)[i]) {

@@ -26,12 +26,16 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
     Graph(const Vertex n = 0) : std::vector<std::vector<E>>(n) {}
 
     template<const EdgeType EDGE_TYPE = EdgeType::Directed>
-    void add_edge(const Vertex u, const Vertex v, const typename E::cost_type w = 0) {
+    inline void add_edge(const Vertex u, const Vertex v, const typename E::cost_type w = 0) {
         dev_assert(0 <= u and u < (Vertex)this->size()), dev_assert(0 <= v and v < (Vertex)this->size());
         (*this)[u].emplace_back(v, w);
         if constexpr(EDGE_TYPE == EdgeType::Undirected) {
             (*this)[v].emplace_back(u, w);
         }
+    }
+
+    inline void add_edge_bidirectionally(const Vertex u, const Vertex v, const typename E::cost_type w = 0) {
+        this->add_edge<EdgeType::Undirected>(u, v, w);
     }
 
     // graph/bfs.hpp
@@ -48,7 +52,7 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
     bool sort_topologically(std::vector<Vertex>*) const;
 
     // graph/minimum_paph_cover.hpp
-    Vertex minimum_paph_cover_as_dag() const;
+    Vertex minimum_paph_cover_size_as_dag() const;
 
     // graph/from_grid.hpp
     template<class G, class U = char>

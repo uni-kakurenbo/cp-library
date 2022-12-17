@@ -1,20 +1,19 @@
 #pragma once
 
-#include <memory>
-
 #include <atcoder/maxflow>
 
 #include "template.hpp"
+#include "internal/types.hpp"
 
 namespace Lib {
 
 struct MaximumBipartiteMatching {
-    using Vertex = int;
+    using Vertex = Internal::Size;
 
   protected:
     using MF = atcoder::mf_graph<Vertex>;
 
-    int _n;
+    Vertex _n;
     MF mf;
 
   public:
