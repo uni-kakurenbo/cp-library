@@ -63,7 +63,7 @@ template<class T> struct IntervalScannerBase {
     void scan_all(const T first, const T last) const {
         Intervals<T> targets;
         this->split(first, last, &targets);
-        ITRM(start, end, targets) this->scan(first, start, end);
+        ITR(start, end, targets) this->scan(first, start, end);
     }
 };
 
@@ -112,7 +112,7 @@ struct ExclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
     void scan_all(const T first, const T last) const {
         Intervals targets;
         this->split(first, last, &targets);
-        ITRM(start, end, targets) this->scan<FOLLOWING>(start, end);
+        ITR(start, end, targets) this->scan<FOLLOWING>(start, end);
     }
 };
 
@@ -160,7 +160,7 @@ struct InclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
     void scan_all(const T first, const T last) const {
         Intervals targets;
         this->split(first, last, &targets);
-        ITRM(start, end, targets) this->scan<INVERSE,FOLLOWING,CONFIRMATION>(start, end);
+        ITR(start, end, targets) this->scan<INVERSE,FOLLOWING,CONFIRMATION>(start, end);
     }
 };
 
