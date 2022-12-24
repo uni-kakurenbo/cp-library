@@ -10,7 +10,7 @@ template<class Stream = std::ostream, class Terminator = std::string, class Sepa
 struct Output {
   private:
     template<class T>
-    auto _put(Lib::Internal::Rank<2>, const T &val) -> decltype(declval<Stream>() << val, 0) {
+    auto _put(Lib::Internal::Rank<2>, const T &val) -> decltype(std::declval<Stream>() << val, 0) {
         *this->out << val;
         return 0;
     }
