@@ -10,7 +10,7 @@
 namespace Lib {
 
 namespace Internal {
-    namespace MultiVectorLib {
+    namespace MultiContainerLib {
         template<class Container> struct Base : Container {
             using Container::Container;
 
@@ -26,12 +26,12 @@ namespace Internal {
 }
 
 template<class T, const unsigned int RANK, template<class...> class Container = std::vector>
-struct MultiVector : Internal::MultiVectorLib::Base<Container<MultiVector<T,RANK-1,Container>>> {
-    using Internal::MultiVectorLib::Base<Container<MultiVector<T,RANK-1,Container>>>::Base;
+struct MultiContainer : Internal::MultiContainerLib::Base<Container<MultiContainer<T,RANK-1,Container>>> {
+    using Internal::MultiContainerLib::Base<Container<MultiContainer<T,RANK-1,Container>>>::Base;
 
     template<class Head, class... Tail>
-    MultiVector(const Head head, const Tail&&... tail)
-    : Internal::MultiVectorLib::Base<Container<MultiVector<T,RANK-1,Container>>>(head, MultiVector<T,RANK-1,Container>(std::forward<const Tail>(tail)...)) {
+    MultiContainer(const Head head, const Tail&&... tail)
+    : Internal::MultiContainerLib::Base<Container<MultiContainer<T,RANK-1,Container>>>(head, MultiContainer<T,RANK-1,Container>(std::forward<const Tail>(tail)...)) {
         static_assert(is_integral_v<Head>, "size must be integral");
     }
 
@@ -53,10 +53,10 @@ struct MultiVector : Internal::MultiVectorLib::Base<Container<MultiVector<T,RANK
 };
 
 template<class T, template<class...> class Container>
-struct MultiVector<T,1,Container> : Internal::MultiVectorLib::Base<Container<T>> {
-    using Internal::MultiVectorLib::Base<Container<T>>::Base;
+struct MultiContainer<T,1,Container> : Internal::MultiContainerLib::Base<Container<T>> {
+    using Internal::MultiContainerLib::Base<Container<T>>::Base;
 
-    template<class... Args> MultiVector(const Args&&... args) : Internal::MultiVectorLib::Base<Container<T>>(std::forward<const Args>(args)...) {}
+    template<class... Args> MultiContainer(const Args&&... args) : Internal::MultiContainerLib::Base<Container<T>>(std::forward<const Args>(args)...) {}
 
     T& operator()(const Internal::Size _index) {
         const Internal::Size index = this->_positivize_index(_index);
@@ -72,7 +72,7 @@ struct MultiVector<T,1,Container> : Internal::MultiVectorLib::Base<Container<T>>
 
 
 // template<class T, const unsigned int RANK, class Base = std::vector<T>>
-// struct UnfoldedMultiVector : Base {
+// struct UnfoldedMultiContainer : Base {
 //   protected:
 //     std::array<Size,RANK> size_list;
 
@@ -80,7 +80,7 @@ struct MultiVector<T,1,Container> : Internal::MultiVectorLib::Base<Container<T>>
 //     using Base::Base;
 
 //     template<class... Args>
-//     UnfoldedMultiVector(const Args... _args) {
+//     UnfoldedMultiContainer(const Args... _args) {
 //         const std::initializer_list<Size> args { _args... };
 
 //         dev_debug(args.size() == RANK or args.size() == RANK + 1);
@@ -111,12 +111,12 @@ struct MultiVector<T,1,Container> : Internal::MultiVectorLib::Base<Container<T>>
 
 
 template<class T, template<class...> class Container>
-struct MultiVector<T,0,Container> {
+struct MultiContainer<T,0,Container> {
     static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 };
 
 // template<class T, class Container>
-// struct UnfoldedMultiVector<T,0,Container> {
+// struct UnfoldedMultiContainer<T,0,Container> {
 //     static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 // };
 
