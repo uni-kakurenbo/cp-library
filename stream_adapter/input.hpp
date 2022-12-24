@@ -1,27 +1,38 @@
 #pragma once
 
+#include <atcoder/modint>
+
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iterator>
+
+#include "internal/develop/dev_resolving_rank.hpp"
 
 template<class Stream = std::istream>
 struct Input {
   private:
     template<class T>
-    auto _set(int, T * const val) -> decltype(declval<Stream>() >> *val, 0) {
+    auto _set(Lib::Internal::Rank<2>, T *const val) -> decltype(std::declval<Stream>() >> *val, 0) {
         *this->in >> *val;
         return 0;
     }
     template<class T>
-    int _set(bool, T * const val) {
+    auto _set(Lib::Internal::Rank<1>, T *const val) -> decltype(std::begin(*val), std::end(*val), 0) {
         (*this)(std::begin(*val), std::end(*val));
+        return 0;
+    }
+    template<class T, atcoder::internal::is_modint_t<T>* = nullptr>
+    int _set(Lib::Internal::Rank<0>, T *const val) {
+        long long v; std::cin >> v;
+        *val = { v };
         return 0;
     }
 
   protected:
     template<class T>
-    Stream *set(T * const val) {
-        this->_set(0, val);
+    Stream *set(T *const val) {
+        this->_set(Lib::Internal::Rank<2>{}, val);
         return this->in;
     }
 
@@ -42,11 +53,11 @@ struct Input {
         return val;
     }
 
-    template<class T> inline void operator()(T* const val) {
+    template<class T> inline void operator()(T*const val) {
         *this >> *val;
     }
 
-    template<class T, class ...Args> inline void operator()(T* const head, Args* const ...tail) {
+    template<class T, class ...Args> inline void operator()(T*const head, Args*const ...tail) {
         *this >> *head;
         (*this)(tail...);
     }
@@ -55,7 +66,7 @@ struct Input {
         for(I itr=first; itr!=last; ++itr) *this >> *itr;
     }
 
-    template<class F, class S> inline void operator()(std::pair<F,S> * const p) {
+    template<class F, class S> inline void operator()(std::pair<F,S> *const p) {
         (*this)(&p->first, &p->second);
     }
 };
