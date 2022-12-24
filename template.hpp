@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <utility>
 
 #ifdef LOCAL_JUDGE
     #include<debug>
@@ -57,8 +56,8 @@
 #define ITRR4(e0,e1,e2,e3,v) for(auto &[e0, e1, e2, e3] : (v))
 
 #define ITR(...) $OVERLOAD5(__VA_ARGS__, ITR4, ITR3, ITR2, ITR1)(__VA_ARGS__)
-#define ITRP(...) $OVERLOAD5()(__VA_ARGS, ITRP4, ITRP3, ITRP2, ITRP1)(__VA_ARGS__)
-#define ITRR(...) $OVERLOAD5()(__VA_ARGS, ITRR4, ITRR3, ITRR2, ITRR1)(__VA_ARGS__)
+#define ITRP(...) $OVERLOAD5(__VA_ARGS__, ITRP4, ITRP3, ITRP2, ITRP1)(__VA_ARGS__)
+#define ITRR(...) $OVERLOAD5(__VA_ARGS__, ITRR4, ITRR3, ITRR2, ITRR1)(__VA_ARGS__)
 
 #define ALL(x) std::begin((x)),std::end((x))
 #define RALL(x) std::rbegin((x)),std::rend((x))
@@ -73,6 +72,8 @@ using ld = long double;
 constexpr char ln = '\n';
 constexpr char spc = ' ';
 
+#include <utility>
+
 constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
@@ -82,3 +83,12 @@ template<class T1, class T2> inline auto mod(T1 x, T2 r) { return (x%r+r)%r; }
 
 template<class T1, class T2> inline bool chmax(T1 &a, T2 b) { return (a<b ? a=b, true : false); }
 template<class T1, class T2> inline bool chmin(T1 &a, T2 b) { return (a>b ? a=b, true : false); }
+
+#include "input.hpp"
+#include "output.hpp"
+
+Input _input;
+Output _print;
+
+#define input _input
+#define print _print
