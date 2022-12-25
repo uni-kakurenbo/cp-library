@@ -18,7 +18,7 @@
 
 #include "internal/macro.hpp"
 
-#define LOOP(n) REP($_, (n))
+#define LOOP(n) REPI($_, (n))
 
 #define REPI(i,n) for(int i=0, i##_length=int(n); i<i##_length; ++i)
 #define REPF(i,l,r) for(auto i=(l), i##_last=(r); i!=i##_last; ++i)
