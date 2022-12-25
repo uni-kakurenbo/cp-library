@@ -20,6 +20,7 @@ template<class Cost = ll> struct Edge {
 
 template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
     using Vertex = Internal::Size;
+    using Edge = E;
 
     enum class EdgeType { Undirected, Directed };
 
@@ -53,6 +54,14 @@ template<class E = Edge<ll>> struct Graph : std::vector<std::vector<E>> {
 
     // graph/minimum_paph_cover.hpp
     Vertex minimum_paph_cover_size_as_dag() const;
+
+    // graph/spanning_tree_cost.hpp
+    template<class Cost = typename E::cost_type>
+    Cost minimum_spanning_tree_cost() const;
+
+    // graph/spanning_tree_cost.hpp
+    template<class Cost = typename E::cost_type>
+    Cost maximum_spanning_tree_cost() const;
 
     // graph/from_grid.hpp
     template<class G, class U = char>
