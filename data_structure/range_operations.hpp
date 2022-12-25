@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <cstdint>
 #include <algorithm>
 #include <limits>
@@ -9,13 +8,15 @@
 #include "template.hpp"
 
 #include "internal/develop/dev_env.hpp"
-
 #include "internal/types.hpp"
+#include "internal/iterator.hpp"
+
 #include "random/xorshift.hpp"
 
 
 namespace Lib {
 
+// Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
 
 template<class T0, class T1>
 class ImplicitTreap {
@@ -53,11 +54,14 @@ class ImplicitTreap {
 
     using Tree = Node*;
 
+    // TODO: iterator
+    // using iterator = Iterator;
+
     Internal::Size cnt(const Tree t) const { return t ? t->cnt : 0; }
 
     T0 acc(const Tree t) const { return t ? t->acc : u0; }
 
-    void update_cnt(Tree t) const {
+    void update_acc(Tree t) const {
         if (t) {
             t->cnt = 1 + cnt(t->l) + cnt(t->r);
         }
@@ -69,7 +73,7 @@ class ImplicitTreap {
         }
     }
 
-    void pushup(Tree t) const { update_cnt(t), update_acc(t); }
+    void pushup(Tree t) const { this->this->update_acc(t), update_acc(t); }
 
     void pushdown(Tree t) const {
         if (t && t->rev) {
@@ -90,7 +94,7 @@ class ImplicitTreap {
             t->value = this->g(t->value, this->p(t->lazy, 1));
             t->lazy = u1;
         }
-        pushup(t);
+        this->pushup(t);
     }
 
     void split(Tree t, Internal::Size key, Tree &l, Tree &r) {
@@ -106,7 +110,7 @@ class ImplicitTreap {
         else {
             split(t->r, key - implicit_key, t->r, r), l = t;
         }
-        pushup(t);
+        this->pushup(t);
     }
 
     void insert(Tree &t, Internal::Size key, Tree item) {
@@ -126,7 +130,7 @@ class ImplicitTreap {
         } else {
             merge(r->l, l, r->l), t = r;
         }
-        pushup(t);
+        this->pushup(t);
     }
 
     void erase(Tree &t, Internal::Size key) {
@@ -250,12 +254,21 @@ public:
 };
 
 template <class T0, class T1>
-struct RangeMinimize : public ImplicitTreap<T0, T1> {
+struct RangeChmin : public ImplicitTreap<T0, T1> {
     using ImplicitTreap<T0, T1>::ImplicitTreap;
-    RangeMinimize() : RangeMinimize(std::numeric_limits<T0>::max(), std::numeric_limits<T1>::min()) {}
+    RangeChmin() : RangeChmin(std::numeric_limits<T0>::max(), std::numeric_limits<T1>::min()) {}
     T0 f0(T0 x, T0 y) const override { return std::min(x, y); }
     T1 f1(T1 x, T1 y) const override { return y == std::numeric_limits<T1>::min() ? x : y; }
     T0 g(T0 x, T1 y) const override { return y == std::numeric_limits<T1>::min() ? x : y; }
+    T1 p(T1 x, int) const override { return x; }
+};
+template <class T0, class T1>
+struct RangeChmax : public ImplicitTreap<T0, T1> {
+    using ImplicitTreap<T0, T1>::ImplicitTreap;
+    RangeChmax() : RangeChmax(std::numeric_limits<T0>::min(), std::numeric_limits<T1>::max()) {}
+    T0 f0(T0 x, T0 y) const override { return std::max(x, y); }
+    T1 f1(T1 x, T1 y) const override { return y == std::numeric_limits<T1>::max() ? x : y; }
+    T0 g(T0 x, T1 y) const override { return y == std::numeric_limits<T1>::max() ? x : y; }
     T1 p(T1 x, int) const override { return x; }
 };
 
@@ -270,10 +283,19 @@ struct RangeAddRangeSum : public ImplicitTreap<T0, T1> {
 };
 
 template <class T0, class T1>
-struct RangeMinimizeAdd : public ImplicitTreap<T0, T1> {
+struct RangeChminAdd : public ImplicitTreap<T0, T1> {
     using ImplicitTreap<T0, T1>::ImplicitTreap;
-    RangeMinimizeAdd() : RangeMinimizeAdd(std::numeric_limits<T0>::max(), 0) {}
+    RangeChminAdd() : RangeChminAdd(std::numeric_limits<T0>::max(), 0) {}
     T0 f0(T0 x, T0 y) const override { return std::min(x, y); }
+    T1 f1(T1 x, T1 y) const override { return x + y; }
+    T0 g(T0 x, T1 y) const override { return x + y; }
+    T1 p(T1 x, int) const override { return x; }
+};
+template <class T0, class T1>
+struct RangeChmaxAdd : public ImplicitTreap<T0, T1> {
+    using ImplicitTreap<T0, T1>::ImplicitTreap;
+    RangeChmaxAdd() : RangeChmaxAdd(std::numeric_limits<T0>::min(), 0) {}
+    T0 f0(T0 x, T0 y) const override { return std::max(x, y); }
     T1 f1(T1 x, T1 y) const override { return x + y; }
     T0 g(T0 x, T1 y) const override { return x + y; }
     T1 p(T1 x, int) const override { return x; }
