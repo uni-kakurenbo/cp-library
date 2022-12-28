@@ -16,11 +16,12 @@ Output _print;
 #define print _print
 /* #endregion */
 
+// https://atcoder.jp/contests/abc276/tasks/abc276_f?lang=en&editorialLang=ja
+
 #include <atcoder/modint>
 
-#include "utility/applier.hpp"
 #include "iterable/accumulation.hpp"
-#include "data_structure/range_sum.hpp"
+#include "data_structure/range_operations.hpp"
 
 using mint = atcoder::modint998244353;
 
