@@ -38,11 +38,11 @@ struct IRandomAccessIterator : IBidirectionalIterator<T> {
     virtual IRandomAccessIterator& operator+=(const difference_type count) = 0;
     virtual IRandomAccessIterator& operator-=(const difference_type count) = 0;
 
-    IRandomAccessIterator& operator+(const difference_type count) const {
+    inline IRandomAccessIterator& operator+(const difference_type count) const {
         auto res = *this;
         return res += count;
     }
-    IRandomAccessIterator& operator-(const difference_type count) const {
+    inline IRandomAccessIterator& operator-(const difference_type count) const {
         auto res = *this;
         return res -= count;
     }
@@ -53,17 +53,23 @@ struct IContainerIterator : public IRandomAccessIterator<T> {
     using difference_type = typename IBidirectionalIterator<T>::difference_type;
 
   protected:
-    Container *const _ref;
+    const Container *const _ref;
     difference_type _pos;
-    IContainerIterator(Container *const ref, const difference_type& pos) : _ref(ref), _pos(pos) {}
+    IContainerIterator(const Container *const ref, const difference_type& pos) : _ref(ref), _pos(pos) {}
 
   public:
-    inline Container* ref() const { return this->_ref; }
+    inline const Container * ref() const { return this->_ref; }
 
     inline difference_type pos() const { return this->_pos; }
     inline difference_type& pos() { return this->_pos; }
 
-    difference_type operator-(const IContainerIterator& other) const { return this->pos() - other.pos(); }
+    inline IContainerIterator& operator++() override { return ++this->pos(), *this; }
+    inline IContainerIterator& operator--() override { return --this->pos(), *this; }
+
+    inline IContainerIterator& operator+=(const difference_type count) override { return this->pos() += count, *this; }
+    inline IContainerIterator& operator-=(const difference_type count) override { return this->pos() -= count, *this; }
+
+    inline difference_type operator-(const IContainerIterator& other) const { return this->pos() - other.pos(); }
 
     inline bool operator<(const IContainerIterator& other) const { return *this - other < 0; }
     inline bool operator>(const IContainerIterator& other) const { return *this - other > 0; }
