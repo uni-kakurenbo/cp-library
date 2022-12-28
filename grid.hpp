@@ -8,7 +8,7 @@
 #include <initializer_list>
 #include <utility>
 
-#include "template.hpp"
+#include "snippet/aliases.hpp"
 
 #include "internal/develop/dev_assert.hpp"
 #include "internal/develop/dev_env.hpp"

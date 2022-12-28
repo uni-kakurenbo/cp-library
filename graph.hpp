@@ -1,8 +1,9 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 
-#include "template.hpp"
+#include "snippet/internal/types.hpp"
 
 #include "internal/develop/dev_assert.hpp"
 #include "internal/types.hpp"

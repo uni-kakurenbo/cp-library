@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
 #include "internal/types.hpp"
 
 #include "graph.hpp"
@@ -67,7 +67,7 @@ struct LowestCommonAncestor {
     }
 
     Vertex edges(const Vertex u, const Vertex v) const {
-        return dists[u] + dists[v] - 2 * dists[query(u, v)];
+        return dists[u] + dists[v] - 2 * dists[find(u, v)];
     }
 };
 

@@ -3,7 +3,9 @@
 #include <vector>
 #include <queue>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
+#include "snippet/internal/types.hpp"
+
 #include "graph.hpp"
 
 template<class E>
@@ -14,7 +16,7 @@ void Lib::Graph<E>::bfs(const Vertex s, std::vector<Dist> *dists) const {
     std::queue<Vertex> que;
     que.push(s), (*dists)[s] = 0;
 
-    until(que.empty()) {
+    while(not que.empty()) {
         const Vertex v = que.front(); que.pop();
         ITR(nv, (*this)[v]) {
             if((*dists)[nv.to] >= 0) continue;

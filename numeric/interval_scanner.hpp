@@ -6,7 +6,7 @@
 #include <functional>
 #include <valarray>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
 #include "internal/exception.hpp"
 
 namespace Lib {

@@ -3,7 +3,7 @@
 #include <vector>
 #include <queue>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
 #include "graph.hpp"
 
 template<class E>
@@ -17,7 +17,7 @@ bool Lib::Graph<E>::sort_topologically_with_priority(std::vector<Vertex> *sorted
     std::priority_queue<Vertex,std::vector<Vertex>,Comparer> que;
     REP(i, this->size()) if(in_degs[i] == 0) que.push(i);
 
-    while(!que.empty()) {
+    while(not que.empty()) {
         const Vertex v = que.top(); que.pop();
         ITR(u, (*this)[v]) if(!(--in_degs[u.to])) que.push(u.to);
         sorted->push_back(v);
@@ -36,7 +36,7 @@ bool Lib::Graph<E>::sort_topologically(std::vector<Vertex> *sorted) const {
     std::queue<Vertex> que;
     REP(i, this->size()) if(in_degs[i] == 0) que.push(i);
 
-    until(que.empty()) {
+    while(not que.empty()) {
         const Vertex v = que.front(); que.pop();
         ITR(u, (*this)[v]) if(!(--in_degs[u.to])) que.push(u.to);
         sorted->push_back(v);

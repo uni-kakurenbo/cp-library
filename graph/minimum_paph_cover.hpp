@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
 
 #include "graph.hpp"
 #include "graph/maximum_bipartite_matching.hpp"

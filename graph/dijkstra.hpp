@@ -5,7 +5,7 @@
 #include <utility>
 #include <functional>
 
-#include "template.hpp"
+#include "snippet/iterations.hpp"
 #include "graph.hpp"
 
 template<class E>
@@ -16,7 +16,7 @@ void Lib::Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
 
     que.emplace(0, s), (*dists)[s] = 0;
 
-    until(que.empty()) {
+    while(not que.empty()) {
         const auto [d, u] = que.top(); que.pop();
 
         if((*dists)[u] < d) continue;
