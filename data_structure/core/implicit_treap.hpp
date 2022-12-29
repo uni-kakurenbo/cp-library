@@ -8,6 +8,8 @@
 #include "snippet/iterations.hpp"
 
 #include "internal/develop/dev_assert.hpp"
+
+#include "internal/uncopyable.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
@@ -20,7 +22,7 @@ namespace ImplicitTreapLib {
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
 template<class T0, class T1>
-struct Base {
+struct Base : private Uncopyable {
     using Size = Internal::Size;
 
   private:
@@ -36,11 +38,11 @@ struct Base {
     virtual T0 g(T0, T1) const = 0;
 
     // 多数のt1(T1)に対するf1の合成
-    virtual T1 p(T1, int) const = 0;
+    virtual T1 p(T1, Size) const = 0;
 
 
     struct Node;
-    using Tree = std::shared_ptr<Node>;
+    using Tree = Node*;
 
     mutable Xorshift random_engine;
 
@@ -57,6 +59,10 @@ struct Base {
 
         Node(const T0& value, const Base* super)
         : value(value), acc(super->u0), lazy(super->u1), priority(super->random_engine()) {}
+        ~Node() {
+            if(this->left) delete this->left;
+            if(this->right) delete this->right;
+        }
     };
 
     Tree root = nullptr;
@@ -139,6 +145,7 @@ struct Base {
         this->split(tree, key + 1, t1, t2);
         this->split(t1, key, t1, t3);
         this->merge(tree, t1, t2);
+        if(t3) delete t3;
     }
 
     inline void apply(Tree tree, const Size first, const Size last, const T1& value) const {
@@ -206,8 +213,10 @@ struct Base {
 
   protected:
     explicit Base(const T0& u0, const T1& u1) : u0(u0), u1(u1) {}
+    virtual ~Base() { delete this->root; }
 
-    void insert(const Size pos, const T0& value) { this->insert(this->root, pos, std::make_shared<Node>(value, this)); }
+    // void insert(const Size pos, const T0& value) { this->insert(this->root, pos, std::make_shared<Node>(value, this)); }
+    void insert(const Size pos, const T0& value) { this->insert(this->root, pos, new Node(value, this)); }
 
     inline void apply(const Size first, const Size last, const T1& value) { this->apply(this->root, first, last, value); }
 
@@ -379,8 +388,8 @@ struct ImplicitTreap : ImplicitTreapLib::Base<T0,T1> {
     };
     using iterator = Iterator;
 
-    inline Iterator begin() { return Iterator(this, 0); }
-    inline Iterator end() { return Iterator(this, this->size()); }
+    inline Iterator begin() const { return Iterator(this, 0); }
+    inline Iterator end() const { return Iterator(this, this->size()); }
 };
 
 
