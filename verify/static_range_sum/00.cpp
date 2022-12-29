@@ -7,7 +7,7 @@ signed main() {
     std::vector<int> a(n); REP(i, n) std::cin >> a[i];
     Lib::Accumulation<ll> sum(ALL(a));
 
-    REP(n) {
+    REP(q) {
         int l, r; std::cin >> l >> r;
         print(sum(l, r));
     }
