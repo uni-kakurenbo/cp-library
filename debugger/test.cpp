@@ -1,13 +1,14 @@
 #include <bits/stdc++.h>
 #include <atcoder/modint>
 
+using namespace std;
+using namespace atcoder;
+
 #include <debug>
 
 #define debug(...) Debug::debug(Debug::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
 #define DEBUG(...) do { Debug::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); Debug::DEBUG(__VA_ARGS__); Debug::DEBUG(nullptr, "\033[m\n"); } while(0);
 
-using namespace std;
-using namespace atcoder;
 
 template<class T = int> struct Matrix : vector<vector<T>> {
     Matrix(size_t h, size_t w, T init = T()) : vector<vector<T>> (h, vector<T> (w, init)) {}
@@ -41,12 +42,12 @@ template<class T> ptrdiff_t distance(Iterator<T>& a, Iterator<T>& b) { return b 
 struct MyString {
     const char* s;
     Iterator<char> begin() { return { s }; }
-    Iterator<char> end()   { return { s + strlen(s) }; }
+    Iterator<char> end() { return { s + strlen(s) }; }
 };
 
 struct MyStructure0 {
     MyStructure0(int a, int b, int c, int d) : a(a), b(b), c(c), d(d) {}
-    vector<int> _debug() {
+    vector<int> _debug() const {
         return { 0, a + b + c + d, a * b * c * d };
     }
   private:
@@ -55,12 +56,12 @@ struct MyStructure0 {
 
 struct MyStructure1 {
     MyStructure1(int a, int b, int c, int d) : a(a), b(b), c(c), d(d) {}
-    friend vector<int> _debug(MyStructure1 &s);
+    friend vector<int> _debug(const MyStructure1 &s);
   private:
     int a, b, c, d;
 };
 
-vector<int> _debug(MyStructure1 &s) {
+vector<int> _debug(const MyStructure1 &s) {
     return { 1, s.a + s.b + s.c + s.d, s.a * s.b * s.c * s.d };
 }
 
@@ -93,9 +94,21 @@ signed main() {
     vector vector_string = { "string", "abcdefg" };
     debug(vector_string);
 
+    set<int> set_int = { 0, 3, 6, 1, 2, 3, 0 };
+    debug(set_int);
+
+    unordered_set<int> unord_set_int = { 0, 3, 6, 1, 2, 3, 0 };
+    debug(unord_set_int);
+
+    map<int,int> map__int_int = { { 0, 3 }, { 6, 1 }, { 2, 3 } };
+    debug(map__int_int);
+
+    // unordered_map<int,int> unord_map__int_int = { { 0, 3 }, { 6, 1 }, { 2, 3 } };
+    // debug(unord_map__int_int);
+
     debug(Primes(100));
 
-    debug(MyString{"abcdefg"});
+    // debug(MyString{"abcdefg"});
     debug(string{string{"abcdefg"}});
 
     static_assert(!Debug::Internal::is_loggable_v<int>);
@@ -121,10 +134,10 @@ signed main() {
     vector<pair<int,MyStructure1>> vector_pair__my_structure1 = { { 0, { 1, 2, 3, 4 } }, { 1, { 1, 2, 3, 4 } } };
     debug(vector_pair__my_structure1);
 
-    map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> comlexed = {
-        { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
-    };
-    debug(comlexed);
+    // map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> comlexed = {
+    //     { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
+    // };
+    // debug(comlexed);
 
     return 0;
 }
