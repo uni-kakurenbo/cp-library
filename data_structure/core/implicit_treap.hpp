@@ -7,7 +7,7 @@
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
 
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 
 #include "internal/uncopyable.hpp"
 #include "internal/types.hpp"

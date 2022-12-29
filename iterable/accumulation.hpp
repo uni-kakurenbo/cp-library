@@ -6,7 +6,7 @@
 #include <numeric>
 
 #include "internal/types.hpp"
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 
 namespace Lib {
 

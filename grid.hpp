@@ -10,8 +10,8 @@
 
 #include "snippet/aliases.hpp"
 
-#include "internal/develop/dev_assert.hpp"
-#include "internal/develop/dev_env.hpp"
+#include "internal/dev_assert.hpp"
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 namespace Lib {

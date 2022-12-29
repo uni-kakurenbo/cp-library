@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "internal/develop/dev_resolving_rank.hpp"
+#include "internal/resolving_rank.hpp"
 
 template<class Stream = std::ostream, class Terminator = std::string, class Separator = std::string>
 struct Output {

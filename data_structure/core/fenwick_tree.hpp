@@ -3,8 +3,8 @@
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
-#include "internal/develop/dev_assert.hpp"
-#include "internal/develop/dev_env.hpp"
+#include "internal/dev_assert.hpp"
+#include "internal/dev_env.hpp"
 
 #include "utility/functional.hpp"
 

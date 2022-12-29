@@ -7,7 +7,7 @@
 #include <vector>
 #include <iterator>
 
-#include "internal/develop/dev_resolving_rank.hpp"
+#include "internal/resolving_rank.hpp"
 
 template<class Stream = std::istream>
 struct Input {

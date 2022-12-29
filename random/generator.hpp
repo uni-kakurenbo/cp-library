@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 
 template<class Engine> struct RandomEngine {
     using result_type = typename Engine::result_type;

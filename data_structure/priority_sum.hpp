@@ -50,7 +50,7 @@ struct PrioritySum {
 
     int size() const { return cnt; }
 
-    T sum(int k) { return tr.query(0, k); }
+    T sum(int k) { return tr.prod(0, k); }
 
     T operator[](int k) { return tr[k]; }
 

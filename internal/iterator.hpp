@@ -38,11 +38,11 @@ struct IRandomAccessIterator : IBidirectionalIterator<T> {
     virtual IRandomAccessIterator& operator+=(const difference_type count) = 0;
     virtual IRandomAccessIterator& operator-=(const difference_type count) = 0;
 
-    inline IRandomAccessIterator& operator+(const difference_type count) const {
+    inline IRandomAccessIterator operator+(const difference_type count) const {
         auto res = *this;
         return res += count;
     }
-    inline IRandomAccessIterator& operator-(const difference_type count) const {
+    inline IRandomAccessIterator operator-(const difference_type count) const {
         auto res = *this;
         return res -= count;
     }

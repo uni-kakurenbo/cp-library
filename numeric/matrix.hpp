@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 #include "grid.hpp"
 #include "val_array.hpp"
 

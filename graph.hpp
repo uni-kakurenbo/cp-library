@@ -5,7 +5,7 @@
 
 #include "snippet/internal/types.hpp"
 
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 
 namespace Lib {

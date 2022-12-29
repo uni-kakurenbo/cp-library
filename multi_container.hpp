@@ -3,7 +3,7 @@
 #include <vector>
 #include <array>
 
-#include "internal/develop/dev_assert.hpp"
+#include "internal/dev_assert.hpp"
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
