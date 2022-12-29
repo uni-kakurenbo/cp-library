@@ -67,19 +67,19 @@ struct Base : private Uncopyable {
 
     Tree root = nullptr;
 
-    inline Size cnt(const Tree& tree) const { return tree ? tree->cnt : 0; }
+    inline Size cnt(const Tree tree) const { return tree ? tree->cnt : 0; }
 
-    inline T0 acc(const Tree& tree) const { return tree ? tree->acc : u0; }
+    inline T0 acc(const Tree tree) const { return tree ? tree->acc : u0; }
 
-    inline void update_cnt(const Tree& tree) const { if(tree) tree->cnt = 1 + this->cnt(tree->left) + this->cnt(tree->right); }
+    inline void update_cnt(const Tree tree) const { if(tree) tree->cnt = 1 + this->cnt(tree->left) + this->cnt(tree->right); }
 
-    inline void update_acc(const Tree& tree) const {
+    inline void update_acc(const Tree tree) const {
         if(tree) tree->acc = this->f0(this->acc(tree->left), this->f0(tree->value, this->acc(tree->right)));
     }
 
-    inline void pushup(const Tree& tree) const { this->update_cnt(tree), update_acc(tree); }
+    inline void pushup(const Tree tree) const { this->update_cnt(tree), update_acc(tree); }
 
-    inline void pushdown(const Tree& tree) const {
+    inline void pushdown(const Tree tree) const {
         if(tree && tree->rev) {
             tree->rev = false;
             std::swap(tree->left, tree->right);
@@ -118,14 +118,14 @@ struct Base : private Uncopyable {
         }
     }
 
-    inline void insert(Tree& tree, const Size key, const Tree& item) const {
+    inline void insert(Tree& tree, const Size key, const Tree item) const {
         Tree t1, t2;
         this->split(tree, key, t1, t2);
         this->merge(t1, t1, item);
         this->merge(tree, t1, t2);
     }
 
-    inline void merge(Tree& tree, const Tree& left, const Tree& right) const {
+    inline void merge(Tree& tree, const Tree left, const Tree right) const {
         this->pushdown(left);
         this->pushdown(right);
         if(!left || !right) {
@@ -171,7 +171,7 @@ struct Base : private Uncopyable {
     }
 
     // [first, last)の中で左から何番目か
-    inline Size find(const Tree& tree, T0& value, const Size offset, const bool dir_left = true) const {
+    inline Size find(const Tree tree, T0& value, const Size offset, const bool dir_left = true) const {
         if(this->f0(tree->acc, value) == value) {
             return -1;
         } else {
