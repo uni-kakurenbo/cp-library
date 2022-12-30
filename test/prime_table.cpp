@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -22,7 +22,7 @@ Output _print;
 
 signed main() {
     int a, b, c, d; cin >> a >> b >> c >> d;
-    Primes primes(b+d);
+    prime_table primes(b+d);
     int max_np = 0, np = 0;
     FOR(i, a+c, b+d) {
         if(primes(i)) np = 0;

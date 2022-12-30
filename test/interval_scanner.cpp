@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 

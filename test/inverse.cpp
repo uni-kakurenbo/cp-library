@@ -9,7 +9,7 @@ signed main() {
     std::vector<int> a(n);
     REP(i, n) std::cin >> a[i];
 
-    Inverse inv(ALL(a));
+    inverse inv(ALL(a));
     debug(inv);
 
     return 0;

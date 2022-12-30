@@ -12,8 +12,8 @@ using namespace std;
 namespace atcoder {}
 using namespace atcoder;
 
-namespace Lib {}
-using namespace Lib;
+namespace lib {}
+using namespace lib;
 
 #include "template.hpp"
 /* #endregion */
@@ -24,7 +24,7 @@ signed main() {
     int n, q; cin >> n >> q;
     vector<int> a(n); input >> a;
 
-    RangeSum<ll> data(ALL(a));
+    range_sum<ll> data(ALL(a));
     debug(data);
 
     REP(q) {

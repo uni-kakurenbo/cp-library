@@ -7,7 +7,7 @@
 
 signed main() {
     int q, k; std::cin >> q >> k;
-    KthElement<ll> kth(k);
+    kth_element<ll> kth(k);
     LOOP(q) {
         int type; std::cin >> type;
         if(type == 1) {

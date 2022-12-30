@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -28,13 +28,13 @@ Output _print;
 signed main() {
     int h, w; cin >> h >> w;
 
-    UnfoldedGrid<char> grid(h, w); grid.read();
-    Graph<> graph;
+    unfolded_grid<char> grid(h, w); grid.read();
+    graph<> graph;
     graph.from_grid(&grid);
 
     debug(grid, graph);
 
-    Max<int> ans = -1;
+    maximum<int> ans = -1;
 
     REP(si, h) REP(sj, w) {
         if(grid(si, sj) == '#') continue;

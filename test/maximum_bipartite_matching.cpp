@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -26,7 +26,7 @@ signed main() {
     REP(i, n) cin >> a[i] >> b[i];
     REP(i, n) cin >> c[i] >> d[i];
 
-    MaximumBipartiteMatching bm(n);
+    maximum_bipartite_matching bm(n);
 
     REP(i, n) REP(j, n) {
         if(a[i] < c[j] and b[i] < d[j]) {

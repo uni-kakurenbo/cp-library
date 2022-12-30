@@ -6,8 +6,8 @@
 
 #ifdef LOCAL_JUDGE
     #include<debug>
-    #define debug(...) Debug::debug(Debug::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-    #define DEBUG(...) do { Debug::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); Debug::DEBUG(__VA_ARGS__); Debug::DEBUG(nullptr, "\033[m\n"); } while(0);
+    #define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+    #define DEBUG(...) do { debugger::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::DEBUG(__VA_ARGS__); debugger::DEBUG(nullptr, "\033[m\n"); } while(0);
 #else
     #define debug(...) ({ ; })
     #define DEBUG(...) ({ ; })
@@ -16,8 +16,8 @@
 #include "input.hpp"
 #include "output.hpp"
 
-Input _input;
-Output _print;
+input_adapter _input;
+output_adapter _print;
 
 #define input _input
 #define print _print

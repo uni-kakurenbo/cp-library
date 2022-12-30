@@ -9,27 +9,27 @@
 #include "snippet/iterations.hpp"
 #include "internal/exception.hpp"
 
-namespace Lib {
+namespace lib {
 
-namespace Internal {
+namespace internal {
 
-namespace IntervalScannerLib {
+namespace interval_scanner_lib {
 
-template<class T> using Interval = std::pair<T, T>;
-template<class T> using Intervals = std::vector<std::pair<T, T>>;
+template<class T> using interval = std::pair<T, T>;
+template<class T> using intervals = std::vector<std::pair<T, T>>;
 
-template<class T> struct IntervalScannerBase {
+template<class T> struct base {
   protected:
     std::function<bool(T)> validate;
 
   public:
-    IntervalScannerBase(std::function<bool(T)> validate) : validate(validate) {}
+    base(std::function<bool(T)> validate) : validate(validate) {}
 
     void scan(T,T,T) {
         static_assert(EXCEPTION<T>, "not implemented: scan()");
     }
 
-    void split(const T first, const T last, Intervals<T> *intervals) const {
+    void split(const T first, const T last, intervals<T> *intervals) const {
         std::valarray<bool> valid(false, last - first);
         for(auto itr=first,index=0; itr!=last; ++itr, ++index) valid[index] = validate(itr);
 
@@ -61,18 +61,18 @@ template<class T> struct IntervalScannerBase {
     }
 
     void scan_all(const T first, const T last) const {
-        Intervals<T> targets;
+        intervals<T> targets;
         this->split(first, last, &targets);
         ITR(start, end, targets) this->scan(first, start, end);
     }
 };
 
-} // namespace IntervalScannerLib
+} // namespace interval_scanner_lib
 
-} // namespace Internal
+} // namespace internal
 
 template<class T>
-struct ExclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerBase<T> {
+struct exclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
   protected:
     std::function<void(T)> init;
     std::function<bool(T)> can_expand;
@@ -80,17 +80,17 @@ struct ExclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
     std::function<void(T, T)> apply;
 
   public:
-    using Interval = Internal::IntervalScannerLib::Interval<T>;
-    using Intervals = Internal::IntervalScannerLib::Intervals<T>;
+    using interval = internal::interval_scanner_lib::interval<T>;
+    using intervals = internal::interval_scanner_lib::intervals<T>;
 
-    ExclusiveIntervalScanner(
+    exclusive_interval_scanner(
         std::function<bool(T)> validate,
         std::function<void(T)> init,
         std::function<bool(T)> can_expand,
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : Internal::IntervalScannerLib::IntervalScannerBase<T>(validate), init(init), can_expand(can_expand), expand(expand), contract(contract), apply(apply) {}
+    ) : internal::interval_scanner_lib::base<T>(validate), init(init), can_expand(can_expand), expand(expand), contract(contract), apply(apply) {}
 
     template<const bool FOLLOWING = true>
     void scan(const T start, const T end) const {
@@ -110,14 +110,14 @@ struct ExclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
 
     template<const bool FOLLOWING = true>
     void scan_all(const T first, const T last) const {
-        Intervals targets;
+        intervals targets;
         this->split(first, last, &targets);
         ITR(start, end, targets) this->scan<FOLLOWING>(start, end);
     }
 };
 
 template<class T>
-struct InclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerBase<T> {
+struct inclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
   protected:
     std::function<void()> init;
     std::function<bool()> valid;
@@ -125,17 +125,17 @@ struct InclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
     std::function<void(T, T)> apply;
 
   public:
-    using Interval = Internal::IntervalScannerLib::Interval<T>;
-    using Intervals = Internal::IntervalScannerLib::Intervals<T>;
+    using interval = internal::interval_scanner_lib::interval<T>;
+    using intervals = internal::interval_scanner_lib::intervals<T>;
 
-    InclusiveIntervalScanner(
+    inclusive_interval_scanner(
         std::function<bool(T)> validate,
         std::function<void()> init,
         std::function<bool()> valid,
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : Internal::IntervalScannerLib::IntervalScannerBase<T>(validate), init(init), valid(valid), expand(expand), contract(contract), apply(apply) {}
+    ) : internal::interval_scanner_lib::base<T>(validate), init(init), valid(valid), expand(expand), contract(contract), apply(apply) {}
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan(const T start, const T end) const {
@@ -158,10 +158,10 @@ struct InclusiveIntervalScanner : Internal::IntervalScannerLib::IntervalScannerB
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan_all(const T first, const T last) const {
-        Intervals targets;
+        intervals targets;
         this->split(first, last, &targets);
         ITR(start, end, targets) this->scan<INVERSE,FOLLOWING,CONFIRMATION>(start, end);
     }
 };
 
-} // namespace Lib
+} // namespace lib

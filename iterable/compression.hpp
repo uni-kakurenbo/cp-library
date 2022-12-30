@@ -6,16 +6,16 @@
 
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class T, class Container = std::vector<Internal::Size>>
-struct Compression : Container {
+template<class T, class container = std::vector<internal::size_t>>
+struct compression : container {
   protected:
     std::vector<T> values;
 
   public:
-    Compression() {}
-    template<class I> Compression(const I first, const I last) {
+    compression() {}
+    template<class I> compression(const I first, const I last) {
         this->values.assign(first, last);
         sort(values.begin(), values.end());
         values.erase(std::unique(values.begin(), values.end()), values.end());
@@ -24,9 +24,9 @@ struct Compression : Container {
             *itr = std::distance(values.begin(), std::lower_bound(values.begin(), values.end(), *e));
         }
     }
-    inline T operator()(const Internal::Size val) const {
+    inline T operator()(const internal::size_t val) const {
         return values[val];
     }
 };
 
-} // namespace Lib
+} // namespace lib

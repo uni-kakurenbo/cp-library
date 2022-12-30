@@ -9,21 +9,21 @@
 
 #include "internal/resolving_rank.hpp"
 
-template<class Stream = std::istream>
-struct Input {
+template<class source = std::istream>
+struct input_adapter {
   private:
     template<class T>
-    auto _set(Lib::Internal::Rank<2>, T *const val) -> decltype(std::declval<Stream>() >> *val, 0) {
+    auto _set(lib::internal::resolving_rank<2>, T *const val) -> decltype(std::declval<source>() >> *val, 0) {
         *this->in >> *val;
         return 0;
     }
     template<class T>
-    auto _set(Lib::Internal::Rank<1>, T *const val) -> decltype(std::begin(*val), std::end(*val), 0) {
+    auto _set(lib::internal::resolving_rank<1>, T *const val) -> decltype(std::begin(*val), std::end(*val), 0) {
         (*this)(std::begin(*val), std::end(*val));
         return 0;
     }
     template<class T, atcoder::internal::is_modint_t<T>* = nullptr>
-    int _set(Lib::Internal::Rank<0>, T *const val) {
+    int _set(lib::internal::resolving_rank<0>, T *const val) {
         long long v; std::cin >> v;
         *val = { v };
         return 0;
@@ -31,19 +31,19 @@ struct Input {
 
   protected:
     template<class T>
-    Stream *set(T *const val) {
-        this->_set(Lib::Internal::Rank<2>{}, val);
+    source *set(T *const val) {
+        this->_set(lib::internal::resolving_rank<2>{}, val);
         return this->in;
     }
 
   public:
-    using char_type = typename Stream::char_type;
+    using char_type = typename source::char_type;
 
-    Stream *in;
+    source *in;
 
-    Input(Stream *in = &std::cin) : in(in) {}
+    input_adapter(source *in = &std::cin) : in(in) {}
 
-    template<class T> inline Input& operator>>(T &s) {
+    template<class T> inline input_adapter& operator>>(T &s) {
         this->set(&s);
         return *this;
     }

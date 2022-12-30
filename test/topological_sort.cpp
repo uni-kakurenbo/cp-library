@@ -13,14 +13,14 @@
 #include "graph/topological_sort.hpp"
 
 using namespace std;
-Output print;
+output_adapter print;
 
 // https://atcoder.jp/contests/abc223/tasks/abc223_d
 
 signed main() {
     int n, m; cin >> n >> m;
 
-    Graph<> G(n);
+    graph<> G(n);
     vector<int> in_degs(n);
 
     REP(i, m) {

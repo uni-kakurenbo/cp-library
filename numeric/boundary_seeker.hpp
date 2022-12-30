@@ -5,14 +5,14 @@
 
 #include "internal/dev_assert.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class T> struct BoundarySeeker {
+template<class T> struct boundary_seeker {
   protected:
     std::function<bool(T)> validate;
 
   public:
-    BoundarySeeker(std::function<bool(T)> validate) : validate(validate) {}
+    boundary_seeker(std::function<bool(T)> validate) : validate(validate) {}
 
     template<const bool REVERSE = false>
     T bound(const T _ok, const T _ng) const {
@@ -45,4 +45,4 @@ template<class T> struct BoundarySeeker {
     }
 };
 
-} // namespace Lib
+} // namespace lib

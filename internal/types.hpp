@@ -2,12 +2,12 @@
 
 #include <cstdint>
 
-namespace Lib {
+namespace lib {
 
-namespace Internal {
+namespace internal {
 
-using Size = std::int32_t;
+using size_t = std::int32_t;
 
 }
 
-} // namespace Lib
+} // namespace lib

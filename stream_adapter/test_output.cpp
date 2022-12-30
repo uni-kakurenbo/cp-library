@@ -3,14 +3,14 @@
 
 #include <debug>
 
-#define debug(...) Debug::debug(Debug::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-#define DEBUG(...) do { Debug::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); Debug::DEBUG(__VA_ARGS__); Debug::DEBUG(nullptr, "\033[m\n"); } while(0);
+#define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#define DEBUG(...) do { debugger::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::DEBUG(__VA_ARGS__); debugger::DEBUG(nullptr, "\033[m\n"); } while(0);
 
 using namespace std;
 using namespace atcoder;
 
-template<class T = int, class C = vector<T>> struct Primes : C {
-    Primes(size_t max) : is_prime(max+1, true) {
+template<class T = int, class C = vector<T>> struct prime_table : C {
+    prime_table(size_t max) : is_prime(max+1, true) {
         is_prime[0] = is_prime[1] = false;
         for(size_t p=2; p<=max; p++) if(is_prime[p]) {
             for(size_t i=p*p; i<=max; i+=p) is_prime[i] = false;
@@ -27,7 +27,7 @@ template<class T = int, class C = vector<T>> struct Primes : C {
 #include <output>
 using namespace std;
 
-Output print(&cout, Output<>::sendl);
+output_adapter print(&cout, output_adapter<>::sendl);
 
 signed main() {
 
@@ -63,7 +63,7 @@ signed main() {
 
     print(pair<int,int>{10,24});
 
-    Primes primes(100);
+    prime_table primes(100);
     print(primes);
 
     return 0;

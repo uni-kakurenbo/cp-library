@@ -2,7 +2,7 @@
 
 #include "internal/dev_assert.hpp"
 
-template<class Engine> struct RandomEngine {
+template<class Engine> struct random_engine {
     using result_type = typename Engine::result_type;
     using signed_result_type = typename std::make_signed_t<result_type>;
 
@@ -16,7 +16,7 @@ template<class Engine> struct RandomEngine {
     static constexpr result_type min() { return MIN; }
     static constexpr result_type max() { return MAX; }
 
-    constexpr RandomEngine(unsigned long seed = 3141592653UL) { this->engine.seed(seed); };
+    constexpr random_engine(unsigned long seed = 3141592653UL) { this->engine.seed(seed); };
 
     inline result_type operator()() const {
         return this->engine();

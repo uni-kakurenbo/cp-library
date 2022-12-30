@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -29,8 +29,8 @@ signed main() {
     int n; cin >> n;
     vector<int> a(n); REP(i, n) cin >> a[i];
 
-    RangeSum<mint> cnt(200001);
-    RangeSum<mint> sum(200001);
+    range_sum<mint> cnt(200001);
+    range_sum<mint> sum(200001);
 
     mint cur = 0;
     FOR(k, 1, n) {

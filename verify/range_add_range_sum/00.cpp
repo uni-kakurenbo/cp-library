@@ -3,7 +3,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    Lib::RangeAddRangeSum<ll,ll> data(n);
+    lib::range_add_range_sum<ll,ll> data(n);
 
     for(;q--;) {
         int t; std::cin >> t;

@@ -6,12 +6,12 @@
 
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class I, class T = typename std::iterator_traits<I>::value_type, class Container = std::vector<std::pair<T,Internal::Size>>>
-struct RLE : Container {
-    RLE() {}
-    RLE(const I first, const I last) {
+template<class I, class T = typename std::iterator_traits<I>::value_type, class container = std::vector<std::pair<T,internal::size_t>>>
+struct run_length_encoding : container {
+    run_length_encoding() {}
+    run_length_encoding(const I first, const I last) {
         this->clear();
         typename C::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {
@@ -23,4 +23,4 @@ struct RLE : Container {
     }
 };
 
-} // namespace Lib
+} // namespace lib

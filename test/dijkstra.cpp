@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -27,7 +27,7 @@ signed main() {
     int n, m; cin >> n >> m;
     vector<ll> h(n); ITRR(v, h) cin >> v;
 
-    Graph<> G(n);
+    graph<> G(n);
     LOOP(m) {
         int u, v; cin >> u >> v; --u, --v;
         if(h[v] > h[u]) swap(u, v);
@@ -41,7 +41,7 @@ signed main() {
 
     debug(res);
 
-    Max<ll> ans = 0;
+    maximum<ll> ans = 0;
     REP(i, n) ans <<= h[0] - h[i] - res[i];
 
     print(ans);

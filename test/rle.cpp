@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -22,7 +22,7 @@ Output _print;
 
 signed main() {
     string s, t; cin >> s >> t;
-    RLE p(ALL(s)), q(ALL(t));
+    run_length_encoding p(ALL(s)), q(ALL(t));
     debug(p, q);
 
     if(p.size() != q.size()){

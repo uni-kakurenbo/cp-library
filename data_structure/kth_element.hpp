@@ -6,17 +6,17 @@
 
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class T, class Container = std::vector<T>, class CompA = std::less<T>, class CompB = std::greater<T>>
-struct KthElement {
+template<class T, class container = std::vector<T>, class comparer = std::less<T>, class rev_comparer = std::greater<T>>
+struct kth_element {
   protected:
-    Internal::Size _k;
-    std::priority_queue<T,Container,CompA> small;
-    std::priority_queue<T,Container,CompB> large;
+    internal::size_t _k;
+    std::priority_queue<T,container,comparer> small;
+    std::priority_queue<T,container,rev_comparer> large;
 
   public:
-    KthElement(Internal::Size k = 0) : _k(k) {}
+    kth_element(internal::size_t k = 0) : _k(k) {}
 
     inline T get() const { return small.top(); }
     inline bool has() const { return small.size() == _k; }
@@ -44,4 +44,4 @@ struct KthElement {
     }
 };
 
-} // namespace Lib
+} // namespace lib

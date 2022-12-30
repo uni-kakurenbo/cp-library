@@ -4,12 +4,12 @@
 #include "template.hpp"
 
 #include "data_structure/range_operations.hpp"
-using namespace Lib;
+using namespace lib;
 
 #include <vector>
 
 signed main() {
-    Lib::RangeUpdateRangeMin<int,int> data;
+    lib::RangeUpdateRangeMin<int,int> data;
 
     debug(data);
     {

@@ -1,10 +1,10 @@
 #pragma once
 
-namespace Lib {
+namespace lib {
 
-template<class T> struct Divisors : std::vector<T> {
-    Divisors() {}
-    Divisors(const T k) {
+template<class T> struct divisors : std::vector<T> {
+    divisors() {}
+    divisors(const T k) {
         this->clear();
 
         for(T i=1; i*i<=k; ++i) {
@@ -16,4 +16,4 @@ template<class T> struct Divisors : std::vector<T> {
     }
 };
 
-} // namespace Lib
+} // namespace lib

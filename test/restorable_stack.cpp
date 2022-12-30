@@ -6,7 +6,7 @@
 
 signed main() {
     int q; std::cin >> q;
-    RestorableStack<int> A;
+    restorable_stack<int> A;
 
     LOOP(q) {
         std::string query; std::cin >> query;

@@ -6,7 +6,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    Lib::RangeAddRangeMin<int,int> data(n);
+    lib::range_add_range_min<int,int> data(n);
     // debug(data);
 
     REP(q) {

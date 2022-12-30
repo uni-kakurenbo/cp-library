@@ -9,7 +9,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    Lib::RangeAffineRangeMinMax<ll> data;
+    lib::range_affine_range_minmax<ll> data;
     data.resize(n);
     debug(data.size());
 

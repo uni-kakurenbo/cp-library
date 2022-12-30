@@ -13,8 +13,8 @@ using namespace std;
 #include "input.hpp"
 #include "output.hpp"
 
-Input _input;
-Output _print;
+input_adapter _input;
+output_adapter _print;
 #define input _input
 #define print _print
 /* #endregion */
@@ -26,7 +26,7 @@ Output _print;
 
 signed main() {
     int n; cin >> n;
-    Lib::Graph<> G(n);
+    lib::graph<> G(n);
 
     REP(i, n) {
         int k; cin >> k;
@@ -36,7 +36,7 @@ signed main() {
         }
     }
 
-    Lib::LowestCommonAncestor lca(G, 0);
+    lib::lowest_common_ancestor lca(G, 0);
 
     int q; cin >> q;
     LOOP(q) {

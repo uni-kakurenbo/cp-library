@@ -6,14 +6,14 @@
 
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class T, class V = std::vector<Internal::Size>, class Container = std::unordered_map<T,V>>
-struct Inverse : Container {
-    Inverse() {}
-    template<class I> Inverse(const I first, const I last) {
+template<class T, class V = std::vector<internal::size_t>, class container = std::unordered_map<T,V>>
+struct inverse : container {
+    inverse() {}
+    template<class I> inverse(const I first, const I last) {
         for(auto itr=first; itr!=last; ++itr) (*this)[*itr].push_back(std::distance(first,itr));
     }
 };
 
-} // namespace Lib
+} // namespace lib

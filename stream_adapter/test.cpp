@@ -3,8 +3,8 @@
 
 #include <debug>
 
-#define debug(...) Debug::debug(Debug::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-#define DEBUG(...) do { Debug::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); Debug::DEBUG(__VA_ARGS__); Debug::DEBUG(nullptr, "\033[m\n"); } while(0);
+#define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#define DEBUG(...) do { debugger::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::DEBUG(__VA_ARGS__); debugger::DEBUG(nullptr, "\033[m\n"); } while(0);
 
 using namespace std;
 using namespace atcoder;
@@ -13,9 +13,9 @@ using namespace atcoder;
 #include <output>
 using namespace std;
 
-Input _input;
-Output _print(&cout, Output<>::sendl);
-Output _info(&cout, "");
+input_adapter _input;
+output_adapter _print(&cout, output_adapter<>::sendl);
+output_adapter _info(&cout, "");
 
 #define input _input
 #define print _print
@@ -30,7 +30,7 @@ signed main() {
 
     print(s1, s2);
 
-    info("Size: ");
+    info("size_t: ");
     int sz = input.one<int>();
 
     info("Vector 1D: ");

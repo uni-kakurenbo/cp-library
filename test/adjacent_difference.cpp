@@ -8,7 +8,7 @@ signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n);
     REP(i, n) std::cin >> a[i];
-    AdjacentDifference diff(ALL(a));
+    adjacent_difference diff(ALL(a));
     debug(diff);
     return 0;
 }

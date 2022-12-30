@@ -4,9 +4,9 @@
 
 #include <utility>
 
-namespace Lib {
+namespace lib {
 
-namespace Internal {
+namespace internal {
 
 
 template<class T> constexpr T plus(const T a, const T b) { return std::plus<T>{}(a, b); }
@@ -14,6 +14,6 @@ template<class T> constexpr T minus(const T a, const T b) { return std::minus<T>
 
 template<class T> constexpr T bxor(const T a, const T b) { return a xor b; }
 
-} // namespace Internal
+} // namespace internal
 
-} // namespace Lib
+} // namespace lib

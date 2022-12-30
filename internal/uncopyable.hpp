@@ -1,7 +1,7 @@
 #pragma once
 
-struct Uncopyable {
-    Uncopyable(){}
-    Uncopyable(const Uncopyable&) = delete;
-    Uncopyable& operator=(const Uncopyable&) = delete;
+struct uncopyable {
+    uncopyable(){}
+    uncopyable(const uncopyable&) = delete;
+    uncopyable& operator=(const uncopyable&) = delete;
 };

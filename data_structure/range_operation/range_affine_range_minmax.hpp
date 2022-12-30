@@ -2,19 +2,19 @@
 
 #include "data_structure/core/implicit_treap.hpp"
 
-namespace Lib {
+namespace lib {
 
 
 template<class T>
-struct RangeAffineRangeMinMax : ImplicitTreap<std::pair<T,T>, std::pair<T,T>> {
-    using Size = typename ImplicitTreap<std::pair<T,T>, std::pair<T,T>>::Size;
+struct range_affine_range_minmax : implicit_treap<std::pair<T,T>, std::pair<T,T>> {
+    using size_t = typename implicit_treap<std::pair<T,T>, std::pair<T,T>>::size_t;
 
     using T0 = std::pair<T,T>;  // {std::min, max}
     using T1 = std::pair<T,T>;  // first * x + second
 
     template<class... Args>
-    explicit RangeAffineRangeMinMax(Args&&... args)
-    : ImplicitTreap<T0,T1>::ImplicitTreap({ std::numeric_limits<T>::max(), std::numeric_limits<T>::min() }, { 1, 0 }) {
+    explicit range_affine_range_minmax(Args&&... args)
+    : implicit_treap<T0,T1>::implicit_treap({ std::numeric_limits<T>::max(), std::numeric_limits<T>::min() }, { 1, 0 }) {
         this->initialize(std::forward<Args>(args)...);
     }
 
@@ -26,35 +26,35 @@ struct RangeAffineRangeMinMax : ImplicitTreap<std::pair<T,T>, std::pair<T,T>> {
         if (y.first < 0) std::swap(ret.first, ret.second);
         return ret;
     }
-    inline T1 p(const T1 x, const Size) const override { return x; }
+    inline T1 p(const T1 x, const size_t) const override { return x; }
 
 
-    inline auto affine(const Size first, const Size last, const T& a, const T& b) { return this->apply(first, last, { a, b }); }
-    inline auto affine(const Size pos, const T& a, const T& b) { return this->apply(pos, { a, b }); }
+    inline auto affine(const size_t first, const size_t last, const T& a, const T& b) { return this->apply(first, last, { a, b }); }
+    inline auto affine(const size_t pos, const T& a, const T& b) { return this->apply(pos, { a, b }); }
     inline auto affine(const T& a, const T& b) { return this->apply({ a, b }); }
 
-    inline auto set(const Size first, const Size last, const T& val) { return this->apply(first, last, { 0, val }); }
-    inline auto set(const Size pos, const T& val) { return this->apply(pos, { 0, val }); }
+    inline auto set(const size_t first, const size_t last, const T& val) { return this->apply(first, last, { 0, val }); }
+    inline auto set(const size_t pos, const T& val) { return this->apply(pos, { 0, val }); }
     inline auto set(const T& val) { return this->apply({ 0, val }); }
 
-    inline auto add(const Size first, const Size last, const T& val) { return this->apply(first, last, { 1, val }); }
-    inline auto add(const Size pos, const T& val) { return this->apply(pos, { 1, val }); }
+    inline auto add(const size_t first, const size_t last, const T& val) { return this->apply(first, last, { 1, val }); }
+    inline auto add(const size_t pos, const T& val) { return this->apply(pos, { 1, val }); }
     inline auto add(const T& val) { return this->apply({ 1, val }); }
 
-    inline auto times(const Size first, const Size last, const T& val) { return this->apply(first, last, { val, 0 }); }
-    inline auto times(const Size pos, const T& val) { return this->apply(pos, { val, 0 }); }
+    inline auto times(const size_t first, const size_t last, const T& val) { return this->apply(first, last, { val, 0 }); }
+    inline auto times(const size_t pos, const T& val) { return this->apply(pos, { val, 0 }); }
     inline auto times(const T& val) { return this->apply({ val, 0 }); }
 
 
-    inline auto minmax(const Size first, const Size last) { return this->prod(first, last); }
+    inline auto minmax(const size_t first, const size_t last) { return this->prod(first, last); }
     inline auto minmax() { return this->prod(); }
 
-    inline auto min(const Size first, const Size last) { return this->prod(first, last).first; }
+    inline auto min(const size_t first, const size_t last) { return this->prod(first, last).first; }
     inline auto min() { return this->prod().first; }
 
-    inline auto max(const Size first, const Size last) { return this->prod(first, last).second; }
+    inline auto max(const size_t first, const size_t last) { return this->prod(first, last).second; }
     inline auto max() { return this->prod().second; }
 };
 
 
-} // namespace Lib
+} // namespace lib

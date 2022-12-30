@@ -2,7 +2,7 @@
 #include "utility/applier.hpp"
 
 signed main() {
-    Max<int> maximum(10);
+    maximum<int> maximum(10);
     std::cout << maximum.val() << std::endl;
     maximum <<= 13;
     std::cout << maximum.val() << std::endl;

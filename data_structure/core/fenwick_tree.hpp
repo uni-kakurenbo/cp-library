@@ -14,22 +14,22 @@
 
 #endif
 
-namespace Lib {
+namespace lib {
 
-namespace FenwickTreeLib {
+namespace fenwick_tree_lib {
 
 
 // Thanks to: atcoder::fenwick_tree
 template<class T,T (*op)(T,T),T (*r_op)(T,T)>
-struct Base {
-   using Size = Internal::Size;
+struct base {
+   using size_t = internal::size_t;
 
   private:
-    Size _n;
+    size_t _n;
     std::vector<T> data;
 
   protected:
-    T prod(Size r) const {
+    T prod(size_t r) const {
         T s = 0;
         while (r > 0) {
             s = op(s, data[r - 1]);
@@ -39,9 +39,9 @@ struct Base {
     }
 
   public:
-    explicit Base(const Size n = 0) : _n(n), data(n) {}
+    explicit base(const size_t n = 0) : _n(n), data(n) {}
 
-    void add(Size p, const T& x) {
+    void add(size_t p, const T& x) {
         dev_assert(0 <= p && p < _n);
         p++;
         while (p <= _n) {
@@ -50,55 +50,54 @@ struct Base {
         }
     }
 
-    T prod(const Size l, const Size r) const {
+    T prod(const size_t l, const size_t r) const {
         dev_assert(0 <= l && l <= r && r <= _n);
         return r_op(this->prod(r), this->prod(l));
     }
 };
 
 
-} // namespace FenwickTreeLib
+} // namespace fenwick_tree_lib
 
 
-template<class T,T (*op)(T,T) = Internal::plus<T>,T (*r_op)(T,T) = Internal::minus<T>>
-struct FenwickTree : FenwickTreeLib::Base<T,op,r_op> {
-   using Size = typename FenwickTreeLib::Base<T,op,r_op>::Size;
+template<class T,T (*op)(T,T) = internal::plus<T>,T (*r_op)(T,T) = internal::minus<T>>
+struct fenwick_tree : fenwick_tree_lib::base<T,op,r_op> {
+   using size_t = typename fenwick_tree_lib::base<T,op,r_op>::size_t;
 
   protected:
-    Size _n;
+    size_t _n;
 
   public:
-    FenwickTree(const Size n = 0) : FenwickTreeLib::Base<T,op,r_op>(n+1) { this->_n = n; }
-    FenwickTree(std::initializer_list<T> init_list) : FenwickTree(ALL(init_list)) {}
+    fenwick_tree(const size_t n = 0) : fenwick_tree_lib::base<T,op,r_op>(n+1) { this->_n = n; }
+    fenwick_tree(std::initializer_list<T> init_list) : fenwick_tree(ALL(init_list)) {}
 
     template<class I>
-    FenwickTree(const I first, const I last) : FenwickTree(std::distance(first, last)) {
+    fenwick_tree(const I first, const I last) : fenwick_tree(std::distance(first, last)) {
         for(auto itr=first; itr!=last; ++itr) this->set(itr-first, *itr);
     }
 
-    inline Size size() const { return this->_n; }
+    inline size_t size() const { return this->_n; }
 
-    inline T get(const Size p) const {
+    inline T get(const size_t p) const {
         dev_assert(0 <= p and p < this->size());
         return this->prod(p, p+1);
     }
-    inline T operator[](Size pos) const { return this->get(pos); }
+    inline T operator[](size_t pos) const { return this->get(pos); }
 
-    inline void set(const Size p, const T& x) {
+    inline void set(const size_t p, const T& x) {
         dev_assert(0 <= p and p < this->size());
         this->add(p, r_op(x, this->get(p)));
     }
 
-    struct Iterator : virtual Internal::IContainerIterator<T,FenwickTree> {
-        Iterator(FenwickTree *const ref, const Size pos) : Internal::IContainerIterator<T,FenwickTree>(ref, pos) {}
+    struct iterator : virtual internal::container_iterator_base<T,fenwick_tree> {
+        iterator(fenwick_tree *const ref, const size_t pos) : internal::container_iterator_base<T,fenwick_tree>(ref, pos) {}
 
         inline T operator*() const override { return this->ref()->get(this->pos()); }
     };
-    using iterator = Iterator;
 
-    inline Iterator begin() { return Iterator(this, 0); }
-    inline Iterator end() { return Iterator(this, this->size()); }
+    inline iterator begin() const { return iterator(this, 0); }
+    inline iterator end() const { return iterator(this, this->size()); }
 };
 
 
-} // namespace Lib
+} // namespace lib

@@ -7,16 +7,16 @@
 
 #include "graph.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class Graph = Graph<>>
-struct LowestCommonAncestor {
-    using Vertex = typename Graph::Vertex;
-    std::vector<std::vector<Vertex>> parent;
-    std::vector<Vertex> dists;
+template<class graph = graph<>>
+struct lowest_common_ancestor {
+    using vertex = typename graph::vertex;
+    std::vector<std::vector<vertex>> parent;
+    std::vector<vertex> dists;
 
   private:
-    void dfs(const Graph &G, const Vertex v, const Vertex p, const Vertex d) {
+    void dfs(const graph &G, const vertex v, const vertex p, const vertex d) {
         parent[0][v] = p;
         dists[v] = d;
         for(const auto& e : G[v]) {
@@ -25,13 +25,13 @@ struct LowestCommonAncestor {
     }
 
   public:
-    LowestCommonAncestor(const Graph &G, const Vertex root = 0) { this->init(G, root); }
+    lowest_common_ancestor(const graph &G, const vertex root = 0) { this->init(G, root); }
 
-    void init(const Graph &G, const Vertex root = 0) {
-        const Vertex V = G.size();
-        Vertex K = 1; while((1 << ++K) < V);
+    void init(const graph &G, const vertex root = 0) {
+        const vertex V = G.size();
+        vertex K = 1; while((1 << ++K) < V);
 
-        parent.assign(K, std::vector<Vertex>(V, -1));
+        parent.assign(K, std::vector<vertex>(V, -1));
         dists.assign(V, -1);
 
         this->dfs(G, root, -1, 0);
@@ -42,13 +42,13 @@ struct LowestCommonAncestor {
         }
     }
 
-    Vertex operator()(const Vertex u, const Vertex v) const {
+    vertex operator()(const vertex u, const vertex v) const {
         return this->find(u, v);
     }
 
-    Vertex find(Vertex u, Vertex v) const {
+    vertex find(vertex u, vertex v) const {
         if(dists[u] < dists[v]) std::swap(u, v);
-        Vertex K = parent.size();
+        vertex K = parent.size();
 
         REP(k, K) {
             if((dists[u] - dists[v]) >> k & 1) u = parent[k][u];
@@ -66,9 +66,9 @@ struct LowestCommonAncestor {
         return parent[0][u];
     }
 
-    Vertex edges(const Vertex u, const Vertex v) const {
+    vertex edges(const vertex u, const vertex v) const {
         return dists[u] + dists[v] - 2 * dists[find(u, v)];
     }
 };
 
-} // namespace Lib
+} // namespace lib

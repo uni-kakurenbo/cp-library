@@ -5,14 +5,14 @@
 
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-template<class T, class Container = std::unordered_map<T,Internal::Size>>
-struct Counter : Container {
-    Counter() {}
-    template<class I> Counter(const I first, const I last) {
+template<class T, class container = std::unordered_map<T,internal::size_t>>
+struct counter : container {
+    counter() {}
+    template<class I> counter(const I first, const I last) {
         for(auto itr=first; itr!=last; ++itr) ++(*this)[*itr];
     }
 };
 
-} // namespace Lib
+} // namespace lib

@@ -14,160 +14,160 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-namespace Lib {
+namespace lib {
 
-namespace Internal {
+namespace internal {
 
-namespace GridLib {
+namespace grid_lib {
 
 template<class T>
-struct Interface {
-    virtual void assign(const Size, const Size, const T&&) = 0;
+struct interface {
+    virtual void assign(const size_t, const size_t, const T&&) = 0;
 
-    virtual void resize(const Size, const Size) = 0;
+    virtual void resize(const size_t, const size_t) = 0;
 
-    virtual Size height() const = 0;
-    virtual Size width() const = 0;
+    virtual size_t height() const = 0;
+    virtual size_t width() const = 0;
 
-    virtual Size id(const Size, const Size) const = 0;
+    virtual size_t id(const size_t, const size_t) const = 0;
 
-    virtual T& operator()(const Size, const Size) = 0;
-    virtual const T& operator()(const Size, const Size) const = 0;
+    virtual T& operator()(const size_t, const size_t) = 0;
+    virtual const T& operator()(const size_t, const size_t) const = 0;
 };
 
-template<class T> struct ContainerBase : virtual Interface<T> {
+template<class T> struct container_base : virtual interface<T> {
   private:
-    Size _h, _w;
+    size_t _h, _w;
 
   protected:
-    inline void _validate_index(__attribute__ ((unused)) const Size i, __attribute__ ((unused)) const Size j) const {
+    inline void _validate_index(__attribute__ ((unused)) const size_t i, __attribute__ ((unused)) const size_t j) const {
         dev_assert(0 <= i and i < this->height());
         dev_assert(0 <= j and j < this->width());
     }
 
-    inline Size _positivize_row_index(const Size x) const {
+    inline size_t _positivize_row_index(const size_t x) const {
         return x < 0 ? this->height() + x : x;
     }
-    inline Size _positivize_col_index(const Size x) const {
+    inline size_t _positivize_col_index(const size_t x) const {
         return x < 0 ? this->width() + x : x;
     }
 
   public:
-    ContainerBase() = default;
-    ContainerBase(const Size _h, const Size _w) : _h(_h), _w(_w) {}
+    container_base() = default;
+    container_base(const size_t _h, const size_t _w) : _h(_h), _w(_w) {}
 
-    virtual void resize(const Size h, const Size w) override {
+    virtual void resize(const size_t h, const size_t w) override {
         this->_h = h, this->_w = w;
     }
 
-    inline Size height() const override { return this->_h; }
-    inline Size width() const override { return this->_w; }
+    inline size_t height() const override { return this->_h; }
+    inline size_t width() const override { return this->_w; }
 
-    inline Size id(const Size i, const Size j) const override {
-        const Size _i = this->_positivize_row_index(i);
-        const Size _j = this->_positivize_col_index(j);
+    inline size_t id(const size_t i, const size_t j) const override {
+        const size_t _i = this->_positivize_row_index(i);
+        const size_t _j = this->_positivize_col_index(j);
         this->_validate_index(_i, _j);
         return _i * this->width() + _j;
     }
 };
 
-template<class T, class Row = std::vector<T>, class Base = std::vector<Row>>
-struct Container : Base, ContainerBase<T>, virtual Interface<T> {
+template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
+struct container : base, container_base<T>, virtual interface<T> {
 
-    Container(const Size n = 0) : Container(n, n) {}
-    Container(const Size h, const Size w, const T &&val = T{}) : Base(h, Row(w, std::forward<const T>(val))), ContainerBase<T>(h, w) {}
+    container(const size_t n = 0) : container(n, n) {}
+    container(const size_t h, const size_t w, const T &&val = T{}) : base(h, Row(w, std::forward<const T>(val))), container_base<T>(h, w) {}
 
-    Container(const std::initializer_list<Row> init_list) : Base(init_list) {
-        const Size rows = std::distance(ALL(init_list));
-        const Size first_cols = init_list.begin()->size();
+    container(const std::initializer_list<Row> init_list) : base(init_list) {
+        const size_t rows = std::distance(ALL(init_list));
+        const size_t first_cols = init_list.begin()->size();
 
-        if constexpr (DEV_ENV) { ITR(init_row, init_list) dev_assert((Size)init_row.size() == first_cols); }
+        if constexpr (DEV_ENV) { ITR(init_row, init_list) dev_assert((size_t)init_row.size() == first_cols); }
 
-        this->ContainerBase<T>::resize(rows, first_cols);
+        this->container_base<T>::resize(rows, first_cols);
     }
 
-    inline void assign(const Container &source) {
+    inline void assign(const container &source) {
         this->resize(source.height(), source.width());
-        this->Base::assign(ALL(source));
+        this->base::assign(ALL(source));
     }
 
-    inline void assign(const Size h, const Size w, const T &&val = T{}) override {
-        this->ContainerBase<T>::resize(h, w);
-        this->Base::resize(h);
+    inline void assign(const size_t h, const size_t w, const T &&val = T{}) override {
+        this->container_base<T>::resize(h, w);
+        this->base::resize(h);
         ITRR(row, *this) row.assign(w, std::forward<const T>(val));
     }
 
-    inline void resize(const Size h, const Size w) override {
-        this->ContainerBase<T>::resize(h, w);
-        this->Base::resize(h);
+    inline void resize(const size_t h, const size_t w) override {
+        this->container_base<T>::resize(h, w);
+        this->base::resize(h);
         ITRR(row, *this) row.resize(w);
     }
 
-    inline T& operator()(const Size i, const Size j) override {
-        const Size _i = this->_positivize_row_index(i);
-        const Size _j = this->_positivize_col_index(j);
+    inline T& operator()(const size_t i, const size_t j) override {
+        const size_t _i = this->_positivize_row_index(i);
+        const size_t _j = this->_positivize_col_index(j);
         this->_validate_index(_i, _j);
         return (*this)[_i][_j];
     }
 
-    inline const T& operator()(const Size i, const Size j) const override {
-        const Size _i = this->_positivize_row_index(i);
-        const Size _j = this->_positivize_col_index(j);
+    inline const T& operator()(const size_t i, const size_t j) const override {
+        const size_t _i = this->_positivize_row_index(i);
+        const size_t _j = this->_positivize_col_index(j);
         this->_validate_index(_i, _j);
         return (*this)[_i][_j];
     }
 };
 
-template<class T, class Base = std::vector<T>>
-struct UnfoldedContainer : Base, ContainerBase<T>, virtual Interface<T> {
+template<class T, class base = std::vector<T>>
+struct unfolded_container : base, container_base<T>, virtual interface<T> {
 
-    UnfoldedContainer(Size n = 0) : UnfoldedContainer(n, n) {}
-    UnfoldedContainer(const Size h, const Size w, const T &&val = T{}) : Base(h*w, std::forward<const T>(val)), ContainerBase<T>(h, w) {}
+    unfolded_container(size_t n = 0) : unfolded_container(n, n) {}
+    unfolded_container(const size_t h, const size_t w, const T &&val = T{}) : base(h*w, std::forward<const T>(val)), container_base<T>(h, w) {}
 
-    UnfoldedContainer(std::initializer_list<std::initializer_list<T>> init_list) {
-        const Size rows = std::distance(init_list.begin(), init_list.end());
-        const Size first_cols = init_list.begin()->size();
+    unfolded_container(std::initializer_list<std::initializer_list<T>> init_list) {
+        const size_t rows = std::distance(init_list.begin(), init_list.end());
+        const size_t first_cols = init_list.begin()->size();
 
         this->resize(rows, first_cols);
 
         for(auto index=0, itr=init_list.begin(), itr_end=init_list.end(); itr!=itr_end; ++itr) {
-            dev_assert((Size)itr->size() == first_cols);
+            dev_assert((size_t)itr->size() == first_cols);
             for(auto v=itr->begin(), v_end=itr->end(); v!=v_end; ++v) (*this)[index++] = *v;
         }
     }
 
-    inline void assign(const UnfoldedContainer &source) {
+    inline void assign(const unfolded_container &source) {
         this->resize(source.height(), source.width());
-        this->Base::assign(ALL(source));
+        this->base::assign(ALL(source));
     }
 
-    inline void assign(const Size h, const Size w, const T &&val = T{}) override {
-        this->ContainerBase<T>::resize(h, w);
-        this->Base::assign(h*w, std::forward<const T>(val));
+    inline void assign(const size_t h, const size_t w, const T &&val = T{}) override {
+        this->container_base<T>::resize(h, w);
+        this->base::assign(h*w, std::forward<const T>(val));
     }
 
-    inline void resize(const Size h, const Size w) override {
-        this->ContainerBase<T>::resize(h, w);
-        this->Base::resize(h*w);
+    inline void resize(const size_t h, const size_t w) override {
+        this->container_base<T>::resize(h, w);
+        this->base::resize(h*w);
     }
 
-    inline T& operator()(const Size i, const Size j) override {
-        const Size _i = this->_positivize_row_index(i);
-        const Size _j = this->_positivize_col_index(j);
+    inline T& operator()(const size_t i, const size_t j) override {
+        const size_t _i = this->_positivize_row_index(i);
+        const size_t _j = this->_positivize_col_index(j);
         return (*this)[this->id(_i, _j)];
     }
 
-    inline const T& operator()(const Size i, const Size j) const override {
-        const Size _i = this->_positivize_row_index(i);
-        const Size _j = this->_positivize_col_index(j);
+    inline const T& operator()(const size_t i, const size_t j) const override {
+        const size_t _i = this->_positivize_row_index(i);
+        const size_t _j = this->_positivize_col_index(j);
         return (*this)[this->id(_i, _j)];
     }
 };
 
-}  // namespace GridLib
+}  // namespace grid_lib
 
-template<class T, class Container> struct GridCore : Container, virtual GridLib::Interface<T> {
-    using Container::Container;
+template<class T, class container> struct grid_core : container, virtual grid_lib::interface<T> {
+    using container::container;
 
     enum class InvertDirection { Vertical, Horizontal };
     enum class RotateDirection { CounterClockwise, Clockwise };
@@ -181,8 +181,8 @@ template<class T, class Container> struct GridCore : Container, virtual GridLib:
     }
 
     template<InvertDirection DIRECT = InvertDirection::Vertical>
-    inline GridCore& invert() {
-        GridCore res(this->height(), this->width());
+    inline grid_core& invert() {
+        grid_core res(this->height(), this->width());
         REP(i, this->height()) REP(j, this->width()) {
             if constexpr (DIRECT == InvertDirection::Vertical) {
                 res(i,j) = (*this)(this->height()-i-1,j);
@@ -196,16 +196,16 @@ template<class T, class Container> struct GridCore : Container, virtual GridLib:
     }
 
     template<RotateDirection DIRECT = RotateDirection::Clockwise>
-    inline GridCore& rotate(const Size k) {
-        GridCore res = *this;
+    inline grid_core& rotate(const size_t k) {
+        grid_core res = *this;
         REP(i, k) { res = res.rotate<DIRECT>(); }
         this->assign(res);
         return *this;
     }
 
     template<RotateDirection DIRECT = RotateDirection::Clockwise>
-    inline GridCore& rotate() {
-        GridCore res(this->width(), this->height());
+    inline grid_core& rotate() {
+        grid_core res(this->width(), this->height());
         REP(i, this->width()) REP(j, this->height()) {
             if constexpr (DIRECT == RotateDirection::Clockwise) {
                 res(i,j) = (*this)(this->height()-j-1,i);
@@ -218,8 +218,8 @@ template<class T, class Container> struct GridCore : Container, virtual GridLib:
         return *this;
     }
 
-    inline GridCore& transpose() {
-        GridCore res(this->width(), this->height());
+    inline grid_core& transpose() {
+        grid_core res(this->width(), this->height());
         REP(i, this->width()) REP(j, this->height()) {
             res(i,j) = (*this)(j,i);
         }
@@ -228,12 +228,12 @@ template<class T, class Container> struct GridCore : Container, virtual GridLib:
     }
 };
 
-} // namespace Internal
+} // namespace internal
 
-template<class T, class Row = std::vector<T>, class Base = std::vector<Row>>
-using Grid = Internal::GridCore<T,Internal::GridLib::Container<T,Row,Base>>;
+template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
+using grid = internal::grid_core<T,internal::grid_lib::container<T,Row,base>>;
 
-template<class T, class Base = std::vector<T>>
-using UnfoldedGrid = Internal::GridCore<T,Internal::GridLib::UnfoldedContainer<T,Base>>;
+template<class T, class base = std::vector<T>>
+using unfolded_grid = internal::grid_core<T,internal::grid_lib::unfolded_container<T,base>>;
 
-} // namespace Lib
+} // namespace lib

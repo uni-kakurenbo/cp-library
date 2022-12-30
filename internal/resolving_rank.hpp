@@ -1,12 +1,12 @@
 #pragma once
 
-namespace Lib {
+namespace lib {
 
-namespace Internal {
+namespace internal {
 
-template<int P> struct Rank : Rank<P-1> {};
-template<> struct Rank<0> {};
+template<int P> struct resolving_rank : resolving_rank<P-1> {};
+template<> struct resolving_rank<0> {};
 
-} // namespace Internal
+} // namespace internal
 
-} // namespace Lib
+} // namespace lib

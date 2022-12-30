@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <limits>
 
-struct Xorshift {
+struct xorshift {
     using result_type = std::uint32_t;
 
     static constexpr result_type MIN = std::numeric_limits<result_type>::min();
@@ -14,7 +14,7 @@ struct Xorshift {
 
     inline void seed(unsigned int seed) { this->x = seed; }
 
-    constexpr Xorshift(uint32_t seed = 3141592653UL) : x(seed) {};
+    constexpr xorshift(uint32_t seed = 3141592653UL) : x(seed) {};
 
     inline uint32_t operator()() {
         uint32_t t;

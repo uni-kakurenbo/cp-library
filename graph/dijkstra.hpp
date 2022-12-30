@@ -9,10 +9,12 @@
 #include "graph.hpp"
 
 template<class E>
-template<class Dist>
-void Lib::Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
-    using State = std::pair<Dist,Vertex>;
-    std::priority_queue<State,std::vector<State>,std::greater<State>> que;
+template<class dist_t>
+void lib::graph<E>::dijkstra(const vertex s, std::vector<dist_t> *dists) const {
+    using state = std::pair<dist_t,vertex>;
+    std::priority_queue<state,std::vector<state>,std::greater<state>> que;
+
+    dists->assign(this->size(), std::numeric_limits<dist_t>::max());
 
     que.emplace(0, s), (*dists)[s] = 0;
 
@@ -22,7 +24,7 @@ void Lib::Graph<E>::dijkstra(const Vertex s, std::vector<Dist> *dists) const {
         if((*dists)[u] < d) continue;
 
         ITR(e, (*this)[u]) {
-            const Vertex v = e.to; const auto cost = e.cost;
+            const vertex v = e.to; const auto cost = e.cost;
 
             if((*dists)[v] <= d + cost) continue;
 

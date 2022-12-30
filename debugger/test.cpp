@@ -6,17 +6,17 @@ using namespace atcoder;
 
 #include <debug>
 
-#define debug(...) Debug::debug(Debug::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-#define DEBUG(...) do { Debug::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); Debug::DEBUG(__VA_ARGS__); Debug::DEBUG(nullptr, "\033[m\n"); } while(0);
+#define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#define DEBUG(...) do { debugger::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::DEBUG(__VA_ARGS__); debugger::DEBUG(nullptr, "\033[m\n"); } while(0);
 
 
-template<class T = int> struct Matrix : vector<vector<T>> {
-    Matrix(size_t h, size_t w, T init = T()) : vector<vector<T>> (h, vector<T> (w, init)) {}
+template<class T = int> struct matrix : vector<vector<T>> {
+    matrix(size_t h, size_t w, T init = T()) : vector<vector<T>> (h, vector<T> (w, init)) {}
     inline T& operator()(size_t i, size_t j) { return (*this)[i][j]; }
 };
 
-template<class T = int, class C = vector<T>> struct Primes : C {
-    Primes(size_t max) : is_prime(max+1, true) {
+template<class T = int, class C = vector<T>> struct prime_table : C {
+    prime_table(size_t max) : is_prime(max+1, true) {
         is_prime[0] = is_prime[1] = false;
         for(size_t p=2; p<=max; p++) if(is_prime[p]) {
             for(size_t i=p*p; i<=max; i+=p) is_prime[i] = false;
@@ -65,7 +65,7 @@ vector<int> _debug(const MyStructure1 &s) {
     return { 1, s.a + s.b + s.c + s.d, s.a * s.b * s.c * s.d };
 }
 
-// template<unsigned long N> Debug::debug_t _debug(bitset<N> &bist) {
+// template<unsigned long N> debugger::debug_t _debug(bitset<N> &bist) {
 //     return bist.to_string();
 // }
 
@@ -85,10 +85,10 @@ signed main() {
     vector<vector<int>> vec_2d = { { 1, 2, 3, 4 }, { 1, 3, 5 }, { 1, 4, 10 } };
     debug(vec_2d);
 
-    Matrix<int> matrix1(10, 5, 0);
+    matrix<int> matrix1(10, 5, 0);
     debug(matrix1);
 
-    Matrix matrix2(2, 3, 0.0L);
+    matrix matrix2(2, 3, 0.0L);
     debug(matrix2);
 
     vector vector_string = { "string", "abcdefg" };
@@ -106,15 +106,15 @@ signed main() {
     // unordered_map<int,int> unord_map__int_int = { { 0, 3 }, { 6, 1 }, { 2, 3 } };
     // debug(unord_map__int_int);
 
-    debug(Primes(100));
+    debug(prime_table(100));
 
     // debug(MyString{"abcdefg"});
     debug(string{string{"abcdefg"}});
 
-    static_assert(!Debug::Internal::is_loggable_v<int>);
-    static_assert(!Debug::Internal::is_loggable_v<vector<int>>);
-    static_assert(Debug::Internal::is_loggable_v<MyStructure0>);
-    static_assert(Debug::Internal::is_loggable_v<MyStructure1>);
+    static_assert(!debugger::internal::is_loggable_v<int>);
+    static_assert(!debugger::internal::is_loggable_v<vector<int>>);
+    static_assert(debugger::internal::is_loggable_v<MyStructure0>);
+    static_assert(debugger::internal::is_loggable_v<MyStructure1>);
 
     MyStructure0 my_structure0 = { 1, 2, 3, 4 };
     debug(my_structure0);

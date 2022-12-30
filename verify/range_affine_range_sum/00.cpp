@@ -4,7 +4,6 @@
 #include "template.hpp"
 
 #include "data_structure/range_operation/range_affine_range_sum.hpp"
-using namespace Lib;
 
 #include <vector>
 
@@ -12,7 +11,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<atcoder::modint998244353> a(n); input >> a;
 
-    RangeAffineRangeSum<atcoder::modint998244353> data(ALL(a));
+    lib::range_affine_range_sum<atcoder::modint998244353> data(ALL(a));
     debug(data);
 
     LOOP(q) {

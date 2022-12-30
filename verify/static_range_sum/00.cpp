@@ -5,7 +5,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<int> a(n); REP(i, n) std::cin >> a[i];
-    Lib::Accumulation<ll> sum(ALL(a));
+    lib::accumulation<ll> sum(ALL(a));
 
     REP(q) {
         int l, r; std::cin >> l >> r;

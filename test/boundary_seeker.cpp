@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -24,7 +24,7 @@ signed main() {
     int n, k; cin >> n >> k;
     vector<int> a(n); REP(i, n) cin >> a[i];
 
-    BoundarySeeker<int> seeker([&](auto i) { return a[i] >= k; });
+    boundary_seeker<int> seeker([&](auto i) { return a[i] >= k; });
     print(seeker.bound_or<true>(n-1, -1));
 
     return 0;

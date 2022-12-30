@@ -4,12 +4,12 @@
 #include "template.hpp"
 
 #include "data_structure/range_operation/range_add_range_sum.hpp"
-using namespace Lib;
+using namespace lib;
 
 #include <vector>
 
 signed main() {
-    Lib::RangeAddRangeSum<int,int> data;
+    lib::range_add_range_sum<int,int> data;
 
     {
         data.insert(0, 1);

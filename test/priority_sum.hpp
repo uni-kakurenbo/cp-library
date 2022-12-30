@@ -20,7 +20,7 @@ signed main() {
     int n, m, k; cin >> n >> m >> k;
     vector<int> a(n); REP(i, n) cin >> a[i];
 
-    Lib::PrioritySum<ll> data;
+    lib::PrioritySum<ll> data;
 
     REP(i, m) data.add(a[i]);
 

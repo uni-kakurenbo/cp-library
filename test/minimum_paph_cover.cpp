@@ -12,7 +12,7 @@ using namespace std;
 #include "template.hpp"
 #include "output.hpp"
 
-Output _print;
+output_adapter _print;
 #define print _print
 /* #endregion */
 
@@ -20,7 +20,7 @@ Output _print;
 
 #include "graph.hpp"
 #include "graph/minimum_paph_cover.hpp"
-using namespace Lib;
+using namespace lib;
 
 struct Solver {
     int n, k;
@@ -33,7 +33,7 @@ struct Solver {
     }
 
     int solve() {
-        Graph G(n);
+        graph G(n);
         REP(i, n) REP(j, n) {
             valarray<bool> less_i = data[i] < data[j];
             if(less_i.min()) G.add_edge(i, j);

@@ -5,13 +5,13 @@
 #include <type_traits>
 #include <algorithm>
 
-namespace Debug {
+namespace debugger {
 
 template<class T> auto _debug (T &val) -> decltype(val._debug()) {
     return val._debug();
 }
 
-namespace Internal {
+namespace internal {
 
 template<class T> struct remove_cvref {
   using type = typename std::remove_cv_t<std::remove_reference_t<T>>;

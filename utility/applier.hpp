@@ -3,7 +3,9 @@
 #include <utility>
 #include <algorithm>
 
-namespace Internal {
+namespace lib {
+
+namespace internal {
     template<class T> T max(T a, T b) { return std::max(a, b); }
     template<class T> T max(T x) { return x; }
     template<class T> T max() { return  -std::numeric_limits<T>::min(); }
@@ -13,18 +15,20 @@ namespace Internal {
     template<class T> T min() { return  std::numeric_limits<T>::max(); }
 }
 
-template<class T, T (*op)(T,T)> struct Applier {
+template<class T, T (*op)(T,T)> struct applier {
   protected:
     T _v;
 
   public:
-    Applier(T&& v = T{}) : _v(v) {}
-    template<class U> Applier& operator<<=(U&& val) & noexcept {
+    applier(T&& v = T{}) : _v(v) {}
+    template<class U> applier& operator<<=(U&& val) & noexcept {
         _v = op(_v, std::forward<U>(val));
         return *this;
     }
     inline T val() const { return _v; }
 };
 
-template<class T> using Max = Applier<T,Internal::max<T>>;
-template<class T> using Min = Applier<T,Internal::min<T>>;
+template<class T> using maximum = applier<T,internal::max<T>>;
+template<class T> using minimum = applier<T,internal::min<T>>;
+
+}
