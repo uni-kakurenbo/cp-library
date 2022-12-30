@@ -381,8 +381,8 @@ struct implicit_treap : implicit_treap_lib::base<T0,T1> {
     }
 
 
-    struct iterator : virtual internal::container_iterator_base<T0,implicit_treap> {
-        iterator(const implicit_treap *const ref, const size_t pos) : internal::container_iterator_base<T0,implicit_treap>(ref, pos) {}
+    struct iterator : virtual internal::container_iterator_interface<T0,implicit_treap> {
+        iterator(const implicit_treap *const ref, const size_t pos) : internal::container_iterator_interface<T0,implicit_treap>(ref, pos) {}
 
         inline T0 operator*() const override { return this->ref()->get(this->pos()); }
     };

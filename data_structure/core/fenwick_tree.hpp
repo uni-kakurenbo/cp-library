@@ -89,8 +89,8 @@ struct fenwick_tree : fenwick_tree_lib::base<T,op,r_op> {
         this->add(p, r_op(x, this->get(p)));
     }
 
-    struct iterator : virtual internal::container_iterator_base<T,fenwick_tree> {
-        iterator(fenwick_tree *const ref, const size_t pos) : internal::container_iterator_base<T,fenwick_tree>(ref, pos) {}
+    struct iterator : virtual internal::container_iterator_interface<T,fenwick_tree> {
+        iterator(const fenwick_tree *const ref, const size_t pos) : internal::container_iterator_interface<T,fenwick_tree>(ref, pos) {}
 
         inline T operator*() const override { return this->ref()->get(this->pos()); }
     };
