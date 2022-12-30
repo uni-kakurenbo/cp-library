@@ -1,5 +1,5 @@
 #include <iostream>
-#include "data_structure/range_operations.hpp"
+#include "data_structure/range_operation/range_add_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

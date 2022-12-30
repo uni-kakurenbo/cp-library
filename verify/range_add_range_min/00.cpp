@@ -2,16 +2,14 @@
 
 #include "snippet/iterations.hpp"
 
-#include "data_structure/range_operation/range_affine_range_minmax.hpp"
+// #include "template.hpp"
 
-#include "template.hpp"
+#include "data_structure/range_operation/range_affine_range_minmax.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::range_affine_range_minmax<ll> data;
-    data.resize(n);
-    debug(data.size());
+    lib::range_affine_range_minmax<ll> data(n);
 
     REP(q) {
         int t; std::cin >> t;

@@ -12,19 +12,16 @@ using namespace std;
 namespace atcoder {}
 using namespace atcoder;
 
-namespace lib {}
-using namespace lib;
-
 #include "template.hpp"
 /* #endregion */
 
-#include "data_structure/range_operations.hpp"
+#include "data_structure/range_operation/range_sum.hpp"
 
 signed main() {
     int n, q; cin >> n >> q;
     vector<int> a(n); input >> a;
 
-    range_sum<ll> data(ALL(a));
+    lib::range_sum<ll> data(ALL(a));
     debug(data);
 
     REP(q) {
