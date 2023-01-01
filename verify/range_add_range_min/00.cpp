@@ -4,12 +4,13 @@
 
 // #include "template.hpp"
 
-#include "data_structure/range_operation/range_affine_range_minmax.hpp"
+#include "data_structure/implicit_treap.hpp"
+#include "data_structure/range_action/range_affine_range_minmax.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::range_affine_range_minmax<ll> data(n);
+    lib::implicit_treap<lib::action::range_affine_range_minmax<ll>> data(n);
 
     REP(q) {
         int t; std::cin >> t;

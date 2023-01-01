@@ -3,7 +3,7 @@
 #include <atcoder/modint>
 #include "template.hpp"
 
-#include "data_structure/range_operation/range_add_range_sum.hpp"
+#include "data_structure/range_action/range_add_range_sum.hpp"
 using namespace lib;
 
 #include <vector>

@@ -15,7 +15,7 @@ using namespace atcoder;
 #include "template.hpp"
 /* #endregion */
 
-#include "data_structure/range_operation/range_sum.hpp"
+#include "data_structure/range_action/range_sum.hpp"
 
 signed main() {
     int n, q; cin >> n >> q;

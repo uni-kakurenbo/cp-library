@@ -1,9 +1,12 @@
 #include <iostream>
-#include "data_structure/range_operation/range_add_range_sum.hpp"
+
+#include "data_structure/implicit_treap.hpp"
+#include "data_structure/range_action/range_add_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::range_add_range_sum<ll,ll> data(n);
+    lib::implicit_treap<lib::action::range_add_range_sum<ll>> data(n);
+    // debug(data);
 
     for(;q--;) {
         int t; std::cin >> t;
@@ -15,5 +18,6 @@ signed main() {
             int l, r; std::cin >> l >> r; --l;
             std::cout << data.sum(l, r) << "\n";
         }
+        // debug(data);
     }
 }

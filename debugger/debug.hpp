@@ -95,11 +95,14 @@ template<class T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr> std::str
     return res.str();
 };
 
+
+// template<class T> auto lit(const T&) -> decltype(val.val(), std::string());
+
 template<class T> std::string _lit(bool, const T& val) {
     return COLOR_TYPE + "<...> " + lit(val.val());
 }
 
-template<class T, atcoder::internal::is_modint_t<T> * = nullptr>
+template<class T, atcoder::internal::is_modint_t<T>*>
 std::string _lit(int, const T& val) {
     return COLOR_TYPE + "<modint> " + lit(val.val());
 }

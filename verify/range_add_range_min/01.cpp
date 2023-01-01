@@ -2,11 +2,12 @@
 
 #include "snippet/iterations.hpp"
 
-#include "data_structure/range_operation/range_add_range_min.hpp"
+#include "data_structure/implicit_treap.hpp"
+#include "data_structure/range_action/range_add_range_min.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::range_add_range_min<int,int> data(n);
+    lib::implicit_treap<lib::action::range_add_range_min<int>> data(n);
     // debug(data);
 
     REP(q) {
