@@ -74,13 +74,13 @@ struct base : private uncopyable {
     inline void pushup(const Tree tree) const { this->update_cnt(tree), update_acc(tree); }
 
     inline void pushdown(const Tree tree) const {
-        if(tree && tree->rev) {
+        if(tree and tree->rev) {
             tree->rev = false;
             std::swap(tree->left, tree->right);
             if(tree->left) tree->left->rev ^= 1;
             if(tree->right) tree->right->rev ^= 1;
         }
-        if(tree && tree->lazy != operator_monoid{}) {
+        if(tree and tree->lazy != operator_monoid{}) {
             if(tree->left) {
                 tree->left->lazy = tree->left->lazy * tree->lazy;
                 tree->left->acc = g(tree->left->acc, p(tree->lazy, this->cnt(tree->left)));
@@ -170,13 +170,13 @@ struct base : private uncopyable {
             return -1;
         } else {
             if(dir_left) {
-                if(tree->left && tree->left->acc * value != value) {
+                if(tree->left and tree->left->acc * value != value) {
                     return this->find(tree->left, value, offset, dir_left);
                 } else {
                     return tree->value * value != value ? offset + this->cnt(tree->left) : this->find(tree->right, value, offset + this->cnt(tree->left) + 1, dir_left);
                 }
             } else {
-                if(tree->right && tree->right->acc * value != value) {
+                if(tree->right and tree->right->acc * value != value) {
                     return this->find(tree->right, value, offset + this->cnt(tree->left) + 1, dir_left);
                 } else {
                     return tree->value * value != value ? offset + this->cnt(tree->left) : this->find(tree->left, value, offset, dir_left);
@@ -208,6 +208,7 @@ struct base : private uncopyable {
   protected:
     virtual ~base() { delete this->root; }
 
+  public:
     // void insert(const size_t pos, const operand_monoid& value) { this->insert(this->root, pos, std::make_shared<node>(value, this)); }
     void insert(const size_t pos, const operand_monoid& value) { this->insert(this->root, pos, new node(value, this)); }
 
@@ -270,9 +271,9 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
 
   public:
     template<class... Args>
-    explicit core(Args&&... args) : core() { this->assign(std::forward<Args>(args)...); }
+    explicit core(Argsand... args) : core() { this->assign(std::forward<Args>(args)...); }
     core(const std::initializer_list<value_type>& values) : core(std::begin(values), std::end(values)) {}
-    explicit core() { static_assert(action::tags.has(actions::flags::implicit_treap)); }
+    core() { static_assert(action::tags.has(actions::flags::implicit_treap)); }
 
     template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
     inline void insert(size_t pos, const I first, const I last) {

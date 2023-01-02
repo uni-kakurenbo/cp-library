@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "data_structure/internal/declarations.hpp"
 
 #include "data_structure/range_action/base.hpp"
@@ -8,14 +9,13 @@
 #include "data_structure/monoid/addition.hpp"
 
 
-
 namespace lib {
 
 namespace actions {
 
 
 template<class T> struct range_sum : base<> {
-    static constexpr flags tags{ flags::fenwick_tree };
+    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree };
 
     using operand_monoid = monoids::addition<T>;
 

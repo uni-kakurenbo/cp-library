@@ -80,31 +80,35 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
 
     explicit core(const size_type n, const value_type& v) : base(n) { if(v != 0) REP(i, n) this->base::apply(i, v); }
 
-    core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+    explicit core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
-    core(const I first, const I last) : core(std::distance(first, last)) {
+    explicit core(const I first, const I last) : core(std::distance(first, last)) {
         size_type pos = 0;
         for(auto itr=first; itr!=last; ++itr, ++pos) this->base::apply(pos, *itr);
     }
 
-    void apply(const size_type p, const value_type& x) {
-        dev_assert(0 <= p && p < this->size());
-        this->base::apply(p, x);
+    void apply(const size_type pos, const value_type& x) {
+        dev_assert(0 <= pos and pos < this->size());
+        this->base::apply(pos, x);
     }
 
-    inline void set(const size_type p, const value_type& x) {
-        this->base::set(p, x);
+    inline void set(const size_type pos, const value_type& x) {
+        dev_assert(0 <= pos and pos < this->size());
+        this->base::set(pos, x);
     }
 
-    inline value_type get(const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-        return this->base::prod(p, p+1).val();
+    inline value_type get(const size_type pos) const {
+        dev_assert(0 <= pos and pos < this->size());
+        return this->base::prod(pos, pos+1).val();
     }
-    inline value_type operator[](size_type pos) const { return this->get(pos); }
+    inline value_type operator[](size_type pos) const {
+        dev_assert(0 <= pos and pos < this->size());
+        return this->base::get(pos);
+    }
 
     inline value_type prod(const size_type l, const size_type r) const {
-        dev_assert(0 <= l && l <= r && r <= this->size());
+        dev_assert(0 <= l and l <= r and r <= this->size());
         return this->base::prod(l, r).val();
     }
     inline value_type prod(const size_type r) const {
