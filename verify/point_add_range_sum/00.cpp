@@ -15,13 +15,15 @@ using namespace atcoder;
 #include "template.hpp"
 /* #endregion */
 
+#include "data_structure/fenwick_tree.hpp"
 #include "data_structure/range_action/range_sum.hpp"
+
 
 signed main() {
     int n, q; cin >> n >> q;
-    vector<int> a(n); input >> a;
+    vector<ll> a(n); input >> a;
 
-    lib::range_sum<ll> data(ALL(a));
+    lib::fenwick_tree<lib::actions::range_sum<ll>> data(ALL(a));
     debug(data);
 
     REP(q) {

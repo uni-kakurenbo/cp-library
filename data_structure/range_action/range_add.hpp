@@ -1,36 +1,71 @@
 #pragma once
 
-#include "data_structure/range_operation/range_sum.hpp"
+
+#include <vector>
+
+#include "internal/dev_assert.hpp"
+#include "data_structure/range_action/range_sum.hpp"
+
 
 namespace lib {
 
+namespace actions {
 
-// Implemented by Fenwick Tree
-template<class T> struct range_add : range_sum<T> {
-    using size_t = typename range_sum<T>::size_t;
-    using range_sum<T>::range_sum;
+template<class T> struct range_add {};
 
-    range_add(const size_t n = 0) : range_sum<T>(n) {}
-    range_add(std::initializer_list<T> init_list) : range_add(ALL(init_list)) {}
+} // namespace actions
 
-    template<class I>
-    range_add(const I first, const I last) : range_add(std::distance(first, last)) {
-        adjacent_difference<T> diff(first, last, false);
-        REP(i, diff.size()) this->set(i, diff[i]);
+
+template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<actions::range_sum<T>> {
+  private:
+    using core = fenwick_tree<actions::range_sum<T>>;
+
+  public:
+    using value_type = typename core::value_type;
+    using size_type = typename core::size_type;
+
+    explicit fenwick_tree(const size_type size = 0) : core(size+1) {}
+    explicit fenwick_tree(const size_type size, const value_type& val) : core(size+1, val) {}
+
+    fenwick_tree(const std::initializer_list<T>& init_list) : fenwick_tree(ALL(init_list)) {}
+
+    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    fenwick_tree(const I first, const I last) : fenwick_tree(std::distance(first, last)) {
+        size_type pos = 0;
+        for(auto itr=first; itr!=last; ++itr, ++pos) this->apply(pos, *itr);
     }
 
-    inline void add(const size_t first, const size_t last, const T& v) {
-        dev_assert(0 <= first and first <= last and last <= this->size());
-        this->add(first, v), this->add(last, -v);
+    inline void add(const size_type first, const size_type last, const value_type& v) {
+        this->core::add(first, v), this->core::apply(last, -v);
     }
-    inline void add(const size_t p, const T& v) { this->add(p, p+1, v); }
-    inline void add(const T& v) { this->add(0, this->size(), v); }
+    inline void add(const size_type p, const value_type& v) { this->apply(p, p+1, v); }
+    inline void add(const value_type& v) { this->apply(0, this->size(), v); }
 
-    inline T get(const size_t p) const {
+    inline void apply(const size_type first, const size_type last, const value_type& v) {
+        this->core::add(first, v), this->core::apply(last, -v);
+    }
+    inline void apply(const size_type p, const value_type& v) { this->apply(p, p+1, v); }
+    inline void apply(const value_type& v) { this->apply(0, this->size(), v); }
+
+    inline void set(const size_type p, const value_type& v) {
+        this->add(p, actions::range_sum<T>::rev(v, this->get(p)).val());
+    }
+
+    inline value_type get(const size_type p) const {
         dev_assert(0 <= p and p < this->size());
-        return this->prod(p+1);
+        return this->core::prod(p+1);
     }
-    inline T operator[](const size_t pos) const { return this->get(pos); }
+    inline value_type operator[](const size_type pos) const { return this->get(pos); }
+
+
+    struct iterator : virtual internal::container_iterator_interface<value_type,fenwick_tree> {
+        iterator(const fenwick_tree *const ref, const size_type pos) : internal::container_iterator_interface<value_type,fenwick_tree>(ref, pos) {}
+
+        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+    };
+
+    inline iterator begin() const { return iterator(this, 0); }
+    inline iterator end() const { return iterator(this, this->size()); }
 };
 
 

@@ -4,6 +4,7 @@
 #include "data_structure/internal/declarations.hpp"
 
 #include "data_structure/range_action/base.hpp"
+#include "data_structure/range_action/flags.hpp"
 
 #include "data_structure/monoid/minmax.hpp"
 #include "data_structure/monoid/affine.hpp"
@@ -12,12 +13,14 @@
 namespace lib {
 
 
-namespace action {
+namespace actions {
 
 
-template<class T> struct range_affine_range_minmax : base<monoid::affine<T>> {
-    using operand_monoid = monoid::minmax<T>;
-    using operator_monoid = monoid::affine<T>;
+template<class T> struct range_affine_range_minmax : base<monoids::affine<T>> {
+    static constexpr flags tags{ flags::implicit_treap };
+
+    using operand_monoid = monoids::minmax<T>;
+    using operator_monoid = monoids::affine<T>;
 
     static operand_monoid map(const operand_monoid& x, const operator_monoid& y) {
         auto res = operand_monoid({ x->first * y->first + y->second, x->second * y->first + y->second });
@@ -27,11 +30,11 @@ template<class T> struct range_affine_range_minmax : base<monoid::affine<T>> {
 };
 
 
-} // namespace action
+} // namespace actions
 
 
-template<class T> struct implicit_treap<action::range_affine_range_minmax<T>> : implicit_treap_lib::core<action::range_affine_range_minmax<T>> {
-    using implicit_treap_lib::core<action::range_affine_range_minmax<T>>::core;
+template<class T> struct implicit_treap<actions::range_affine_range_minmax<T>> : internal::implicit_treap_lib::core<actions::range_affine_range_minmax<T>> {
+    using internal::implicit_treap_lib::core<actions::range_affine_range_minmax<T>>::core;
 
 
     inline auto set(const size_t first, const size_t last, const T& val) { return this->apply(first, last, { 0, val }); }

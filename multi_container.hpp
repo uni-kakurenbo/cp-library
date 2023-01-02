@@ -10,20 +10,27 @@
 namespace lib {
 
 namespace internal {
-    namespace multi_container_lib {
-        template<class container> struct base : container {
-            using container::container;
 
-          protected:
-            inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const {
-                dev_assert(0 <= index and index < (internal::size_t)this->size());
-            }
-            inline internal::size_t _positivize_index(const internal::size_t x) const {
-                return x < 0 ? this->size() + x : x;
-            }
-        };
+namespace multi_container_lib {
+
+
+template<class container> struct base : container {
+    using container::container;
+
+    protected:
+    inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const {
+        dev_assert(0 <= index and index < (internal::size_t)this->size());
     }
-}
+    inline internal::size_t _positivize_index(const internal::size_t x) const {
+        return x < 0 ? this->size() + x : x;
+    }
+};
+
+
+} // namespace multi_contatiner_lib
+
+} // namespace internal
+
 
 template<class T, const unsigned int RANK, template<class...> class container = std::vector>
 struct multi_container : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>> {

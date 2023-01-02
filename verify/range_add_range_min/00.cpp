@@ -10,7 +10,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::implicit_treap<lib::action::range_affine_range_minmax<ll>> data(n);
+    lib::implicit_treap<lib::actions::range_affine_range_minmax<ll>> data(n);
 
     REP(q) {
         int t; std::cin >> t;

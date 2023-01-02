@@ -5,7 +5,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::implicit_treap<lib::action::range_add_range_sum<ll>> data(n);
+    lib::implicit_treap<lib::actions::range_add_range_sum<ll>> data(n);
     // debug(data);
 
     for(;q--;) {

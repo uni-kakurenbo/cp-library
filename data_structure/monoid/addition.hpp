@@ -6,7 +6,7 @@
 
 namespace lib {
 
-namespace monoid {
+namespace monoids {
 
 
 template<class T> struct addition : base<T> {
@@ -16,6 +16,6 @@ template<class T> struct addition : base<T> {
 };
 
 
-} // namespace monoid
+} // namespace monoids
 
 } // namespace lib

@@ -9,7 +9,7 @@
 
 namespace lib {
 
-namespace monoid {
+namespace monoids {
 
 
 template<class T> struct minimum : base<T> {
@@ -19,6 +19,6 @@ template<class T> struct minimum : base<T> {
 };
 
 
-} // namespace monoid
+} // namespace monoids
 
 } // namespace lib

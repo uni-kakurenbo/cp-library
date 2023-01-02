@@ -3,7 +3,7 @@
 
 namespace lib {
 
-namespace monoid {
+namespace monoids {
 
 namespace internal {
 

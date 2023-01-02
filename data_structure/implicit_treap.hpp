@@ -3,6 +3,7 @@
 #include <utility>
 #include <type_traits>
 #include <memory>
+#include <initializer_list>
 
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
@@ -15,8 +16,12 @@
 
 #include "random/xorshift.hpp"
 
+#include "data_structure/range_action/flags.hpp"
+
+
 namespace lib {
 
+namespace internal {
 
 namespace implicit_treap_lib {
 
@@ -233,7 +238,7 @@ struct base : private uncopyable {
 
 template<class Action>
 struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename Action::operator_monoid,Action::map,Action::compose> {
-  private:
+  public:
     using action = Action;
 
     using operand_monoid = typename action::operand_monoid;
@@ -242,6 +247,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     using value_type = typename operand_monoid::value_type;
     using action_type = typename operator_monoid::value_type;
 
+  private:
     using base = implicit_treap_lib::base<operand_monoid,operator_monoid,Action::map,Action::compose>;
 
   public:
@@ -264,8 +270,9 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
 
   public:
     template<class... Args>
-    explicit core(Args&&... args) { this->assign(std::forward<Args>(args)...); }
-    explicit core() {}
+    explicit core(Args&&... args) : core() { this->assign(std::forward<Args>(args)...); }
+    core(const std::initializer_list<value_type>& values) : core(std::begin(values), std::end(values)) {}
+    explicit core() { static_assert(action::tags.has(actions::flags::implicit_treap)); }
 
     template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
     inline void insert(size_t pos, const I first, const I last) {
@@ -295,6 +302,8 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     inline void assign(const size_t size, const value_type& value = value_type{}) {
         this->clear(), this->insert(0, value, size);
     }
+
+    inline void assign(const std::initializer_list<value_type>& values) { this->assign(std::begin(values), std::end(values)); }
 
     template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
     inline void assign(const I first, const I second) { this->clear(), this->insert(0, first, second); }
@@ -382,6 +391,12 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
 
 } // namespace implicit_treap_lib
 
-template<class action> struct implicit_treap : implicit_treap_lib::core<action> {};
+} // namespace internal
+
+
+template<class action> struct implicit_treap : internal::implicit_treap_lib::core<action> {
+    using internal::implicit_treap_lib::core<action>::core;
+};
+
 
 } // namespace lib

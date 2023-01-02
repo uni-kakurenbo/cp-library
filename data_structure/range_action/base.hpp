@@ -7,7 +7,7 @@
 
 namespace lib {
 
-namespace action {
+namespace actions {
 
 namespace internal {
 
@@ -22,6 +22,6 @@ template<class operator_monoid = std::nullptr_t> struct base : internal::base {
 };
 
 
-} // namespace action
+} // namespace actions
 
 } // namespace lib

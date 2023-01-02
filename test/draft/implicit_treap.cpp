@@ -6,12 +6,12 @@
 
 namespace lib {
 
-namespace action {
+namespace actions {
 
 
 template<class T> struct range_set_range_sum {
-    using operand_monoid = monoid::sum<T>;
-    using operator_monoid = monoid::assignment<T>;
+    using operand_monoid = monoids::sum<T>;
+    using operator_monoid = monoids::assignment<T>;
 
     static operand_monoid map(const operand_monoid& x, const operator_monoid& f) {
         return { compose(f, x.len())->value_or(x->val()) };
@@ -23,15 +23,15 @@ template<class T> struct range_set_range_sum {
 };
 
 
-} // namespace action
+} // namespace actions
 
 } // namespace lib
 
 signed main() {
     debug(lib::internal::is_monoid_v<int>);
-    debug(lib::internal::is_monoid_v<lib::monoid::addition<int>>);
-    debug(lib::action::range_set_range_sum::operand_monoid::specialized);
-    // lib::implicit_treap<lib::action::range_set_range_sum<int>> data(5, 1);
+    debug(lib::internal::is_monoid_v<lib::monoids::addition<int>>);
+    debug(lib::actions::range_set_range_sum::operand_monoid::specialized);
+    // lib::implicit_treap<lib::actions::range_set_range_sum<int>> data(5, 1);
     // debug(data, data.prod());
     // data.apply(1, 5);
     // data.apply(1, 3, 5);

@@ -8,7 +8,7 @@
 
 namespace lib {
 
-namespace monoid {
+namespace monoids {
 
 
 template<class T> struct assignment : base<std::optional<T>> {
@@ -21,6 +21,6 @@ template<class T> struct assignment : base<std::optional<T>> {
 };
 
 
-} // namespace monoid
+} // namespace monoids
 
 } // namespace lib

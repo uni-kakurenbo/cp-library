@@ -1,38 +1,35 @@
-#include <atcoder/internal_type_traits>
+#pragma once
+
 
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
 #include "internal/dev_assert.hpp"
-#include "internal/dev_env.hpp"
 
-#include "utility/functional.hpp"
+#include "data_structure/range_action/flags.hpp"
 
-#ifdef LOCAL_JUDGE
-
-#include "random/xorshift.hpp"
-
-#endif
 
 namespace lib {
+
+namespace internal {
 
 namespace fenwick_tree_lib {
 
 
 // Thanks to: atcoder::fenwick_tree
-template<class Action>
+template<class S,S (*r_op)(const S&,const S&)>
 struct base {
     using size_type = internal::size_t;
-  private:
 
+  private:
     size_t _n;
-    std::vector<T> data;
+    std::vector<S> data;
 
   protected:
-    T prod(size_type r) const {
-        T s = 0;
+    S prod(size_type r) const {
+        S s = 0;
         while (r > 0) {
-            s = op(s, data[r - 1]);
+            s = s * data[r - 1];
             r -= r & -r;
         }
         return s;
@@ -41,55 +38,88 @@ struct base {
   public:
     explicit base(const size_type n = 0) : _n(n), data(n) {}
 
-    void add(size_type p, const T& x) {
-        dev_assert(0 <= p && p < _n);
+    inline size_type size() const { return this->_n; }
+
+    inline void apply(size_type p, const S& x) {
         p++;
         while (p <= _n) {
-            data[p-1] = op(data[p-1], T(x));
+            data[p-1] = data[p-1] * x;
             p += p & -p;
         }
     }
 
-    T prod(const size_type l, const size_type r) const {
-        dev_assert(0 <= l && l <= r && r <= _n);
+    inline void set(const size_type p, const S& x) {
+        this->apply(p, r_op(x, this->prod(p, p+1)));
+    }
+
+    inline S prod(const size_type l, const size_type r) const {
         return r_op(this->prod(r), this->prod(l));
     }
+
 };
 
 
-template<class T,T (*op)(T,T) = internal::plus<T>,T (*r_op)(T,T) = internal::minus<T>>
-struct core : fenwick_tree_lib::base<T,op,r_op> {
-   using size_type = typename fenwick_tree_lib::base<T,op,r_op>::size_type;
+template<class Action>
+struct core : base<typename Action::operand_monoid,Action::rev> {
+  public:
+    using action = Action;
 
-  protected:
-    size_type _n;
+    using operand_monoid = typename action::operand_monoid;
+
+  private:
+    using base = typename fenwick_tree_lib::base<operand_monoid,action::rev>;
 
   public:
-    core(const size_type n = 0) : fenwick_tree_lib::base<T,op,r_op>(n+1) { this->_n = n; }
-    core(std::initializer_list<T> init_list) : core(ALL(init_list)) {}
+    using value_type = typename operand_monoid::value_type;
+    using size_type = typename base::size_type;
 
-    template<class I>
+  public:
+    explicit core(const size_type n = 0) : base(n) {
+        static_assert(action::tags.has(actions::flags::fenwick_tree));
+    }
+
+    explicit core(const size_type n, const value_type& v) : base(n) { if(v != 0) REP(i, n) this->base::apply(i, v); }
+
+    core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+
+    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
     core(const I first, const I last) : core(std::distance(first, last)) {
-        for(auto itr=first; itr!=last; ++itr) this->set(itr-first, *itr);
+        size_type pos = 0;
+        for(auto itr=first; itr!=last; ++itr, ++pos) this->base::apply(pos, *itr);
     }
 
-    inline size_type size() const { return this->_n; }
+    void apply(const size_type p, const value_type& x) {
+        dev_assert(0 <= p && p < this->size());
+        this->base::apply(p, x);
+    }
 
-    inline T get(const size_type p) const {
+    inline void set(const size_type p, const value_type& x) {
+        this->base::set(p, x);
+    }
+
+    inline value_type get(const size_type p) const {
         dev_assert(0 <= p and p < this->size());
-        return this->prod(p, p+1);
+        return this->base::prod(p, p+1).val();
     }
-    inline T operator[](size_type pos) const { return this->get(pos); }
+    inline value_type operator[](size_type pos) const { return this->get(pos); }
 
-    inline void set(const size_type p, const T& x) {
-        dev_assert(0 <= p and p < this->size());
-        this->add(p, r_op(x, this->get(p)));
+    inline value_type prod(const size_type l, const size_type r) const {
+        dev_assert(0 <= l && l <= r && r <= this->size());
+        return this->base::prod(l, r).val();
+    }
+    inline value_type prod(const size_type r) const {
+        dev_assert(0 <= r and r <= this->size());
+        return this->base::prod(0, r).val();
+    }
+    inline value_type prod() const {
+        return this->base::prod(0, this->size()).val();
     }
 
-    struct iterator : virtual internal::container_iterator_interface<T,core> {
-        iterator(const core *const ref, const size_type pos) : internal::container_iterator_interface<T,fenwick_tree>(ref, pos) {}
 
-        inline T operator*() const override { return this->ref()->get(this->pos()); }
+    struct iterator : virtual internal::container_iterator_interface<value_type,core> {
+        iterator(const core *const ref, const size_type pos) : internal::container_iterator_interface<value_type,core>(ref, pos) {}
+
+        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }
@@ -99,8 +129,12 @@ struct core : fenwick_tree_lib::base<T,op,r_op> {
 
 } // namespace fenwick_tree_lib
 
+} // namespace internal
 
-template<class action> struct fenwick_tree : fenwick_tree_lib::core<action> {};
+
+template<class action> struct fenwick_tree : internal::fenwick_tree_lib::core<action> {
+    using internal::fenwick_tree_lib::core<action>::core;
+};
 
 
 } // namespace lib
