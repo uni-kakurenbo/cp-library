@@ -8,6 +8,7 @@
 
 // #include "template.hpp"
 
+
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::segment_tree<lib::actions::range_min<int>> data(n);

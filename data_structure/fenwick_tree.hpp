@@ -3,8 +3,9 @@
 
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-
 #include "internal/dev_assert.hpp"
+
+#include "snippet/iterations.hpp"
 
 #include "data_structure/range_action/flags.hpp"
 
@@ -23,27 +24,31 @@ struct base {
 
   private:
     size_t _n;
-    std::vector<S> data;
+    S *const _data;
 
   protected:
     S prod(size_type r) const {
         S s = 0;
         while (r > 0) {
-            s = s * data[r - 1];
+            s = s * _data[r-1];
             r -= r & -r;
         }
         return s;
     }
 
+  protected:
+    explicit base(const size_type n = 0) : _n(n), _data(new S[n]()) {}
+
+    ~base() { delete[] this->_data; }
+
   public:
-    explicit base(const size_type n = 0) : _n(n), data(n) {}
 
     inline size_type size() const { return this->_n; }
 
     inline void apply(size_type p, const S& x) {
         p++;
         while (p <= _n) {
-            data[p-1] = data[p-1] * x;
+            _data[p-1] = _data[p-1] * x;
             p += p & -p;
         }
     }

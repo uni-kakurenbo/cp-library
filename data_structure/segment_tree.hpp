@@ -12,6 +12,8 @@
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
+#include "snippet/iterations.hpp"
+
 #include "data_structure/internal/is_action.hpp"
 #include "data_structure/internal/is_monoid.hpp"
 
@@ -25,28 +27,24 @@ namespace internal {
 namespace segment_tree_lib {
 
 
-// Thanks to: atcoder::segtreeZ
+// Thanks to: atcoder::segtree
 template<class S> struct base {
     using size_type = internal::size_t;
 
-  private:
+  protected:
     size_type _n, _size, _depth;
-    std::vector<S> _data;
+    S* _data = nullptr;
 
-    inline void update(size_type k) { this->_data[k] = this->_data[2 * k] * this->_data[2 * k + 1]; }
+    inline void update(const size_type k) { this->_data[k] = this->_data[2*k] * this->_data[2*k+1]; }
+
+  protected:
+    explicit base(const size_type n = 0) : _n(n), _depth(atcoder::internal::ceil_pow2(n)) {
+        this->_size = 1 << this->_depth;
+        this->_data = new S[this->_size << 1]();
+    }
+    ~base() { delete[] this->_data; }
 
   public:
-    base() : base(0) {}
-    explicit base(const size_type n) : base(std::vector<S>(n)) {}
-    explicit base(const std::vector<S>& v) : _n(size_type(v.size())) {
-        this->_depth = atcoder::internal::ceil_pow2(this->_n);
-        this->_size = 1 << this->_depth;
-        this->_data = std::vector<S>(2 * this->_size);
-        for (size_type i = 0; i < this->_n; i++) this->_data[this->_size + i] = v[i];
-        for (size_type i = this->_size - 1; i >= 1; i--) {
-            this->update(i);
-        }
-    }
 
     inline size_type size() const { return this->_n; }
     inline size_type capacity() const { return this->_size; }
@@ -148,14 +146,19 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
   public:
     explicit core(const size_type n = 0) : base(n) {}
 
-    explicit core(const size_type n, const value_type& v) : base(n) { if(v != 0) REP(i, n) this->base::set(i, v); }
+    explicit core(const size_type n, const value_type& v) : base(n) {
+        if(v == value_type{}) return;
+        REP(pos, 0, this->_n) this->_data[this->_size + pos] = v;
+        REPD(pos, 1, this->_size) this->update(pos);
+    }
 
-    explicit core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+    core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {
         size_type pos = 0;
-        for(auto itr=first; itr!=last; ++itr, ++pos) this->base::set(pos, *itr);
+        for(auto itr=first; itr!=last; ++itr, ++pos) this->_data[this->_size + pos] = *itr;
+        REPD(pos, 1, this->_size) this->update(pos);
     }
 
     inline void set(const size_type p, const value_type& x) {

@@ -1,8 +1,8 @@
 #pragma once
 
+
 #include <utility>
 #include <type_traits>
-#include <memory>
 #include <initializer_list>
 
 #include "snippet/internal/types.hpp"
@@ -271,7 +271,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
 
   public:
     template<class... Args>
-    explicit core(Argsand... args) : core() { this->assign(std::forward<Args>(args)...); }
+    explicit core(Args... args) : core() { this->assign(std::forward<Args>(args)...); }
     core(const std::initializer_list<value_type>& values) : core(std::begin(values), std::end(values)) {}
     core() { static_assert(action::tags.has(actions::flags::implicit_treap)); }
 
