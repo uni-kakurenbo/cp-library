@@ -2,8 +2,11 @@
 
 
 #include <vector>
+#include <iterator>
+#include <algorithm>
 
 #include "internal/types.hpp"
+#include "snippet/iterations.hpp"
 #include "grid.hpp"
 
 
