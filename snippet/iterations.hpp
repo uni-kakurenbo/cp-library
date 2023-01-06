@@ -17,11 +17,11 @@
 
 #define FORI(i,l,r) for(auto i=(l), i##_last=(r); i<=i##_last; ++i)
 #define FORIS(i,l,r,s) for(auto i=(l), i##_last=(r); i<=i##_last; i+=(s))
-#define FORR(i,l,r) for(auto i=(l), i##_last=(r); i>=i##_last; --i)
-#define FORRS(i,l,r,s) for(auto i=(l), i##_last=(r); i>=i##_last; i-=(s))
+#define FORR(i,l,r) for(auto i=(r), i##_last=(l); i>=i##_last; --i)
+#define FORRS(i,l,r,s) for(auto i=(r), i##_last=(l); i>=i##_last; i-=(s))
 
 #define FOR(...) $OVERLOAD4(__VA_ARGS__, FORIS, FORI)(__VA_ARGS__)
-#define FORD(...) $OVERLOAD4(__VA_ARGS__, FORDS, FORD)(__VA_ARGS__)
+#define FORD(...) $OVERLOAD4(__VA_ARGS__, FORRS, FORR)(__VA_ARGS__)
 
 #define ITR1(e0,v) for(const auto &e0 : (v))
 #define ITRP1(e0,v) for(auto e0 : (v))
