@@ -172,8 +172,8 @@ template<class T, class container> struct grid_core : container, virtual grid_li
     enum class InvertDirection { Vertical, Horizontal };
     enum class RotateDirection { CounterClockwise, Clockwise };
 
-    template<class U = T>
-    void inline read(std::istream *ist = &std::cin) {
+    template<class U = T, class Stream = std::istream>
+    void inline read(Stream *const ist = &std::cin) {
         REP(i, this->height()) REP(j, this->width()) {
             U val; *ist >> val;
             (*this)(i, j) = val;

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iterator>
+#include <utility>
 
 #include "internal/resolving_rank.hpp"
 
@@ -13,17 +14,22 @@ template<class source = std::istream>
 struct input_adapter {
   private:
     template<class T>
-    auto _set(lib::internal::resolving_rank<2>, T *const val) -> decltype(std::declval<source>() >> *val, 0) {
+    auto _set(lib::internal::resolving_rank<3>, T *const val) -> decltype(std::declval<source>() >> *val, 0) {
         *this->in >> *val;
         return 0;
     }
     template<class T>
-    auto _set(lib::internal::resolving_rank<1>, T *const val) -> decltype(std::begin(*val), std::end(*val), 0) {
+    auto _set(lib::internal::resolving_rank<2>, T *const val) -> decltype(std::begin(*val), std::end(*val), 0) {
         (*this)(std::begin(*val), std::end(*val));
         return 0;
     }
-    template<class T, atcoder::internal::is_modint_t<T>* = nullptr>
-    int _set(lib::internal::resolving_rank<0>, T *const val) {
+    template<class T>
+    auto _set(lib::internal::resolving_rank<1>, T *const val) -> decltype(val->first, val->second, 0) {
+        (*this)(&*val);
+        return 0;
+    }
+    template<class T>
+    auto _set(lib::internal::resolving_rank<0>, T *const val) -> std::enable_if_t<atcoder::internal::is_modint<T>::value,int> {
         long long v; std::cin >> v;
         *val = { v };
         return 0;
@@ -32,7 +38,7 @@ struct input_adapter {
   protected:
     template<class T>
     source *set(T *const val) {
-        this->_set(lib::internal::resolving_rank<2>{}, val);
+        this->_set(lib::internal::resolving_rank<3>{}, val);
         return this->in;
     }
 
