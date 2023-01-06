@@ -9,9 +9,9 @@
 namespace lib {
 
 template<class I, class T = typename std::iterator_traits<I>::value_type, class container = std::vector<std::pair<T,internal::size_t>>>
-struct run_length_encoding : container {
-    run_length_encoding() {}
-    run_length_encoding(const I first, const I last) {
+struct run_length : container {
+    run_length() {}
+    run_length(const I first, const I last) {
         this->clear();
         typename C::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {

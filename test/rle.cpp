@@ -22,7 +22,7 @@ output_adapter _print;
 
 signed main() {
     string s, t; cin >> s >> t;
-    run_length_encoding p(ALL(s)), q(ALL(t));
+    run_length p(ALL(s)), q(ALL(t));
     debug(p, q);
 
     if(p.size() != q.size()){
