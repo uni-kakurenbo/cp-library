@@ -16,7 +16,7 @@ namespace actions {
 
 
 template<class T> struct range_set_range_max : base<monoids::assignment<T>>  {
-    static constexpr flags tags{ flags::implicit_treap };
+    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
 
     using operand_monoid = monoids::maximum<T>;
     using operator_monoid = monoids::assignment<T>;
@@ -28,8 +28,8 @@ template<class T> struct range_set_range_max : base<monoids::assignment<T>>  {
 } // namespace actions
 
 
-template<class T> struct implicit_treap<actions::range_set_range_max<T>> : internal::implicit_treap_lib::core<actions::range_set_range_max<T>> {
-    using internal::implicit_treap_lib::core<actions::range_set_range_max<T>>::core;
+template<class T> struct lazy_segment_tree<actions::range_set_range_max<T>> : internal::lazy_segment_tree_lib::core<actions::range_set_range_max<T>> {
+    using internal::lazy_segment_tree_lib::core<actions::range_set_range_max<T>>::core;
 
     inline auto set(const size_t first, const size_t last, const T& val) { return this->apply(first, last, val); }
     inline auto set(const size_t pos, const T& val) { return this->apply(pos, val); }

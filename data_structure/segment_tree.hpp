@@ -33,9 +33,9 @@ template<class S> struct base {
 
   protected:
     size_type _n, _size, _depth;
-    S* _data = nullptr;
+    S* _data;
 
-    inline void update(const size_type k) { this->_data[k] = this->_data[2*k] * this->_data[2*k+1]; }
+    inline void update(const size_type k) { this->_data[k] = this->_data[k << 1] * this->_data[k << 1 | 1]; }
 
   protected:
     explicit base(const size_type n = 0) : _n(n), _depth(atcoder::internal::ceil_pow2(n)) {
@@ -45,19 +45,18 @@ template<class S> struct base {
     ~base() { delete[] this->_data; }
 
   public:
-
     inline size_type size() const { return this->_n; }
-    inline size_type capacity() const { return this->_size; }
+    inline size_type allocated() const { return this->_size; }
     inline size_type depth() const { return this->_depth; }
 
-    inline void set(size_type p, S x) {
-        p += this->_size;
-        this->_data[p] = x;
-        for (size_type i = 1; i <= this->_depth; i++) this->update(p >> i);
+    inline void set(size_type pos, const S& x) {
+        pos += this->_size;
+        this->_data[pos] = x;
+        FOR(i, 1, this->_depth) this->update(pos >> i);
     }
 
-    inline S get(size_type p) const {
-        return this->_data[p + this->_size];
+    inline S get(size_type pos) const {
+        return this->_data[pos + this->_size];
     }
 
     inline S prod(size_type l, size_type r) const {
@@ -77,9 +76,10 @@ template<class S> struct base {
     inline S all_prod() const { return this->_data[1]; }
 
     template<bool (*f)(S)> inline size_type max_right(size_type l) const {
-        return max_right(l, [](S x) { return f(x); });
+        return this->max_right(l, [](S x) { return f(x); });
     }
     template<class F> inline size_type max_right(size_type l, F f) const {
+        assert(0 <= l && l <= _n);
         assert(f(S{}));
         if (l == this->_n) return this->_n;
         l += this->_size;
@@ -103,9 +103,10 @@ template<class S> struct base {
     }
 
     template<bool (*f)(S)> inline size_type min_left(size_type r) const {
-        return min_left(r, [](S x) { return f(x); });
+        return this->min_left(r, [](S x) { return f(x); });
     }
     template<class F> inline size_type min_left(size_type r, F f) const {
+        assert(0 <= r && r <= _n);
         assert(f(S()));
         if (r == 0) return 0;
         r += this->_size;
@@ -129,6 +130,7 @@ template<class S> struct base {
     }
 };
 
+
 template<class, class = std::void_t<>> struct core {};
 
 template<class Monoid>
@@ -146,29 +148,28 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
   public:
     explicit core(const size_type n = 0) : base(n) {}
 
-    explicit core(const size_type n, const value_type& v) : base(n) {
-        if(v == value_type{}) return;
-        REP(pos, 0, this->_n) this->_data[this->_size + pos] = v;
+    explicit core(const size_type n, const value_type& v) : core(n) {
+        REP(pos, this->_n) this->_data[this->_size + pos] = v;
         REPD(pos, 1, this->_size) this->update(pos);
     }
 
     core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
 
-    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {
         size_type pos = 0;
-        for(auto itr=first; itr!=last; ++itr, ++pos) this->_data[this->_size + pos] = *itr;
+        for(auto itr=first; itr!=last; ++itr, ++pos) this->_data[this->_size + pos] = monoid(*itr);
         REPD(pos, 1, this->_size) this->update(pos);
     }
 
-    inline void set(const size_type p, const value_type& x) {
-        dev_assert(0 <= p and p < this->size());
-        this->base::set(p, x);
+    inline void set(const size_type pos, const value_type& x) {
+        dev_assert(0 <= pos and pos < this->size());
+        this->base::set(pos, x);
     }
 
-    inline value_type get(const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-        return this->base::prod(p, p+1).val();
+    inline value_type get(const size_type pos) const {
+        dev_assert(0 <= pos and pos < this->size());
+        return this->base::prod(pos, pos+1).val();
     }
     inline value_type operator[](const size_type pos) const { return this->get(pos); }
 
@@ -199,7 +200,7 @@ template<class Action>
 struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand_monoid> {
     using action = Action;
     using core<typename action::operand_monoid>::core;
-    static_assert(action::tags.has(actions::flags::segment_tree));
+    static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::segment_tree));
 };
 
 

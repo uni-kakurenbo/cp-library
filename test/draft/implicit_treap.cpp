@@ -14,9 +14,9 @@ template<class T> struct range_set_range_sum {
     using operator_monoid = monoids::assignment<T>;
 
     static operand_monoid map(const operand_monoid& x, const operator_monoid& f) {
-        return { compose(f, x.len())->value_or(x->val()) };
+        return { fold(f, x.len())->value_or(x->val()) };
     }
-    static operator_monoid compose(const operator_monoid& x, const internal::size_t length) {
+    static operator_monoid fold(const operator_monoid& x, const internal::size_t length) {
         if(x->has_value()) return { x->operator*() * length };
         return x;
     }

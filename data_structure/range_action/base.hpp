@@ -18,7 +18,7 @@ struct base {};
 
 
 template<class operator_monoid = std::nullptr_t> struct base : internal::base {
-    static operator_monoid compose(const operator_monoid& x, const lib::internal::size_t) { return x; }
+    static operator_monoid fold(const operator_monoid& x, const lib::internal::size_t) { return x; }
 };
 
 

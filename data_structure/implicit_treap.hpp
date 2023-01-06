@@ -27,7 +27,7 @@ namespace implicit_treap_lib {
 
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
-template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*g)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*p)(const OperatorMonoid&, internal::size_t)>
+template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*fold)(const OperatorMonoid&, internal::size_t)>
 struct base : private uncopyable {
     using operand_monoid = OperandMonoid;
     using operator_monoid = OperatorMonoid;
@@ -82,14 +82,14 @@ struct base : private uncopyable {
         }
         if(tree and tree->lazy != operator_monoid{}) {
             if(tree->left) {
-                tree->left->lazy = tree->left->lazy * tree->lazy;
-                tree->left->acc = g(tree->left->acc, p(tree->lazy, this->cnt(tree->left)));
+                tree->left->lazy = tree->lazy * tree->left->lazy;
+                tree->left->acc = map(tree->left->acc, fold(tree->lazy, this->cnt(tree->left)));
             }
             if(tree->right) {
-                tree->right->lazy = tree->right->lazy * tree->lazy;
-                tree->right->acc = g(tree->right->acc, p(tree->lazy, this->cnt(tree->right)));
+                tree->right->lazy = tree->lazy * tree->right->lazy;
+                tree->right->acc = map(tree->right->acc, fold(tree->lazy, this->cnt(tree->right)));
             }
-            tree->value = g(tree->value, p(tree->lazy, 1));
+            tree->value = map(tree->value, fold(tree->lazy, 1));
             tree->lazy = operator_monoid{};
         }
         // this->pushup(tree);
@@ -147,8 +147,8 @@ struct base : private uncopyable {
         Tree t1, t2, t3;
         this->split(tree, first, t1, t2);
         this->split(t2, last - first, t2, t3);
-        t2->lazy = t2->lazy * value;
-        // t2->acc = g(t2->acc, p(value, cnt(t2)));
+        t2->lazy = value * t2->lazy;
+        // t2->acc = map(t2->acc, fold(value, cnt(t2)));
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
     }
@@ -238,7 +238,7 @@ struct base : private uncopyable {
 
 
 template<class Action>
-struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename Action::operator_monoid,Action::map,Action::compose> {
+struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename Action::operator_monoid,Action::map,Action::fold> {
   public:
     using action = Action;
 
@@ -249,7 +249,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     using action_type = typename operator_monoid::value_type;
 
   private:
-    using base = implicit_treap_lib::base<operand_monoid,operator_monoid,Action::map,Action::compose>;
+    using base = implicit_treap_lib::base<operand_monoid,operator_monoid,Action::map,Action::fold>;
 
   public:
     using size_t = typename base::size_t;
@@ -273,9 +273,9 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     template<class... Args>
     explicit core(Args... args) : core() { this->assign(std::forward<Args>(args)...); }
     core(const std::initializer_list<value_type>& values) : core(std::begin(values), std::end(values)) {}
-    core() { static_assert(action::tags.has(actions::flags::implicit_treap)); }
+    core() { static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::implicit_treap)); }
 
-    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void insert(size_t pos, const I first, const I last) {
         for(auto itr=first; itr != last; ++itr, ++pos) {
             this->insert(pos, *itr);
@@ -306,7 +306,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
 
     inline void assign(const std::initializer_list<value_type>& values) { this->assign(std::begin(values), std::end(values)); }
 
-    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void assign(const I first, const I second) { this->clear(), this->insert(0, first, second); }
 
     inline void fill(const value_type& value) {
@@ -334,7 +334,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
         this->_validate_rigth_open_interval(first, last);
         this->base::apply(first, last, value);
     }
-    inline void apply(const size_t p, const action_type& value) { this->apply(p, p+1, value); }
+    inline void apply(const size_t pos, const action_type& value) { this->apply(pos, pos+1, value); }
     inline void apply(const action_type& value) { this->apply(0, this->size(), value); }
 
 

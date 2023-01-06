@@ -17,7 +17,7 @@ namespace actions {
 
 
 template<class T> struct range_affine_range_minmax : base<monoids::affine<T>> {
-    static constexpr flags tags{ flags::implicit_treap };
+    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
 
     using operand_monoid = monoids::minmax<T>;
     using operator_monoid = monoids::affine<T>;
@@ -33,8 +33,8 @@ template<class T> struct range_affine_range_minmax : base<monoids::affine<T>> {
 } // namespace actions
 
 
-template<class T> struct implicit_treap<actions::range_affine_range_minmax<T>> : internal::implicit_treap_lib::core<actions::range_affine_range_minmax<T>> {
-    using internal::implicit_treap_lib::core<actions::range_affine_range_minmax<T>>::core;
+template<class T> struct lazy_segment_tree<actions::range_affine_range_minmax<T>> : internal::lazy_segment_tree_lib::core<actions::range_affine_range_minmax<T>> {
+    using internal::lazy_segment_tree_lib::core<actions::range_affine_range_minmax<T>>::core;
 
 
     inline auto set(const size_t first, const size_t last, const T& val) { return this->apply(first, last, { 0, val }); }

@@ -29,7 +29,7 @@ template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<acti
 
     fenwick_tree(const std::initializer_list<T>& init_list) : fenwick_tree(ALL(init_list)) {}
 
-    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     fenwick_tree(const I first, const I last) : fenwick_tree(std::distance(first, last)) {
         size_type pos = 0;
         for(auto itr=first; itr!=last; ++itr, ++pos) this->apply(pos, *itr);

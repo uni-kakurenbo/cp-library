@@ -42,7 +42,6 @@ struct base {
     ~base() { delete[] this->_data; }
 
   public:
-
     inline size_type size() const { return this->_n; }
 
     inline void apply(size_type p, const S& x) {
@@ -80,14 +79,12 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
 
   public:
     explicit core(const size_type n = 0) : base(n) {
-        static_assert(action::tags.has(actions::flags::fenwick_tree));
+        static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::fenwick_tree));
     }
-
-    explicit core(const size_type n, const value_type& v) : base(n) { if(v != 0) REP(i, n) this->base::apply(i, v); }
-
+    explicit core(const size_type n, const value_type& v) : base(n) { REP(i, n) this->base::apply(i, v); }
     explicit core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
 
-    template<class I, std::enable_if_t<std::is_same_v<value_type, typename std::iterator_traits<I>::value_type>>* = nullptr>
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {
         size_type pos = 0;
         for(auto itr=first; itr!=last; ++itr, ++pos) this->base::apply(pos, *itr);

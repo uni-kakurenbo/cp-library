@@ -16,7 +16,7 @@ namespace actions {
 
 
 template<class T> struct range_add_range_min : base<monoids::addition<T>> {
-    static constexpr flags tags{ flags::implicit_treap };
+    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
 
     using operand_monoid = monoids::minimum<T>;
     using operator_monoid = monoids::addition<T>;
@@ -28,9 +28,8 @@ template<class T> struct range_add_range_min : base<monoids::addition<T>> {
 } // namespace actions
 
 
-
-template<class T> struct implicit_treap<actions::range_add_range_min<T>> : internal::implicit_treap_lib::core<actions::range_add_range_min<T>> {
-    using internal::implicit_treap_lib::core<actions::range_add_range_min<T>>::core;
+template<class T> struct lazy_segment_tree<actions::range_add_range_min<T>> : internal::lazy_segment_tree_lib::core<actions::range_add_range_min<T>> {
+    using internal::lazy_segment_tree_lib::core<actions::range_add_range_min<T>>::core;
 
     inline auto add(const size_t first, const size_t last, const T& val) { return this->apply(first, last, val); }
     inline auto add(const size_t pos, const T& val) { return this->apply(pos, val); }
