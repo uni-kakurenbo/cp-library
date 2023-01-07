@@ -42,31 +42,35 @@ template<class E = edge<ll>> struct graph : std::vector<std::vector<E>> {
 
     // graph/bfs.hpp
     template<class dist_t = typename E::cost_type>
-    void bfs(const vertex, std::vector<dist_t>*) const;
+    inline void bfs(const vertex, std::vector<dist_t>*) const;
 
     // graph/dijkstra.hpp
     template<class dist_t = typename E::cost_type>
-    void dijkstra(const vertex, std::vector<dist_t>*) const;
+    inline void dijkstra(const vertex, std::vector<dist_t>*) const;
 
     // graph/dijkstra.hpp
     template<class>
-    bool sort_topologically_with_priority(std::vector<vertex>*) const;
-    bool sort_topologically(std::vector<vertex>*) const;
+    inline bool sort_topologically_with_priority(std::vector<vertex>*) const;
+    inline bool sort_topologically(std::vector<vertex>*) const;
 
     // graph/minimum_paph_cover.hpp
-    vertex minimum_paph_cover_size_as_dag() const;
+    inline vertex minimum_paph_cover_size_as_dag() const;
 
     // graph/spanning_tree_cost.hpp
     template<class cost_t = typename E::cost_type>
-    cost_t minimum_spanning_tree_cost() const;
+    inline cost_t minimum_spanning_tree_cost() const;
 
     // graph/spanning_tree_cost.hpp
     template<class cost_t = typename E::cost_type>
-    cost_t maximum_spanning_tree_cost() const;
+    inline cost_t maximum_spanning_tree_cost() const;
 
     // graph/from_grid.hpp
     template<class G, class U = char>
-    void from_grid(const G&, U = '.');
+    inline void from_grid(const G&, U = '.');
+
+    // graph/manhattan_minimum_spanning_tree.hpp
+    template<class distance_type = typename E::cost_type, class = internal::size_t>
+    inline distance_type build_manhattan_mst(const std::vector<distance_type>&, const std::vector<distance_type>&);
 };
 
 } // namespace lib
