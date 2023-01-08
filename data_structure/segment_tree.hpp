@@ -49,14 +49,14 @@ template<class S> struct base {
     inline size_type allocated() const { return this->_size; }
     inline size_type depth() const { return this->_depth; }
 
-    inline void set(size_type pos, const S& x) {
-        pos += this->_size;
-        this->_data[pos] = x;
-        FOR(i, 1, this->_depth) this->update(pos >> i);
+    inline void set(size_type p, const S& x) {
+        p += this->_size;
+        this->_data[p] = x;
+        FOR(i, 1, this->_depth) this->update(p >> i);
     }
 
-    inline S get(size_type pos) const {
-        return this->_data[pos + this->_size];
+    inline S get(size_type p) const {
+        return this->_data[p + this->_size];
     }
 
     inline S prod(size_type l, size_type r) const {
@@ -149,29 +149,29 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
     explicit core(const size_type n = 0) : base(n) {}
 
     explicit core(const size_type n, const value_type& v) : core(n) {
-        REP(pos, this->_n) this->_data[this->_size + pos] = v;
-        REPD(pos, 1, this->_size) this->update(pos);
+        REP(p, this->_n) this->_data[this->_size + p] = v;
+        REPD(p, 1, this->_size) this->update(p);
     }
 
     core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {
-        size_type pos = 0;
-        for(auto itr=first; itr!=last; ++itr, ++pos) this->_data[this->_size + pos] = monoid(*itr);
-        REPD(pos, 1, this->_size) this->update(pos);
+        size_type p = 0;
+        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = monoid(*itr);
+        REPD(p, 1, this->_size) this->update(p);
     }
 
-    inline void set(const size_type pos, const value_type& x) {
-        dev_assert(0 <= pos and pos < this->size());
-        this->base::set(pos, x);
+    inline void set(const size_type p, const value_type& x) {
+        dev_assert(0 <= p and p < this->size());
+        this->base::set(p, x);
     }
 
-    inline value_type get(const size_type pos) const {
-        dev_assert(0 <= pos and pos < this->size());
-        return this->base::prod(pos, pos+1).val();
+    inline value_type get(const size_type p) const {
+        dev_assert(0 <= p and p < this->size());
+        return this->base::prod(p, p+1).val();
     }
-    inline value_type operator[](const size_type pos) const { return this->get(pos); }
+    inline value_type operator[](const size_type p) const { return this->get(p); }
 
     inline value_type prod(const size_type l, const size_type r) const {
         dev_assert(0 <= l and l <= r and r <= this->size());
@@ -187,9 +187,9 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type pos) : internal::container_iterator_interface<value_type,core>(ref, pos) {}
+        iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
-        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const override { return this->ref()->get(this->p()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

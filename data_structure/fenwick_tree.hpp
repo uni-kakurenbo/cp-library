@@ -86,27 +86,27 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {
-        size_type pos = 0;
-        for(auto itr=first; itr!=last; ++itr, ++pos) this->base::apply(pos, *itr);
+        size_type p = 0;
+        for(auto itr=first; itr!=last; ++itr, ++p) this->base::apply(p, *itr);
     }
 
-    void apply(const size_type pos, const value_type& x) {
-        dev_assert(0 <= pos and pos < this->size());
-        this->base::apply(pos, x);
+    void apply(const size_type p, const value_type& x) {
+        dev_assert(0 <= p and p < this->size());
+        this->base::apply(p, x);
     }
 
-    inline void set(const size_type pos, const value_type& x) {
-        dev_assert(0 <= pos and pos < this->size());
-        this->base::set(pos, x);
+    inline void set(const size_type p, const value_type& x) {
+        dev_assert(0 <= p and p < this->size());
+        this->base::set(p, x);
     }
 
-    inline value_type get(const size_type pos) const {
-        dev_assert(0 <= pos and pos < this->size());
-        return this->base::prod(pos, pos+1).val();
+    inline value_type get(const size_type p) const {
+        dev_assert(0 <= p and p < this->size());
+        return this->base::prod(p, p+1).val();
     }
-    inline value_type operator[](size_type pos) const {
-        dev_assert(0 <= pos and pos < this->size());
-        return this->base::get(pos);
+    inline value_type operator[](size_type p) const {
+        dev_assert(0 <= p and p < this->size());
+        return this->base::get(p);
     }
 
     inline value_type prod(const size_type l, const size_type r) const {
@@ -123,7 +123,7 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type pos) : internal::container_iterator_interface<value_type,core>(ref, pos) {}
+        iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
         inline value_type operator*() const override { return this->ref()->get(this->pos()); }
     };

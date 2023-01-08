@@ -41,7 +41,7 @@ struct base : private uncopyable {
     mutable xorshift rand;
 
     struct node {
-        operand_monoid value, acc;
+        operand_monoid v, acc;
         operator_monoid lazy;
 
         xorshift::result_type priority;
@@ -51,8 +51,8 @@ struct base : private uncopyable {
         bool rev = false;
         Tree left = nullptr, right = nullptr;
 
-        node(const operand_monoid& value, const base* super)
-        : value(value), acc(operand_monoid{}), lazy(operator_monoid{}), priority(super->rand()) {}
+        node(const operand_monoid& v, const base* super)
+        : v(v), acc(operand_monoid{}), lazy(operator_monoid{}), priority(super->rand()) {}
         ~node() {
             if(this->left) delete this->left;
             if(this->right) delete this->right;
@@ -68,7 +68,7 @@ struct base : private uncopyable {
     inline void update_cnt(const Tree tree) const { if(tree) tree->cnt = 1 + this->cnt(tree->left) + this->cnt(tree->right); }
 
     inline void update_acc(const Tree tree) const {
-        if(tree) tree->acc = this->acc(tree->left) * tree->value * this->acc(tree->right);
+        if(tree) tree->acc = this->acc(tree->left) * tree->v * this->acc(tree->right);
     }
 
     inline void pushup(const Tree tree) const { this->update_cnt(tree), update_acc(tree); }
@@ -89,32 +89,32 @@ struct base : private uncopyable {
                 tree->right->lazy = tree->lazy * tree->right->lazy;
                 tree->right->acc = map(tree->right->acc, fold(tree->lazy, this->cnt(tree->right)));
             }
-            tree->value = map(tree->value, fold(tree->lazy, 1));
+            tree->v = map(tree->v, fold(tree->lazy, 1));
             tree->lazy = operator_monoid{};
         }
         // this->pushup(tree);
     }
 
-    inline void split(const Tree tree, const size_t key, Tree& left, Tree& right) const {
+    inline void split(const Tree tree, const size_t pos, Tree& left, Tree& right) const {
         if(!tree) {
             left = right = nullptr;
             return;
         }
         this->pushdown(tree);
         const size_t implicit_key = this->cnt(tree->left) + 1;
-        if(key < implicit_key) {
-            this->split(tree->left, key, left, tree->left), right = std::move(tree);
+        if(pos < implicit_key) {
+            this->split(tree->left, pos, left, tree->left), right = std::move(tree);
             this->pushup(right);
         }
         else {
-            this->split(tree->right, key - implicit_key, tree->right, right), left = std::move(tree);
+            this->split(tree->right, pos - implicit_key, tree->right, right), left = std::move(tree);
             this->pushup(left);
         }
     }
 
-    inline void insert(Tree& tree, const size_t key, const Tree item) const {
+    inline void insert(Tree& tree, const size_t pos, const Tree item) const {
         Tree t1, t2;
-        this->split(tree, key, t1, t2);
+        this->split(tree, pos, t1, t2);
         this->merge(t1, t1, item);
         this->merge(tree, t1, t2);
     }
@@ -134,72 +134,72 @@ struct base : private uncopyable {
         this->pushup(tree);
     }
 
-    inline void erase(Tree& tree, const size_t key) const {
+    inline void erase(Tree& tree, const size_t pos) const {
         Tree t1, t2, t3;
-        this->split(tree, key + 1, t1, t2);
-        this->split(t1, key, t1, t3);
+        this->split(tree, pos + 1, t1, t2);
+        this->split(t1, pos, t1, t3);
         this->merge(tree, t1, t2);
         if(t3) delete t3;
     }
 
-    inline void apply(Tree tree, const size_t first, const size_t last, const operator_monoid& value) const {
-        if(first >= last) return;
+    inline void apply(Tree tree, const size_t l, const size_t r, const operator_monoid& v) const {
+        if(l >= r) return;
         Tree t1, t2, t3;
-        this->split(tree, first, t1, t2);
-        this->split(t2, last - first, t2, t3);
-        t2->lazy = value * t2->lazy;
-        // t2->acc = map(t2->acc, fold(value, cnt(t2)));
+        this->split(tree, l, t1, t2);
+        this->split(t2, r - l, t2, t3);
+        t2->lazy = v * t2->lazy;
+        // t2->acc = map(t2->acc, fold(v, cnt(t2)));
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
     }
 
-    inline operand_monoid prod(Tree tree, const size_t first, const size_t last) const {
-        if(first == last) return operand_monoid{};
+    inline operand_monoid prod(Tree tree, const size_t l, const size_t r) const {
+        if(l == r) return operand_monoid{};
         Tree t1, t2, t3;
-        this->split(tree, first, t1, t2);
-        this->split(t2, last - first, t2, t3);
+        this->split(tree, l, t1, t2);
+        this->split(t2, r - l, t2, t3);
         operand_monoid ret = t2->acc;
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
         return ret;
     }
 
-    // [first, last)の中で左から何番目か
-    inline size_t find(const Tree tree, operand_monoid& value, const size_t offset, const bool dir_left = true) const {
-        if(tree->acc * value == value) {
+    // [l, r)の中で左から何番目か
+    inline size_t find(const Tree tree, operand_monoid& v, const size_t offset, const bool dir_left = true) const {
+        if(tree->acc * v == v) {
             return -1;
         } else {
             if(dir_left) {
-                if(tree->left and tree->left->acc * value != value) {
-                    return this->find(tree->left, value, offset, dir_left);
+                if(tree->left and tree->left->acc * v != v) {
+                    return this->find(tree->left, v, offset, dir_left);
                 } else {
-                    return tree->value * value != value ? offset + this->cnt(tree->left) : this->find(tree->right, value, offset + this->cnt(tree->left) + 1, dir_left);
+                    return tree->v * v != v ? offset + this->cnt(tree->left) : this->find(tree->right, v, offset + this->cnt(tree->left) + 1, dir_left);
                 }
             } else {
-                if(tree->right and tree->right->acc * value != value) {
-                    return this->find(tree->right, value, offset + this->cnt(tree->left) + 1, dir_left);
+                if(tree->right and tree->right->acc * v != v) {
+                    return this->find(tree->right, v, offset + this->cnt(tree->left) + 1, dir_left);
                 } else {
-                    return tree->value * value != value ? offset + this->cnt(tree->left) : this->find(tree->left, value, offset, dir_left);
+                    return tree->v * v != v ? offset + this->cnt(tree->left) : this->find(tree->left, v, offset, dir_left);
                 }
             }
         }
     }
 
-    inline void reverse(Tree tree, const size_t first, const size_t last) const {
-        if(first > last) return;
+    inline void reverse(Tree tree, const size_t l, const size_t r) const {
+        if(l > r) return;
         Tree t1, t2, t3;
-        this->split(tree, first, t1, t2);
-        this->split(t2, last - first, t2, t3);
+        this->split(tree, l, t1, t2);
+        this->split(t2, r - l, t2, t3);
         t2->rev ^= 1;
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
     }
 
-    // [first, last)の先頭がmになるようにシフトさせる。std::rotateと同じ仕様
-    inline void rotate(Tree tree, const size_t first, const size_t middle, const size_t last) const {
-        this->reverse(tree, first, last);
-        this->reverse(tree, first, first + last - middle);
-        this->reverse(tree, first + last - middle, last);
+    // [l, r)の先頭がmになるようにシフトさせる。std::rotateと同じ仕様
+    inline void rotate(Tree tree, const size_t l, const size_t m, const size_t r) const {
+        this->reverse(tree, l, r);
+        this->reverse(tree, l, l + r - m);
+        this->reverse(tree, l + r - m, r);
     }
 
   public:
@@ -209,27 +209,27 @@ struct base : private uncopyable {
     virtual ~base() { delete this->root; }
 
   public:
-    // void insert(const size_t pos, const operand_monoid& value) { this->insert(this->root, pos, std::make_shared<node>(value, this)); }
-    void insert(const size_t pos, const operand_monoid& value) { this->insert(this->root, pos, new node(value, this)); }
+    // void insert(const size_t p, const operand_monoid& v) { this->insert(this->root, p, std::make_shared<node>(v, this)); }
+    void insert(const size_t p, const operand_monoid& v) { this->insert(this->root, p, new node(v, this)); }
 
-    inline void apply(const size_t first, const size_t last, const operator_monoid& value) { this->apply(this->root, first, last, value); }
+    inline void apply(const size_t l, const size_t r, const operator_monoid& v) { this->apply(this->root, l, r, v); }
 
-    inline operand_monoid prod(const size_t first, const size_t last) const { return this->prod(this->root, first, last); }
+    inline operand_monoid prod(const size_t l, const size_t r) const { return this->prod(this->root, l, r); }
 
-    inline void erase(const size_t pos) { this->erase(this->root, pos); }
+    inline void erase(const size_t p) { this->erase(this->root, p); }
 
-    inline void reverse(const size_t first, const size_t last) const { this->reverse(this->root, first, last); }
+    inline void reverse(const size_t l, const size_t r) const { this->reverse(this->root, l, r); }
 
-    inline void rotate(const size_t first, const size_t middle, const size_t last) const { this->rotate(this->root, first, middle, last); }
+    inline void rotate(const size_t l, const size_t m, const size_t r) const { this->rotate(this->root, l, m, r); }
 
-    // 二分探索。[first, last)内のkでf0(tr[k], value) != xとなる最左/最右のもの。存在しない場合は-1
+    // 二分探索。[l, r)内のkでf0(tr[k], v) != xとなる最左/最右のもの。存在しない場合は-1
     // たとえばMinMonoidの場合、x未満の最左/最右の要素の位置を返す
-    inline size_t find(const size_t first, const size_t last, const operand_monoid& value, const bool dir_left) const {
-        if(first >= last) return -1;
+    inline size_t find(const size_t l, const size_t r, const operand_monoid& v, const bool dir_left) const {
+        if(l >= r) return -1;
         Tree t1, t2, t3;
-        this->split(this->root, first, t1, t2);
-        this->split(t2, last - first, t2, t3);
-        const size_t ret = this->find(t2, value, first, dir_left);
+        this->split(this->root, l, t1, t2);
+        this->split(t2, r - l, t2, t3);
+        const size_t ret = this->find(t2, v, l, dir_left);
         this->merge(t2, t2, t3);
         this->merge(this->root, t1, t2);
         return ret;
@@ -255,18 +255,18 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     using size_t = typename base::size_t;
 
   protected:
-    inline void _validate_index_in_right_open(const size_t _pos) const {
-        dev_assert(0 <= _pos and _pos < this->size());
+    inline void _validate_index_in_right_open([[maybe_unused]] const size_t p) const {
+        dev_assert(0 <= p and p < this->size());
     }
-    inline void _validate_index_in_closed(const size_t _pos) const {
-        dev_assert(0 <= _pos and _pos <= this->size());
+    inline void _validate_index_in_closed[[maybe_unused]] (const size_t p) const {
+        dev_assert(0 <= p and p <= this->size());
     }
-    inline void _validate_rigth_open_interval(const size_t _l, const size_t _r) const {
-        dev_assert(0 <= _l and _l <= _r and _r <= this->size());
+    inline void _validate_rigth_open_interval([[maybe_unused]] const size_t l, [[maybe_unused]] const size_t r) const {
+        dev_assert(0 <= l and l <= r and r <= this->size());
     }
 
-    inline size_t _positivize_index(const size_t pos) const {
-        return pos < 0 ? this->size() + pos : pos;
+    inline size_t _positivize_index(const size_t p) const {
+        return p < 0 ? this->size() + p : p;
     }
 
   public:
@@ -276,111 +276,111 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     core() { static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::implicit_treap)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline void insert(size_t pos, const I first, const I last) {
-        for(auto itr=first; itr != last; ++itr, ++pos) {
-            this->insert(pos, *itr);
+    inline void insert(size_t p, const I first, const I last) {
+        for(auto itr=first; itr != last; ++itr, ++p) {
+            this->insert(p, *itr);
         }
     }
 
-    inline void insert(size_t pos, const value_type& value) {
-        pos = this->_positivize_index(pos);
-        this->_validate_index_in_closed(pos);
-        this->base::insert(pos, value);
+    inline void insert(size_t p, const value_type& v) {
+        p = this->_positivize_index(p);
+        this->_validate_index_in_closed(p);
+        this->base::insert(p, v);
     }
 
-    inline void insert(const size_t first, const value_type& value, const size_t count) {
-        REP(pos, count) this->insert(first + pos, value);
+    inline void insert(const size_t p, const value_type& v, const size_t count) {
+        REP(k, count) this->insert(p + k, v);
     }
 
-    inline void push_front(const value_type& value, const size_t count = 1) { this->insert(0, value, count); }
-    inline void push_back(const value_type& value, const size_t count = 1) { this->insert(this->size(), value, count); }
+    inline void push_front(const value_type& v, const size_t count = 1) { this->insert(0, v, count); }
+    inline void push_back(const value_type& v, const size_t count = 1) { this->insert(this->size(), v, count); }
 
-    inline void resize(const size_t size, const value_type& value = value_type{}) {
+    inline void resize(const size_t size, const value_type& v = value_type{}) {
         REP(this->size() - size) this->erase(-1);
-        REP(i, this->size(), size) this->push_back(value);
+        REP(i, this->size(), size) this->push_back(v);
     }
 
-    inline void assign(const size_t size, const value_type& value = value_type{}) {
-        this->clear(), this->insert(0, value, size);
+    inline void assign(const size_t size, const value_type& v = value_type{}) {
+        this->clear(), this->insert(0, v, size);
     }
 
     inline void assign(const std::initializer_list<value_type>& values) { this->assign(std::begin(values), std::end(values)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline void assign(const I first, const I second) { this->clear(), this->insert(0, first, second); }
+    inline void assign(const I first, const I last) { this->clear(), this->insert(0, first, last); }
 
-    inline void fill(const value_type& value) {
+    inline void fill(const value_type& v) {
         const size_t count = this->size();
-        this->clear(), this->insert(0, value, count);
+        this->clear(), this->insert(0, v, count);
     }
-    inline void fill(const size_t first, const size_t last, const value_type& value) {
-        REP(pos, first, last) this->erase(pos), this->insert(pos, value);
+    inline void fill(const size_t l, const size_t r, const value_type& v) {
+        REP(p, l, r) this->erase(p), this->insert(p, v);
     }
 
-    inline void erase(size_t pos) {
-        pos = this->_positivize_index(pos);
-        this->_validate_index_in_right_open(pos);
-        this->base::erase(pos);
+    inline void erase(size_t p) {
+        p = this->_positivize_index(p);
+        this->_validate_index_in_right_open(p);
+        this->base::erase(p);
     }
-    inline void erase(const size_t pos, const size_t count) { REP(count) this->erase(pos); }
+    inline void erase(const size_t p, const size_t count) { REP(count) this->erase(p); }
     inline void clear() { this->erase(0, this->size()); }
 
     inline void pop_front(const size_t count = 1) { this->erase(0, count); }
     inline void pop_back(const size_t count = 1) { this->erase(this->size() - count, count); }
 
 
-    inline void apply(size_t first, size_t last, const action_type& value) {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last);
-        this->base::apply(first, last, value);
+    inline void apply(size_t l, size_t r, const action_type& v) {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+        this->base::apply(l, r, v);
     }
-    inline void apply(const size_t pos, const action_type& value) { this->apply(pos, pos+1, value); }
-    inline void apply(const action_type& value) { this->apply(0, this->size(), value); }
+    inline void apply(const size_t p, const action_type& v) { this->apply(p, p+1, v); }
+    inline void apply(const action_type& v) { this->apply(0, this->size(), v); }
 
 
-    inline value_type get(size_t pos) const {
-        pos = this->_positivize_index(pos);
-        this->_validate_index_in_right_open(pos);
-        return this->base::prod(pos, pos+1).val();
+    inline value_type get(size_t p) const {
+        p = this->_positivize_index(p);
+        this->_validate_index_in_right_open(p);
+        return this->base::prod(p, p+1).val();
     }
-    inline value_type operator[](const size_t pos) const { return this->get(pos); }
+    inline value_type operator[](const size_t p) const { return this->get(p); }
 
     inline value_type front() const { return this->get(0); }
     inline value_type back() const { return this->get(this->size()-1); }
 
-    inline value_type prod(size_t first, size_t last) const {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last);
-        return this->base::prod(first, last).val();
+    inline value_type prod(size_t l, size_t r) const {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+        return this->base::prod(l, r).val();
     }
     inline value_type prod() const { return this->prod(0, this->size()); }
 
-    inline void reverse(size_t first, size_t last) const {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last);
-        this->base::reverse(first, last);
+    inline void reverse(size_t l, size_t r) const {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+        this->base::reverse(l, r);
     }
     inline void reverse() const { this->reverse(0, this->size()); }
 
-    inline void rotate(size_t first, size_t middle, size_t last) const {
-        first = this->_positivize_index(first), middle = this->_positivize_index(middle), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last), dev_assert(first <= middle and middle < last);
-        this->base::rotate(first, middle, last).val();
+    inline void rotate(size_t l, size_t m, size_t r) const {
+        l = this->_positivize_index(l), m = this->_positivize_index(m), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r), dev_assert(l <= m and m < r);
+        this->base::rotate(l, m, r).val();
     }
-    inline void rotate(const size_t middle) const { this->rotate(0, middle, this->size()); }
+    inline void rotate(const size_t m) const { this->rotate(0, m, this->size()); }
 
-    inline size_t find(size_t first, size_t last, const value_type& value, const bool dir_left = true) const {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_index_right_closed(first), this->_validate_index_right_closed(last);
-        return this->base::find(first, last, value, dir_left);
+    inline size_t find(size_t l, size_t r, const value_type& v, const bool dir_left = true) const {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_index_right_closed(l), this->_validate_index_right_closed(r);
+        return this->base::find(l, r, v, dir_left);
     }
-    inline size_t find(const value_type& value, const bool dir_left = true) const {
-        return this->find(0, this->size(), value, dir_left);
+    inline size_t find(const value_type& v, const bool dir_left = true) const {
+        return this->find(0, this->size(), v, dir_left);
     }
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_t pos) : internal::container_iterator_interface<value_type,core>(ref, pos) {}
+        iterator(const core *const ref, const size_t p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
         inline value_type operator*() const override { return this->ref()->get(this->pos()); }
     };

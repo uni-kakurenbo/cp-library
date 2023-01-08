@@ -35,17 +35,17 @@ struct base {
     mutable S* _values;
     mutable F* _lazy;
 
-    inline void update(const size_type k) {
-        this->_values[k] = this->_values[k << 1] * this->_values[k << 1 | 1];
+    inline void update(const size_type p) {
+        this->_values[p] = this->_values[p << 1] * this->_values[p << 1 | 1];
     }
-    inline void all_apply(const size_type k, const F& f) const {
-        this->_values[k] = map(this->_values[k], fold(f, this->_lengths[k]));
-        if(k < this->_size) this->_lazy[k] = f * this->_lazy[k];
+    inline void all_apply(const size_type p, const F& f) const {
+        this->_values[p] = map(this->_values[p], fold(f, this->_lengths[p]));
+        if(p < this->_size) this->_lazy[p] = f * this->_lazy[p];
     }
-    inline void push(const size_type k) const {
-        this->all_apply(k << 1, this->_lazy[k]);
-        this->all_apply(k << 1 | 1, this->_lazy[k]);
-        this->_lazy[k] = {};
+    inline void push(const size_type p) const {
+        this->all_apply(p << 1, this->_lazy[p]);
+        this->all_apply(p << 1 | 1, this->_lazy[p]);
+        this->_lazy[p] = {};
     }
 
   protected:
@@ -62,9 +62,9 @@ struct base {
     }
 
     inline void initialize() {
-        REPD(pos, 1, this->_size) {
-            this->_lengths[pos] = this->_lengths[pos << 1] + this->_lengths[pos << 1 | 1];
-            this->update(pos);
+        REPD(p, 1, this->_size) {
+            this->_lengths[p] = this->_lengths[p << 1] + this->_lengths[p << 1 | 1];
+            this->update(p);
         }
     }
 
@@ -73,17 +73,17 @@ struct base {
     inline size_type allocated() const { return this->_size; }
     inline size_type depth() const { return this->_depth; }
 
-    inline void set(size_type pos, const S& x) {
-        pos += this->_size;
-        FORD(i, 1, this->_depth) this->push(pos >> i);
-        this->_values[pos] = x;
-        FOR(i, 1, this->_depth) this->update(pos >> i);
+    inline void set(size_type p, const S& x) {
+        p += this->_size;
+        FORD(i, 1, this->_depth) this->push(p >> i);
+        this->_values[p] = x;
+        FOR(i, 1, this->_depth) this->update(p >> i);
     }
 
-    inline S get(size_type pos) const {
-        pos += this->_size;
-        FORD(i, 1, this->_depth) this->push(pos >> i);
-        return this->_values[pos];
+    inline S get(size_type p) const {
+        p += this->_size;
+        FORD(i, 1, this->_depth) this->push(p >> i);
+        return this->_values[p];
     }
 
     inline S prod(size_type l, size_type r) const {
@@ -110,11 +110,11 @@ struct base {
 
     inline S all_prod() const { return this->_values[1]; }
 
-    inline void apply(size_type pos, const F& f) {
-        pos += this->_size;
-        FORD(i, 1, this->_depth) this->push(pos >> i);
-        this->_values[pos] = map(this->_values[pos], fold(f, this->_lengths[pos]));
-        FOR(i, 1, this->_depth) this->update(pos >> i);
+    inline void apply(size_type p, const F& f) {
+        p += this->_size;
+        FORD(i, 1, this->_depth) this->push(p >> i);
+        this->_values[p] = map(this->_values[p], fold(f, this->_lengths[p]));
+        FOR(i, 1, this->_depth) this->update(p >> i);
     }
     inline void apply(size_type l, size_type r, const F& f) {
         if(l == r) return;
@@ -223,24 +223,24 @@ struct core : base<typename Action::operand_monoid, typename Action::operator_mo
     using size_type = typename base::size_type;
 
   protected:
-    inline void _validate_index_in_right_open(const size_t _pos) const {
-        dev_assert(0 <= _pos and _pos < this->size());
+    inline void _validate_index_in_right_open([[maybe_unused]] const size_t p) const {
+        dev_assert(0 <= p and p < this->size());
     }
-    inline void _validate_index_in_closed(const size_t _pos) const {
-        dev_assert(0 <= _pos and _pos <= this->size());
+    inline void _validate_index_in_closed([[maybe_unused]] const size_t p) const {
+        dev_assert(0 <= p and p <= this->size());
     }
-    inline void _validate_rigth_open_interval(const size_t _l, const size_t _r) const {
-        dev_assert(0 <= _l and _l <= _r and _r <= this->size());
+    inline void _validate_rigth_open_interval([[maybe_unused]] const size_t l, [[maybe_unused]] const size_t r) const {
+        dev_assert(0 <= l and l <= r and r <= this->size());
     }
 
-    inline size_t _positivize_index(const size_t pos) const {
-        return pos < 0 ? this->size() + pos : pos;
+    inline size_t _positivize_index(const size_t p) const {
+        return p < 0 ? this->size() + p : p;
     }
 
   public:
     explicit core(const size_type n = 0, const value_type& v = {}) : base(n) {
         static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::lazy_segment_tree));
-        REP(pos, 0, this->_n) this->_lengths[this->_size + pos] = 1, this->_values[this->_size + pos] = v;
+        REP(p, 0, this->_n) this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         this->initialize();
     }
 
@@ -249,44 +249,44 @@ struct core : base<typename Action::operand_monoid, typename Action::operator_mo
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : base(std::distance(first, last)) {
         static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::lazy_segment_tree));
-        size_type pos = 0;
-        for(auto itr=first; itr!=last; ++itr, ++pos) {
-            this->_lengths[this->_size + pos] = 1, this->_values[this->_size + pos] = operand_monoid(*itr);
+        size_type p = 0;
+        for(auto itr=first; itr!=last; ++itr, ++p) {
+            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = operand_monoid(*itr);
         }
         this->initialize();
     }
 
-    inline void set(const size_type pos, const value_type& value) {
-        pos = this->_positivize_index(pos), this->_validate_index_in_right_open(pos);
-        this->base::set(value);
+    inline void set(const size_type p, const value_type& v) {
+        p = this->_positivize_index(p), this->_validate_index_in_right_open(p);
+        this->base::set(v);
     }
 
-    inline void apply(size_t first, size_t last, const action_type& value) {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last);
-        this->base::apply(first, last, value);
+    inline void apply(size_t l, size_t r, const action_type& v) {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+        this->base::apply(l, r, v);
     }
-    inline void apply(const size_t pos, const action_type& value) { this->apply(pos, pos+1, value); }
-    inline void apply(const action_type& value) { this->apply(0, this->size(), value); }
+    inline void apply(const size_t p, const action_type& v) { this->apply(p, p+1, v); }
+    inline void apply(const action_type& v) { this->apply(0, this->size(), v); }
 
 
-    inline value_type get(size_t pos) const {
-        pos = this->_positivize_index(pos);
-        this->_validate_index_in_right_open(pos);
-        return this->base::get(pos).val();
+    inline value_type get(size_t p) const {
+        p = this->_positivize_index(p);
+        this->_validate_index_in_right_open(p);
+        return this->base::get(p).val();
     }
-    inline value_type operator[](const size_t pos) const { return this->get(pos); }
+    inline value_type operator[](const size_t p) const { return this->get(p); }
 
-    inline value_type prod(size_t first, size_t last) const {
-        first = this->_positivize_index(first), last = this->_positivize_index(last);
-        this->_validate_rigth_open_interval(first, last);
-        return this->base::prod(first, last).val();
+    inline value_type prod(size_t l, size_t r) const {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+        return this->base::prod(l, r).val();
     }
     inline value_type prod() const { return this->prod(0, this->size()); }
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_t pos) : internal::container_iterator_interface<value_type,core>(ref, pos) {}
+        iterator(const core *const ref, const size_t p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
         inline value_type operator*() const override { return this->ref()->get(this->pos()); }
     };
