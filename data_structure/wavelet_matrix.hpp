@@ -7,13 +7,14 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <optional>
+
+#include <atcoder/internal_bit>
 
 #include "snippet/iterations.hpp"
-
 #include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-
 #include "data_structure/succinct_bit_vector.hpp"
 
 
@@ -32,46 +33,42 @@ template<class T> struct base {
     using int64 = std::int64_t;
     using uint64 = std::uint64_t;
 
-    size_type _n, _depth;
-    std::vector<T> a;
+    size_type _n, _bits;
     std::vector<succinct_bit_vector> index;
 
+    T _max = 0;
+
   public:
-    base(const size_type _n) : _n(std::max(_n, 1)), a(this->_n) {}
-    template<class I> base(const I first, const I last) : _n(std::distance(first, last)), a(first, last) { this->build(); }
+    template<class I> base(const I first, const I last) { this->build(first, last); }
 
     inline size_type size() const { return this->_n; }
-    inline size_type depth() const { return this->_depth; }
+    inline size_type bits() const { return this->_bits; }
 
-    __attribute__((optimize("O3"))) void build() {
-        this->_depth = std::__lg(std::max<T>(*std::max_element(ALL(this->a)), 1)) + 1;
+    template<class I> __attribute__((optimize("O3"))) void build(const I first, const I last) {
+        this->_n = std::distance(first, last);
+        this->_max = first == last ? 0 : *std::max_element(first, last);
+        this->_bits = atcoder::internal::ceil_pow2(this->_max);
 
-        this->index.assign(this->_depth, this->_n);
-        std::vector<T> cur = this->a, nxt(this->_n);
+        this->index.assign(this->_bits, this->_n);
+        std::vector<T> cur(first, last), nxt(this->_n);
 
-        for(size_type h = this->_depth - 1; h >= 0; --h) {
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
             for(size_type i = 0; i < this->_n; ++i) {
                 if((cur[i] >> h) & 1) this->index[h].set(i);
             }
             this->index[h].build();
 
-            std::array<decltype(std::begin(nxt)),2> it{ std::begin(nxt), std::next(std::begin(nxt), this->index[h].zeros()) };
-            for(size_type i = 0; i < this->_n; ++i) *it[this->index[h].get(i)]++ = cur[i];
+            std::array<typename std::vector<T>::iterator,2> itrs{ std::begin(nxt), std::next(std::begin(nxt), this->index[h].zeros()) };
+            for(size_type i = 0; i < this->_n; ++i) *itrs[this->index[h].get(i)]++ = cur[i];
 
             std::swap(cur, nxt);
         }
-        return;
     }
 
   protected:
-    void set(const size_type i, const T &x) {
-        dev_assert(x >= 0);
-        this->a[i] = x;
-    }
-
     inline T get(size_type k) const {
         T res = 0;
-        for(size_type h = this->_depth - 1; h >= 0; --h) {
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
             bool f = this->index[h].get(k);
             res |= f ? T(1) << h : 0;
             k = f ? this->index[h].rank1(k) + this->index[h].zeros() : this->index[h].rank0(k);
@@ -81,7 +78,7 @@ template<class T> struct base {
 
     inline T kth_smallest(size_type l, size_type r, size_type k) const {
         T res = 0;
-        for(size_type h = this->_depth - 1; h >= 0; --h) {
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
             size_type l0 = this->index[h].rank0(l), r0 = this->index[h].rank0(r);
             if(k < r0 - l0)
                 l = l0, r = r0;
@@ -96,10 +93,10 @@ template<class T> struct base {
     }
 
     inline size_type count_less_than(size_type l, size_type r, const T upper) const {
-        if(upper >= (T(1) << this->_depth)) return r - l;
+        if(upper >= (T(1) << this->_bits)) return r - l;
 
         size_type res = 0;
-        for(size_type h = this->_depth - 1; h >= 0; --h) {
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
             bool f = (upper >> h) & 1;
             size_type l0 = this->index[h].rank0(l), r0 = this->index[h].rank0(r);
             if(f) {
@@ -160,7 +157,7 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
 
     inline void set(const size_type i, const T &x) const { this->base::set(i, x); }
 
-    // return this->a[k]
+    // return a[k]
     inline T get(size_type k) const {
         k = this->_positivize_index(k);
         this->_validate_index_in_right_open(k);
@@ -168,6 +165,26 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
         return this->base::get(k);
     }
     inline T operator[](const size_type k) const { return this->get(k); }
+
+
+    // min value in a[l, r)
+    inline T min(const size_type l, const size_type r) { return this->kth_smallest(l, r, 0); }
+    // min value in whole a
+    inline T min() { return this->kth_smallest(0, this->size(), 0); }
+
+    // max value in a[l, r)
+    inline T max(const size_type l, const size_type r) { return this->kth_largest(l, r, 0); }
+    // min value in whole a
+    inline T max() { return this->kth_largest(0, this->size(), 0); }
+
+    inline T sum(size_type l, size_type r) const {
+        l = this->_positivize_index(l), r = this->_positivize_index(r);
+        this->_validate_rigth_open_interval(l, r);
+
+        T res = 0; REP(p, l, r) res += this->get(p);
+        return res;
+    }
+    inline T sum() const { return this->sum(0, this->size()); }
 
     inline std::pair<size_type,size_type> succ0(const size_type l, const size_type r, const size_type h) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
@@ -182,15 +199,46 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
         return this->base::succ1(l, r, h);
     }
 
-    // count i s.t. (l <= i < r) && (v[i] < upper)
+    // count i s.t. (l <= i < r) and (v[i] < upper)
     inline size_type count_less_than(size_type l, size_type r, const T upper) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         this->_validate_rigth_open_interval(l, r);
 
         return this->base::count_less_than(l, r, upper);
     }
+    // count i s.t. v[i] < upper
+    inline size_type count_less_than(const T upper) const {
+        return this->base::count_less_than(0, this->size(), upper);
+    }
 
-    // k-th (0-indexed) smallest number in this->a[l, r)
+    // count i s.t. (l <= i < r) and (v[i] >= lower)
+    inline size_type count_not_less_than(size_type l, size_type r, const T lower) const {
+        return r - l - this->count_less_than(l, r, lower);
+    }
+    // count i s.t. v[i] >= lower
+    inline size_type count_not_less_than(const T lower) const {
+        return this->size() - this->count_less_than(lower);
+    }
+
+    // count i s.t. (l <= i < r) and (lower <= v[i] < upper)
+    inline size_type count(const size_type l, const size_type r, const T lower, const T upper) const {
+        return this->count_less_than(l, r, upper) - this->count_less_than(l, r, lower);
+    }
+    // count i s.t. lower <= v[i] < upper
+    inline size_type count(const T lower, const T upper) const {
+        return this->count_less_than(upper) - this->count_less_than(lower);
+    }
+
+    // count i s.t. (l <= i < r) and v[i] == v
+    inline size_type count(const size_type l, const size_type r, const T v) const {
+        return this->count_less_than(l, r, v+1) - this->count_less_than(l, r, v);
+    }
+    // count i s.t. v[i] == v
+    inline size_type count(const T v) const {
+        return this->count_less_than(v+1) - this->count_less_than(v);
+    }
+
+    // k-th (0-indexed) smallest number in a[l, r)
     inline T kth_smallest(size_type l, size_type r, const size_type k) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         this->_validate_rigth_open_interval(l, r);
@@ -198,28 +246,42 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
 
         return this->base::kth_smallest(l, r, k);
     }
-    // k-th (0-indexed) largest number in this->a[l, r)
+    // k-th (0-indexed) smallest number in a
+    inline T kth_smallest(const size_type k) const {
+        dev_assert(0 <= k and k < this->size());
+
+        return this->base::kth_smallest(0, this->size(), k);
+    }
+
+    // k-th (0-indexed) largest number in a[l, r)
     inline T kth_largest(const size_type l, const size_type r, const size_type k) const {
         return this->kth_smallest(l, r, r-l-k-1);
     }
-
-    inline size_type count(const size_type l, const size_type r, const T lower, const T upper) const {
-        return this->count_less_than(l, r, upper) - this->count_less_than(l, r, lower);
-    }
-    inline size_type count(const size_type l, const size_type r, const T v) const {
-        return this->count_less_than(l, r, v+1) - this->count_less_than(l, r, v);
+    // k-th (0-indexed) largest number in a
+    inline T kth_largest(const size_type k) const {
+        return this->kth_smallest(this->size()-k-1);
     }
 
-    // std::max v[i] s.t. (l <= i < r) && (v[i] < upper)
-    inline T prev_value(const size_type l, const size_type r, const T upper) const {
+    // std::max v[i] s.t. (l <= i < r) and (v[i] < upper)
+    inline std::optional<T> prev_value(const size_type l, const size_type r, const T upper) const {
         size_type cnt = this->count_less_than(l, r, upper);
-        return cnt == 0 ? T(-1) : this->kth_smallest(l, r, cnt - 1);
+        return cnt == 0 ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt - 1));
+    }
+    // std::max v[i] s.t. v[i] < upper
+    inline std::optional<T> prev_value(const T upper) const {
+        size_type cnt = this->count_less_than(upper);
+        return cnt == 0 ? std::optional<T>{} : std::optional<T>(this->kth_smallest(cnt - 1));
     }
 
-    // min v[i] s.t. (l <= i < r) && (lower <= v[i])
-    inline T next_value(const size_type l, const size_type r, const T lower) {
+    // min v[i] s.t. (l <= i < r) and (lower <= v[i])
+    inline std::optional<T> next_value(const size_type l, const size_type r, const T lower) {
         size_type cnt = this->count_less_than(l, r, lower);
-        return cnt == r - l ? T(-1) : this->kth_smallest(l, r, cnt);
+        return cnt == r - l ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt));
+    }
+    // min v[i] s.t. lower <= v[i]
+    inline std::optional<T> next_value(const T lower) {
+        size_type cnt = this->count_less_than(lower);
+        return cnt == this->size() ? std::optional<T>{} : std::optional<T>(this->kth_smallest(cnt));
     }
 
 
