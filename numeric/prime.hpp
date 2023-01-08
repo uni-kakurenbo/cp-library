@@ -17,7 +17,7 @@ namespace lib {
 
 namespace internal {
 
-//Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
+//Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-prime_factors.hpp
 namespace fast_factorize_lib {
 
 
@@ -109,7 +109,7 @@ template <typename mint, typename T> T find_factor(T n) {
 }
 
 
-std::vector<int64> factorize(value_type n) {
+std::vector<int64> prime_factors(value_type n) {
     if(n <= 1) return {};
 
     value_type p;
@@ -118,8 +118,8 @@ std::vector<int64> factorize(value_type n) {
 
     if(p == n) return { int64(p) };
 
-    auto l = internal::factorize(p);
-    auto r = internal::factorize(n / p);
+    auto l = internal::prime_factors(p);
+    auto r = internal::prime_factors(n / p);
 
     std::copy(std::begin(r), std::end(r), std::back_inserter(l));
 
@@ -130,15 +130,15 @@ std::vector<int64> factorize(value_type n) {
 } // namespace internal
 
 
-std::vector<int64> factorize(value_type n) {
-    auto res = internal::factorize(n);
+std::vector<int64> prime_factors(value_type n) {
+    auto res = internal::prime_factors(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-std::map<int64, int64> factor_count(value_type n) {
+std::map<int64, int64> factorize(value_type n) {
     std::map<int64, int64> mp;
-    for(auto &x : factorize(n)) mp[x]++;
+    for(auto &x : internal::prime_factors(n)) mp[x]++;
     return mp;
 }
 
@@ -146,7 +146,7 @@ std::vector<int64> divisors(value_type n) {
     if(n == 0) return {};
 
     std::vector<std::pair<int64, int64>> v;
-    for(auto &p : factorize(n)) {
+    for(auto &p : prime_factors(n)) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
         } else {
@@ -181,8 +181,8 @@ std::vector<int64> divisors(value_type n) {
 
 
 using internal::fast_factorize_lib::divisors;
-using internal::fast_factorize_lib::factor_count;
 using internal::fast_factorize_lib::factorize;
+using internal::fast_factorize_lib::prime_factors;
 using internal::fast_factorize_lib::is_prime;
 
 
