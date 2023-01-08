@@ -1,10 +1,13 @@
 #pragma once
 
+
 #include <vector>
 
 #include "internal/types.hpp"
 
+
 namespace lib {
+
 
 template<class container = std::vector<bool>> struct is_prime : container {
     is_prime(const internal::size_t max) : container(max+1, true) {
@@ -34,5 +37,6 @@ template<class T, class container = std::vector<T>> struct prime_table : contain
         return is_prime[index];
     }
 };
+
 
 } // namespace lib
