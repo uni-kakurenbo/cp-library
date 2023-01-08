@@ -43,6 +43,7 @@ struct output_adapter {
     output_adapter(destination *out = &std::cout, Terminator endline = "\n", Separator separator = " ")
       : out(out), endline(endline), separator(separator) {}
 
+    inline void seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) { this->out->seekp(off, dir); };
 
     template<class T> inline output_adapter& operator<<(const T &s) {
         this->put(s);
