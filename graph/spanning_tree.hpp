@@ -11,7 +11,7 @@ namespace internal {
 namespace graph_lib {
 
 
-template<class G, class cost_t, class Compare> cost_t kruskal(const G& graph, Compare compare) {
+template<class G, class cost_type, class Compare> cost_type kruskal(const G& graph, Compare compare) {
     atcoder::dsu uft(graph.size());
 
     std::vector<std::tuple<typename G::edge::cost_type,typename G::vertex,typename G::vertex>> edges;
@@ -22,7 +22,7 @@ template<class G, class cost_t, class Compare> cost_t kruskal(const G& graph, Co
 
     std::sort(ALL(edges), compare);
 
-    cost_t res = cost_t{};
+    cost_type res = cost_type{};
     ITR(w, u, v, edges) {
         if(not uft.same(u, v)) {
             uft.merge(u, v);
@@ -39,16 +39,16 @@ template<class G, class cost_t, class Compare> cost_t kruskal(const G& graph, Co
 } // namespace internal
 
 
-template<class E>
-template<class cost_t>
-cost_t graph<E>::minimum_spanning_tree_cost() const {
-    return internal::graph_lib::kruskal<graph<E>,cost_t,std::less<tuple<cost_t,vertex,vertex>>>(*this, {});
+template<class edge_cost>
+template<class cost_type>
+cost_type graph<edge_cost>::minimum_spanning_tree_cost() const {
+    return internal::graph_lib::kruskal<graph<edge_cost>,cost_type,std::less<tuple<cost_type,vertex,vertex>>>(*this, {});
 }
 
-template<class E>
-template<class cost_t>
-inline cost_t graph<E>::maximum_spanning_tree_cost() const {
-    return internal::graph_lib::kruskal<graph<E>,cost_t,std::greater<tuple<cost_t,vertex,vertex>>>(*this, {});
+template<class edge_cost>
+template<class cost_type>
+inline cost_type graph<edge_cost>::maximum_spanning_tree_cost() const {
+    return internal::graph_lib::kruskal<graph<edge_cost>,cost_type,std::greater<tuple<cost_type,vertex,vertex>>>(*this, {});
 }
 
 

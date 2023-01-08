@@ -8,9 +8,9 @@
 
 #include "graph.hpp"
 
-template<class E>
-template<class dist_t>
-void lib::graph<E>::bfs(const vertex s, std::vector<dist_t> *dists) const {
+template<class edge_cost>
+template<class cost_type>
+void lib::graph<edge_cost>::bfs(const vertex s, std::vector<cost_type> *dists) const {
     dists->assign(this->size(), -1);
 
     std::queue<vertex> que;

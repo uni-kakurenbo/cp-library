@@ -80,9 +80,9 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
 }
 
 
-template<class E>
+template<class edge_cost>
 template <class cost_type, class size_type>
-cost_type graph<E>::build_manhattan_mst(const std::vector<cost_type>& xs, const std::vector<cost_type>& ys) {
+cost_type graph<edge_cost>::build_manhattan_mst(const std::vector<cost_type>& xs, const std::vector<cost_type>& ys) {
     dev_assert(xs.size() == ys.size());
 
     cost_type res = 0;

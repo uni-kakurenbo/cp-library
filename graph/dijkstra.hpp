@@ -8,13 +8,13 @@
 #include "snippet/iterations.hpp"
 #include "graph.hpp"
 
-template<class E>
-template<class dist_t>
-void lib::graph<E>::dijkstra(const vertex s, std::vector<dist_t> *dists) const {
-    using state = std::pair<dist_t,vertex>;
+template<class edge_cost>
+template<class cost_type>
+void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *dists) const {
+    using state = std::pair<cost_type,vertex>;
     std::priority_queue<state,std::vector<state>,std::greater<state>> que;
 
-    dists->assign(this->size(), std::numeric_limits<dist_t>::max());
+    dists->assign(this->size(), std::numeric_limits<cost_type>::max());
 
     que.emplace(0, s), (*dists)[s] = 0;
 

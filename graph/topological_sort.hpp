@@ -6,9 +6,9 @@
 #include "snippet/iterations.hpp"
 #include "graph.hpp"
 
-template<class E>
+template<class edge_cost>
 template<class comparer>
-bool lib::graph<E>::sort_topologically_with_priority(std::vector<vertex> *sorted) const {
+bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<vertex> *sorted) const {
     sorted->clear();
 
     std::vector<vertex> in_degs(this->size());
@@ -26,8 +26,8 @@ bool lib::graph<E>::sort_topologically_with_priority(std::vector<vertex> *sorted
     return sorted->size() == this->size();
 }
 
-template<class E>
-bool lib::graph<E>::sort_topologically(std::vector<vertex> *sorted) const {
+template<class edge_cost>
+bool lib::graph<edge_cost>::sort_topologically(std::vector<vertex> *sorted) const {
     sorted->clear();
 
     std::vector<vertex> in_degs(this->size());
