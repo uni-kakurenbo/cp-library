@@ -169,8 +169,8 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
 template<class T, class container> struct grid_core : container, virtual grid_lib::interface<T> {
     using container::container;
 
-    enum class InvertDirection { Vertical, Horizontal };
-    enum class RotateDirection { CounterClockwise, Clockwise };
+    enum class invert_direction { vertical, horizontal };
+    enum class rotate_direction { counter_clockwise, clockwise };
 
     template<class U = T, class Stream = std::istream>
     void inline read(Stream *const ist = &std::cin) {
@@ -180,11 +180,11 @@ template<class T, class container> struct grid_core : container, virtual grid_li
         }
     }
 
-    template<InvertDirection DIRECT = InvertDirection::Vertical>
+    template<invert_direction DIRECTION = invert_direction::vertical>
     inline grid_core& invert() {
         grid_core res(this->height(), this->width());
         REP(i, this->height()) REP(j, this->width()) {
-            if constexpr (DIRECT == InvertDirection::Vertical) {
+            if constexpr (DIRECTION == invert_direction::vertical) {
                 res(i,j) = (*this)(this->height()-i-1,j);
             }
             else {
@@ -195,19 +195,19 @@ template<class T, class container> struct grid_core : container, virtual grid_li
         return *this;
     }
 
-    template<RotateDirection DIRECT = RotateDirection::Clockwise>
+    template<rotate_direction DIRECTION = rotate_direction::clockwise>
     inline grid_core& rotate(const size_t k) {
         grid_core res = *this;
-        REP(i, k) { res = res.rotate<DIRECT>(); }
+        REP(i, k) { res = res.rotate<DIRECTION>(); }
         this->assign(res);
         return *this;
     }
 
-    template<RotateDirection DIRECT = RotateDirection::Clockwise>
+    template<rotate_direction DIRECTION = rotate_direction::clockwise>
     inline grid_core& rotate() {
         grid_core res(this->width(), this->height());
         REP(i, this->width()) REP(j, this->height()) {
-            if constexpr (DIRECT == RotateDirection::Clockwise) {
+            if constexpr (DIRECTION == rotate_direction::clockwise) {
                 res(i,j) = (*this)(this->height()-j-1,i);
             }
             else {
