@@ -1,6 +1,11 @@
 #pragma once
 
+
 #include "internal/dev_assert.hpp"
+
+
+namespace lib {
+
 
 template<class Engine> struct random_engine {
     using result_type = typename Engine::result_type;
@@ -35,3 +40,6 @@ template<class Engine> struct random_engine {
         return static_cast<T>(this->engine() + 0.5) / (1.0 + this->max());
     }
 };
+
+
+} // namespace lib
