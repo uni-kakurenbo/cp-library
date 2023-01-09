@@ -16,6 +16,7 @@ signed main() {
         int l = i, r = i + k;
 
         auto range = data.range(l, r);
+        debug(range);
 
         ll med = range.median();
 

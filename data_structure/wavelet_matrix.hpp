@@ -237,9 +237,7 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
   public:
     using base::base;
 
-    inline void set(const size_type i, const T& x) const { this->base::set(i, x); }
 
-    // return a[k]
     inline T get(size_type k) const {
         k = this->_positivize_index(k);
         this->_validate_index_in_right_open(k);
@@ -268,20 +266,51 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
             this->super->_validate_rigth_open_interval(this->_begin, this->_end);
         }
 
+        inline T get(size_type k) const {
+            k = this->super->_positivize_index(k);
+            dev_assert(0 <= k and k < this->size());
+
+            return this->super->get(this->_begin + k);
+        }
+        inline T operator[](const size_type k) const { return this->get(k); }
+
+      protected:
+        inline range_reference sub_range(size_type l, size_type r) const {
+            l = this->super->_positivize_index(l), r = this->super->_positivize_index(r);
+            dev_assert(0 <= l and l <= r and r <= this->size());
+
+            return range_reference(this->super, this->_begin + l, this->_begin + r);
+        }
+
+      public:
+        inline size_type size() const { return this->_end - this->_begin; }
+
+
+        template<lib::range rng = lib::range::right_open>
+        inline range_reference range(const size_type l, const size_type r) const {
+            if constexpr(rng == lib::range::right_open) return this->sub_range(l, r);
+            if constexpr(rng == lib::range::left_open) return this->sub_range(l+1, r+1);
+            if constexpr(rng == lib::range::open) return this->sub_range(l+1, r);
+            if constexpr(rng == lib::range::closed) return this->sub_range(l, r+1);
+        }
+        inline range_reference range() const { return range_reference(this->_begin, this->_end); }
+
+
         inline T kth_smallest(const size_type k) const {
-            dev_assert(0 <= k and k < this->_end - this->_begin);
+            dev_assert(0 <= k and k < this->size());
             return this->super->base::kth_smallest(this->_begin, this->_end, k);
         }
         inline T kth_largest(const size_type k) const {
-            dev_assert(0 <= k and k < this->_end - this->_begin);
+            dev_assert(0 <= k and k < this->size());
             return this->super->base::kth_largest(this->_begin, this->_end, k);
         }
 
         inline T min() const { return this->kth_smallest(0); }
         inline T max() const { return this->kth_largest(0); }
 
+
         // (r-l)/2 th smallest (0-origin)
-        inline T median() const { return this->kth_smallest((this->_end - this->_begin) / 2); }
+        inline T median() const { return this->kth_smallest(this->size() / 2); }
 
         inline T sum_in_range(const T& x, const T& y) const { return this->super->base::sum_in_range(this->_begin, this->_end, x, y); }
 
