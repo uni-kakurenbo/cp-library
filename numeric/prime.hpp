@@ -59,7 +59,7 @@ bool is_prime(const value_type n) {
     else return internal::primality_test<modint64>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
 }
 
-using int64 = std::int64_t;
+using int64_t = std::int64_t;
 
 namespace internal {
 
@@ -109,14 +109,14 @@ template <typename mint, typename T> T find_factor(T n) {
 }
 
 
-std::vector<int64> prime_factors(value_type n) {
+std::vector<int64_t> prime_factors(value_type n) {
     if(n <= 1) return {};
 
     value_type p;
     if(n <= (1UL << 31)) p = find_factor<modint,std::uint32_t>(n);
     else p = find_factor<modint64,std::uint64_t>(n);
 
-    if(p == n) return { int64(p) };
+    if(p == n) return { int64_t(p) };
 
     auto l = internal::prime_factors(p);
     auto r = internal::prime_factors(n / p);
@@ -130,22 +130,22 @@ std::vector<int64> prime_factors(value_type n) {
 } // namespace internal
 
 
-std::vector<int64> prime_factors(value_type n) {
+std::vector<int64_t> prime_factors(value_type n) {
     auto res = internal::prime_factors(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-std::map<int64, int64> factorize(value_type n) {
-    std::map<int64, int64> mp;
+std::map<int64_t, int64_t> factorize(value_type n) {
+    std::map<int64_t, int64_t> mp;
     for(auto &x : internal::prime_factors(n)) mp[x]++;
     return mp;
 }
 
-std::vector<int64> divisors(value_type n) {
+std::vector<int64_t> divisors(value_type n) {
     if(n == 0) return {};
 
-    std::vector<std::pair<int64, int64>> v;
+    std::vector<std::pair<int64_t, int64_t>> v;
     for(auto &p : prime_factors(n)) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
@@ -154,8 +154,8 @@ std::vector<int64> divisors(value_type n) {
         }
     }
 
-    std::vector<int64> res;
-    auto f = [&](auto rc, int i, int64 x) -> void {
+    std::vector<int64_t> res;
+    auto f = [&](auto rc, int i, int64_t x) -> void {
         if(i == (int)v.size()) {
             res.push_back(x);
             return;

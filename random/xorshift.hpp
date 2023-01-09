@@ -5,7 +5,6 @@
 
 namespace lib {
 
-
 struct xorshift {
     using result_type = std::uint32_t;
 
@@ -15,10 +14,10 @@ struct xorshift {
     static constexpr result_type min() { return MIN; }
     static constexpr result_type max() { return MAX; }
 
-    inline void seed(unsigned int seed) { this->x = seed; }
+    inline void seed(unsigned int seed) { this->w = seed; }
 
     constexpr xorshift() {};
-    constexpr xorshift(const std::uint32_t seed) : x(seed) {};
+    constexpr xorshift(const std::uint32_t seed) : w(seed) {};
 
     inline std::uint32_t operator()() {
         std::uint32_t t;
@@ -34,7 +33,6 @@ struct xorshift {
     std::uint32_t z = 521288629;
     std::uint32_t w = 88675123;
 };
-
 
 struct xorshift64 {
     using result_type = std::uint64_t;
@@ -58,6 +56,9 @@ struct xorshift64 {
   private:
     std::uint64_t x = 3141592653589793238UL;
 };
+
+xorshift rnd;
+xorshift64 rnd64;
 
 
 } // namespace lib

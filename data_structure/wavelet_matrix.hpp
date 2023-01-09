@@ -32,8 +32,8 @@ template<class T> struct base {
     using size_type = internal::size_t;
 
   private:
-    using int64 = std::int64_t;
-    using uint64 = std::uint64_t;
+    using int64_t = std::int64_t;
+    using uint64_t = std::uint64_t;
 
     size_type _n, _bits;
     std::vector<succinct_bit_vector> _index;
