@@ -4,6 +4,7 @@
 #include <utility>
 #include <type_traits>
 #include <initializer_list>
+#include <random>
 
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
@@ -38,7 +39,7 @@ struct base : private uncopyable {
     struct node;
     using Tree = node*;
 
-    mutable xorshift rand;
+    static xorshift rand;
 
     struct node {
         operand_monoid v, acc;
@@ -235,6 +236,9 @@ struct base : private uncopyable {
         return ret;
     }
 };
+
+template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*fold)(const OperatorMonoid&, internal::size_t)>
+xorshift base<OperandMonoid,OperatorMonoid,map,fold>::rand(std::random_device{}());
 
 
 template<class Action>

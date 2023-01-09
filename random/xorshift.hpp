@@ -57,8 +57,8 @@ struct xorshift64 {
     std::uint64_t x = 3141592653589793238UL;
 };
 
-xorshift rnd;
-xorshift64 rnd64;
+xorshift rand;
+xorshift64 rand64;
 
 
 } // namespace lib

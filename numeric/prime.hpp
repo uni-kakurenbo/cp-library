@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 #include <algorithm>
+#include <random>
 
 #include "numeric/modint.hpp"
 #include "random/xorshift.hpp"
@@ -64,8 +65,6 @@ using int64_t = std::int64_t;
 namespace internal {
 
 
-xorshift64 rnd;
-
 // Pollard's rho algorithm
 template <typename mint, typename T> T find_factor(T n) {
     if(~n & 1) return 2;
@@ -76,12 +75,14 @@ template <typename mint, typename T> T find_factor(T n) {
     mint R, one = 1;
 
     auto f = [&](mint x) { return x * x + R; };
-    auto rnd_ = [&]() { return rnd() % (n - 2) + 2; };
+
+    static xorshift64 rand(std::random_device{}());
+    auto rand_ = [&]() { return rand() % (n - 2) + 2; };
 
     while(true) {
 
         mint x, y, ys, q = one;
-        R = rnd_(), y = rnd_();
+        R = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
 

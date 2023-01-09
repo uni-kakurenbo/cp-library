@@ -66,8 +66,8 @@ struct hasher {
 
         if(hasher::base > 0) return;
 
-        xorshift64 rnd64(std::random_device{}());
-        hasher::base = static_cast<std::uint64_t>(rnd64() % mod);
+        xorshift64 rand64(std::random_device{}());
+        hasher::base = static_cast<std::uint64_t>(rand64() % mod);
     }
 
     template<class I> hasher(const I first, const I last) : hasher(std::distance(first, last)) {
