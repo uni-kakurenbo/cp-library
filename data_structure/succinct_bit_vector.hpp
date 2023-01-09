@@ -17,13 +17,9 @@ struct succinct_bit_vector {
     using size_type = internal::size_t;
 
   private:
-    using uint32 = std::uint32_t;
-    using int64 = std::int64_t;
-    using uint64 = std::uint64_t;
-
-    static constexpr uint32 w = 64;
-    std::vector<uint64> _block;
-    std::vector<uint32> _count;
+    static constexpr std::uint32_t w = 64;
+    std::vector<std::uint64_t> _block;
+    std::vector<std::uint32_t> _count;
     size_type _n, _zeros;
 
   public:
@@ -34,7 +30,7 @@ struct succinct_bit_vector {
     inline size_type zeros() const { return this->_zeros; }
 
     inline void set(size_type i) { this->_block[i / w] |= 1LL << (i % w); }
-    inline bool get(size_type i) const { return uint32(this->_block[i / w] >> (i % w)) & 1U; }
+    inline bool get(size_type i) const { return std::uint32_t(this->_block[i / w] >> (i % w)) & 1U; }
 
     __attribute__((optimize("O3", "unroll-loops"))) void init(const int _n) {
         this->_n = this->_zeros = _n;

@@ -11,6 +11,6 @@ signed main() {
 
     REP(q) {
         int l, r, k; std::cin >> l >> r >> k;
-        print(data.kth_smallest(l, r, k));
+        print(data.range(l, r).kth_smallest(k));
     }
 }

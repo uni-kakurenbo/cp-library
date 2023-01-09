@@ -11,6 +11,6 @@ signed main() {
 
     REP(q) {
         int l, r, x; std::cin >> l >> r >> x;
-        print(data.count(l, r, x));
+        print(data.range(l, r).count(x));
     }
 }

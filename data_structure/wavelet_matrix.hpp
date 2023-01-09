@@ -15,6 +15,7 @@
 #include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
+#include "internal/range_reference.hpp"
 #include "data_structure/succinct_bit_vector.hpp"
 #include "constants.hpp"
 
@@ -85,7 +86,46 @@ template<class T> struct base {
     }
 
   protected:
-    T sum(const size_type l, const size_type r, const T& x, const T& y, const T& cur, const size_type bit) const {
+    inline T get(size_type k) const {
+        T res = 0;
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
+            bool f = this->_index[h].get(k);
+            res |= f ? T{1} << h : 0;
+            k = f ? this->_index[h].rank1(k) + this->_index[h].zeros() : this->_index[h].rank0(k);
+        }
+        return res;
+    }
+
+    inline T kth_smallest(size_type l, size_type r, size_type k) const {
+        T res = 0;
+        for(size_type h = this->_bits - 1; h >= 0; --h) {
+            size_type l0 = this->_index[h].rank0(l), r0 = this->_index[h].rank0(r);
+            if(k < r0 - l0)
+                l = l0, r = r0;
+            else {
+                k -= r0 - l0;
+                res |= T{1} << h;
+                l += this->_index[h].zeros() - l0;
+                r += this->_index[h].zeros() - r0;
+            }
+        }
+        return res;
+    }
+    inline T kth_largest(const size_type l, const size_type r, const size_type k) const {
+        return this->kth_smallest(l, r, r-l-k-1);
+    }
+
+    inline std::pair<size_type,size_type> succ0(const size_type l, const size_type r, const size_type h) const {
+        return std::make_pair(this->_index[h].rank0(l), this->_index[h].rank0(r));
+    }
+    inline std::pair<size_type,size_type> succ1(const size_type l, const size_type r, const size_type h) const {
+        size_type l0 = this->_index[h].rank0(l);
+        size_type r0 = this->_index[h].rank0(r);
+        size_type vals = this->_index[h].zeros();
+        return std::make_pair(l + vals - l0, r + vals - r0);
+    }
+
+    T sum_in_range(const size_type l, const size_type r, const T& x, const T& y, const T& cur, const size_type bit) const {
         if(l == r) return 0;
 
         if(bit == -1) {
@@ -103,40 +143,26 @@ template<class T> struct base {
         const size_type l0 = this->_index[bit].rank0(l), r0 = this->_index[bit].rank0(r);
         const size_type l1 = l - l0, r1 = r - r0;
 
-        return this->sum(l0, r0, x, y, cur, bit - 1) + this->sum(this->_first_ones[bit]+l1, this->_first_ones[bit]+r1, x, y, nxt, bit - 1);
+        return this->sum_in_range(l0, r0, x, y, cur, bit - 1) + this->sum_in_range(this->_first_ones[bit]+l1, this->_first_ones[bit]+r1, x, y, nxt, bit - 1);
     }
-    inline T sum(const size_type l, const size_type r, const size_type x, const size_type y) const {
-        return this->sum(l, r, x, y, 0, this->_bits-1);
+    inline T sum_in_range(const size_type l, const size_type r, const T& x, const T& y) const {
+        return this->sum_in_range(l, r, x, y, 0, this->_bits-1);
     }
-
-    inline T get(size_type k) const {
-        T res = 0;
-        for(size_type h = this->_bits - 1; h >= 0; --h) {
-            bool f = this->_index[h].get(k);
-            res |= f ? T(1) << h : 0;
-            k = f ? this->_index[h].rank1(k) + this->_index[h].zeros() : this->_index[h].rank0(k);
-        }
-        return res;
+    inline T sum_under(const size_type l, const size_type r, const T& v) const {
+        return this->sum_in_range(l, r, 0, v);
     }
-
-    inline T kth_smallest(size_type l, size_type r, size_type k) const {
-        T res = 0;
-        for(size_type h = this->_bits - 1; h >= 0; --h) {
-            size_type l0 = this->_index[h].rank0(l), r0 = this->_index[h].rank0(r);
-            if(k < r0 - l0)
-                l = l0, r = r0;
-            else {
-                k -= r0 - l0;
-                res |= (T)1 << h;
-                l += this->_index[h].zeros() - l0;
-                r += this->_index[h].zeros() - r0;
-            }
-        }
-        return res;
+    inline T sum_over(const size_type l, const size_type r, const T& v) const {
+        return this->sum_in_range(l, r, v+1, std::numeric_limits<T>::max());
+    }
+    inline T sum_under_or(const size_type l, const size_type r, const T& v) const {
+        return this->sum_in_range(l, r, 0, v+1);
+    }
+    inline T sum_over_or(const size_type l, const size_type r, const T& v) const {
+        return this->sum_in_range(l, r, v, std::numeric_limits<T>::max());
     }
 
     inline size_type count_under(size_type l, size_type r, const T& y) const {
-        if(y >= (T(1) << this->_bits)) return r - l;
+        if(y >= (T{1} << this->_bits)) return r - l;
 
         size_type res = 0;
         for(size_type h = this->_bits - 1; h >= 0; --h) {
@@ -153,16 +179,29 @@ template<class T> struct base {
         }
         return res;
     }
-
-    inline std::pair<size_type,size_type> succ0(const size_type l, const size_type r, const size_type h) const {
-        return std::make_pair(this->_index[h].rank0(l), this->_index[h].rank0(r));
+    inline size_type count_in_range(const size_type l, const size_type r, const T& x, const T& y) const {
+        return this->count_under(l, r, y) - this->count_under(l, r, x);
+    }
+    inline size_type count_under_or(size_type l, size_type r, const T& y) const {
+        return this->count_under(l, r, y+1);
+    }
+    inline size_type count_over(size_type l, size_type r, const T& x) const {
+        return this->count_over_or(l, r, x+1);
+    }
+    inline size_type count_over_or(size_type l, size_type r, const T& x) const {
+        return r - l - this->count_under(l, r, x);
+    }
+    inline size_type count_equal_to(const size_type l, const size_type r, const T& v) const {
+        return this->count_under(l, r, v+1) - this->count_under(l, r, v);
     }
 
-    inline std::pair<size_type,size_type> succ1(const size_type l, const size_type r, const size_type h) const {
-        size_type l0 = this->_index[h].rank0(l);
-        size_type r0 = this->_index[h].rank0(r);
-        size_type vals = this->_index[h].zeros();
-        return std::make_pair(l + vals - l0, r + vals - r0);
+    inline std::optional<T> prev_value(const size_type l, const size_type r, const T& y) const {
+        size_type cnt = this->count_under(l, r, y);
+        return cnt == 0 ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt - 1));
+    }
+    inline std::optional<T> next_value(const size_type l, const size_type r, const T& x) const {
+        size_type cnt = this->count_under(l, r, x);
+        return cnt == r - l ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt));
     }
 };
 
@@ -210,162 +249,121 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
     inline T operator[](const size_type k) const { return this->get(k); }
 
 
-    // min value in a[l, r)
-    inline T min(const size_type l, const size_type r) { return this->kth_smallest(l, r, 0); }
-    // min value in whole a
-    inline T min() { return this->kth_smallest(0, this->size(), 0); }
+    struct iterator;
+    struct range_reference;
 
-    // max value in a[l, r)
-    inline T max(const size_type l, const size_type r) { return this->kth_largest(l, r, 0); }
-    // min value in whole a
-    inline T max() { return this->kth_largest(0, this->size(), 0); }
+    inline range_reference range(const size_type l, const size_type r) const { return range_reference(this, l, r); }
+    inline range_reference range() const { return range_reference(this, 0, this->size()); }
 
-    // sum of c s.t. x <= c < y in a[l, r)
-    T sum(size_type l, size_type r, const T& x, const T& y) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+    struct range_reference : internal::range_reference<wavelet_matrix> {
+        range_reference(const wavelet_matrix *const super, const size_type l, const size_type r)
+          : internal::range_reference<wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
+        {
+            this->super->_validate_rigth_open_interval(this->_begin, this->_end);
+        }
 
-        return this->base::sum(l, r, x, y);
-    }
+        inline T kth_smallest(const size_type k) const {
+            dev_assert(0 <= k and k < this->_end - this->_begin);
+            return this->super->base::kth_smallest(this->_begin, this->_end, k);
+        }
+        inline T kth_largest(const size_type k) const {
+            dev_assert(0 <= k and k < this->_end - this->_begin);
+            return this->super->base::kth_largest(this->_begin, this->_end, k);
+        }
 
-    // sum of a[l, r)
-    inline T sum(const size_type l, const size_type r) const {
-        return this->sum(l, r, -1, std::numeric_limits<T>::max());
-    }
-    // sum of a
-    inline T sum() const { return this->sum(0, this->size()); }
+        inline T min() const { return this->kth_smallest(0); }
+        inline T max() const { return this->kth_largest(0); }
 
-    // sum of a[i] for l <= i < r and l <= a[i] < r;
-    inline std::pair<size_type,size_type> succ0(size_type l, size_type r, const size_type h) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        // (r-l)/2 th smallest (0-origin)
+        inline T median() const { return this->kth_smallest((this->_end - this->_begin) / 2); }
 
-        return this->base::succ0(l, r, h);
-    }
-    inline std::pair<size_type,size_type> succ1(size_type l, size_type r, const size_type h) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        inline T sum_in_range(const T& x, const T& y) const { return this->super->base::sum_in_range(this->_begin, this->_end, x, y); }
 
-        return this->base::succ1(l, r, h);
-    }
+        inline T sum_under(const T& v) const { return this->super->base::sum_under(this->_begin, this->_end, v); }
+        inline T sum_over(const T& v) const { return this->super->base::sum_over(this->_begin, this->_end, v); }
+        inline T sum_under_or(const T& v) const { return this->super->base::sum_under_or(this->_begin, this->_end, v); }
+        inline T sum_over_or(const T& v) const { return this->super->base::sum_over_or(this->_begin, this->_end, v); }
 
-    // count i s.t. (l <= i < r) and (v[i] < y)
-    inline size_type count_under(size_type l, size_type r, const T& y) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        inline T sum(const T& x, const T& y) const { return this->super->base::sum_in_range(this->_begin, this->_end, x, y); }
+        template<comp com>
+        inline size_type sum(const T& v) const {
+            if constexpr(com == comp::under) return this->sum_under(v);
+            if constexpr(com == comp::over) return this->sum_over(v);
+            if constexpr(com == comp::under_or) return this->sum_under_or(v);
+            if constexpr(com == comp::over_or) return this->sum_over_or(v);
+            assert(false);
+        }
 
-        return this->base::count_under(l, r, y);
-    }
-    // count i s.t. v[i] < y
-    inline size_type count_under(const T& y) const {
-        return this->base::count_under(0, this->size(), y);
-    }
 
-    // count i s.t. (l <= i < r) and (v[i] >= x)
-    inline size_type count_or_over(size_type l, size_type r, const T& x) const {
-        return r - l - this->count_under(l, r, x);
-    }
-    // count i s.t. v[i] >= x
-    inline size_type count_or_over(const T& x) const {
-        return this->size() - this->count_under(x);
-    }
+        inline T count_in_range(const T& x, const T& y) const { return this->super->base::count_in_range(this->_begin, this->_end, x, y); }
 
-    // count i s.t. (l <= i < r) and (v[i] > x)
-    inline size_type count_over(size_type l, size_type r, const T& x) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        inline T count_under(const T& v) const { return this->super->base::count_under(this->_begin, this->_end, v); }
+        inline T count_over(const T& v) const { return this->super->base::count_over(this->_begin, this->_end, v); }
+        inline T count_under_or(const T& v) const { return this->super->base::count_under_or(this->_begin, this->_end, v); }
+        inline T count_over_or(const T& v) const { return this->super->base::count_over_or(this->_begin, this->_end, v); }
 
-        return this->base::count_or_over(l, r, x+1);
-    }
-    // count i s.t. v[i] > x
-    inline size_type count_over(const T& x) const {
-        return this->base::count_over(0, this->size(), x);
-    }
-    // count i s.t. (l <= i < r) and (v[i] <= y)
-    inline size_type count_or_under(size_type l, size_type r, const T& y) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        template<comp com = comp::equal_to>
+        inline size_type count(const T& v) const {
+            if constexpr(com == comp::eq) return this->super->count_equal_to(this->_begin, this->_end, v);
+            if constexpr(com == comp::under) return this->count_under(v);
+            if constexpr(com == comp::over) return this->count_over(v);
+            if constexpr(com == comp::under_or) return this->count_under_or(v);
+            if constexpr(com == comp::over_or) return this->count_over_or(v);
+            assert(false);
+        }
 
-        return this->base::count_under(l, r, y+1);
-    }
-    // count i s.t. v[i] <= y
-    inline size_type count_or_under(const T& y) const {
-        return this->base::count_or_under(0, this->size(), y);
-    }
 
-    // count i s.t. (l <= i < r) and (x <= v[i] < y)
-    inline size_type count(const size_type l, const size_type r, const T& x, const T& y) const {
-        return this->count_under(l, r, y) - this->count_under(l, r, x);
-    }
-    // count i s.t. x <= v[i] < y
-    inline size_type count(const T& x, const T& y) const {
-        return this->count_under(y) - this->count_under(x);
-    }
+        inline std::optional<T> prev_value(const T& v) const { return this->super->base::prev_value(this->_begin, this->_end, v); }
+        inline std::optional<T> next_value(const T& v) const { return this->super->base::next_value(this->_begin, this->_end, v); }
+    };
 
-    // count i s.t. (l <= i < r) and v[i] == v
-    inline size_type count_equal_to(const size_type l, const size_type r, const T& v) const {
-        return this->count_under(l, r, v+1) - this->count_under(l, r, v);
-    }
-    // count i s.t. v[i] == v
-    inline size_type count_equal_to(const T& v) const {
-        return this->count_under(v+1) - this->count_under(v);
-    }
+    inline T kth_smallest(const size_type k) const { return this->range().kth_smallest(k); }
+    inline T kth_largest(const size_type k) const { return this->range().kth_largest(k); }
 
-    template<conditions cond>
-    inline size_type count(const size_type l, const size_type r, const T& v) const {
-        if constexpr(cond == conditions::eq) return this->count_equal_to(l, r, v);
-        if constexpr(cond == conditions::under) return this->count_under(l, r, v);
-        if constexpr(cond == conditions::over) return this->count_over(l, r, v);
-        if constexpr(cond == conditions::or_under) return this->count_or_under(l, r, v);
-        if constexpr(cond == conditions::or_over) return this->count_or_over(l, r, v);
+    inline T min() const { return this->range().kth_smallest(0); }
+    inline T max() const { return this->range().kth_largest(0); }
+
+    // (size)/2 th smallest (0-origin)
+    inline T median() const { return this->range().median(); }
+
+    inline T sum_in_range(const T& x, const T& y) const { return this->range().sum_in_range(x, y); }
+
+    inline T sum_under(const T& v) const { return this->range().sum_under(v); }
+    inline T sum_over(const T& v) const { return this->range().sum_over(v); }
+    inline T sum_under_or(const T& v) const { return this->range().sum_under_or(v); }
+    inline T sum_over_or(const T& v) const { return this->range().sum_over_or(v); }
+
+    inline T sum(const T& x, const T& y) const { return this->range().sum_in_range(x, y); }
+    template<comp com>
+    inline size_type sum(const T& v) const {
+        if constexpr(com == comp::under) return this->range().sum_under(v);
+        if constexpr(com == comp::over) return this->range().sum_over(v);
+        if constexpr(com == comp::under_or) return this->range().sum_under_or(v);
+        if constexpr(com == comp::over_or) return this->range().sum_over_or(v);
         assert(false);
     }
 
-    // k-th (0-indexed) smallest number in a[l, r)
-    inline T kth_smallest(size_type l, size_type r, const size_type k) const {
-        l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
-        dev_assert(0 <= k and k < r-l);
 
-        return this->base::kth_smallest(l, r, k);
-    }
-    // k-th (0-indexed) smallest number in a
-    inline T kth_smallest(const size_type k) const {
-        dev_assert(0 <= k and k < this->size());
+    inline T count_in_range(const T& x, const T& y) const { return this->range().count_in_range(x, y); }
 
-        return this->base::kth_smallest(0, this->size(), k);
-    }
+    inline T count_under(const T& v) const { return this->range().count_under(v); }
+    inline T count_over(const T& v) const { return this->range().count_over(v); }
+    inline T count_under_or(const T& v) const { return this->range().count_under_or(v); }
+    inline T count_over_or(const T& v) const { return this->range().count_over_or(v); }
 
-    // k-th (0-indexed) largest number in a[l, r)
-    inline T kth_largest(const size_type l, const size_type r, const size_type k) const {
-        return this->kth_smallest(l, r, r-l-k-1);
-    }
-    // k-th (0-indexed) largest number in a
-    inline T kth_largest(const size_type k) const {
-        return this->kth_smallest(this->size()-k-1);
+    template<comp com = comp::equal_to>
+    inline size_type count(const T& v) const {
+        if constexpr(com == comp::eq) return this->range().count_equal_to(v);
+        if constexpr(com == comp::under) return this->range().count_under(v);
+        if constexpr(com == comp::over) return this->range().count_over(v);
+        if constexpr(com == comp::under_or) return this->range().count_under_or(v);
+        if constexpr(com == comp::over_or) return this->range().count_over_or(v);
+        assert(false);
     }
 
-    // std::max v[i] s.t. (l <= i < r) and (v[i] < y)
-    inline std::optional<T> prev_value(const size_type l, const size_type r, const T& y) const {
-        size_type cnt = this->count_under(l, r, y);
-        return cnt == 0 ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt - 1));
-    }
-    // std::max v[i] s.t. v[i] < y
-    inline std::optional<T> prev_value(const T& y) const {
-        size_type cnt = this->count_under(y);
-        return cnt == 0 ? std::optional<T>{} : std::optional<T>(this->kth_smallest(cnt - 1));
-    }
 
-    // min v[i] s.t. (l <= i < r) and (x <= v[i])
-    inline std::optional<T> next_value(const size_type l, const size_type r, const T& x) {
-        size_type cnt = this->count_under(l, r, x);
-        return cnt == r - l ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, cnt));
-    }
-    // min v[i] s.t. x <= v[i]
-    inline std::optional<T> next_value(const T& x) {
-        size_type cnt = this->count_under(x);
-        return cnt == this->size() ? std::optional<T>{} : std::optional<T>(this->kth_smallest(cnt));
-    }
+    inline std::optional<T> prev_value(const T& v) const { return this->range().prev_value(v); }
+    inline std::optional<T> next_value(const T& v) const { return this->range().next_value(v); }
 
 
     struct iterator : virtual internal::container_iterator_interface<T,wavelet_matrix> {

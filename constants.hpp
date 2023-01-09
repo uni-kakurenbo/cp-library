@@ -5,7 +5,7 @@
 namespace lib {
 
 
-enum class conditions : std::int8_t {
+enum class comp : std::int8_t {
     equal_to,
     not_equal_to,
 
@@ -14,20 +14,20 @@ enum class conditions : std::int8_t {
 
     under,
     over,
-    or_under,
-    or_over,
+    under_or,
+    over_or,
 
     less = under,
     more = over,
 
     less_than = under,
     more_than = over,
-    not_less_than = or_over,
-    not_more_than = or_under,
+    not_less_than = over_or,
+    not_more_than = under_or,
 
-    leq = or_under,
-    geq = or_over
-}; // namespace conditions
+    leq = under_or,
+    geq = over_or
+}; // namespace comp
 
 
 } // namespace lib

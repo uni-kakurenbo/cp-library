@@ -15,12 +15,14 @@ signed main() {
     FOR(i, 0, n-k) {
         int l = i, r = i + k;
 
-        ll med = data.kth_smallest(l, r, k/2);
+        auto range = data.range(l, r);
 
-        ll less_cost = med * data.count<lib::conditions::less_than>(l, r, med) - data.sum(l, r, 0, med);
-        ll or_over_cost = data.sum(l, r, med, INT_MAX) - med * data.count<lib::conditions::geq>(l, r, med);
+        ll med = range.median();
 
-        chmin(ans, less_cost + or_over_cost);
+        ll less_cost = med * range.count_under(med) - range.sum_under(med);
+        ll over_or_cost = range.sum_over_or(med) - med * range.count_over_or(med);
+
+        chmin(ans, less_cost + over_or_cost);
     }
 
     print(ans);
