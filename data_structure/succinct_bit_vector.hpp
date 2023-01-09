@@ -44,7 +44,7 @@ struct succinct_bit_vector {
 
     __attribute__((target("popcnt"))) void build() {
         for(auto i=1UL; i < this->_block.size(); ++i) this->_count[i] = this->_count[i - 1] + _mm_popcnt_u64(this->_block[i - 1]);
-        this->_zeros = this->rank0(_n);
+        this->_zeros = this->rank0(this->_n);
     }
 
     __attribute__((target("bmi2,popcnt"))) inline size_type rank1(size_type i) const {
