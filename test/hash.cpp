@@ -8,8 +8,12 @@ signed main() {
     int n; std::cin >> n;
     std::string s; std::cin >> s;
 
+    std::string str0 = "ABC", str1 = "DEF", str2 = "ABCDEF";
+    debug(lib::hasher(ALL(str0)).concat_front(ALL(str1)).get());
+    debug(lib::hasher(ALL(str2)).get());
+
     int ans = 0;
-    lib::hasher<> hash(ALL(s));
+    lib::hasher hash(ALL(s));
     debug(lib::hasher<>::base);
     REP(i, s.size()) REP(j, i, (int)s.size()) {
         while(i + ans < j and j + ans < n) {
