@@ -252,7 +252,13 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
     struct iterator;
     struct range_reference;
 
-    inline range_reference range(const size_type l, const size_type r) const { return range_reference(this, l, r); }
+    template<lib::range rng = lib::range::right_open>
+    inline range_reference range(const size_type l, const size_type r) const {
+        if constexpr(rng == lib::range::right_open) return range_reference(this, l, r);
+        if constexpr(rng == lib::range::left_open) return range_reference(this, l+1, r+1);
+        if constexpr(rng == lib::range::open) return range_reference(this, l+1, r);
+        if constexpr(rng == lib::range::closed) return range_reference(this, l, r+1);
+    }
     inline range_reference range() const { return range_reference(this, 0, this->size()); }
 
     struct range_reference : internal::range_reference<wavelet_matrix> {

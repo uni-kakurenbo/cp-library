@@ -19,10 +19,10 @@ signed main() {
 
         ll med = range.median();
 
-        ll less_cost = med * range.count_under(med) - range.sum_under(med);
-        ll over_or_cost = range.sum_over_or(med) - med * range.count_over_or(med);
+        ll costl = med * range.count_under(med) - range.sum_under(med);
+        ll costr = range.sum_over_or(med) - med * range.count_over_or(med);
 
-        chmin(ans, less_cost + over_or_cost);
+        chmin(ans, costl + costr);
     }
 
     print(ans);
