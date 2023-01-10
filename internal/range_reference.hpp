@@ -36,12 +36,12 @@ template<class Super> struct range_reference {
     }
 
   public:
-    template<lib::range rng = lib::range::right_open>
+    template<lib::interval rng = lib::interval::right_open>
     inline range_reference range(const size_type l, const size_type r) const {
-        if constexpr(rng == lib::range::right_open) return this->sub_range(l, r);
-        if constexpr(rng == lib::range::left_open) return this->sub_range(l+1, r+1);
-        if constexpr(rng == lib::range::open) return this->sub_range(l+1, r);
-        if constexpr(rng == lib::range::closed) return this->sub_range(l, r+1);
+        if constexpr(rng == lib::interval::right_open) return this->sub_range(l, r);
+        if constexpr(rng == lib::interval::left_open) return this->sub_range(l+1, r+1);
+        if constexpr(rng == lib::interval::open) return this->sub_range(l+1, r);
+        if constexpr(rng == lib::interval::closed) return this->sub_range(l, r+1);
     }
     inline range_reference range() const { return range_reference(this->_begin, this->_end); }
 

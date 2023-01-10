@@ -29,7 +29,7 @@ enum class comp : std::int8_t {
     geq = over_or
 }; // namespace comp
 
-enum class range : std::int8_t {
+enum class interval : std::int8_t {
     right_open,
     left_open,
     open,

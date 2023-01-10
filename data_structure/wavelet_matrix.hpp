@@ -18,6 +18,7 @@
 #include "internal/range_reference.hpp"
 #include "data_structure/succinct_bit_vector.hpp"
 #include "constants.hpp"
+#include "iterable/compression.hpp"
 
 
 namespace lib {
@@ -43,6 +44,7 @@ template<class T> struct base {
     T _max = 0;
 
   public:
+    base() {}
     template<class I> base(const I first, const I last) { this->build(first, last); }
 
     inline size_type size() const { return this->_n; }
@@ -211,7 +213,11 @@ template<class T> struct base {
 } // namespace internal
 
 
+template<class T> struct compressed_wavelet_matrix;
+
 template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> {
+    using compressed = compressed_wavelet_matrix<T>;
+
   private:
     using base = typename internal::wavelet_matrix_lib::base<T>;
 
@@ -250,12 +256,12 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
     struct iterator;
     struct range_reference;
 
-    template<lib::range rng = lib::range::right_open>
+    template<lib::interval rng = lib::interval::right_open>
     inline range_reference range(const size_type l, const size_type r) const {
-        if constexpr(rng == lib::range::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::range::left_open) return range_reference(this, l+1, r+1);
-        if constexpr(rng == lib::range::open) return range_reference(this, l+1, r);
-        if constexpr(rng == lib::range::closed) return range_reference(this, l, r+1);
+        if constexpr(rng == lib::interval::right_open) return range_reference(this, l, r);
+        if constexpr(rng == lib::interval::left_open) return range_reference(this, l+1, r+1);
+        if constexpr(rng == lib::interval::open) return range_reference(this, l+1, r);
+        if constexpr(rng == lib::interval::closed) return range_reference(this, l, r+1);
     }
     inline range_reference range() const { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const { return range_reference(this, l, r); }
@@ -271,7 +277,7 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
             this->super->_validate_rigth_open_interval(this->_begin, this->_end);
         }
 
-        inline T get(size_type k) const {
+        inline T get(const size_type k) const {
             k = this->super->_positivize_index(k);
             dev_assert(0 <= k and k < this->size());
 
@@ -314,12 +320,12 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
         }
 
 
-        inline T count_in_range(const T& x, const T& y) const { return this->super->base::count_in_range(this->_begin, this->_end, x, y); }
+        inline size_type count_in_range(const T& x, const T& y) const { return this->super->base::count_in_range(this->_begin, this->_end, x, y); }
 
-        inline T count_under(const T& v) const { return this->super->base::count_under(this->_begin, this->_end, v); }
-        inline T count_over(const T& v) const { return this->super->base::count_over(this->_begin, this->_end, v); }
-        inline T count_under_or(const T& v) const { return this->super->base::count_under_or(this->_begin, this->_end, v); }
-        inline T count_over_or(const T& v) const { return this->super->base::count_over_or(this->_begin, this->_end, v); }
+        inline size_type count_under(const T& v) const { return this->super->base::count_under(this->_begin, this->_end, v); }
+        inline size_type count_over(const T& v) const { return this->super->base::count_over(this->_begin, this->_end, v); }
+        inline size_type count_under_or(const T& v) const { return this->super->base::count_under_or(this->_begin, this->_end, v); }
+        inline size_type count_over_or(const T& v) const { return this->super->base::count_over_or(this->_begin, this->_end, v); }
 
         template<comp com = comp::equal_to>
         inline size_type count(const T& v) const {
@@ -363,12 +369,12 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
     }
 
 
-    inline T count_in_range(const T& x, const T& y) const { return this->range().count_in_range(x, y); }
+    inline size_type count_in_range(const T& x, const T& y) const { return this->range().count_in_range(x, y); }
 
-    inline T count_under(const T& v) const { return this->range().count_under(v); }
-    inline T count_over(const T& v) const { return this->range().count_over(v); }
-    inline T count_under_or(const T& v) const { return this->range().count_under_or(v); }
-    inline T count_over_or(const T& v) const { return this->range().count_over_or(v); }
+    inline size_type count_under(const T& v) const { return this->range().count_under(v); }
+    inline size_type count_over(const T& v) const { return this->range().count_over(v); }
+    inline size_type count_under_or(const T& v) const { return this->range().count_under_or(v); }
+    inline size_type count_over_or(const T& v) const { return this->range().count_over_or(v); }
 
     template<comp com = comp::equal_to>
     inline size_type count(const T& v) const {
@@ -388,7 +394,127 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
     struct iterator : virtual internal::container_iterator_interface<T,wavelet_matrix> {
         iterator(const wavelet_matrix *const ref, const size_type pos) : internal::container_iterator_interface<T,wavelet_matrix>(ref, pos) {}
 
-        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+        inline T operator*() const override { return this->ref()->get(this->pos()); }
+    };
+
+    inline iterator begin() const { return iterator(this, 0); }
+    inline iterator end() const { return iterator(this, this->size()); }
+};
+
+
+template<class T>
+struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression<T>::size_type> {
+  protected:
+    using core = wavelet_matrix<typename compression<T>::size_type>;
+
+    compression<T> compressed;
+
+  public:
+    using size_type = typename core::size_type;
+
+    template<class I> compressed_wavelet_matrix(const I first, const I last) { this->build(first, last); }
+    template<class I> void build(const I first, const I last) {
+        this->compressed = compression<T>(first, last);
+        this->core::build(ALL(this->compressed));
+    }
+
+    inline T get(const size_type k) const { return this->compressed(this->core::get(k)); }
+    inline size_type operator[](const size_type k) const { return this->core::get(k); }
+
+
+    struct iterator;
+    struct range_reference;
+
+    template<lib::interval rng = lib::interval::right_open>
+    inline range_reference range(const size_type l, const size_type r) const {
+        if constexpr(rng == lib::interval::right_open) return range_reference(this, l, r);
+        if constexpr(rng == lib::interval::left_open) return range_reference(this, l+1, r+1);
+        if constexpr(rng == lib::interval::open) return range_reference(this, l+1, r);
+        if constexpr(rng == lib::interval::closed) return range_reference(this, l, r+1);
+    }
+    inline range_reference range() const { return range_reference(this, 0, this->size()); }
+    inline range_reference operator()(const size_type l, const size_type r) const { return range_reference(this, l, r); }
+
+    inline range_reference subseq(const size_type p, const size_type c) const { return range_reference(this, p, p+c); }
+    inline range_reference subseq(const size_type p) const { return range_reference(this, p, this->size()); }
+
+
+    struct range_reference : internal::range_reference<compressed_wavelet_matrix> {
+        range_reference(const compressed_wavelet_matrix *const super, const size_type l, const size_type r)
+          : internal::range_reference<compressed_wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
+        {
+            this->super->_validate_rigth_open_interval(this->_begin, this->_end);
+        }
+
+      private:
+        inline auto _range() const { return this->super->core::range(this->_begin, this->_end); }
+
+      public:
+        inline T get(const size_type k) const { return this->super->compressed(this->_range().get(k)); }
+        inline T operator[](const size_type k) const { return this->get(k); }
+
+
+        inline T kth_smallest(const size_type k) const { return this->super->compressed(this->_range().kth_smallest(k)); }
+        inline T kth_largest(const size_type k) const { return this->super->compressed(this->_range().kth_largest(k));}
+
+        inline T min() const { return this->kth_smallest(0); }
+        inline T max() const { return this->kth_largest(0); }
+
+
+        // (r-l)/2 th smallest (0-origin)
+        inline T median() const { return this->kth_smallest(this->size() / 2); }
+
+
+        inline size_type count_in_range(const T& x, const T& y) const {
+            return this->_range().count_in_range(this->super->compressed.rank(x), this->super->compressed.rank(y));
+        }
+
+        inline size_type count_under(const T& v) const { return this->_range().count_under(this->super->compressed.rank(v)); }
+        inline size_type count_over(const T& v) const { return this->_range().count_over(this->super->compressed.rank(v)); }
+        inline size_type count_under_or(const T& v) const { return this->_range().count_under_or(this->super->compressed.rank(v)); }
+        inline size_type count_over_or(const T& v) const { return this->_range().count_over_or(this->super->compressed.rank(v)); }
+
+        template<comp com = comp::equal_to>
+        inline size_type count(const T& v) const { return this->_range().template count<com>(this->super->compressed.rank(v)); }
+
+
+        inline std::optional<T> prev_value(const T& v) const {
+            std::optional<size_type> res = this->_range().prev_value(this->super->compressed.rank(v));
+            if(res.has_value()) return this->super->compressed(res.value());
+            return {};
+        }
+        inline std::optional<T> next_value(const T& v) const {
+            std::optional<size_type> res = this->_range().next_value(this->super->compressed.rank(v));
+            if(res.has_value()) return this->super->compressed(res.value());
+            return {};
+        }
+    };
+
+    inline T kth_smallest(const size_type k) const { return this->range().kth_smallest(k); }
+    inline T kth_largest(const size_type k) const { return this->range().kth_largest(k); }
+
+    inline T min() const { return this->range().kth_smallest(0); }
+    inline T max() const { return this->range().kth_largest(0); }
+
+    inline T median() const { return this->range().median(); }
+
+    inline size_type count_in_range(const T& x, const T& y) const { return this->range().count_in_range(x, y); }
+
+    inline size_type count_under(const T& v) const { return this->range().count_under(v); }
+    inline size_type count_over(const T& v) const { return this->range().count_over(v); }
+    inline size_type count_under_or(const T& v) const { return this->range().count_under_or(v); }
+    inline size_type count_over_or(const T& v) const { return this->range().count_over_or(v); }
+
+    template<comp com = comp::equal_to> inline size_type count(const T& v) const { return this->range().template count<com>(v); }
+
+    inline std::optional<T> prev_value(const T& v) const { return this->range().prev_value(v); }
+    inline std::optional<T> next_value(const T& v) const { return this->range().next_value(v); }
+
+
+    struct iterator : virtual internal::container_iterator_interface<T,compressed_wavelet_matrix> {
+        iterator(const compressed_wavelet_matrix *const ref, const size_type pos) : internal::container_iterator_interface<T,compressed_wavelet_matrix>(ref, pos) {}
+
+        inline T operator*() const override { return this->ref()->get(this->pos()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }
