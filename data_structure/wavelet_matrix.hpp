@@ -258,6 +258,11 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
         if constexpr(rng == lib::range::closed) return range_reference(this, l, r+1);
     }
     inline range_reference range() const { return range_reference(this, 0, this->size()); }
+    inline range_reference operator()(const size_type l, const size_type r) const { return range_reference(this, l, r); }
+
+    inline range_reference subseq(const size_type p, const size_type c) const { return range_reference(this, p, p+c); }
+    inline range_reference subseq(const size_type p) const { return range_reference(this, p, this->size()); }
+
 
     struct range_reference : internal::range_reference<wavelet_matrix> {
         range_reference(const wavelet_matrix *const super, const size_type l, const size_type r)
@@ -273,27 +278,6 @@ template<class T> struct wavelet_matrix : internal::wavelet_matrix_lib::base<T> 
             return this->super->get(this->_begin + k);
         }
         inline T operator[](const size_type k) const { return this->get(k); }
-
-      protected:
-        inline range_reference sub_range(size_type l, size_type r) const {
-            l = this->super->_positivize_index(l), r = this->super->_positivize_index(r);
-            dev_assert(0 <= l and l <= r and r <= this->size());
-
-            return range_reference(this->super, this->_begin + l, this->_begin + r);
-        }
-
-      public:
-        inline size_type size() const { return this->_end - this->_begin; }
-
-
-        template<lib::range rng = lib::range::right_open>
-        inline range_reference range(const size_type l, const size_type r) const {
-            if constexpr(rng == lib::range::right_open) return this->sub_range(l, r);
-            if constexpr(rng == lib::range::left_open) return this->sub_range(l+1, r+1);
-            if constexpr(rng == lib::range::open) return this->sub_range(l+1, r);
-            if constexpr(rng == lib::range::closed) return this->sub_range(l, r+1);
-        }
-        inline range_reference range() const { return range_reference(this->_begin, this->_end); }
 
 
         inline T kth_smallest(const size_type k) const {

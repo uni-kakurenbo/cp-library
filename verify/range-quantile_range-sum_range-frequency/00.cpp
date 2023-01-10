@@ -13,9 +13,7 @@ signed main() {
 
     ll ans = LONG_LONG_MAX;
     FOR(i, 0, n-k) {
-        int l = i, r = i + k;
-
-        auto range = data.range(l, r);
+        auto range = data.subseq(i, k);
         debug(range);
 
         ll med = range.median();
