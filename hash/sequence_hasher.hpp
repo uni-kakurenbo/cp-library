@@ -124,8 +124,8 @@ struct sequence_hasher {
     inline hash get() const { return this->get(0, this->size()); }
     inline hash operator()(const size_type l, const size_type r) const { return this->get(l, r); }
 
-    inline hash sub(const size_type p, const size_type c) const { return this->get(p, p+c); }
-    inline hash sub(const size_type p) const {  return this->get(p, this->size()); }
+    inline hash subseq(const size_type p, const size_type c) const { return this->get(p, p+c); }
+    inline hash subseq(const size_type p) const {  return this->get(p, this->size()); }
 
 
     static constexpr hash_type concat(const hash_type h0, const hash_type h1, const size_type len1) {
