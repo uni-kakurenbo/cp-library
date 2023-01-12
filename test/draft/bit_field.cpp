@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <initializer_list>
 #include <utility>
 #include <type_traits>
 

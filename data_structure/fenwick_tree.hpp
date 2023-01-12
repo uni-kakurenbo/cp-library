@@ -82,7 +82,7 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
         static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::fenwick_tree));
     }
     explicit core(const size_type n, const value_type& v) : base(n) { REP(i, n) this->base::apply(i, v); }
-    explicit core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+    template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {

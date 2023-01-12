@@ -276,7 +276,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
   public:
     template<class... Args>
     explicit core(Args... args) : core() { this->assign(std::forward<Args>(args)...); }
-    core(const std::initializer_list<value_type>& values) : core(std::begin(values), std::end(values)) {}
+    template<class T> core(const std::initializer_list<T>& values) : core(std::begin(values), std::end(values)) {}
     core() { static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::implicit_treap)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
@@ -308,7 +308,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
         this->clear(), this->insert(0, v, size);
     }
 
-    inline void assign(const std::initializer_list<value_type>& values) { this->assign(std::begin(values), std::end(values)); }
+    template<class T> inline void assign(const std::initializer_list<T>& values) { this->assign(std::begin(values), std::end(values)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void assign(const I first, const I last) { this->clear(), this->insert(0, first, last); }

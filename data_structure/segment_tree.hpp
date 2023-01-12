@@ -153,7 +153,7 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
         REPD(p, 1, this->_size) this->update(p);
     }
 
-    core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+    template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : core(std::distance(first, last)) {

@@ -244,7 +244,7 @@ struct core : base<typename Action::operand_monoid, typename Action::operator_mo
         this->initialize();
     }
 
-    core(const std::initializer_list<value_type>& init_list) : core(ALL(init_list)) {}
+    template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : base(std::distance(first, last)) {
