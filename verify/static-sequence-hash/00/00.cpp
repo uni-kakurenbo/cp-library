@@ -8,16 +8,18 @@ signed main() {
     int n; std::cin >> n;
     std::string s; std::cin >> s;
 
+    lib::sequence_hasher hash(ALL(s));
+    debug(lib::sequence_hasher<>::base);
+
     int ans = 0;
-    lib::hasher hash(ALL(s));
-    debug(lib::hasher<>::base);
     REP(i, s.size()) REP(j, i, (int)s.size()) {
         while(i + ans < j and j + ans < n) {
-            if(hash(i, i+ans+1) != hash(j, j+ans+1)) break;
+            if(hash.subseq(i, ans+1) != hash.subseq(j, ans+1)) break;
             ++ans;
         }
     }
 
-    printf("%d\n", ans);
+    print(ans);
+
     return 0;
 }

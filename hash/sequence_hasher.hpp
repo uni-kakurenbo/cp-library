@@ -39,22 +39,25 @@ struct sequence_hasher {
     static std::vector<hash_type> _powers;
 
   protected:
-    static void _prepare_powers(const size_type size) {
-        if(static_cast<size_type>(sequence_hasher::_powers.size()) <= size) {
+    static inline hash_type power(const size_type p) {
+        if(static_cast<size_type>(sequence_hasher::_powers.size()) <= p) {
             size_type n = sequence_hasher::_powers.size();
-            sequence_hasher::_powers.resize(size+1);
+            sequence_hasher::_powers.resize(p+1);
             if(n == 0) sequence_hasher::_powers[0] = 1;
-            REP(i, std::max(0, n-1), size) sequence_hasher::_powers[i+1] = sequence_hasher::_mul(sequence_hasher::_powers[i], sequence_hasher::base);
+            REP(i, std::max(0, n-1), p) sequence_hasher::_powers[i+1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
         }
-    }
-    inline void _prepare(const size_type size) {
-        if(static_cast<size_type>(this->_hashed.size()) <= size) this->_hashed.resize(size+1);
-        sequence_hasher::_prepare_powers(size);
+        return sequence_hasher::_powers[p];
     }
 
-    static constexpr hash_type _mask(const size_type a){ return (1ULL << a) - 1; }
+    inline hash_type& hashed(const size_type p) {
+        if(static_cast<size_type>(this->_hashed.size()) <= p) this->_hashed.resize(p+1);
+        return this->_hashed[p];
+    }
+    inline const hash_type& hashed(const size_type p) const { return this->_hashed[p]; }
 
-    static constexpr hash_type _mul(hash_type a, hash_type b) {
+    static constexpr hash_type mask(const size_type a){ return (1ULL << a) - 1; }
+
+    static constexpr hash_type mul(hash_type a, hash_type b) {
         #ifdef __SIZEOF_INT128__
 
         uint128_t ans = static_cast<uint128_t>(a) * b;
@@ -62,10 +65,10 @@ struct sequence_hasher {
         #else
 
         hash_type a31 = a >> 31, b31 = b >> 31;
-        a &= sequence_hasher::_mask(31);
-        b &= sequence_hasher::_mask(31);
+        a &= sequence_hasher::mask(31);
+        b &= sequence_hasher::mask(31);
         hash_type x = a * b31 + b * a31;
-        hash_type ans = (a31 * b31 << 1) + (x >> 30) + ((x & sequence_hasher::_mask(30)) << 31) + a * b;
+        hash_type ans = (a31 * b31 << 1) + (x >> 30) + ((x & sequence_hasher::mask(30)) << 31) + a * b;
 
         #endif
 
@@ -103,13 +106,13 @@ struct sequence_hasher {
 
     template<class I>
     sequence_hasher(const I first, const I last) : sequence_hasher(std::distance(first, last)) {
-        sequence_hasher::_prepare_powers(this->_n);
+        this->_hashed.resize(this->_n);
         this->_hashed.assign(this->_n+1, 0);
 
         size_type i = 0;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->_hashed[i+1] = sequence_hasher::_mul(this->_hashed[i], sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
-            if(this->_hashed[i+1] >= sequence_hasher::mod) this->_hashed[i+1] -= sequence_hasher::mod;
+            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
+            if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
     }
 
@@ -117,7 +120,7 @@ struct sequence_hasher {
 
     inline hash get(const size_type l, const size_type r) const {
         dev_assert(0 <= l and l <= r and r <= this->_n);
-        hash_type res = this->_hashed[r] + sequence_hasher::mod - sequence_hasher::_mul(this->_hashed[l], sequence_hasher::_powers[r-l]);
+        hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r-l));
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
         return { res, r-l };
     }
@@ -129,9 +132,7 @@ struct sequence_hasher {
 
 
     static constexpr hash_type concat(const hash_type h0, const hash_type h1, const size_type len1) {
-        sequence_hasher::_prepare_powers(len1);
-
-        hash_type res = sequence_hasher::_mul(h0, sequence_hasher::_powers[len1]) + h1;
+        hash_type res = sequence_hasher::mul(h0, sequence_hasher::power(len1)) + h1;
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
 
         return res;
@@ -144,11 +145,8 @@ struct sequence_hasher {
     template<class T> inline sequence_hasher& push_back(const T& v) {
         this->_n++;
 
-        this->_prepare(this->_n);
-
-        sequence_hasher::_powers[this->_n] = sequence_hasher::_mul(sequence_hasher::_powers[this->_n-1], sequence_hasher::base);
-        this->_hashed[this->_n] = sequence_hasher::_mul(this->_hashed[this->_n-1], sequence_hasher::base) + std::hash<T>{}(v);
-        if(this->_hashed[this->_n] >= sequence_hasher::mod) this->_hashed[this->_n-1] -= sequence_hasher::mod;
+        this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + std::hash<T>{}(v);
+        if(this->hashed(this->_n) >= sequence_hasher::mod) this->hashed(this->_n-1) -= sequence_hasher::mod;
 
         return *this;
     }
@@ -158,12 +156,10 @@ struct sequence_hasher {
         size_type n = this->_n;
         this->_n += std::distance(first, last);
 
-        this->_prepare(this->_n);
-
         size_type i = n;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->_hashed[i+1] = sequence_hasher::_mul(this->_hashed[i], sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
-            if(this->_hashed[i+1] >= sequence_hasher::mod) this->_hashed[i+1] -= sequence_hasher::mod;
+            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
+            if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
 
         return *this;
