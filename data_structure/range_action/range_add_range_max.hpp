@@ -6,7 +6,7 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/minmax.hpp"
+#include "data_structure/monoid/maximum.hpp"
 #include "data_structure/monoid/addition.hpp"
 
 
