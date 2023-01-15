@@ -26,7 +26,7 @@ template<class T> struct base {
     base(std::function<bool(T)> validate) : validate(validate) {}
 
     void scan(T,T,T) {
-        static_assert(EXCEPTION<T>, "not implemented: scan()");
+        static_assert(internal::EXCEPTION<T>, "not implemented: scan()");
     }
 
     void split(const T first, const T last, intervals<T> *intervals) const {

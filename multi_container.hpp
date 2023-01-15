@@ -119,12 +119,12 @@ struct multi_container<T,1,container> : internal::multi_container_lib::base<cont
 
 template<class T, template<class...> class container>
 struct multi_container<T,0,container> {
-    static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
+    static_assert(internal::EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 };
 
 // template<class T, class container>
 // struct UnfoldedMultiContainer<T,0,container> {
-//     static_assert(EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
+//     static_assert(internal::EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 // };
 
 } // namespace lib
