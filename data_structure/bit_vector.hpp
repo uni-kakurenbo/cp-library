@@ -85,7 +85,7 @@ struct bit_vector {
         size_type ng = -1, ok = w;
         while(ok - ng > 1) {
             const size_type mid = (ok + ng) / 2;
-            size_type r = this->_count[block_pos - 1] + _mm_popcnt_u64(_bzhi_u64(block, mid));
+            size_type r = count + _mm_popcnt_u64(_bzhi_u64(block, mid));
             if(!bit) r = base_index + mid - r;
             (r >= rank ? ok : ng) = mid;
         }
