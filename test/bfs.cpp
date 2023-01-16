@@ -10,10 +10,6 @@
 using namespace std;
 
 #include "template.hpp"
-#include "output.hpp"
-
-output_adapter _print;
-#define print _print
 /* #endregion */
 
 // https://atcoder.jp/contests/abc151/tasks/abc151_d
@@ -28,13 +24,13 @@ output_adapter _print;
 signed main() {
     int h, w; cin >> h >> w;
 
-    unfolded_grid<char> grid(h, w); grid.read();
-    graph<> graph;
+    lib::unfolded_grid<char> grid(h, w); grid.read();
+    lib::graph<> graph;
     graph.from_grid(&grid);
 
     debug(grid, graph);
 
-    maximum<int> ans = -1;
+    lib::maximum<int> ans = -1;
 
     REP(si, h) REP(sj, w) {
         if(grid(si, sj) == '#') continue;

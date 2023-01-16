@@ -83,17 +83,20 @@ struct graph : std::vector<std::vector<internal::graph_lib::edge<cost_type>>> {
     }
 
     // graph/bfs.hpp
-    template<class cost_t = cost_type>
-    inline void bfs(const vertex, std::vector<cost_t>*) const;
+    template<class cost_t = cost_type> inline void bfs(const vertex, std::vector<cost_t> *const) const;
+    template<class cost_t = cost_type> inline std::vector<cost_t> bfs(const vertex) const;
 
     // graph/dijkstra.hpp
-    template<class cost_t = cost_type>
-    inline void dijkstra(const vertex, std::vector<cost_t>*) const;
+    template<class cost_t = cost_type> inline void dijkstra(const vertex, std::vector<cost_t> *const) const;
+    template<class cost_t = cost_type> inline std::vector<cost_t> dijkstra(const vertex) const;
 
-    // graph/dijkstra.hpp
-    template<class>
-    inline bool sort_topologically_with_priority(std::vector<vertex>*) const;
-    inline bool sort_topologically(std::vector<vertex>*) const;
+    // graph/topological_sort.hpp
+    inline bool sort_topologically(std::vector<vertex> *const ) const;
+    inline bool sort_topologically() const;
+
+    // graph/topological_sort.hpp
+    template<class> inline bool sort_topologically_with_priority(std::vector<vertex> *const) const;
+    template<class> inline bool sort_topologically_with_priority() const;
 
     // graph/minimum_paph_cover.hpp
     inline vertex minimum_paph_cover_size_as_dag() const;

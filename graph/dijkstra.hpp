@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <vector>
 #include <queue>
 #include <utility>
@@ -8,9 +9,10 @@
 #include "snippet/iterations.hpp"
 #include "graph.hpp"
 
+
 template<class edge_cost>
 template<class cost_type>
-void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *dists) const {
+void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *const dists) const {
     using state = std::pair<cost_type,vertex>;
     std::priority_queue<state,std::vector<state>,std::greater<state>> que;
 
@@ -32,6 +34,12 @@ void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *dis
             que.emplace((*dists)[v], v);
         }
     }
+}
 
-    return;
+template<class edge_cost>
+template<class cost_type>
+std::vector<cost_type> lib::graph<edge_cost>::dijkstra(const vertex s) const {
+    std::vector<cost_type> dists;
+    this->dijkstra<cost_type>(s, &dists);
+    return dists;
 }

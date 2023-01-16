@@ -1,14 +1,16 @@
 #pragma once
 
+
 #include <vector>
 #include <queue>
 
 #include "snippet/iterations.hpp"
 #include "graph.hpp"
 
+
 template<class edge_cost>
 template<class comparer>
-bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<vertex> *sorted) const {
+bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<vertex> *const sorted) const {
     sorted->clear();
 
     std::vector<vertex> in_degs(this->size());
@@ -27,7 +29,15 @@ bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<vertex>
 }
 
 template<class edge_cost>
-bool lib::graph<edge_cost>::sort_topologically(std::vector<vertex> *sorted) const {
+template<class comparer>
+bool lib::graph<edge_cost>::sort_topologically_with_priority() const {
+    std::vector<vertex> vs;
+    return this->sort_topologically_with_priority<comparer>(&vs);
+}
+
+
+template<class edge_cost>
+bool lib::graph<edge_cost>::sort_topologically(std::vector<vertex> *const sorted) const {
     sorted->clear();
 
     std::vector<vertex> in_degs(this->size());
@@ -43,4 +53,10 @@ bool lib::graph<edge_cost>::sort_topologically(std::vector<vertex> *sorted) cons
     }
 
     return sorted->size() == this->size();
+}
+
+template<class edge_cost>
+bool lib::graph<edge_cost>::sort_topologically() const {
+    std::vector<vertex> vs;
+    return this->sort_topologically(&vs);
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <vector>
 #include <queue>
 
@@ -7,6 +8,7 @@
 #include "snippet/internal/types.hpp"
 
 #include "graph.hpp"
+
 
 template<class edge_cost>
 template<class cost_type>
@@ -24,4 +26,12 @@ void lib::graph<edge_cost>::bfs(const vertex s, std::vector<cost_type> *dists) c
             que.push(nv.to);
         }
     }
+}
+
+template<class edge_cost>
+template<class cost_type>
+std::vector<cost_type> lib::graph<edge_cost>::bfs(const vertex s) const {
+    std::vector<cost_type> dists;
+    this->bfs<cost_type>(s, &dists);
+    return dists;
 }
