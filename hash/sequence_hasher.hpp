@@ -60,7 +60,7 @@ struct sequence_hasher {
     static constexpr hash_type mul(hash_type a, hash_type b) {
         #ifdef __SIZEOF_INT128__
 
-        uint128_t ans = static_cast<uint128_t>(a) * b;
+        uint128_t res = static_cast<uint128_t>(a) * b;
 
         #else
 
@@ -68,14 +68,14 @@ struct sequence_hasher {
         a &= sequence_hasher::mask(31);
         b &= sequence_hasher::mask(31);
         hash_type x = a * b31 + b * a31;
-        hash_type ans = (a31 * b31 << 1) + (x >> 30) + ((x & sequence_hasher::mask(30)) << 31) + a * b;
+        hash_type res = (a31 * b31 << 1) + (x >> 30) + ((x & sequence_hasher::mask(30)) << 31) + a * b;
 
         #endif
 
-        ans = (ans >> 61) + (ans & sequence_hasher::mod);
-        if(ans >= sequence_hasher::mod) ans -= sequence_hasher::mod;
+        res = (res >> 61) + (res & sequence_hasher::mod);
+        if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
 
-        return ans;
+        return res;
     }
 
   public:
