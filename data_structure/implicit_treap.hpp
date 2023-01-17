@@ -262,7 +262,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
         dev_assert(0 <= p and p < this->size());
     }
-    inline void _validate_index_in_closed[[maybe_unused]] (const size_type p) const {
+    inline void _validate_index_in_closed ([[maybe_unused]] const size_type p) const {
         dev_assert(0 <= p and p <= this->size());
     }
     inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
