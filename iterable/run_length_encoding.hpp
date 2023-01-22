@@ -13,7 +13,7 @@ struct run_length : container {
     run_length() {}
     template<class I> run_length(const I first, const I last) {
         this->clear();
-        typename C::value_type::second_type cnt = 0;
+        typename container::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {
             if(*prev != *itr) this->emplace_back(*prev, cnt), cnt = 0;
             ++cnt;
