@@ -8,7 +8,7 @@
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/debugger",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/stream_adapter"
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/adapter"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++-12",
