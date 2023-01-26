@@ -6,12 +6,13 @@
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/range_action/range_add.hpp"
 
+#include "template.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
     lib::fenwick_tree<lib::actions::range_add<ll>> data(n);
-    // debug(data);
+    debug(data);
 
     REP(q) {
         int t; std::cin >> t;
@@ -23,7 +24,7 @@ signed main() {
             int p; std::cin >> p; --p;
             std::cout << data.get(p) << "\n";
         }
-        // debug(data);
+        debug(data);
     }
 
     return 0;

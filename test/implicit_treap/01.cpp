@@ -1,24 +1,28 @@
 // https://judge.yosupo.jp/problem/range_affine_range_sum
 
+#include <vector>
+
 #include <atcoder/modint>
 #include "template.hpp"
 
+#include "data_structure/implicit_treap.hpp"
 #include "data_structure/range_action/range_add_range_sum.hpp"
-using namespace lib;
-
-#include <vector>
 
 signed main() {
-    lib::range_add_range_sum<int,int> data;
+    lib::implicit_treap<lib::actions::range_add_range_sum<int>> data;
 
     {
-        data.insert(0, 1);
-        data.insert(1, 2);
-        data.insert(2, 3);
-        data.insert(3, 4);
-        data.insert(4, 5);
+        data.push_back(1);
+        data.push_back(2);
+        data.push_back(3);
+        data.push_back(4);
+        data.push_back(5);
     }
     debug(data);
+
+    debug(*data.begin());
+    debug(*(data.begin() + 2));
+    debug(data.begin()[2]);
 
     data.rotate(0, 1, 3);
     debug(data);
@@ -68,10 +72,10 @@ signed main() {
         debug(data);
     }
 
-    data.add(12);
+    data.apply(12);
     debug(data);
 
-    data.add(3, 8, 10);
+    data.apply(3, 8, 10);
     debug(data);
 
     data.pop_back(3);

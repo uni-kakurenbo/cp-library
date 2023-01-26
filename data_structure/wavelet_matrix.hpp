@@ -436,10 +436,15 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
     inline std::optional<T> prev(const T& v, const size_type k = 1) const { return this->range().prev(v, k); }
 
 
-    struct iterator : virtual internal::container_iterator_interface<T,wavelet_matrix> {
-        iterator(const wavelet_matrix *const ref, const size_type pos) : internal::container_iterator_interface<T,wavelet_matrix>(ref, pos) {}
+  protected:
+    using iterator_interface = internal::container_iterator_interface<T,wavelet_matrix>;
 
-        inline T operator*() const override { return this->ref()->get(this->pos()); }
+  public:
+    struct iterator : virtual iterator_interface {
+        iterator(const wavelet_matrix *const ref, const size_type pos) : iterator_interface(ref, pos) {}
+
+        inline T operator*() const { return this->ref()->get(this->pos()); }
+        inline T operator[](const typename iterator_interface::difference_type count) const { return *(*this + count); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }
@@ -572,10 +577,15 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
     inline std::optional<T> prev(const T& v, const size_type k = 1) const { return this->range().prev(v, k); }
 
 
-    struct iterator : virtual internal::container_iterator_interface<T,compressed_wavelet_matrix> {
-        iterator(const compressed_wavelet_matrix *const ref, const size_type pos) : internal::container_iterator_interface<T,compressed_wavelet_matrix>(ref, pos) {}
+  protected:
+    using iterator_interface = internal::container_iterator_interface<value_type,compressed_wavelet_matrix>;
 
-        inline T operator*() const override { return this->ref()->get(this->pos()); }
+  public:
+    struct iterator : virtual iterator_interface {
+        iterator(const compressed_wavelet_matrix *const ref, const size_type pos) : iterator_interface(ref, pos) {}
+
+        inline T operator*() const { return this->ref()->get(this->pos()); }
+        inline T operator[](const typename iterator_interface::difference_type count) const { return *(*this + count); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

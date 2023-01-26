@@ -58,10 +58,11 @@ template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<acti
     inline value_type operator[](const size_type pos) const { return this->get(pos); }
 
 
-    struct iterator : virtual internal::container_iterator_interface<value_type,fenwick_tree> {
-        iterator(const fenwick_tree *const ref, const size_type pos) : internal::container_iterator_interface<value_type,fenwick_tree>(ref, pos) {}
+    struct iterator : virtual core::iterator_interface {
+        iterator(const fenwick_tree *const ref, const size_type pos) : core::iterator_interface(ref, pos) {}
 
-        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const { return this->ref()->get(this->pos()); }
+        inline value_type operator[](const typename core::iterator_interface::difference_type count) const { return *(*this + count); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

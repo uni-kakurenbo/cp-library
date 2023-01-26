@@ -100,7 +100,7 @@ struct bit_vector {
     struct iterator : virtual internal::container_iterator_interface<bool,bit_vector> {
         iterator(const bit_vector *const ref, const size_type pos) : internal::container_iterator_interface<bool,bit_vector>(ref, pos) {}
 
-        inline bool operator*() const override { return this->ref()->get(this->pos()); }
+        inline bool operator*() const { return this->ref()->get(this->pos()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

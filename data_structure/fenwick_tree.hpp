@@ -122,10 +122,15 @@ struct core : base<typename Action::operand_monoid,Action::rev> {
     }
 
 
-    struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
+  protected:
+    using iterator_interface = internal::container_iterator_interface<value_type,core>;
 
-        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+  public:
+    struct iterator : virtual iterator_interface {
+        iterator(const core *const ref, const size_type p) : iterator_interface(ref, p) {}
+
+        inline value_type operator*() const { return this->ref()->get(this->pos()); }
+        inline value_type operator[](const typename iterator_interface::difference_type count) const { return *(*this + count); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

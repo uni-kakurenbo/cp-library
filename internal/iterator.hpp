@@ -18,15 +18,15 @@ struct iterator_interface {
     using pointer = T*;
     using reference = T&;
 
-    virtual T operator*() const = 0;
+    // virtual T operator*() const { return 0; };
 };
 
 template<class T>
 struct bidirectiona_iterator_interface : iterator_interface<T> {
     using iterator_category = std::bidirectional_iterator_tag;
 
-    virtual bidirectiona_iterator_interface& operator++() = 0;
-    virtual bidirectiona_iterator_interface& operator--() = 0;
+    // virtual bidirectiona_iterator_interface& operator++() = 0;
+    // virtual bidirectiona_iterator_interface& operator--() = 0;
 };
 
 template<class T>
@@ -35,8 +35,8 @@ struct random_access_iterator_base : bidirectiona_iterator_interface<T> {
     using difference_type = typename bidirectiona_iterator_interface<T>::difference_type;
 
   public:
-    virtual random_access_iterator_base& operator+=(const difference_type count) = 0;
-    virtual random_access_iterator_base& operator-=(const difference_type count) = 0;
+    // virtual random_access_iterator_base& operator+=(const difference_type count) = 0;
+    // virtual random_access_iterator_base& operator-=(const difference_type count) = 0;
 };
 
 template<class T, class container>
@@ -49,16 +49,16 @@ struct container_iterator_interface : public random_access_iterator_base<T> {
     container_iterator_interface(const container *const ref, const difference_type& pos) : _ref(ref), _pos(pos) {}
 
   public:
-    inline const container * ref() const { return this->_ref; }
+    inline const container* ref() const { return this->_ref; }
 
     inline difference_type pos() const { return this->_pos; }
     inline difference_type& pos() { return this->_pos; }
 
-    inline container_iterator_interface& operator++() override { return ++this->pos(), *this; }
-    inline container_iterator_interface& operator--() override { return --this->pos(), *this; }
+    inline container_iterator_interface& operator++() { return ++this->pos(), *this; }
+    inline container_iterator_interface& operator--() { return --this->pos(), *this; }
 
-    inline container_iterator_interface& operator+=(const difference_type count) override { return this->pos() += count, *this; }
-    inline container_iterator_interface& operator-=(const difference_type count) override { return this->pos() -= count, *this; }
+    inline container_iterator_interface& operator+=(const difference_type count) { return this->pos() += count, *this; }
+    inline container_iterator_interface& operator-=(const difference_type count) { return this->pos() -= count, *this; }
 
     inline difference_type operator-(const container_iterator_interface& other) const { return this->pos() - other.pos(); }
 
@@ -72,6 +72,12 @@ struct container_iterator_interface : public random_access_iterator_base<T> {
     inline bool operator==(const container_iterator_interface& other) const { return not (*this != other); }
 };
 
+
+template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
+inline I operator+(I itr, const typename I::difference_type count) { return itr += count, itr; }
+
+template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
+inline I operator-(I itr, const typename I::difference_type count) { return itr -= count, itr; }
 
 } // namespace internal
 

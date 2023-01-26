@@ -369,7 +369,7 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     inline void rotate(size_type l, size_type m, size_type r) const {
         l = this->_positivize_index(l), m = this->_positivize_index(m), r = this->_positivize_index(r);
         this->_validate_rigth_open_interval(l, r), dev_assert(l <= m and m < r);
-        this->base::rotate(l, m, r).val();
+        this->base::rotate(l, m, r);
     }
     inline void rotate(const size_type m) const { this->rotate(0, m, this->size()); }
 
@@ -382,11 +382,15 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
         return this->find(0, this->size(), v, dir_left);
     }
 
+  protected:
+    using iterator_interface = internal::container_iterator_interface<value_type,core>;
 
-    struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
+  public:
+    struct iterator : virtual iterator_interface {
+        iterator(const core *const ref, const size_type p) : iterator_interface(ref, p) {}
 
-        inline value_type operator*() const override { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const { return this->ref()->get(this->pos()); }
+        inline value_type operator[](const typename iterator_interface::difference_type count) const { return *(*this + count); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }

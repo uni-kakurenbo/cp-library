@@ -189,7 +189,7 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
         iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
-        inline value_type operator*() const override { return this->ref()->get(this->p()); }
+        inline value_type operator*() const { return this->ref()->get(this->p()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }
