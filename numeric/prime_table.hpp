@@ -9,8 +9,8 @@
 namespace lib {
 
 
-template<class container = std::vector<bool>> struct is_prime : container {
-    is_prime(const internal::size_t max) : container(max+1, true) {
+template<class container = std::vector<bool>> struct prime_flags : container {
+    prime_flags(const internal::size_t max) : container(max+1, true) {
         (*this)[0] = (*this)[1] = false;
         for(internal::size_t p=2; p*p<=max; p++) if((*this)[p]) {
             for(internal::size_t i=p*p; i<=max; i+=p) (*this)[i] = false;
