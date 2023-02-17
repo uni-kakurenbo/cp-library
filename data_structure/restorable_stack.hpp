@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <map>
 #include <memory>
 #include <optional>
 
@@ -13,6 +14,7 @@ struct restorable_stack {
     using node_ptr = std::shared_ptr<node>;
 
     struct node {
+        std::map<int,int> a;
         std::optional<T> val = std::nullopt;
         node_ptr parent;
     };
