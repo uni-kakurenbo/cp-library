@@ -12,8 +12,8 @@
 
 template<class edge_cost>
 template<class cost_type>
-void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *const dists) const {
-    using state = std::pair<cost_type,vertex>;
+void lib::graph<edge_cost>::dijkstra(const size_type s, std::vector<cost_type> *const dists) const {
+    using state = std::pair<cost_type,size_type>;
     std::priority_queue<state,std::vector<state>,std::greater<state>> que;
 
     dists->assign(this->size(), std::numeric_limits<cost_type>::max());
@@ -26,7 +26,7 @@ void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *con
         if((*dists)[u] < d) continue;
 
         ITR(e, (*this)[u]) {
-            const vertex v = e.to; const auto cost = e.cost;
+            const size_type v = e.to; const auto cost = e.cost;
 
             if((*dists)[v] <= d + cost) continue;
 
@@ -38,7 +38,7 @@ void lib::graph<edge_cost>::dijkstra(const vertex s, std::vector<cost_type> *con
 
 template<class edge_cost>
 template<class cost_type>
-std::vector<cost_type> lib::graph<edge_cost>::dijkstra(const vertex s) const {
+std::vector<cost_type> lib::graph<edge_cost>::dijkstra(const size_type s) const {
     std::vector<cost_type> dists;
     this->dijkstra<cost_type>(s, &dists);
     return dists;

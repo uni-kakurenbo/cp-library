@@ -11,12 +11,12 @@ namespace lib {
 
 template<class graph = graph<>>
 struct lowest_common_ancestor {
-    using vertex = typename graph::vertex;
-    std::vector<std::vector<vertex>> parent;
-    std::vector<vertex> dists;
+    using size_type = typename graph::size_type;
+    std::vector<std::vector<size_type>> parent;
+    std::vector<size_type> dists;
 
   private:
-    void dfs(const graph &G, const vertex v, const vertex p, const vertex d) {
+    void dfs(const graph &G, const size_type v, const size_type p, const size_type d) {
         parent[0][v] = p;
         dists[v] = d;
         for(const auto& e : G[v]) {
@@ -25,13 +25,13 @@ struct lowest_common_ancestor {
     }
 
   public:
-    lowest_common_ancestor(const graph &G, const vertex root = 0) { this->init(G, root); }
+    lowest_common_ancestor(const graph &G, const size_type root = 0) { this->init(G, root); }
 
-    void init(const graph &G, const vertex root = 0) {
-        const vertex V = G.size();
-        vertex K = 1; while((1 << ++K) < V);
+    void init(const graph &G, const size_type root = 0) {
+        const size_type V = G.size();
+        size_type K = 1; while((1 << ++K) < V);
 
-        parent.assign(K, std::vector<vertex>(V, -1));
+        parent.assign(K, std::vector<size_type>(V, -1));
         dists.assign(V, -1);
 
         this->dfs(G, root, -1, 0);
@@ -42,13 +42,13 @@ struct lowest_common_ancestor {
         }
     }
 
-    vertex operator()(const vertex u, const vertex v) const {
+    size_type operator()(const size_type u, const size_type v) const {
         return this->find(u, v);
     }
 
-    vertex find(vertex u, vertex v) const {
+    size_type find(size_type u, size_type v) const {
         if(dists[u] < dists[v]) std::swap(u, v);
-        vertex K = parent.size();
+        size_type K = parent.size();
 
         REP(k, K) {
             if((dists[u] - dists[v]) >> k & 1) u = parent[k][u];
@@ -66,7 +66,7 @@ struct lowest_common_ancestor {
         return parent[0][u];
     }
 
-    vertex edges(const vertex u, const vertex v) const {
+    size_type edges(const size_type u, const size_type v) const {
         return dists[u] + dists[v] - 2 * dists[find(u, v)];
     }
 };
