@@ -30,7 +30,7 @@ template<class cost_t, class size_type> struct edge {
 } // namespace internal
 
 template<class C = ll>
-struct graph : private std::vector<std::vector<internal::graph_lib::edge<C,internal::size_t>>> {
+struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::size_t>>> {
     using size_type = internal::size_t;
     using cost_type = C;
 
@@ -52,12 +52,12 @@ struct graph : private std::vector<std::vector<internal::graph_lib::edge<C,inter
 
     inline void clear() { ITR(row, *this) row.clear(); }
 
-    using std::vector<std::vector<edge>>::size;
+    // using std::vector<std::vector<edge>>::size;
 
-    using std::vector<std::vector<edge>>::begin;
-    using std::vector<std::vector<edge>>::cbegin;
-    using std::vector<std::vector<edge>>::end;
-    using std::vector<std::vector<edge>>::cend;
+    // using std::vector<std::vector<edge>>::begin;
+    // using std::vector<std::vector<edge>>::cbegin;
+    // using std::vector<std::vector<edge>>::end;
+    // using std::vector<std::vector<edge>>::cend;
 
     inline size_type vertexes() const { return this->size(); }
     inline size_type edges() const { return this->inputted.size(); }
@@ -77,7 +77,7 @@ struct graph : private std::vector<std::vector<internal::graph_lib::edge<C,inter
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_type EDGE_TYPE = edge_type::directed, class Stream = std::istream>
     void inline read(const size_type edges, Stream *const ist = &std::cin) {
         REP(edges) {
-            size_type u, v; cost_type w = 0; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
+            size_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
             this->add_edge<EDGE_TYPE>(u, v, w);
         }
@@ -85,7 +85,7 @@ struct graph : private std::vector<std::vector<internal::graph_lib::edge<C,inter
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = std::istream>
     void inline read_bidirectionally(const size_type edges, Stream *const ist = &std::cin) {
         REP(edges) {
-            size_type u, v; cost_type w = 0; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
+            size_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
             this->add_edge<edge_type::undirected>(u, v, w);
         }

@@ -11,8 +11,8 @@
 
 
 template<class edge_cost>
-template<class cost_type>
-void lib::graph<edge_cost>::bfs(const size_type s, std::vector<cost_type> *dists) const {
+template<class cost_t>
+void lib::graph<edge_cost>::bfs(const size_type s, std::vector<cost_t> *dists) const {
     dists->assign(this->size(), -1);
 
     std::queue<size_type> que;
@@ -29,9 +29,9 @@ void lib::graph<edge_cost>::bfs(const size_type s, std::vector<cost_type> *dists
 }
 
 template<class edge_cost>
-template<class cost_type>
-std::vector<cost_type> lib::graph<edge_cost>::bfs(const size_type s) const {
-    std::vector<cost_type> dists;
-    this->bfs<cost_type>(s, &dists);
+template<class cost_t>
+std::vector<cost_t> lib::graph<edge_cost>::bfs(const size_type s) const {
+    std::vector<cost_t> dists;
+    this->bfs<cost_t>(s, &dists);
     return dists;
 }
