@@ -1,6 +1,10 @@
 #pragma once
 
+#include <cstdint>
+#include <utility>
+
 #include "snippet/internal/types.hpp"
+
 
 #define until(...) while(!(__VA_ARGS__))
 
@@ -13,7 +17,6 @@
 constexpr char ln = '\n';
 constexpr char spc = ' ';
 
-#include <utility>
 constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
