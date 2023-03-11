@@ -256,7 +256,7 @@ struct core : base<typename Action::operand_monoid, typename Action::operator_mo
         this->initialize();
     }
 
-    inline void set(const size_type p, const value_type& v) {
+    inline void set(size_type p, const value_type& v) {
         p = this->_positivize_index(p), this->_validate_index_in_right_open(p);
         this->base::set(v);
     }
