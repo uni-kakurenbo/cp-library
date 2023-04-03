@@ -30,11 +30,11 @@ signed main() {
         int t; cin >> t;
         if(t == 1) {
             int p, x; cin >> p >> x; --p;
-            data.apply(p, x);
+            data[p] <<= x;
         }
         if(t == 2) {
             int l, r; cin >> l >> r; --l;
-            print(data.prod(l, r));
+            print(data(l, r).fold());
         }
         debug(data);
     }

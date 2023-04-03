@@ -32,7 +32,7 @@ signed main() {
         }
         if(t == 4) {
             int l, r; std::cin >> l >> r;
-            print(data.prod(l, r));
+            print(data.fold(l, r));
         }
         debug(data);
     }

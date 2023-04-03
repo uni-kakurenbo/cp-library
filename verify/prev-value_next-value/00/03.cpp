@@ -16,7 +16,7 @@ signed main() {
     REP(q) {
         int l, r, x; std::cin >> l >> r >> x; ++r;
 
-        auto itr = data(l, r).lower_bound(x);
+        auto itr = data(l, r).next_element(x);
 
         std::cout << (
             std::min(

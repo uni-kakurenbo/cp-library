@@ -24,7 +24,7 @@ signed main() {
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;
-            auto [a, b] = data.prod(l, r);
+            auto [a, b] = data.fold(l, r);
             print(a * x + b);
         }
         debug(data);

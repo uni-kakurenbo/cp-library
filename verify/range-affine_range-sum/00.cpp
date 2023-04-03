@@ -1,4 +1,3 @@
-#include <atcoder/modint>
 #include "template.hpp"
 
 #include "data_structure/lazy_segment_tree.hpp"
@@ -8,20 +7,20 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<atcoder::modint998244353> a(n); input >> a;
+    std::vector<lib::modint998244353> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<atcoder::modint998244353>> data(ALL(a));
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint998244353>> data(ALL(a));
     debug(data);
 
-    LOOP(q) {
+    REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             ll l, r, b, c; std::cin >> l >> r >> b >> c;
-            data.affine(l, r, b, c);
+            data(l, r).affine(b, c);
         }
         if(t == 1) {
             ll l, r; std::cin >> l >> r;
-            print(data.sum(l, r));
+            print(data(l, r).sum());
         }
         debug(data);
     }

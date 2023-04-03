@@ -21,10 +21,11 @@ signed main() {
     lib::wavelet_matrix<int> wm(ALL(a));
 
     ITR(p, b) {
-        int s = wm.prev(p).value_or(INT_MAX);
+        int s = wm.prev(p).value_or(INT_MIN);
         int t = wm.next(p).value_or(INT_MIN);
+        debug(s, t);
 
-        print(max({ 0, k - abs(p - s), k - abs(p - t) }));
+        print(std::max({ 0, k - std::abs(p - s), k - std::abs(p - t) }));
     }
 
     return 0;

@@ -1,7 +1,11 @@
 #include <bits/stdc++.h>
+
+#include "template.hpp"
+
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 #include "data_structure/wavelet_matrix.hpp"
+
 
 signed main() {
     int n; std::cin >> n;
@@ -14,7 +18,8 @@ signed main() {
     REP(q) {
         int l, r, x; std::cin >> l >> r >> x; ++r;
 
-        auto itr = data(l, r).lower_bound(x);
+        auto itr = data(l, r).next_element(x);
+        debug(l, r, itr - data(l, r).begin());
 
         std::cout << (
             std::min(

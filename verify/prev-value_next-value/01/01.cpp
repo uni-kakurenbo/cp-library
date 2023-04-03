@@ -23,6 +23,7 @@ signed main() {
     ITR(p, b) {
         int s = wm.prev(p).value_or(INT_MAX);
         int t = wm.next(p).value_or(INT_MIN);
+        debug(s, t);
 
         print(max({ 0, k - abs(p - s), k - abs(p - t) }));
     }

@@ -16,7 +16,7 @@ signed main() {
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r; --l;
-            std::cout << data.prod(l, r) << "\n";
+            std::cout << data.fold(l, r) << "\n";
         }
         // debug(data);
     }

@@ -14,11 +14,11 @@ using mint = atcoder::modint998244353;
 struct action {
     static constexpr lib::actions::flags tags{};
 
-    using operand_monoid = affine<mint,true>;
-    using operator_monoid = lib::monoids::assignment<std::pair<mint,mint>>;
+    using operand = affine<mint,true>;
+    using operation = lib::monoids::assignment<std::pair<mint,mint>>;
 
-    static operand_monoid map(const operand_monoid& x, const operator_monoid& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
-    static operator_monoid fold(const operator_monoid& x, const lib::internal::size_t) { return x; }
+    static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
+    static operation fold(const operation& x, const lib::internal::size_t) { return x; }
 };
 
 
@@ -38,7 +38,7 @@ signed main() {
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;
-            auto [a, b] = data.prod(l, r);
+            auto [a, b] = data.fold(l, r);
             print(a * x + b);
         }
         debug(data);
