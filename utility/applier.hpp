@@ -16,16 +16,19 @@ namespace internal {
 }
 
 template<class T, T (*op)(T,T)> struct applier {
+    using value_type = T;
+
   protected:
     T _v;
 
   public:
-    applier(T&& v = T{}) : _v(v) {}
+    applier(const T& v = T{}) : _v(v) {}
     template<class U> applier& operator<<=(U&& val) & noexcept {
         _v = op(_v, std::forward<U>(val));
         return *this;
     }
     inline T val() const { return _v; }
+    inline operator T() const { return _v; }
 };
 
 template<class T> using maximum = applier<T,internal::max<T>>;
