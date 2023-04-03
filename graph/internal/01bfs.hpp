@@ -2,7 +2,7 @@
 
 
 #include <vector>
-#include <queue>
+#include <deque>
 #include <utility>
 #include <functional>
 
@@ -12,18 +12,15 @@
 
 template<class edge_cost>
 template<class cost_t>
-void lib::graph<edge_cost>::dijkstra(const size_type s, std::vector<cost_t> *const dists) const {
-    using state = std::pair<cost_t,size_type>;
-    std::priority_queue<state,std::vector<state>,std::greater<state>> que;
+void lib::graph<edge_cost>::distances_with_01cost(const size_type s, std::vector<cost_t> *const dists) const {
+    std::deque<size_type> que;
 
     dists->assign(this->size(), std::numeric_limits<cost_t>::max());
-
-    que.emplace(0, s), (*dists)[s] = 0;
+    que.push_back(s), (*dists)[s] = 0;
 
     while(not que.empty()) {
-        const auto [d, u] = que.top(); que.pop();
-
-        if((*dists)[u] < d) continue;
+        const auto u = que.front(); que.pop_front();
+        const cost_t d = (*dists)[u];
 
         ITR(e, (*this)[u]) {
             const size_type v = e.to; const auto cost = e.cost;
@@ -31,15 +28,17 @@ void lib::graph<edge_cost>::dijkstra(const size_type s, std::vector<cost_t> *con
             if((*dists)[v] <= d + cost) continue;
 
             (*dists)[v] = d + cost;
-            que.emplace((*dists)[v], v);
+
+            if(cost) que.push_back(v);
+            else que.push_front(v);
         }
     }
 }
 
 template<class edge_cost>
 template<class cost_t>
-std::vector<cost_t> lib::graph<edge_cost>::dijkstra(const size_type s) const {
+std::vector<cost_t> lib::graph<edge_cost>::distances_with_01cost(const size_type s) const {
     std::vector<cost_t> dists;
-    this->dijkstra<cost_t>(s, &dists);
+    this->distances_with_01cost<cost_t>(s, &dists);
     return dists;
 }

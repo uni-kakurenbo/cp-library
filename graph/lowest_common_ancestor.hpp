@@ -9,24 +9,27 @@
 
 namespace lib {
 
-template<class graph = graph<>>
+
 struct lowest_common_ancestor {
-    using size_type = typename graph::size_type;
+    using size_type = internal::size_t;
     std::vector<std::vector<size_type>> parent;
     std::vector<size_type> dists;
 
   private:
+    template<class graph>
     void dfs(const graph &G, const size_type v, const size_type p, const size_type d) {
         parent[0][v] = p;
         dists[v] = d;
-        for(const auto& e : G[v]) {
+        ITR(e, G[v]) {
             if(e.to != p) dfs(G, e.to, v, d+1);
         }
     }
 
   public:
+    template<class graph>
     lowest_common_ancestor(const graph &G, const size_type root = 0) { this->init(G, root); }
 
+    template<class graph>
     void init(const graph &G, const size_type root = 0) {
         const size_type V = G.size();
         size_type K = 1; while((1 << ++K) < V);
@@ -66,9 +69,10 @@ struct lowest_common_ancestor {
         return parent[0][u];
     }
 
-    size_type edges(const size_type u, const size_type v) const {
+    size_type distance(const size_type u, const size_type v) const {
         return dists[u] + dists[v] - 2 * dists[find(u, v)];
     }
 };
+
 
 } // namespace lib

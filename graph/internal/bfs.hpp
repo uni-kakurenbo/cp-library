@@ -12,7 +12,7 @@
 
 template<class edge_cost>
 template<class cost_t>
-void lib::graph<edge_cost>::bfs(const size_type s, std::vector<cost_t> *dists) const {
+void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vector<cost_t> *dists) const {
     dists->assign(this->size(), -1);
 
     std::queue<size_type> que;
@@ -30,8 +30,8 @@ void lib::graph<edge_cost>::bfs(const size_type s, std::vector<cost_t> *dists) c
 
 template<class edge_cost>
 template<class cost_t>
-std::vector<cost_t> lib::graph<edge_cost>::bfs(const size_type s) const {
+std::vector<cost_t> lib::graph<edge_cost>::distances_without_cost(const size_type s) const {
     std::vector<cost_t> dists;
-    this->bfs<cost_t>(s, &dists);
+    this->distances_without_cost<cost_t>(s, &dists);
     return dists;
 }

@@ -10,10 +10,10 @@
 #include "data_structure/disjoint_set_union.hpp"
 
 template<class edge_cost>
-typename lib::graph<edge_cost>::size_type lib::graph<edge_cost>::count_components() const {
+lib::dsu lib::graph<edge_cost>::components() const {
     lib::dsu dsu(this->vertexes());
     ITR(edges, *this) ITR(u, v, _w, edges) {
         dsu.merge(u, v);
     }
-    return dsu.group_count();
+    return dsu;
 }

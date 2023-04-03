@@ -11,10 +11,11 @@ namespace internal {
 namespace graph_lib {
 
 
-template<class G, class cost_type, class Compare> cost_type kruskal(const G& graph, Compare compare) {
-    atcoder::dsu uft(graph.size());
+template<class G, class cost_type, class Compare>
+cost_type kruskal(const G& graph, const Compare compare) {
+    atcoder::dsu ds(graph.size());
 
-    std::vector<std::tuple<typename G::edge::cost_type,typename G::size_type,typename G::size_type>> edges;
+    std::vector<std::tuple<typename G::edge::cost_type,size_t,size_t>> edges;
 
     REP(u, graph.size()) ITR(e, graph[u]) {
         edges.emplace_back(e.cost, u, e.to);
@@ -24,8 +25,8 @@ template<class G, class cost_type, class Compare> cost_type kruskal(const G& gra
 
     cost_type res = cost_type{};
     ITR(w, u, v, edges) {
-        if(not uft.same(u, v)) {
-            uft.merge(u, v);
+        if(not ds.same(u, v)) {
+            ds.merge(u, v);
             res += w;
         }
     }
