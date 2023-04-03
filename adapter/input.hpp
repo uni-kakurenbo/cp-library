@@ -63,16 +63,16 @@ struct input_adapter {
         *this >> *val;
     }
 
-    template<class T, class ...Args> inline void operator()(T*const head, Args*const ...tail) {
+    template<class T, class... Args> inline void operator()(T *const head, Args *const... tail) {
         *this >> *head;
         (*this)(tail...);
     }
 
-    template<class I, class = typename I::value_type> inline void operator()(I first, I last) {
+    template<class I, class = typename std::iterator_traits<I>::value_type> inline void operator()(I first, I last) {
         for(I itr=first; itr!=last; ++itr) *this >> *itr;
     }
 
     template<class F, class S> inline void operator()(std::pair<F,S> *const p) {
-        (*this)(&p->first, &p->second);
+        *this >> p->first >> p->second;
     }
 };

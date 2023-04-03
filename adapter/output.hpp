@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
+#include <iterator>
 
 #include "internal/resolving_rank.hpp"
 
@@ -16,7 +18,7 @@ struct output_adapter {
     }
     template<class T>
     auto _put(lib::internal::resolving_rank<1>, const T &val) -> decltype(val.val(), 0) {
-        *this->out << val.val();
+        this->put(val.val());
         return 0;
     }
     template<class T>
@@ -41,7 +43,10 @@ struct output_adapter {
     Separator separator;
 
     output_adapter(destination *out = &std::cout, Terminator endline = "\n", Separator separator = " ")
-      : out(out), endline(endline), separator(separator) {}
+      : out(out), endline(endline), separator(separator)
+    {
+        *this << std::fixed << std::setprecision(20);
+    }
 
     inline void seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) { this->out->seekp(off, dir); };
 
@@ -59,7 +64,7 @@ struct output_adapter {
         (*this)(tail...);
     }
 
-    template<class I, class = typename I::iterator_category> inline void operator()(const I first, const I last, const bool terminate = true) {
+    template<class I, class = typename std::iterator_traits<I>::iterator_category> inline void operator()(const I first, const I last, const bool terminate = true) {
         for(I itr=first; itr!=last;) {
             *this << *itr;
             if(++itr == last) {
