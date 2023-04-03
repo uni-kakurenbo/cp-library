@@ -238,8 +238,12 @@ template<class T, class dict_type> struct base {
     }
 
     inline std::optional<T> next(const size_type l, const size_type r, const T& v, const size_type k) const {
-        size_type rank = this->count_under(l, r, v) + k;
+        const size_type rank = this->count_under(l, r, v) + k;
         return (rank < 0 or rank >= r - l) ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, rank));
+    }
+    inline std::optional<T> prev(const size_type l, const size_type r, const T& v, const size_type k) const {
+        const size_type rank = this->count_over(l, r, v) + k;
+        return (rank < 0 or rank >= r - l) ? std::optional<T>{} : std::optional<T>(this->kth_largest(l, r, rank));
     }
 };
 
@@ -280,6 +284,7 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
   public:
     using base::base;
 
+    bool empty() const { return this->size() == 0; }
 
     inline T get(size_type k) const {
         k = this->_positivize_index(k);
@@ -308,38 +313,40 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
     inline range_reference subseq(const size_type p) const { return range_reference(this, p, this->size()); }
 
 
-    struct range_reference : internal::range_reference<wavelet_matrix> {
+    struct range_reference : internal::range_reference<const wavelet_matrix> {
         range_reference(const wavelet_matrix *const super, const size_type l, const size_type r)
-          : internal::range_reference<wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
+          : internal::range_reference<const wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->super->_validate_rigth_open_interval(this->_begin, this->_end);
+            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
         }
 
         inline T get(const size_type k) const {
-            k = this->super->_positivize_index(k);
+            k = this->_super->_positivize_index(k);
             dev_assert(0 <= k and k < this->size());
 
-            return this->super->get(this->_begin + k);
+            return this->_super->get(this->_begin + k);
         }
         inline T operator[](const size_type k) const { return this->get(k); }
 
 
         inline T kth_smallest(const size_type k) const {
             dev_assert(0 <= k and k < this->size());
-            return this->super->base::kth_smallest(this->_begin, this->_end, k);
+            return this->_super->base::kth_smallest(this->_begin, this->_end, k);
         }
         inline auto kth_smallest_element(const size_type k) const {
-            dev_assert(0 <= k and k <= this->size());
-            return std::next(this->super->begin(), this->super->base::kth_smallest_index(this->_begin, this->_end, k));
+            if(k == this->size()) return this->end();
+            dev_assert(0 <= k and k < this->size());
+            return std::next(this->_super->begin(), this->_super->base::kth_smallest_index(this->_begin, this->_end, k));
         }
 
         inline T kth_largest(const size_type k) const {
             dev_assert(0 <= k and k < this->size());
-            return this->super->base::kth_largest(this->_begin, this->_end, k);
+            return this->_super->base::kth_largest(this->_begin, this->_end, k);
         }
         inline auto kth_largest_element(const size_type k) const {
-            dev_assert(0 <= k and k <= this->size());
-            return std::next(this->super->begin(), this->super->base::kth_largest_index(this->_begin, this->_end, k));
+            if(k == this->size()) return this->end();
+            dev_assert(0 <= k and k < this->size());
+            return std::next(this->_super->begin(), this->_super->base::kth_largest_index(this->_begin, this->_end, k));
         }
 
         inline T min() const { return this->kth_smallest(0); }
@@ -349,15 +356,15 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
         // (r-l)/2 th smallest (0-origin)
         inline T median() const { return this->kth_smallest(this->size() / 2); }
 
-        inline T sum_in_range(const T& x, const T& y) const { return this->super->base::sum_in_range(this->_begin, this->_end, x, y); }
+        inline T sum_in_range(const T& x, const T& y) const { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
 
-        inline T sum_under(const T& v) const { return this->super->base::sum_under(this->_begin, this->_end, v); }
-        inline T sum_over(const T& v) const { return this->super->base::sum_over(this->_begin, this->_end, v); }
-        inline T sum_under_or(const T& v) const { return this->super->base::sum_under_or(this->_begin, this->_end, v); }
-        inline T sum_over_or(const T& v) const { return this->super->base::sum_over_or(this->_begin, this->_end, v); }
+        inline T sum_under(const T& v) const { return this->_super->base::sum_under(this->_begin, this->_end, v); }
+        inline T sum_over(const T& v) const { return this->_super->base::sum_over(this->_begin, this->_end, v); }
+        inline T sum_under_or(const T& v) const { return this->_super->base::sum_under_or(this->_begin, this->_end, v); }
+        inline T sum_over_or(const T& v) const { return this->_super->base::sum_over_or(this->_begin, this->_end, v); }
 
-        inline T sum(const T& x, const T& y) const { return this->super->base::sum_in_range(this->_begin, this->_end, x, y); }
-        inline T sum() const { return this->super->base::sum(this->_begin, this->_end); }
+        inline T sum(const T& x, const T& y) const { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
+        inline T sum() const { return this->_super->base::sum(this->_begin, this->_end); }
 
         template<comp com>
         inline size_type sum(const T& v) const {
@@ -369,16 +376,16 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
         }
 
 
-        inline size_type count_in_range(const T& x, const T& y) const { return this->super->base::count_in_range(this->_begin, this->_end, x, y); }
+        inline size_type count_in_range(const T& x, const T& y) const { return this->_super->base::count_in_range(this->_begin, this->_end, x, y); }
 
-        inline size_type count_under(const T& v) const { return this->super->base::count_under(this->_begin, this->_end, v); }
-        inline size_type count_over(const T& v) const { return this->super->base::count_over(this->_begin, this->_end, v); }
-        inline size_type count_under_or(const T& v) const { return this->super->base::count_under_or(this->_begin, this->_end, v); }
-        inline size_type count_over_or(const T& v) const { return this->super->base::count_over_or(this->_begin, this->_end, v); }
+        inline size_type count_under(const T& v) const { return this->_super->base::count_under(this->_begin, this->_end, v); }
+        inline size_type count_over(const T& v) const { return this->_super->base::count_over(this->_begin, this->_end, v); }
+        inline size_type count_under_or(const T& v) const { return this->_super->base::count_under_or(this->_begin, this->_end, v); }
+        inline size_type count_over_or(const T& v) const { return this->_super->base::count_over_or(this->_begin, this->_end, v); }
 
         template<comp com = comp::equal_to>
         inline size_type count(const T& v) const {
-            if constexpr(com == comp::eq) return this->super->count_equal_to(this->_begin, this->_end, v);
+            if constexpr(com == comp::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
             if constexpr(com == comp::under) return this->count_under(v);
             if constexpr(com == comp::over) return this->count_over(v);
             if constexpr(com == comp::under_or) return this->count_under_or(v);
@@ -386,10 +393,15 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
             assert(false);
         }
 
-        inline auto next_element(const T& v, const size_type k = 0) { return this->kth_smallest_element(std::clamp(this->count_under(v) + k, 0, this->size())); }
+        inline auto next_element(const T& v, const size_type k = 0) {
+            return this->kth_smallest_element(std::clamp(this->count_under(v) + k, 0, this->size()));
+        }
+        inline auto prev_element(const T& v, const size_type k = 0) {
+            return this->kth_smallest_element(std::clamp(this->count_over(v) - k, 0, this->size()));
+        }
 
-        inline std::optional<T> next(const T& v, const size_type k = 0) const { return this->super->base::next(this->_begin, this->_end, v, k); }
-        inline std::optional<T> prev(const T& v, const size_type k = 1) const { return this->super->base::next(this->_begin, this->_end, v, -k); }
+        inline std::optional<T> next(const T& v, const size_type k = 0) const { return this->_super->base::next(this->_begin, this->_end, v, k); }
+        inline std::optional<T> prev(const T& v, const size_type k = 0) const { return this->_super->base::prev(this->_begin, this->_end, v, k); }
     };
 
     inline T kth_smallest(const size_type k) const { return this->range().kth_smallest(k); }
@@ -432,9 +444,10 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
 
 
     inline auto next_element(const T& v) { return this->range().next_element(v); }
+    inline auto prev_element(const T& v) { return this->range().prev_element(v); }
 
     inline std::optional<T> next(const T& v, const size_type k = 0) const { return this->range().next(v, k); }
-    inline std::optional<T> prev(const T& v, const size_type k = 1) const { return this->range().prev(v, k); }
+    inline std::optional<T> prev(const T& v, const size_type k = 0) const { return this->range().prev(v, k); }
 
 
   protected:
@@ -491,29 +504,29 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
     inline range_reference subseq(const size_type p) const { return range_reference(this, p, this->size()); }
 
 
-    struct range_reference : internal::range_reference<compressed_wavelet_matrix> {
+    struct range_reference : internal::range_reference<const compressed_wavelet_matrix> {
         range_reference(const compressed_wavelet_matrix *const super, const size_type l, const size_type r)
-          : internal::range_reference<compressed_wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
+          : internal::range_reference<const compressed_wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->super->_validate_rigth_open_interval(this->_begin, this->_end);
+            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
         }
 
       private:
-        inline auto _range() const { return this->super->core::range(this->_begin, this->_end); }
+        inline auto _range() const { return this->_super->core::range(this->_begin, this->_end); }
 
       public:
-        inline T get(const size_type k) const { return this->super->compressed(this->_range().get(k)); }
+        inline T get(const size_type k) const { return this->_super->compressed(this->_range().get(k)); }
         inline T operator[](const size_type k) const { return this->get(k); }
 
 
-        inline T kth_smallest(const size_type k) const { return this->super->compressed(this->_range().kth_smallest(k)); }
+        inline T kth_smallest(const size_type k) const { return this->_super->compressed(this->_range().kth_smallest(k)); }
         inline auto kth_smallest_element(const size_type k) const {
-            return std::next(this->super->begin(), std::distance(this->super->core::begin(), this->_range().kth_smallest_element(k)));
+            return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_smallest_element(k)));
         }
 
-        inline T kth_largest(const size_type k) const { return this->super->compressed(this->_range().kth_largest(k));}
+        inline T kth_largest(const size_type k) const { return this->_super->compressed(this->_range().kth_largest(k));}
         inline auto kth_largest_element(const size_type k) const {
-            return std::next(this->super->begin(), std::distance(this->super->core::begin(), this->_range().kth_largest_element(k)));
+            return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_largest_element(k)));
         }
 
         inline T min() const { return this->kth_smallest(0); }
@@ -525,30 +538,33 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
 
 
         inline size_type count_in_range(const T& x, const T& y) const {
-            return this->_range().count_in_range(this->super->compressed.rank(x), this->super->compressed.rank(y));
+            return this->_range().count_in_range(this->_super->compressed.rank(x), this->_super->compressed.rank(y));
         }
 
-        inline size_type count_under(const T& v) const { return this->_range().count_under(this->super->compressed.rank(v)); }
-        inline size_type count_over(const T& v) const { return this->_range().count_over(this->super->compressed.rank(v)); }
-        inline size_type count_under_or(const T& v) const { return this->_range().count_under_or(this->super->compressed.rank(v)); }
-        inline size_type count_over_or(const T& v) const { return this->_range().count_over_or(this->super->compressed.rank(v)); }
+        inline size_type count_under(const T& v) const { return this->_range().count_under(this->_super->compressed.rank(v)); }
+        inline size_type count_over(const T& v) const { return this->_range().count_over(this->_super->compressed.rank2(v)); }
+        inline size_type count_under_or(const T& v) const { return this->_range().count_under_or(this->_super->compressed.rank2(v)); }
+        inline size_type count_over_or(const T& v) const { return this->_range().count_over_or(this->_super->compressed.rank(v)); }
 
         template<comp com = comp::equal_to>
-        inline size_type count(const T& v) const { return this->_range().template count<com>(this->super->compressed.rank(v)); }
+        inline size_type count(const T& v) const { return this->_range().template count<com>(this->_super->compressed.rank(v)); }
 
 
         inline auto next_element(const T& v, const size_type k = 0) {
-            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->super->compressed.rank(v) + k), 0, this->size()));
+            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->compressed.rank(v) + k), 0, this->size()));
+        }
+        inline auto prev_element(const T& v, const size_type k = 0) {
+            return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->compressed.rank2(v) + k), 0, this->size()));
         }
 
         inline std::optional<T> next(const T& v, const size_type k = 0) const {
-            std::optional<size_type> res = this->_range().next(this->super->compressed.rank(v), k);
-            if(res.has_value()) return this->super->compressed(res.value());
+            const std::optional<size_type> res = this->_range().next(this->_super->compressed.rank(v), k);
+            if(res.has_value()) return this->_super->compressed(res.value());
             return {};
         }
-        inline std::optional<T> prev(const T& v, const size_type k = 1) const {
-            std::optional<size_type> res = this->_range().prev(this->super->compressed.rank(v), k);
-            if(res.has_value()) return this->super->compressed(res.value());
+        inline std::optional<T> prev(const T& v, const size_type k = 0) const {
+            const std::optional<size_type> res = this->_range().prev(this->_super->compressed.rank2(v), k);
+            if(res.has_value()) return this->_super->compressed(res.value());
             return {};
         }
     };
@@ -574,9 +590,10 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
     template<comp com = comp::equal_to> inline size_type count(const T& v) const { return this->range().template count<com>(v); }
 
     inline auto next_element(const T& v) { return this->range().next_element(v); }
+    inline auto prev_element(const T& v) { return this->range().prev_element(v); }
 
     inline std::optional<T> next(const T& v, const size_type k = 0) const { return this->range().next(v, k); }
-    inline std::optional<T> prev(const T& v, const size_type k = 1) const { return this->range().prev(v, k); }
+    inline std::optional<T> prev(const T& v, const size_type k = 0) const { return this->range().prev(v, k); }
 
 
   protected:

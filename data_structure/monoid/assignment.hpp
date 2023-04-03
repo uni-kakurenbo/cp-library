@@ -3,7 +3,7 @@
 
 #include <optional>
 
-#include "data_structure/monoid/base.hpp"
+#include "data_structure/semigroup/assignment.hpp"
 
 
 namespace lib {

@@ -14,7 +14,7 @@ namespace monoids {
 
 template<class T> struct minimum : base<T> {
     using base<T>::base;
-    minimum() : base<T>(std::numeric_limits<T>::max()) {};
+    minimum() : base<T>(std::numeric_limits<T>::max() / 2 - 1) {};
     inline minimum operator*(const minimum& other) const { return std::min(this->val(), other.val()); }
 };
 

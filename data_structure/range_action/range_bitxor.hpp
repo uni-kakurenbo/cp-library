@@ -15,15 +15,14 @@ namespace actions {
 
 
 template<class T> struct range_bitxor : base<> {
-    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree };
+    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree, flags::disjoint_sparse_table };
 
-    using operand_monoid = monoids::bitxor<T>;
+    using operand = monoids::bitxor<T>;
 
-    static operand_monoid rev(const operand_monoid& x, const operand_monoid& y) { return x * y; }
+    static operand rev(const operand& x, const operand& y) { return x * y; }
 };
 
 
 } // namespace actions
-
 
 } // namespace lib

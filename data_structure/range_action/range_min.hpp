@@ -15,9 +15,9 @@ namespace actions {
 
 
 template<class T> struct range_min : base<> {
-    static constexpr flags tags{ flags::segment_tree };
+    static constexpr flags tags{ flags::segment_tree, flags::disjoint_sparse_table };
 
-    using operand_monoid = monoids::minimum<T>;
+    using operand = monoids::minimum<T>;
 };
 
 
@@ -27,8 +27,8 @@ template<class T> struct range_min : base<> {
 template<class T> struct segment_tree<actions::range_min<T>> : internal::segment_tree_lib::core<monoids::minimum<T>> {
     using internal::segment_tree_lib::core<monoids::minimum<T>>::core;
 
-    inline auto min(const size_t first, const size_t last) { return this->prod(first, last); }
-    inline auto min() { return this->prod(); }
+    inline auto min(const size_t first, const size_t last) { return this->fold(first, last); }
+    inline auto min() { return this->fold(); }
 };
 
 

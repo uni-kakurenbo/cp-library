@@ -18,10 +18,10 @@ namespace actions {
 template<class T> struct range_set_range_max : base<monoids::assignment<T>>  {
     static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
 
-    using operand_monoid = monoids::maximum<T>;
-    using operator_monoid = monoids::assignment<T>;
+    using operand = monoids::maximum<T>;
+    using operation = monoids::assignment<T>;
 
-    static operand_monoid map(const operand_monoid& x, const operator_monoid& y) { return y->value_or(x.val()); }
+    static operand map(const operand& x, const operation& y) { return y->value_or(x.val()); }
 };
 
 
@@ -35,8 +35,8 @@ template<class T> struct lazy_segment_tree<actions::range_set_range_max<T>> : in
     inline auto set(const size_t pos, const T& val) { return this->apply(pos, val); }
     inline auto set(const T& val) { return this->apply(val); }
 
-    inline auto max(const size_t first, const size_t last) { return this->prod(first, last); }
-    inline auto max() { return this->prod(); }
+    inline auto max(const size_t first, const size_t last) { return this->fold(first, last); }
+    inline auto max() { return this->fold(); }
 };
 
 

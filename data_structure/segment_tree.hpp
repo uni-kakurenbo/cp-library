@@ -11,6 +11,8 @@
 #include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
+#include "internal/point_reference.hpp"
+#include "internal/range_reference.hpp"
 
 #include "snippet/iterations.hpp"
 
@@ -49,6 +51,10 @@ template<class S> struct base {
     inline size_type allocated() const { return this->_size; }
     inline size_type depth() const { return this->_depth; }
 
+    inline void apply(size_type p, const S& x) {
+        this->set(p, this->_data[p + this->_size] * x);
+    }
+
     inline void set(size_type p, const S& x) {
         p += this->_size;
         this->_data[p] = x;
@@ -59,7 +65,7 @@ template<class S> struct base {
         return this->_data[p + this->_size];
     }
 
-    inline S prod(size_type l, size_type r) const {
+    inline S fold(size_type l, size_type r) const {
         S sml, smr;
         l += this->_size;
         r += this->_size;
@@ -145,6 +151,21 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
     using value_type = typename monoid::value_type;
     using size_type = typename base::size_type;
 
+  protected:
+    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
+        dev_assert(0 <= p and p < this->size());
+    }
+    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
+        dev_assert(0 <= p and p <= this->size());
+    }
+    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
+        dev_assert(0 <= l and l <= r and r <= this->size());
+    }
+
+    inline size_type _positivize_index(const size_type p) const {
+        return p < 0 ? this->size() + p : p;
+    }
+
   public:
     explicit core(const size_type n = 0) : base(n) {}
 
@@ -162,34 +183,91 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
         REPD(p, 1, this->_size) this->update(p);
     }
 
-    inline void set(const size_type p, const value_type& x) {
+    bool empty() const { return this->size() == 0; }
+
+    struct point_reference : internal::point_reference<core> {
+        point_reference(core *const super, const size_type p)
+          : internal::point_reference<core>(super, super->_positivize_index(p))
+        {
+            this->_super->_validate_index_in_right_open(this->_pos);
+        }
+
+        operator value_type() const { return this->_super->get(this->_pos); }
+        value_type val() const { return this->_super->get(this->_pos); }
+
+        inline point_reference& set(const value_type& v) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
+        inline point_reference& operator=(const value_type& v) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
+
+        inline point_reference& apply(const value_type& v) {
+            this->_super->apply(this->_pos, v);
+            return *this;
+        }
+        inline point_reference& operator<<=(const value_type& v) {
+            this->_super->apply(this->_pos, v);
+            return *this;
+        }
+    };
+
+    struct range_reference : internal::range_reference<core> {
+        range_reference(core *const super, const size_type l, const size_type r)
+          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+        {
+            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+        }
+
+        inline value_type fold() {
+            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+            return this->_super->fold(this->_begin, this->_end);
+        }
+        inline value_type operator*() {
+            return this->_super->fold(this->_begin, this->_end);
+        }
+    };
+
+
+    inline auto& apply(const size_type p, const value_type& x) {
+        dev_assert(0 <= p and p < this->size());
+        this->base::apply(p, x);
+         return *this;
+    }
+
+    inline auto& set(const size_type p, const value_type& x) {
         dev_assert(0 <= p and p < this->size());
         this->base::set(p, x);
+         return *this;
     }
 
     inline value_type get(const size_type p) const {
         dev_assert(0 <= p and p < this->size());
-        return this->base::prod(p, p+1).val();
+        return this->base::fold(p, p+1);
     }
-    inline value_type operator[](const size_type p) const { return this->get(p); }
 
-    inline value_type prod(const size_type l, const size_type r) const {
+    inline point_reference operator[](const size_type p) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
+
+    inline value_type fold(const size_type l, const size_type r) const {
         dev_assert(0 <= l and l <= r and r <= this->size());
-        return this->base::prod(l, r).val();
+        return this->base::fold(l, r);
     }
-    inline value_type prod(const size_type r) const {
+    inline value_type fold(const size_type r) const {
         dev_assert(0 <= r and r <= this->size());
-        return this->base::prod(0, r).val();
+        return this->base::fold(0, r);
     }
-    inline value_type prod() const {
-        return this->base::all_prod().val();
+    inline value_type fold() const {
+        return this->base::all_prod();
     }
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
         iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
-        inline value_type operator*() const { return this->ref()->get(this->p()); }
+        inline value_type operator*() const { return this->ref()->get(this->pos()); }
     };
 
     inline iterator begin() const { return iterator(this, 0); }
@@ -197,9 +275,9 @@ struct core<Monoid, std::void_t<typename internal::is_monoid_t<Monoid>>> : base<
 };
 
 template<class Action>
-struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand_monoid> {
+struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand> {
     using action = Action;
-    using core<typename action::operand_monoid>::core;
+    using core<typename action::operand>::core;
     static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::segment_tree));
 };
 

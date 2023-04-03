@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "internal/types.hpp"
 #include "data_structure/monoid/base.hpp"
 
 
@@ -11,7 +11,7 @@ namespace monoids {
 
 template<class T> struct sum : base<T> {
     using value_type = typename base<T>::value_type;
-    using size_type = internal::size_t;
+    using size_type = lib::internal::size_t;
 
   protected:
     size_type _length = 1;

@@ -15,6 +15,9 @@
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
+#include "internal/point_reference.hpp"
+#include "internal/range_reference.hpp"
+
 #include "random/xorshift.hpp"
 
 #include "data_structure/range_action/flags.hpp"
@@ -30,8 +33,8 @@ namespace implicit_treap_lib {
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
 template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*fold)(const OperatorMonoid&, internal::size_t)>
 struct base : private uncopyable {
-    using operand_monoid = OperandMonoid;
-    using operator_monoid = OperatorMonoid;
+    using operand = OperandMonoid;
+    using operation = OperatorMonoid;
 
     using size_type = internal::size_t;
 
@@ -42,8 +45,8 @@ struct base : private uncopyable {
     static xorshift rand;
 
     struct node {
-        operand_monoid v, acc;
-        operator_monoid lazy;
+        operand v, acc;
+        operation lazy;
 
         xorshift::result_type priority;
 
@@ -52,8 +55,8 @@ struct base : private uncopyable {
         bool rev = false;
         Tree left = nullptr, right = nullptr;
 
-        node(const operand_monoid& v, const base* super)
-        : v(v), acc(operand_monoid{}), lazy(operator_monoid{}), priority(super->rand()) {}
+        node(const operand& v, const base* super)
+        : v(v), acc(operand{}), lazy(operation{}), priority(super->rand()) {}
         ~node() {
             if(this->left) delete this->left;
             if(this->right) delete this->right;
@@ -64,7 +67,7 @@ struct base : private uncopyable {
 
     inline size_type cnt(const Tree tree) const { return tree ? tree->cnt : 0; }
 
-    inline operand_monoid acc(const Tree tree) const { return tree ? tree->acc : operand_monoid{}; }
+    inline operand acc(const Tree tree) const { return tree ? tree->acc : operand{}; }
 
     inline void update_cnt(const Tree tree) const { if(tree) tree->cnt = 1 + this->cnt(tree->left) + this->cnt(tree->right); }
 
@@ -81,7 +84,7 @@ struct base : private uncopyable {
             if(tree->left) tree->left->rev ^= 1;
             if(tree->right) tree->right->rev ^= 1;
         }
-        if(tree and tree->lazy != operator_monoid{}) {
+        if(tree and tree->lazy != operation{}) {
             if(tree->left) {
                 tree->left->lazy = tree->lazy * tree->left->lazy;
                 tree->left->acc = map(tree->left->acc, fold(tree->lazy, this->cnt(tree->left)));
@@ -91,7 +94,7 @@ struct base : private uncopyable {
                 tree->right->acc = map(tree->right->acc, fold(tree->lazy, this->cnt(tree->right)));
             }
             tree->v = map(tree->v, fold(tree->lazy, 1));
-            tree->lazy = operator_monoid{};
+            tree->lazy = operation{};
         }
         // this->pushup(tree);
     }
@@ -143,7 +146,7 @@ struct base : private uncopyable {
         if(t3) delete t3;
     }
 
-    inline void apply(Tree tree, const size_type l, const size_type r, const operator_monoid& v) const {
+    inline void apply(Tree tree, const size_type l, const size_type r, const operation& v) const {
         if(l >= r) return;
         Tree t1, t2, t3;
         this->split(tree, l, t1, t2);
@@ -154,19 +157,19 @@ struct base : private uncopyable {
         this->merge(tree, t1, t2);
     }
 
-    inline operand_monoid prod(Tree tree, const size_type l, const size_type r) const {
-        if(l == r) return operand_monoid{};
+    inline operand fold(Tree tree, const size_type l, const size_type r) const {
+        if(l == r) return operand{};
         Tree t1, t2, t3;
         this->split(tree, l, t1, t2);
         this->split(t2, r - l, t2, t3);
-        operand_monoid ret = t2->acc;
+        operand ret = t2->acc;
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
         return ret;
     }
 
     // [l, r)の中で左から何番目か
-    inline size_type find(const Tree tree, operand_monoid& v, const size_type offset, const bool dir_left = true) const {
+    inline size_type find(const Tree tree, operand& v, const size_type offset, const bool dir_left = true) const {
         if(tree->acc * v == v) {
             return -1;
         } else {
@@ -210,12 +213,12 @@ struct base : private uncopyable {
     virtual ~base() { delete this->root; }
 
   public:
-    // void insert(const size_type p, const operand_monoid& v) { this->insert(this->root, p, std::make_shared<node>(v, this)); }
-    void insert(const size_type p, const operand_monoid& v) { this->insert(this->root, p, new node(v, this)); }
+    // void insert(const size_type p, const operand& v) { this->insert(this->root, p, std::make_shared<node>(v, this)); }
+    void insert(const size_type p, const operand& v) { this->insert(this->root, p, new node(v, this)); }
 
-    inline void apply(const size_type l, const size_type r, const operator_monoid& v) { this->apply(this->root, l, r, v); }
+    inline void apply(const size_type l, const size_type r, const operation& v) { this->apply(this->root, l, r, v); }
 
-    inline operand_monoid prod(const size_type l, const size_type r) const { return this->prod(this->root, l, r); }
+    inline operand fold(const size_type l, const size_type r) const { return this->fold(this->root, l, r); }
 
     inline void erase(const size_type p) { this->erase(this->root, p); }
 
@@ -225,7 +228,7 @@ struct base : private uncopyable {
 
     // 二分探索。[l, r)内のkでf0(tr[k], v) != xとなる最左/最右のもの。存在しない場合は-1
     // たとえばMinMonoidの場合、x未満の最左/最右の要素の位置を返す
-    inline size_type find(const size_type l, const size_type r, const operand_monoid& v, const bool dir_left) const {
+    inline size_type find(const size_type l, const size_type r, const operand& v, const bool dir_left) const {
         if(l >= r) return -1;
         Tree t1, t2, t3;
         this->split(this->root, l, t1, t2);
@@ -242,18 +245,18 @@ xorshift base<OperandMonoid,OperatorMonoid,map,fold>::rand(std::random_device{}(
 
 
 template<class Action>
-struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename Action::operator_monoid,Action::map,Action::fold> {
+struct core : implicit_treap_lib::base<typename Action::operand,typename Action::operation,Action::map,Action::fold> {
   public:
     using action = Action;
 
-    using operand_monoid = typename action::operand_monoid;
-    using operator_monoid = typename action::operator_monoid;
+    using operand = typename action::operand;
+    using operation = typename action::operation;
 
-    using value_type = typename operand_monoid::value_type;
-    using action_type = typename operator_monoid::value_type;
+    using value_type = typename operand::value_type;
+    using action_type = typename operation::value_type;
 
   private:
-    using base = implicit_treap_lib::base<operand_monoid,operator_monoid,Action::map,Action::fold>;
+    using base = implicit_treap_lib::base<operand,operation,Action::map,Action::fold>;
 
   public:
     using size_type = typename base::size_type;
@@ -285,6 +288,76 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
             this->insert(p, *itr);
         }
     }
+
+    bool empty() const { return this->size() == 0; }
+
+    struct point_reference : internal::point_reference<core> {
+        point_reference(core *const super, const size_type p)
+          : internal::point_reference<core>(super, super->_positivize_index(p))
+        {
+            this->_super->_validate_index_in_right_open(this->_pos);
+        }
+
+        operator value_type() const { return this->_super->get(this->_pos); }
+        value_type val() const { return this->_super->get(this->_pos); }
+
+        inline point_reference& set(const value_type& v) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
+        inline point_reference& operator=(const value_type& v) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
+
+        inline point_reference& apply(const value_type& v) {
+            this->_super->apply(this->_pos, v);
+            return *this;
+        }
+        inline point_reference& operator<<=(const value_type& v) {
+            this->_super->apply(this->_pos, v);
+            return *this;
+        }
+    };
+
+    struct range_reference : internal::range_reference<core> {
+        range_reference(core *const super, const size_type l, const size_type r)
+          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+        {
+            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+        }
+
+        inline value_type fold() {
+            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+            return this->_super->fold(this->_begin, this->_end);
+        }
+        inline value_type operator*() {
+            return this->_super->fold(this->_begin, this->_end);
+        }
+
+        inline range_reference& fill(const value_type& v) {
+            this->_super->fill(this->_begin, this->_end, v);
+            return *this;
+        }
+        inline range_reference& operator=(const value_type& v) {
+            this->_super->fill(this->_begin, this->_end, v);
+            return *this;
+        }
+
+        inline range_reference& apply(const value_type& v) {
+            this->_super->apply(this->_begin, this->_end, v);
+            return *this;
+        }
+        inline range_reference& operator<<=(const value_type& v) {
+            this->_super->apply(this->_begin, this->_end, v);
+            return *this;
+        }
+
+        inline size_type find(const value_type& v, const bool dir_left = true) const {
+            return this->_super->base::find(this->_begin, this->_end, v, dir_left);
+        }
+    };
+
 
     inline void insert(size_type p, const value_type& v) {
         p = this->_positivize_index(p);
@@ -345,19 +418,21 @@ struct core : implicit_treap_lib::base<typename Action::operand_monoid,typename 
     inline value_type get(size_type p) const {
         p = this->_positivize_index(p);
         this->_validate_index_in_right_open(p);
-        return this->base::prod(p, p+1).val();
+        return this->base::fold(p, p+1).val();
     }
-    inline value_type operator[](const size_type p) const { return this->get(p); }
+
+    inline point_reference operator[](const size_type p) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
 
     inline value_type front() const { return this->get(0); }
     inline value_type back() const { return this->get(this->size()-1); }
 
-    inline value_type prod(size_type l, size_type r) const {
+    inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         this->_validate_rigth_open_interval(l, r);
-        return this->base::prod(l, r).val();
+        return this->base::fold(l, r).val();
     }
-    inline value_type prod() const { return this->prod(0, this->size()); }
+    inline value_type fold() const { return this->fold(0, this->size()); }
 
     inline void reverse(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);

@@ -17,6 +17,7 @@ enum class tags : std::int8_t {
     segment_tree = 1 << 1,
     lazy_segment_tree = 1 << 2,
     implicit_treap = 1 << 3,
+    disjoint_sparse_table = 1 << 4,
 };
 
 
@@ -30,6 +31,7 @@ struct flags : lib::internal::bit_field::base<internal::tags> {
     static constexpr internal::tags segment_tree = internal::tags::segment_tree;
     static constexpr internal::tags lazy_segment_tree = internal::tags::lazy_segment_tree;
     static constexpr internal::tags implicit_treap = internal::tags::implicit_treap;
+    static constexpr internal::tags disjoint_sparse_table = internal::tags::disjoint_sparse_table;
 };
 
 

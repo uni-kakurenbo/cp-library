@@ -1,14 +1,13 @@
 #pragma once
 
-#include "data_structure/semigroup/base.hpp"
 
 namespace lib {
 
-namespace monoids {
+namespace semigroups {
 
 namespace internal {
 
-struct base : lib::semigroups::internal::base {};
+struct base {};
 
 } // namespace internal
 

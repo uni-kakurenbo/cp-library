@@ -20,10 +20,10 @@ namespace actions {
 template<class T> struct null : base<monoids::null<T>> {
     static constexpr flags tags{ flags::implicit_treap };
 
-    using operand_monoid = monoids::addition<T>;
-    using operator_monoid = monoids::null<T>;
+    using operand = monoids::addition<T>;
+    using operation = monoids::null<T>;
 
-    static operand_monoid map(const operand_monoid& x, const operator_monoid&) { return x; }
+    static operand map(const operand& x, const operation&) { return x; }
 };
 
 
@@ -34,7 +34,7 @@ template<class T> struct implicit_treap<actions::null<T>> : internal::implicit_t
     using internal::implicit_treap_lib::core<actions::null<T>>::core;
 
     template<class... Args> void apply(const Args&... args) = delete;
-    template<class... Args> void prod(const Args&... args) = delete;
+    template<class... Args> void fold(const Args&... args) = delete;
 };
 
 

@@ -15,9 +15,9 @@ namespace actions {
 
 
 template<class T> struct range_max : base<> {
-    static constexpr flags tags{ flags::segment_tree };
+    static constexpr flags tags{ flags::segment_tree, flags::disjoint_sparse_table };
 
-    using operand_monoid = monoids::maximum<T>;
+    using operand = monoids::maximum<T>;
 };
 
 
@@ -27,8 +27,8 @@ template<class T> struct range_max : base<> {
 template<class T> struct segment_tree<actions::range_max<T>> : internal::segment_tree_lib::core<monoids::maximum<T>> {
     using internal::segment_tree_lib::core<monoids::maximum<T>>::core;
 
-    inline auto max(const size_t first, const size_t last) { return this->prod(first, last); }
-    inline auto max() { return this->prod(); }
+    inline auto max(const size_t first, const size_t last) { return this->fold(first, last); }
+    inline auto max() { return this->fold(); }
 };
 
 

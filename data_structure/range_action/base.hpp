@@ -17,8 +17,8 @@ struct base {};
 
 
 
-template<class operator_monoid = std::nullptr_t> struct base : internal::base {
-    static operator_monoid fold(const operator_monoid& x, const lib::internal::size_t) { return x; }
+template<class operation = std::nullptr_t> struct base : internal::base {
+    static operation fold(const operation& x, const lib::internal::size_t) { return x; }
 };
 
 

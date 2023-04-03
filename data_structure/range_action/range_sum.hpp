@@ -15,11 +15,11 @@ namespace actions {
 
 
 template<class T> struct range_sum : base<> {
-    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree };
+    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree, flags::disjoint_sparse_table };
 
-    using operand_monoid = monoids::addition<T>;
+    using operand = monoids::addition<T>;
 
-    static operand_monoid rev(const operand_monoid& x, const operand_monoid& y) { return x.val() - y.val(); }
+    static operand rev(const operand& x, const operand& y) { return x.val() - y.val(); }
 };
 
 
@@ -27,12 +27,46 @@ template<class T> struct range_sum : base<> {
 
 
 template<class T> struct fenwick_tree<actions::range_sum<T>> : internal::fenwick_tree_lib::core<actions::range_sum<T>> {
-    using internal::fenwick_tree_lib::core<actions::range_sum<T>>::core;
+  private:
+    using base = internal::fenwick_tree_lib::core<actions::range_sum<T>>;
 
-    inline auto add(const size_t pos, const T& val) { return this->apply(pos, val); }
+  public:
+    using base::base;
+    using size_type = typename base::size_type;
 
-    inline auto sum(const size_t first, const size_t last) { return this->prod(first, last); }
-    inline auto sum() { return this->prod(); }
+    struct point_reference : base::point_reference {
+        using base::point_reference::point_reference;
+
+        inline point_reference& add(const T& val) { this->_super->apply(this->_pos, val); return *this; }
+        inline point_reference& operator+=(const T& val) { this->_super->apply(this->_pos, val); return *this; }
+        inline point_reference& operator-=(const T& val) { this->_super->apply(this->_pos, -val); return *this; }
+        inline point_reference& operator++(int) { return *this += 1; }
+        inline point_reference& operator--(int) { return *this -= 1; }
+        inline point_reference& operator++() { const auto res = *this; *this += 1; return res; }
+        inline point_reference& operator--() { const auto res = *this; *this -= 1; return res; }
+    };
+
+    struct range_reference : base::range_reference {
+        using base::range_reference::range_reference;
+
+        inline auto sum() const { return this->_super->fold(this->_begin, this->_end); }
+    };
+
+    inline point_reference operator[](const size_type p) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
+
+    inline auto& add(const size_type first, const size_type last, const T& val) { this->apply(first, last, val); return *this; }
+    inline auto& add(const size_type pos, const T& val) { this->apply(pos, val); return *this; }
+    inline auto& add(const T& val) { this->apply(val); return *this; }
+    inline auto& operator+=(const T& val) { this->apply(this->_pos, val); return *this; }
+    inline auto& operator-=(const T& val) { this->apply(this->_pos, -val); return *this; }
+    inline auto& operator++(int) { return *this += 1; }
+    inline auto& operator--(int) { return *this -= 1; }
+    inline auto& operator++() { const auto res = *this; *this += 1; return res; }
+    inline auto& operator--() { const auto res = *this; *this -= 1; return res; }
+
+    inline auto sum(const size_t first, const size_t last) { return this->fold(first, last); }
+    inline auto sum() { return this->fold(); }
 };
 
 
