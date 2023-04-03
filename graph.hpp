@@ -2,11 +2,16 @@
 
 #include <tuple>
 #include <vector>
+#include <iostream>
 
 #include "snippet/internal/types.hpp"
 
 #include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
+#include "snippet/iterations.hpp"
+
+#include "data_structure/disjoint_set_union.hpp"
+
 
 namespace lib {
 
@@ -16,12 +21,21 @@ namespace graph_lib {
 
 
 template<class cost_t, class size_type> struct edge {
+  private:
+    inline static internal::size_t unique() { static internal::size_t id = 0; return id++; }
+
+  public:
     using cost_type = cost_t;
+
+    const internal::size_t id = unique();
     const size_type from, to; const cost_t cost;
 
     edge(const size_type u, const size_type v, const cost_t w) : from(u), to(v), cost(w) {}
 
     std::tuple<size_type,size_type,cost_t> _debug() const { return { from, to, cost }; };
+
+    friend bool operator==(const edge& lhs, const edge& rhs) { return lhs.id == rhs.id; }
+    friend bool operator!=(const edge& lhs, const edge& rhs) { return lhs.id != rhs.id; }
 };
 
 
@@ -63,14 +77,14 @@ struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::siz
     inline size_type edges() const { return this->inputted.size(); }
 
     template<const edge_type EDGE_TYPE = edge_type::directed>
-    inline void add_edge(const size_type u, const size_type v, const cost_type w = 0) {
+    inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) {
         dev_assert(0 <= u and u < this->vertexes()), dev_assert(0 <= v and v < this->vertexes());
         this->_add_edge(u, v, w);
         if constexpr(EDGE_TYPE == edge_type::undirected) this->_add_edge(v, u, w);
         ++this->_undirected_edge_count;
     }
 
-    inline void add_edge_bidirectionally(const size_type u, const size_type v, const cost_type w = 0) {
+    inline void add_edge_bidirectionally(const size_type u, const size_type v, const cost_type w = 1) {
         this->add_edge<edge_type::undirected>(u, v, w);
     }
 
@@ -91,13 +105,17 @@ struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::siz
         }
     }
 
-    // graph/bfs.hpp
-    template<class cost_t = cost_type> inline void bfs(const size_type, std::vector<cost_t> *const) const;
-    template<class cost_t = cost_type> inline std::vector<cost_t> bfs(const size_type) const;
+    // graph/shortest_path.hpp
+    template<class cost_t = cost_type> inline void distances_without_cost(const size_type, std::vector<cost_t> *const) const;
+    template<class cost_t = cost_type> inline std::vector<cost_t> distances_without_cost(const size_type) const;
 
     // graph/dijkstra.hpp
-    template<class cost_t = cost_type> inline void dijkstra(const size_type, std::vector<cost_t> *const) const;
-    template<class cost_t = cost_type> inline std::vector<cost_t> dijkstra(const size_type) const;
+    template<class cost_t = cost_type> inline void distances_with_01cost(const size_type, std::vector<cost_t> *const) const;
+    template<class cost_t = cost_type> inline std::vector<cost_t> distances_with_01cost(const size_type) const;
+
+    // graph/dijkstra.hpp
+    template<class cost_t = cost_type> inline void distances(const size_type, std::vector<cost_t> *const) const;
+    template<class cost_t = cost_type> inline std::vector<cost_t> distances(const size_type) const;
 
     // graph/topological_sort.hpp
     inline bool sort_topologically(std::vector<size_type> *const ) const;
@@ -118,16 +136,16 @@ struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::siz
     template<class cost_t = cost_type>
     inline cost_t maximum_spanning_tree_cost() const;
 
-    // graph/manhattan_minimum_spanning_tree.hpp
-    inline size_type count_components() const;
+    // graph/connected_components.hpp
+    inline lib::dsu components() const;
 
     // graph/from_grid.hpp
     template<class G, class U = char>
     inline void from_grid(const G&, U = '.');
 
     // graph/manhattan_minimum_spanning_tree.hpp
-    template<class distance_type = cost_type, class = internal::size_t>
-    inline distance_type build_manhattan_mst(const std::vector<distance_type>&, const std::vector<distance_type>&);
+    template<class I, class J = I, class distance_type = cost_type, class = internal::size_t>
+    inline distance_type build_manhattan_mst(const I, const I, const J, const J);
 };
 
 } // namespace lib

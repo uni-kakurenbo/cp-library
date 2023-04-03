@@ -7,6 +7,8 @@
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
+#include "valarray.hpp"
+
 namespace lib {
 
 namespace internal {
@@ -32,18 +34,18 @@ template<class container> struct base : container {
 } // namespace internal
 
 
-template<class T, const unsigned int RANK, template<class...> class container = std::vector>
+template<class T, const unsigned int RANK, template<class...> class container = valarray>
 struct multi_container : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>> {
     using internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>>::base;
 
     template<class Head, class... Tail>
-    multi_container(const Head head, const Tail&&... tail)
-    : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(std::forward<const Tail>(tail)...)) {
-        static_assert(is_integral_v<Head>, "size must be integral");
+    multi_container(const Head head, const Tail... tail)
+    : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) {
+        static_assert(std::is_integral_v<Head>, "size must be integral");
     }
 
     template<class Head, class... Tail> T& operator()(const Head _head, const Tail... tail) {
-        static_assert(is_integral_v<Head>, "index must be integral");
+        static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const internal::size_t head = this->_positivize_index(_head);
         this->_validate_index(head);
@@ -51,7 +53,7 @@ struct multi_container : internal::multi_container_lib::base<container<multi_con
     }
 
     template<class Head, class... Tail> const T& operator()(const Head _head, const Tail... tail) const {
-        static_assert(is_integral_v<Head>, "index must be integral");
+        static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const internal::size_t head = this->_positivize_index(_head);
         this->_validate_index(head);
@@ -63,7 +65,7 @@ template<class T, template<class...> class container>
 struct multi_container<T,1,container> : internal::multi_container_lib::base<container<T>> {
     using internal::multi_container_lib::base<container<T>>::base;
 
-    template<class... Args> multi_container(const Args&&... args) : internal::multi_container_lib::base<container<T>>(std::forward<const Args>(args)...) {}
+    template<class... Args> multi_container(const Args&... args) : internal::multi_container_lib::base<container<T>>(args...) {}
 
     T& operator()(const internal::size_t _index) {
         const internal::size_t index = this->_positivize_index(_index);

@@ -1,8 +1,23 @@
 #pragma once
 
 #include <cstdint>
+#include <utility>
+#include <limits>
+
+#include "snippet/aliases.hpp"
+
 
 namespace lib {
+
+
+i32 INF32 = (std::numeric_limits<i32>::max() >> 1) - 1;
+i64 INF64 = (std::numeric_limits<i64>::max() >> 1) - 1;
+
+constexpr char LN = '\n';
+constexpr char SPC = ' ';
+
+constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
 
 enum class comp : std::int8_t {
