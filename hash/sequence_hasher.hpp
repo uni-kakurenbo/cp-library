@@ -167,13 +167,13 @@ struct sequence_hasher {
 
     template<class T>inline sequence_hasher& concat(const T& v) { return this->concat(ALL(v)); }
 
-    inline size_type lcp(const sequence_hasher &b, size_type l0, size_type r0, size_type l1, size_type r1) {
+    inline size_type lcp(size_type l0, size_type r0, size_type l1, size_type r1) {
         size_type size = std::min(r0 - l0, r1 - l1);
         size_type low = -1, high = size + 1;
 
         while(high - low > 1) {
             size_type mid = (low + high) / 2;
-            if(this->get(l0, l0 + mid) == b.get(l1, l1 + mid)) low = mid;
+            if(this->get(l0, l0 + mid) == this->get(l1, l1 + mid)) low = mid;
             else high = mid;
         }
 
