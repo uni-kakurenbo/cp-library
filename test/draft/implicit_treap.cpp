@@ -10,13 +10,13 @@ namespace actions {
 
 
 template<class T> struct range_set_range_sum {
-    using operand_monoid = monoids::sum<T>;
-    using operator_monoid = monoids::assignment<T>;
+    using operand = monoids::sum<T>;
+    using operation = monoids::assignment<T>;
 
-    static operand_monoid map(const operand_monoid& x, const operator_monoid& f) {
+    static operand map(const operand& x, const operation& f) {
         return { fold(f, x.len())->value_or(x->val()) };
     }
-    static operator_monoid fold(const operator_monoid& x, const internal::size_t length) {
+    static operation fold(const operation& x, const internal::size_t length) {
         if(x->has_value()) return { x->operator*() * length };
         return x;
     }
@@ -30,10 +30,10 @@ template<class T> struct range_set_range_sum {
 signed main() {
     debug(lib::internal::is_monoid_v<int>);
     debug(lib::internal::is_monoid_v<lib::monoids::addition<int>>);
-    debug(lib::actions::range_set_range_sum::operand_monoid::specialized);
+    debug(lib::actions::range_set_range_sum::operand::specialized);
     // lib::implicit_treap<lib::actions::range_set_range_sum<int>> data(5, 1);
-    // debug(data, data.prod());
+    // debug(data, data.fold());
     // data.apply(1, 5);
     // data.apply(1, 3, 5);
-    // debug(data, data.prod());
+    // debug(data, data.fold());
 }

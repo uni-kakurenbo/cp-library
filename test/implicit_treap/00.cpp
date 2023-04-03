@@ -39,7 +39,7 @@ signed main() {
     data.reverse(1, 4);
     debug(data);
 
-    debug(data.prod(0, 1));
-    debug(data.prod(2, 5));
-    debug(data.prod(2, 3));
+    debug(data.fold(0, 1));
+    debug(data.fold(2, 5));
+    debug(data.fold(2, 3));
 }

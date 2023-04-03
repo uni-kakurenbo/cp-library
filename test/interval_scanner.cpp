@@ -31,12 +31,12 @@ signed main() {
         return 0;
     }
 
-    ll prod = 0;
+    ll fold = 0;
     auto validate = [&](int val) { return val <= k; };
-    auto init = [&]() { prod = 1; };
-    auto valid = [&]() { return prod <= k; };
-    auto expand = [&](int val) { prod *= val; };
-    auto contract = [&](int val) { assert(prod % val == 0), prod /= val; };
+    auto init = [&]() { fold = 1; };
+    auto valid = [&]() { return fold <= k; };
+    auto expand = [&](int val) { fold *= val; };
+    auto contract = [&](int val) { assert(fold % val == 0), fold /= val; };
 
     int ans = 0;
     auto apply = [&](auto left, auto right) { chmax(ans, right - left); };
