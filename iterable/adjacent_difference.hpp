@@ -9,7 +9,7 @@
 
 namespace lib {
 
-template<class T, class container = std::vector<T>>
+template<class T = i64, class container = std::vector<T>>
 struct adjacent_difference : container {
   public:
     adjacent_difference() {}

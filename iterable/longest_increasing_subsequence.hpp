@@ -12,7 +12,7 @@
 namespace lib {
 
 
-template<class T, bool STRICT, class container = std::vector<T>>
+template<class T = i64, bool STRICT, class container = std::vector<T>>
 struct lis : container {
     using size_type = typename internal::size_t;
 

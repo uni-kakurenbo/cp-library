@@ -9,7 +9,7 @@
 
 namespace lib {
 
-template<class T, class container = std::vector<internal::size_t>>
+template<class T = i64, class container = std::vector<internal::size_t>>
 struct compression : container {
     using size_type = internal::size_t;
 
@@ -31,8 +31,11 @@ struct compression : container {
     inline size_type rank(const T& val) const {
         return std::distance(this->values.begin(), std::lower_bound(this->values.begin(), this->values.end(), val));
     }
+    inline size_type rank2(const T& val) const {
+        return std::distance(this->values.begin(), std::upper_bound(this->values.begin(), this->values.end(), val)) - 1;
+    }
 
-    inline T val() const { return this->values[val]; }
+    inline T value(const size_type rank) const { return this->values[rank]; }
     inline T operator()(const internal::size_t val) const { return this->values[val]; }
 };
 
