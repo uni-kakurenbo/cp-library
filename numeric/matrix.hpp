@@ -25,7 +25,7 @@ template<class T, class base>
 struct matrix_core : base, virtual matrix_lib::interface<T> {
     using base::base;
 
-    static inline matrix_core Identity(const size_t n, const T &&val = { 1 }) {
+    static inline matrix_core identity(const size_t n, const T &&val = { 1 }) {
         matrix_core res(n);
         REP(i, n) res(i, i) = val;
         return res;

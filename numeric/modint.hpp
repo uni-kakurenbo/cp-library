@@ -32,7 +32,7 @@ namespace lib {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/modint/modint-montgomery64.hpp
-template <int id> struct dynamic_modint_64bit {
+template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
   private:
     using mint = dynamic_modint_64bit;
 

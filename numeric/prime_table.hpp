@@ -18,7 +18,7 @@ template<class container = std::vector<bool>> struct prime_flags : container {
     }
 };
 
-template<class T, class container = std::vector<T>> struct prime_table : container {
+template<class T, class container = std::valarray<T>> struct prime_table : container {
   protected:
     std::vector<bool> is_prime;
 
