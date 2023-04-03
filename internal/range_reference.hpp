@@ -16,23 +16,23 @@ template<class Super> struct range_reference {
     using iterator = typename Super::iterator;
 
   protected:
-    const Super *const super;
+    Super *const _super;
     const size_type _begin, _end;
 
-    range_reference(const Super *const super, const size_type begin, const size_type end) : super(super), _begin(begin), _end(end) {}
+    range_reference(Super *const super, const size_type begin, const size_type end) : _super(super), _begin(begin), _end(end) {}
 
   public:
-    inline iterator begin() const { return std::next(super->begin(), this->_begin); }
-    inline iterator end() const { return std::next(super->begin(), this->_end); }
+    inline iterator begin() const { return std::next(_super->begin(), this->_begin); }
+    inline iterator end() const { return std::next(_super->begin(), this->_end); }
 
     inline size_type size() const { return this->_end - this->_begin; }
 
   protected:
     inline range_reference sub_range(size_type l, size_type r) const {
-        l = this->super->_positivize_index(l), r = this->super->_positivize_index(r);
+        l = _super->_positivize_index(l), r = _super->_positivize_index(r);
         dev_assert(0 <= l and l <= r and r <= this->size());
 
-        return range_reference(this->super, this->_begin + l, this->_begin + r);
+        return range_reference(_super, this->_begin + l, this->_begin + r);
     }
 
   public:

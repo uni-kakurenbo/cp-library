@@ -22,17 +22,23 @@ struct iterator_interface {
 };
 
 template<class T>
-struct bidirectiona_iterator_interface : iterator_interface<T> {
-    using iterator_category = std::bidirectional_iterator_tag;
+struct forward_iterator : iterator_interface<T> {
+    using iterator_category = std::forward_iterator_tag;
 
-    // virtual bidirectiona_iterator_interface& operator++() = 0;
-    // virtual bidirectiona_iterator_interface& operator--() = 0;
+    // virtual bidirectional_iterator_interface& operator++() = 0;
 };
 
 template<class T>
-struct random_access_iterator_base : bidirectiona_iterator_interface<T> {
+struct bidirectional_iterator_interface : forward_iterator<T> {
+    using iterator_category = std::bidirectional_iterator_tag;
+
+    // virtual bidirectional_iterator_interface& operator--() = 0;
+};
+
+template<class T>
+struct random_access_iterator_base : bidirectional_iterator_interface<T> {
     using iterator_category = std::random_access_iterator_tag;
-    using difference_type = typename bidirectiona_iterator_interface<T>::difference_type;
+    using difference_type = typename bidirectional_iterator_interface<T>::difference_type;
 
   public:
     // virtual random_access_iterator_base& operator+=(const difference_type count) = 0;
@@ -41,7 +47,7 @@ struct random_access_iterator_base : bidirectiona_iterator_interface<T> {
 
 template<class T, class container>
 struct container_iterator_interface : public random_access_iterator_base<T> {
-    using difference_type = typename bidirectiona_iterator_interface<T>::difference_type;
+    using difference_type = typename bidirectional_iterator_interface<T>::difference_type;
 
   protected:
     const container *const _ref;
@@ -78,6 +84,7 @@ inline I operator+(I itr, const typename I::difference_type count) { return itr 
 
 template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
 inline I operator-(I itr, const typename I::difference_type count) { return itr -= count, itr; }
+
 
 } // namespace internal
 
