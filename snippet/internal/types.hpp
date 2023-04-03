@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 using i16 = std::int16_t;
 using u16 = std::uint16_t;
 

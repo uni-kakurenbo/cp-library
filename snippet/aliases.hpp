@@ -14,13 +14,10 @@
 #define $F first
 #define $S second
 
-constexpr char ln = '\n';
-constexpr char spc = ' ';
+namespace lib {
 
-constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
-constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
-template<class T1, class T2> inline auto mod(T1 x, T2 r) { return (x%r+r)%r; }
+template<class T> using spair = std::pair<T,T>;
 
-template<class T1, class T2> inline bool chmax(T1 &a, T2 b) { return (a<b ? a=b, true : false); }
-template<class T1, class T2> inline bool chmin(T1 &a, T2 b) { return (a>b ? a=b, true : false); }
+
+}
