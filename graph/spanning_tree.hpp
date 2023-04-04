@@ -8,7 +8,7 @@ namespace lib {
 
 namespace internal {
 
-namespace graph_lib {
+namespace graph_impl {
 
 
 template<class G, class cost_type, class Compare>
@@ -35,7 +35,7 @@ cost_type kruskal(const G& graph, const Compare compare) {
 }
 
 
-} // namespace graph_lib
+} // namespace graph_impl
 
 } // namespace internal
 
@@ -43,13 +43,13 @@ cost_type kruskal(const G& graph, const Compare compare) {
 template<class edge_cost>
 template<class cost_type>
 cost_type graph<edge_cost>::minimum_spanning_tree_cost() const {
-    return internal::graph_lib::kruskal<graph<edge_cost>,cost_type,std::less<tuple<cost_type,size_type,size_type>>>(*this, {});
+    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::less<tuple<cost_type,size_type,size_type>>>(*this, {});
 }
 
 template<class edge_cost>
 template<class cost_type>
 inline cost_type graph<edge_cost>::maximum_spanning_tree_cost() const {
-    return internal::graph_lib::kruskal<graph<edge_cost>,cost_type,std::greater<tuple<cost_type,size_type,size_type>>>(*this, {});
+    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::greater<tuple<cost_type,size_type,size_type>>>(*this, {});
 }
 
 

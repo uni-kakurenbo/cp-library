@@ -9,7 +9,6 @@
 
 #include <atcoder/dsu>
 
-#include "internal/dev_assert.hpp"
 #include "snippet/iterations.hpp"
 #include "internal/types.hpp"
 
@@ -25,7 +24,7 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_candidate_e
     const I x_first, const I x_last, const J y_first, const J y_last
 ) {
     std::vector<cost_type> xs(x_first, x_last), ys(y_first, y_last);
-    dev_assert(xs.size() == ys.size());
+    assert(xs.size() == ys.size());
 
     std::vector<size_type> indices(xs.size());
     std::iota(ALL(indices), 0);
@@ -62,7 +61,7 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
     const I x_first, const I x_last, const J y_first, const J y_last,
     cost_type *const cost_sum = nullptr
 ) {
-    dev_assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
+    assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
 
     if(cost_sum) *cost_sum = 0;
 
@@ -84,7 +83,7 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
 template<class edge_cost>
 template <class I, class J, class cost_type, class size_type>
 cost_type graph<edge_cost>::build_manhattan_mst(const I x_first, const I x_last, const J y_first, const J y_last) {
-    dev_assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
+    assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
 
     cost_type res = 0;
 

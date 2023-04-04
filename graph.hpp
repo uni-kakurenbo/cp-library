@@ -6,7 +6,6 @@
 
 #include "snippet/internal/types.hpp"
 
-#include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 #include "snippet/iterations.hpp"
 
@@ -17,7 +16,7 @@ namespace lib {
 
 namespace internal {
 
-namespace graph_lib {
+namespace graph_impl {
 
 
 template<class cost_t, class size_type> struct edge {
@@ -39,16 +38,16 @@ template<class cost_t, class size_type> struct edge {
 };
 
 
-} // namespace graph_lib
+} // namespace graph_impl
 
 } // namespace internal
 
 template<class C = ll>
-struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::size_t>>> {
+struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::size_t>>> {
     using size_type = internal::size_t;
     using cost_type = C;
 
-    using edge = typename internal::graph_lib::edge<cost_type,size_type>;
+    using edge = typename internal::graph_impl::edge<cost_type,size_type>;
 
     enum class edge_type { undirected, directed };
 
@@ -78,7 +77,7 @@ struct graph : std::vector<std::vector<internal::graph_lib::edge<C,internal::siz
 
     template<const edge_type EDGE_TYPE = edge_type::directed>
     inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) {
-        dev_assert(0 <= u and u < this->vertexes()), dev_assert(0 <= v and v < this->vertexes());
+        assert(0 <= u and u < this->vertexes()), assert(0 <= v and v < this->vertexes());
         this->_add_edge(u, v, w);
         if constexpr(EDGE_TYPE == edge_type::undirected) this->_add_edge(v, u, w);
         ++this->_undirected_edge_count;

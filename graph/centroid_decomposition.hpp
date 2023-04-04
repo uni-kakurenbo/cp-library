@@ -3,8 +3,6 @@
 #include <vector>
 #include <utility>
 
-#include "internal/dev_assert.hpp"
-#include "internal/dev_assert.hpp"
 
 #include "graph.hpp"
 
@@ -35,20 +33,20 @@ struct centroid_decomposition {
     inline const auto& used() const { return this->_used; }
 
     inline size_type size(const size_type v) const {
-        dev_assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertexes());
         return this->_size[v];
     }
     inline size_type parent(const size_type v) const {
-        dev_assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertexes());
         return this->_parent[v];
     }
     inline bool used(const size_type v) const {
-        dev_assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertexes());
         return this->_used[v];
     }
 
     const std::vector<size_type>& find(const size_type v, const size_type sz, const size_type p = -1) {
-        dev_assert(not this->_used[v]);
+        assert(not this->_used[v]);
 
         this->_size[v] = 1, this->_parent[v] = p;
         bool found = true;
@@ -67,7 +65,7 @@ struct centroid_decomposition {
     }
 
     auto decompose(const size_type root, const size_type sz) {
-    dev_assert(not this->_used[root]);
+    assert(not this->_used[root]);
 
         std::vector<std::pair<size_type,size_type>> subtrees;
 
