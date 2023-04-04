@@ -1,6 +1,6 @@
-#include "data_structure/monoid/addition.hpp"
-#include "data_structure/internal/is_monoid.hpp"
-#include "data_structure/monoid/assignment.hpp"
+#include "algebraic/addition.hpp"
+#include "algebraic/internal/is_algebraic.hpp"
+#include "algebraic/assignment.hpp"
 
 #include "template.hpp"
 
@@ -28,8 +28,8 @@ template<class T> struct range_set_range_sum {
 } // namespace lib
 
 signed main() {
-    debug(lib::internal::is_monoid_v<int>);
-    debug(lib::internal::is_monoid_v<lib::monoids::addition<int>>);
+    debug(lib::algebraic::internal::is_monoid_v<int>);
+    debug(lib::algebraic::internal::is_monoid_v<lib::algebraic::addition<int>>);
     debug(lib::actions::range_set_range_sum::operand::specialized);
     // lib::implicit_treap<lib::actions::range_set_range_sum<int>> data(5, 1);
     // debug(data, data.fold());
