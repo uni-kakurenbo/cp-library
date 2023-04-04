@@ -10,7 +10,6 @@
 
 #include "snippet/aliases.hpp"
 
-#include "internal/dev_assert.hpp"
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
@@ -18,7 +17,7 @@ namespace lib {
 
 namespace internal {
 
-namespace grid_lib {
+namespace grid_impl {
 
 template<class T>
 struct interface {
@@ -41,8 +40,8 @@ template<class T> struct container_base : virtual interface<T> {
 
   protected:
     inline void _validate_index(__attribute__ ((unused)) const size_t i, __attribute__ ((unused)) const size_t j) const {
-        dev_assert(0 <= i and i < this->height());
-        dev_assert(0 <= j and j < this->width());
+        assert(0 <= i and i < this->height());
+        assert(0 <= j and j < this->width());
     }
 
     inline size_t _positivize_row_index(const size_t x) const {
@@ -81,7 +80,7 @@ struct container : base, container_base<T>, virtual interface<T> {
         const size_t rows = std::distance(ALL(init_list));
         const size_t first_cols = init_list.begin()->size();
 
-        if constexpr (DEV_ENV) { ITR(init_row, init_list) dev_assert((size_t)init_row.size() == first_cols); }
+        if constexpr (DEV_ENV) { ITR(init_row, init_list) assert((size_t)init_row.size() == first_cols); }
 
         this->container_base<T>::resize(rows, first_cols);
     }
@@ -131,7 +130,7 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
         this->resize(rows, first_cols);
 
         for(auto index=0, itr=init_list.begin(), itr_end=init_list.end(); itr!=itr_end; ++itr) {
-            dev_assert((size_t)itr->size() == first_cols);
+            assert((size_t)itr->size() == first_cols);
             for(auto v=itr->begin(), v_end=itr->end(); v!=v_end; ++v) (*this)[index++] = *v;
         }
     }
@@ -164,9 +163,9 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
     }
 };
 
-}  // namespace grid_lib
+}  // namespace grid_impl
 
-template<class T, class container> struct grid_core : container, virtual grid_lib::interface<T> {
+template<class T, class container> struct grid_core : container, virtual grid_impl::interface<T> {
     using container::container;
 
     enum class invert_direction { vertical, horizontal };
@@ -231,9 +230,9 @@ template<class T, class container> struct grid_core : container, virtual grid_li
 } // namespace internal
 
 template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
-using grid = internal::grid_core<T,internal::grid_lib::container<T,Row,base>>;
+using grid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>>;
 
 template<class T, class base = std::vector<T>>
-using unfolded_grid = internal::grid_core<T,internal::grid_lib::unfolded_container<T,base>>;
+using unfolded_grid = internal::grid_core<T,internal::grid_impl::unfolded_container<T,base>>;
 
 } // namespace lib
