@@ -6,7 +6,6 @@
 #include <numeric>
 
 #include "internal/types.hpp"
-#include "internal/dev_assert.hpp"
 
 #include "valarray.hpp"
 
@@ -36,7 +35,7 @@ struct accumulation : container {
     template<class Operaotr = std::minus<T>>
     inline T operator()(size_type left, size_type right, Operaotr op = std::minus<T>{}) const {
         left = _positivize_index(left), right = _positivize_index(right);
-        dev_assert(0 <= left and left <= right and right < (size_type)std::size(*this));
+        assert(0 <= left and left <= right and right < (size_type)std::size(*this));
         return op((*this)[right], (*this)[left]);
     }
 };
@@ -65,7 +64,7 @@ struct accumulation_2d : container {
             this->assign(h+1, head);
             (*this)[0].assign(w+1, head);
             REP(i, h) {
-                dev_assert(w == std::distance(std::begin(*row), std::end(*row)));
+                assert(w == std::distance(std::begin(*row), std::end(*row)));
                 (*this)[i+1].assign(w+1, head);
                 REP(j, w) (*this)[i+1][j+1] = first[i][j];
                 ++row;
@@ -79,8 +78,8 @@ struct accumulation_2d : container {
     inline T operator()(size_type a, size_type b, size_type c, size_type d, const Rev rev = std::minus<T>{}) const {
         a = _positivize_index(a), b = _positivize_index(b);
         c = _positivize_index(c), d = _positivize_index(d);
-        dev_assert(0 <= a and a <= b and b < (size_type)std::size(*this));
-        dev_assert(0 <= c and c <= d and d < (size_type)std::size((*this)[0]));
+        assert(0 <= a and a <= b and b < (size_type)std::size(*this));
+        assert(0 <= c and c <= d and d < (size_type)std::size((*this)[0]));
         return this->_op(rev((*this)[b][d], this->_op((*this)[a][d], (*this)[b][c])), (*this)[a][c]);
     }
 
