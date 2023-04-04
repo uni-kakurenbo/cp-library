@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "constants.hpp"
 #include "geometry.hpp"
 #include "multi_container.hpp"

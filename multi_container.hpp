@@ -3,7 +3,6 @@
 #include <vector>
 #include <array>
 
-#include "internal/dev_assert.hpp"
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
@@ -13,7 +12,7 @@ namespace lib {
 
 namespace internal {
 
-namespace multi_container_lib {
+namespace multi_container_impl {
 
 
 template<class container> struct base : container {
@@ -21,7 +20,7 @@ template<class container> struct base : container {
 
     protected:
     inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const {
-        dev_assert(0 <= index and index < (internal::size_t)this->size());
+        assert(0 <= index and index < (internal::size_t)this->size());
     }
     inline internal::size_t _positivize_index(const internal::size_t x) const {
         return x < 0 ? this->size() + x : x;
@@ -29,18 +28,18 @@ template<class container> struct base : container {
 };
 
 
-} // namespace multi_contatiner_lib
+} // namespace multi_contatiner_impl
 
 } // namespace internal
 
 
 template<class T, const unsigned int RANK, template<class...> class container = valarray>
-struct multi_container : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>> {
-    using internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>>::base;
+struct multi_container : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>> {
+    using internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>::base;
 
     template<class Head, class... Tail>
     multi_container(const Head head, const Tail... tail)
-    : internal::multi_container_lib::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) {
+    : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) {
         static_assert(std::is_integral_v<Head>, "size must be integral");
     }
 
@@ -62,10 +61,10 @@ struct multi_container : internal::multi_container_lib::base<container<multi_con
 };
 
 template<class T, template<class...> class container>
-struct multi_container<T,1,container> : internal::multi_container_lib::base<container<T>> {
-    using internal::multi_container_lib::base<container<T>>::base;
+struct multi_container<T,1,container> : internal::multi_container_impl::base<container<T>> {
+    using internal::multi_container_impl::base<container<T>>::base;
 
-    template<class... Args> multi_container(const Args&... args) : internal::multi_container_lib::base<container<T>>(args...) {}
+    template<class... Args> multi_container(const Args&... args) : internal::multi_container_impl::base<container<T>>(args...) {}
 
     T& operator()(const internal::size_t _index) {
         const internal::size_t index = this->_positivize_index(_index);
@@ -105,7 +104,7 @@ struct multi_container<T,1,container> : internal::multi_container_lib::base<cont
 //         const std::initializer_list<size_t> args { _args... };
 //         reverse(ALL(args));
 
-//         dev_assert(args.size() == RANK);
+//         assert(args.size() == RANK);
 
 //         size_t curr = 0;
 //         ITR(r, RANK) {

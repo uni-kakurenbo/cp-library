@@ -7,7 +7,6 @@
 #include <initializer_list>
 
 #include "internal/types.hpp"
-#include "internal/dev_assert.hpp"
 
 
 namespace lib {
@@ -17,14 +16,14 @@ template<class T> struct valarray : std::valarray<T> {
     using size_type = internal::size_t;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
+    inline bool _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
+        return 0 <= p and p < this->size();
     }
-    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
+    inline bool _validate_index_in_closed([[maybe_unused]] const size_type p) const {
+        return 0 <= p and p <= this->size();
     }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
+    inline bool _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
+        return 0 <= l and l <= r and r <= this->size();
     }
 
     inline size_type _positivize_index(const size_type p) const {
@@ -63,11 +62,11 @@ template<class T> struct valarray : std::valarray<T> {
     }
 
     inline const T& operator[](size_type pos) const {
-        pos = this->_positivize_index(pos); this->_validate_index_in_right_open(pos);
+        pos = this->_positivize_index(pos), assert(this->_validate_index_in_right_open(pos));
         return this->std::valarray<T>::operator[](pos);
     }
     inline T& operator[](size_type pos) {
-        pos = this->_positivize_index(pos); this->_validate_index_in_right_open(pos);
+        pos = this->_positivize_index(pos), assert(this->_validate_index_in_right_open(pos));
         return this->std::valarray<T>::operator[](pos);
     }
 

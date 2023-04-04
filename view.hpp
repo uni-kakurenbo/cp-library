@@ -10,14 +10,13 @@
 
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-#include "internal/dev_assert.hpp"
 
 
 namespace lib {
 
 namespace internal {
 
-namespace view_lib {
+namespace view_impl {
 
 
 struct base {};
@@ -28,12 +27,12 @@ template<class T> inline constexpr auto is_view_v = is_view<T>::value;
 template<class T> using is_view_t = std::enable_if_t<is_view_v<T>>;
 
 
-} // namespace view_lib
+} // namespace view_impl
 
 } // namespace internal
 
 template<class Ref>
-struct view : internal::view_lib::base {
+struct view : internal::view_impl::base {
     using size_type = internal::size_t;
     using value_type = typename Ref::value_type;
 
@@ -47,9 +46,9 @@ struct view : internal::view_lib::base {
 
   private:
     __attribute__((always_inline)) inline void _validate() const {
-        dev_assert(0 <= this->_pos && this->_pos < static_cast<size_type>(this->_ref->size()));
-        dev_assert(0 <= this->_taken);
-        dev_assert(this->_pos + this->_taken <= static_cast<size_type>(this->_ref->size()));
+        assert(0 <= this->_pos && this->_pos < static_cast<size_type>(this->_ref->size()));
+        assert(0 <= this->_taken);
+        assert(this->_pos + this->_taken <= static_cast<size_type>(this->_ref->size()));
     }
 
   public:
@@ -100,7 +99,7 @@ struct view : internal::view_lib::base {
 };
 
 template<class Ref, class Size = std::make_signed_t<std::size_t>>
-struct cyclic_view : internal::view_lib::base {
+struct cyclic_view : internal::view_impl::base {
     using size_type = Size;
     using value_type = typename Ref::value_type;
 
@@ -160,7 +159,7 @@ struct cyclic_view : internal::view_lib::base {
 };
 
 template<class Ref, internal::size_t D>
-struct multi_view : internal::view_lib::base {
+struct multi_view : internal::view_impl::base {
     using size_type = internal::size_t;
 
     using transposer = std::function<std::vector<size_type>(const std::initializer_list<size_type>&)>;
@@ -181,7 +180,7 @@ struct multi_view : internal::view_lib::base {
         else {
             size_type index = this->_pos[d] + *std::next(p, d);
 
-            dev_assert(0 <= index && index < static_cast<size_type>(std::size(*r)));
+            assert(0 <= index && index < static_cast<size_type>(std::size(*r)));
 
             using nR = std::remove_reference_t<decltype(r->operator[](0))>;
             return multi_view::_access<nR,I,d+1>(&r->operator[](index), p);
@@ -199,7 +198,7 @@ struct multi_view : internal::view_lib::base {
     inline size_type size() const { return std::size(*this->_ref); }
 
     inline multi_view& drop(const std::initializer_list<size_type> pos) {
-        dev_assert(pos.size() == std::size(this->_pos));
+        assert(pos.size() == std::size(this->_pos));
         for(auto a=pos.begin(),b=std::begin(this->_pos); a != pos.end(); ++a, ++b) *b = *a;
         return *this;
     }
@@ -222,7 +221,7 @@ struct multi_view : internal::view_lib::base {
     template<class... Pos> inline const auto& operator()(const Pos... pos) const noexcept { return this->operator[]({ pos... }); }
 };
 
-template<class Ref> struct view_2d : internal::view_lib::base {
+template<class Ref> struct view_2d : internal::view_impl::base {
     using size_type = internal::size_t;
 
     using transposer = std::function<std::pair<size_type,size_type>(const size_type, const size_type)>;
@@ -246,7 +245,7 @@ template<class Ref> struct view_2d : internal::view_lib::base {
     inline size_type width() const { return std::size(*this->_ref->begin()); }
 
     inline view_2d& drop(const std::initializer_list<size_type> pos) {
-        dev_assert(pos.size() == std::size(this->_pos));
+        assert(pos.size() == std::size(this->_pos));
         for(auto a=pos.begin(),b=std::begin(this->_pos); a != pos.end(); ++a, ++b) *b = *a;
         return *this;
     }
