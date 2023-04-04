@@ -59,10 +59,7 @@ template<class T> struct lazy_segment_tree<actions::range_add_range_min<T>> : in
 
     inline auto& add(const size_type first, const size_type last, const T& val) { this->apply(first, last, val); return *this; }
     inline auto& add(const size_type pos, const T& val) { this->apply(pos, val); return *this; }
-
     inline auto& add(const T& val) { this->apply(val); return *this; }
-    inline auto& operator+=(const T& val) { this->apply(val); return *this; }
-    inline auto& operator-=(const T& val) { this->apply(val); return *this; }
 
     inline auto min(const size_type first, const size_type last) { return this->fold(first, last); }
     inline auto min() { return this->fold(); }

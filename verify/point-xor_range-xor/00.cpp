@@ -30,11 +30,11 @@ signed main() {
         int t; cin >> t;
         if(t == 1) {
             int p, x; cin >> p >> x; --p;
-            data[p] <<= x;
+            data[p] ^= x;
         }
         if(t == 2) {
             int l, r; cin >> l >> r; --l;
-            print(data(l, r).fold());
+            print(data(l, r).bitxor());
         }
         debug(data);
     }

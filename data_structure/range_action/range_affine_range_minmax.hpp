@@ -85,17 +85,14 @@ template<class T> struct lazy_segment_tree<actions::range_affine_range_minmax<T>
     inline auto& set(const size_t first, const size_t last, const T& val) { this->apply(first, last, { 0, val }); return *this; }
     inline auto& set(const size_t pos, const T& val) { this->apply(pos, { 0, val }); return *this; }
     inline auto& set(const T& val) { this->apply({ 0, val }); return *this; }
-    inline auto& operator=(const T& val) { this->apply({ 0, val }); return *this; }
 
     inline auto& add(const size_type first, const size_type last, const T& val) { this->apply(first, last, { 1, val }); return *this; }
     inline auto& add(const size_type pos, const T& val) { this->apply(pos, { 1, val }); return *this; }
     inline auto& add(const T& val) { this->apply({ 1, val }); return *this; }
-    inline auto& operator+=(const T& val) { this->apply({ 1, val }); return *this; }
 
     inline auto& times(const size_t first, const size_t last, const T& val) { this->apply(first, last, { val, 0 }); return *this; }
     inline auto& times(const size_t pos, const T& val) { this->apply(pos, { val, 0 }); return *this; }
     inline auto& times(const T& val) { this->apply({ val, 0 }); return *this; }
-    inline auto& operator*=(const T& val) { this->apply({ val, 0 }); return *this; }
 
 
     inline auto minmax(const size_t first, const size_t last) { return this->fold(first, last); }

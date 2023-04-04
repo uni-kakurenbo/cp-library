@@ -237,7 +237,6 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
   public:
     explicit core(const size_type n = 0, const operand_value& v = {}) : base(n) {
-        static_assert(action::tags.none() or action::tags.has(actions::flags::lazy_segment_tree));
         REP(p, 0, this->_n) this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         this->initialize();
     }
@@ -246,7 +245,6 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : base(std::distance(first, last)) {
-        static_assert(action::tags.none() or action::tags.has(actions::flags::lazy_segment_tree));
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = operand(*itr);
@@ -260,7 +258,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->size());
+            assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
         operator operand_value() const { return this->_super->get(this->_pos); }
@@ -320,13 +318,12 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline auto& apply(size_type l, size_type r, const action_type& v) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         this->base::apply(l, r, v);
         return *this;
     }
     inline auto& apply(const size_type p, const action_type& v) { this->apply(p, p+1, v); return *this; }
     inline auto& apply(const action_type& v) { this->apply(0, this->size(), v);  return *this; }
-    inline auto& operator<<=(const action_type& v) { this->apply(0, this->size(), v);  return *this; }
 
 
     inline value_type get(size_type p) const {
@@ -339,7 +336,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r).val();
     }
     inline value_type fold() const { return this->fold_all(); }

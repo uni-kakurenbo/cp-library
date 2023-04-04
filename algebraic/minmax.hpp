@@ -16,8 +16,8 @@ namespace algebraic {
 
 template<class T> struct minmax : internal::base<std::pair<T,T>>, internal::monoid, internal::commutative {
     using internal::base<std::pair<T,T>>::base;
-    minmax() : internal::base<std::pair<T,T>>({ std::numeric_limits<T>::max() / 2 - 1, std::numeric_limits<T>::lowest() / 2 + 1}) {};
-    inline minmax operator+(const minmax& other) const { return minmax({ std::min(this->val().first, other->first), std::max(this->val().second, other->second) }); }
+    minmax() : internal::base<std::pair<T,T>>({ std::numeric_limits<T>::max(), std::numeric_limits<T>::lowest() }) {};
+    friend inline minmax operator+(const minmax& lhs, const minmax& rhs) { return minmax({ std::min(lhs.val().first, rhs->first), std::max(lhs.val().second, rhs->second) }); }
 };
 
 

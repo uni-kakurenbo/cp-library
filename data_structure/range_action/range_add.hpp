@@ -139,8 +139,6 @@ template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<acti
     }
     inline auto& add(const size_type p, const value_type& v) { this->apply(p, p+1, v); return *this; }
     inline auto& add(const value_type& v) { this->apply(0, this->size(), v); return *this; }
-    inline auto& operator+=(const value_type& v) { this->apply(0, this->size(), v); return *this; }
-    inline auto& operator-=(const value_type& v) { this->apply(0, this->size(), -v); return *this; }
 
     inline auto& apply(const size_type first, const size_type last, const value_type& v) {
         this->core::apply(first, v), this->core::apply(last, -v);

@@ -11,7 +11,7 @@ namespace algebraic {
 template<class T> struct addition : internal::base<T>, internal::group, internal::commutative {
     using internal::base<T>::base;
     addition() : internal::base<T>() {};
-    inline addition operator+(const addition& other) const { return this->val() + other.val(); }
+    friend inline addition operator+(const addition& lhs, const addition& rhs) { return lhs.val() + rhs.val(); }
     inline addition operator-() const { return -this->val(); }
 };
 

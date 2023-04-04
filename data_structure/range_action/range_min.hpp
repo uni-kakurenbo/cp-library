@@ -24,8 +24,21 @@ template<class T> struct range_min : base<> {
 } // namespace actions
 
 
-template<class T> struct segment_tree<actions::range_min<T>> : internal::segment_tree_impl::core<algebraic::minimum<T>> {
-    using internal::segment_tree_impl::core<algebraic::minimum<T>>::core;
+template<class T> struct segment_tree<actions::range_min<T>> : internal::segment_tree_impl::core<actions::range_min<T>,void> {
+  private:
+    using base = internal::segment_tree_impl::core<actions::range_min<T>,void>;
+
+  public:
+    using base::base;
+    using size_type = typename base::size_type;
+
+    struct range_reference : base::range_reference {
+        using base::range_reference::range_reference;
+
+        inline auto min() const { return this->_super->fold(this->_begin, this->_end); }
+    };
+
+    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
 
     inline auto min(const size_t first, const size_t last) { return this->fold(first, last); }
     inline auto min() { return this->fold(); }

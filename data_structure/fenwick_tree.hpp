@@ -104,7 +104,7 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->size());
+            assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
         operator value_type() const { return this->_super->get(this->_pos); }

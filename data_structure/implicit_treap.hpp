@@ -291,7 +291,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->size());
+            assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
         operator value_type() const { return this->_super->get(this->_pos); }
@@ -327,24 +327,13 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() {
-            return this->_super->fold(this->_begin, this->_end);
-        }
 
         inline range_reference& fill(const operand_value& v) {
             this->_super->fill(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator=(const operand_value& v) {
-            this->_super->fill(this->_begin, this->_end, v);
-            return *this;
-        }
 
         inline range_reference& apply(const action_type& v) {
-            this->_super->apply(this->_begin, this->_end, v);
-            return *this;
-        }
-        inline range_reference& operator<<=(const action_type& v) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
@@ -356,7 +345,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
 
     inline void insert(size_type p, const operand_value& v) {
-        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
+        p = this->_positivize_index(p), assert(0 <= p && p <= this->size());
         this->base::insert(p, v);
     }
 
@@ -402,7 +391,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
     inline void apply(size_type l, size_type r, const action_type& v) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         this->base::apply(l, r, v);
     }
     inline void apply(const size_type p, const action_type& v) { this->apply(p, p+1, v); }
@@ -422,14 +411,14 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
     inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r).val();
     }
     inline value_type fold() const { return this->fold(0, this->size()); }
 
     inline void reverse(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         this->base::reverse(l, r);
     }
     inline void reverse() const { this->reverse(0, this->size()); }
@@ -443,7 +432,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
     inline size_type find(size_type l, size_type r, const operand_value& v, const bool dir_left = true) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         return this->base::find(l, r, v, dir_left);
     }
     inline size_type find(const operand_value& v, const bool dir_left = true) const {

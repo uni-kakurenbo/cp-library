@@ -18,11 +18,11 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             int p, x; std::cin >> p >> x;;
-            data.set(p, x);
+            data[p] = x;
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r; ++r;
-            std::cout << data.min(l, r) << "\n";
+            std::cout << data(l, r).min() << "\n";
         }
         // debug(data);
     }

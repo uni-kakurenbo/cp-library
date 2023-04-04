@@ -24,8 +24,21 @@ template<class T> struct range_max : base<> {
 } // namespace actions
 
 
-template<class T> struct segment_tree<actions::range_max<T>> : internal::segment_tree_impl::core<algebraic::maximum<T>> {
-    using internal::segment_tree_impl::core<algebraic::maximum<T>>::core;
+template<class T> struct segment_tree<actions::range_max<T>> : internal::segment_tree_impl::core<actions::range_max<T>,void> {
+  private:
+    using base = internal::segment_tree_impl::core<actions::range_max<T>,void>;
+
+  public:
+    using base::base;
+    using size_type = typename base::size_type;
+
+    struct range_reference : base::range_reference {
+        using base::range_reference::range_reference;
+
+        inline auto max() const { return this->_super->fold(this->_begin, this->_end); }
+    };
+
+    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
 
     inline auto max(const size_t first, const size_t last) { return this->fold(first, last); }
     inline auto max() { return this->fold(); }

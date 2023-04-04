@@ -37,24 +37,22 @@ struct base {
     base() {}
 
     template<class I>
-    explicit base(const I l, const I r) : _n(std::distance(l, r)) {
-        this->_table.emplace_back(l, r);
-
-        for(size_type i=2; i < this->_n; i <<= 1) {
-            std::vector<S> vec; vec.reserve(this->_n);
-
-            for(size_type j=i; j < this->_n; j += i << 1) {
-                vec.emplace_back(this->_table.front()[j - 1]);
-                for(size_type k=2; k<=i; ++k) {
-                    vec.emplace_back(this->_table.front()[j - k] + vec.back());
+    explicit base(const I first, const I last) : _n(std::distance(first, last)) {
+        const size_type depth = bit_width<unsigned>(this->_n);
+        this->_table.resize(depth+1, std::vector<S>(this->_n));
+        std::copy(first, last, this->_table.begin()->begin());
+        for(size_type i=2; i<=depth; ++i) {
+            const size_type len = 1 << i;
+            for(size_type l = 0, m = len/2; m < this->_n; l += len, m = l + len/2) {
+                this->_table[i-1][m - 1] = first[m - 1];
+                for(size_type j = m-2; j>=l; --j) {
+                    this->_table[i-1][j] = this->_table[i-1][j + 1] + S{first[j]};
                 }
-                vec.emplace_back(this->_table.front()[j]);
-                for(size_type k=1; k<i and j+k < this->_n; ++k) {
-                    vec.emplace_back(vec.back() + this->_table.front()[j + k]);
+                this->_table[i-1][m] = first[m];
+                for(size_type j = m+1; j<std::min(l + len, this->_n); ++j) {
+                    this->_table[i-1][j] = this->_table[i-1][j - 1] +  S{first[j]};
                 }
             }
-
-            this->_table.emplace_back(std::move(vec));
         }
     }
 
@@ -65,7 +63,7 @@ struct base {
         if(l == --r) return this->_table.front()[l];
 
         const size_type p = highest_bit_pos<unsigned>(l ^ r);
-        return this->_table[p][l ^ ((size_type{1} << p) - 1)] + this->_table[p][r];
+        return this->_table[p][l] + this->_table[p][r];
     }
 };
 
@@ -106,7 +104,7 @@ struct core<semigroup, std::void_t<typename algebraic::internal::is_semigroup_t<
 
     inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->_super->size());
+        assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
     inline value_type fold() const { return this->fold(0, this->size()); }
@@ -124,7 +122,7 @@ struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<
     using action = Action;
     using core<typename action::operand>::core;
 
-    static_assert(action::tags.none() or action::tags.has(actions::flags::disjoint_sparse_table));
+    static_assert(action::tags.none() or action::tags.has(actions::flags::range_folding));
 };
 
 

@@ -14,7 +14,7 @@ namespace algebraic {
 template<class T> struct gcd : internal::base<T>, internal::monoid, internal::commutative {
     using internal::base<T>::base;
     gcd() : internal::base<T>() {};
-    inline gcd operator+(const gcd& other) const { return std::gcd(this->val(), other.val()); }
+    friend inline gcd operator+(const gcd& lhs, const gcd& rhs) { return std::gcd(lhs.val(), rhs.val()); }
 };
 
 
