@@ -23,6 +23,7 @@ template<class Flag> struct base {
     template<class... Flags>
     constexpr base(Flags... flags) : _bits(set(flags...)) {}
 
+    constexpr bool none() const { return this->_bits == 0; }
 
     template<class... Tail>
     static constexpr bit_type set(flag head, Tail... tail) {
@@ -30,7 +31,6 @@ template<class Flag> struct base {
     }
 
     static constexpr bit_type set() { return 0; }
-
 
     template<class... Tail> constexpr bool has(flag head, Tail... tail) const {
         return (this->bits() & static_cast<bit_type>(head)) and has(tail...);

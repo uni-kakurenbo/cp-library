@@ -30,7 +30,7 @@ template<class Super> struct range_reference {
   protected:
     inline range_reference sub_range(size_type l, size_type r) const {
         l = _super->_positivize_index(l), r = _super->_positivize_index(r);
-        dev_assert(0 <= l and l <= r and r <= this->size());
+        assert(0 <= l and l <= r and r <= this->size());
 
         return range_reference(_super, this->_begin + l, this->_begin + r);
     }
