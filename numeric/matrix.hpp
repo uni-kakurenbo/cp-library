@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "internal/dev_assert.hpp"
 #include "grid.hpp"
 #include "valarray.hpp"
 
@@ -10,9 +9,9 @@ namespace lib {
 
 namespace internal {
 
-namespace matrix_lib {
+namespace matrix_impl {
 
-template<class T> struct interface : virtual grid_lib::interface<T> {
+template<class T> struct interface : virtual grid_impl::interface<T> {
     virtual size_t rows() const = 0;
     virtual size_t cols() const = 0;
 
@@ -22,7 +21,7 @@ template<class T> struct interface : virtual grid_lib::interface<T> {
 }
 
 template<class T, class base>
-struct matrix_core : base, virtual matrix_lib::interface<T> {
+struct matrix_core : base, virtual matrix_impl::interface<T> {
     using base::base;
 
     static inline matrix_core identity(const size_t n, const T &&val = { 1 }) {
@@ -61,7 +60,7 @@ struct matrix_core : base, virtual matrix_lib::interface<T> {
     }
 
     template<class ...U> inline matrix_core operator*(const matrix_core<U...> rhs) {
-        dev_assert(this->cols() == rhs.rows());
+        assert(this->cols() == rhs.rows());
         matrix_core res(this->rows(), rhs.cols());
         REP(i, this->rows()) REP(j, rhs.cols()) REP(k, this->cols()) {
             res(i, j) += (*this)(i, k) * rhs(k, j);
@@ -96,7 +95,7 @@ struct matrix_core : base, virtual matrix_lib::interface<T> {
     }
 
     inline matrix_core pow(ll p) {
-        dev_assert(this->square());
+        assert(this->square());
         matrix_core x = *this, res = matrix_core::Identity(this->rows());
         while(p > 0) {
             if(p & 1) res *= x;

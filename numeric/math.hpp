@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "internal/dev_assert.hpp"
 #include "snippet/iterations.hpp"
 
 #include "numeric/modint.hpp"
@@ -12,7 +11,7 @@
 namespace lib {
 
 
-namespace binomial_lib {
+namespace binomial_impl {
 
 
 template<class T>
@@ -39,15 +38,15 @@ struct small_binomial {
     }
 
     inline constexpr T nPr(const size_type n, size_type r) const {
-        dev_assert(0 <= n);
-        dev_assert(0 <= r);
+        assert(0 <= n);
+        assert(0 <= r);
         if(n < r) return 0;
         return this->_nPr[n][r];
     }
 
     inline constexpr T nCr(const size_type n, size_type r) const {
-        dev_assert(0 <= n);
-        dev_assert(0 <= r);
+        assert(0 <= n);
+        assert(0 <= r);
         if(n < r) return 0;
         if(n < r*2) r = n - r;
         return this->_nCr[n][r];
@@ -78,15 +77,15 @@ struct small_binomial_prime_mod {
     }
 
     T nPr(size_type n, size_type r) const {
-        dev_assert(0 <= n);
-        dev_assert(0 <= r);
+        assert(0 <= n);
+        assert(0 <= r);
         if(n < r) return 0;
         return this->_fact[n] * this->_fact_inv[n-r];
     }
 
     T nCr(size_type n, size_type r) const {
-        dev_assert(0 <= n);
-        dev_assert(0 <= r);
+        assert(0 <= n);
+        assert(0 <= r);
         if(n < r) return 0;
         return this->_fact[n] * this->_fact_inv[r] * this->_fact_inv[n-r];
     }
@@ -114,8 +113,8 @@ struct large_binomial_prime_mod {
     }
 
     T nPr(size_type n, size_type r) const {
-        dev_assert(0 <= n);
-        dev_assert(0 <= r);
+        assert(0 <= n);
+        assert(0 <= r);
         if(n < r) return 0;
         T res = 1;
         FORD(i, n-r+1, n) res *= i;
@@ -147,7 +146,7 @@ struct large_binomial_fixed_power_prime_mod {
     large_binomial_fixed_power_prime_mod(const N n, const size_type max_r)
       : _n(n), _nCr(max_r/2+1), _inv(max_r/2+1), _fact(max_r+1)
     {
-        dev_assert(0 <= n);
+        assert(0 <= n);
 
         this->_fact[0] = this->_fact[1] = 1;
         this->_inv[1] = 1;
@@ -169,7 +168,7 @@ struct large_binomial_fixed_power_prime_mod {
     }
 
     T nCr(size_type r) {
-        dev_assert(0 <= r);
+        assert(0 <= r);
         if(this->_n < r) return 0;
         if(this->_n < r*2) r = this->_n-r;
         return this->_nCr[r];
@@ -178,13 +177,13 @@ struct large_binomial_fixed_power_prime_mod {
 };
 
 
-} // binomial_lib
+} // binomial_impl
 
 
-using binomial_lib::small_binomial;
-using binomial_lib::small_binomial_prime_mod;
-using binomial_lib::large_binomial_prime_mod;
-using binomial_lib::large_binomial_fixed_power_prime_mod;
+using binomial_impl::small_binomial;
+using binomial_impl::small_binomial_prime_mod;
+using binomial_impl::large_binomial_prime_mod;
+using binomial_impl::large_binomial_fixed_power_prime_mod;
 
 
 } // namespace lib

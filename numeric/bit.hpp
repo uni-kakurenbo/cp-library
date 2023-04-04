@@ -5,10 +5,11 @@
 
 namespace lib {
 
+#define LIB_STATUC_ASSERT_UNSIGNED(T) static_assert(std::is_unsigned_v<T>, "only unsigned type is supported")
 
 template<class T>
 inline constexpr int countl_zero(const T v) {
-    static_assert(std::is_unsigned_v<T>, "only unsigned type is supported");
+    LIB_STATUC_ASSERT_UNSIGNED(T);
 
     using ull = unsigned long long;
     using ul = unsigned long;
@@ -38,10 +39,18 @@ inline constexpr int countl_zero(const T v) {
 }
 
 template<class T>
-inline constexpr int most_significant_one_index(const T v) {
-    static_assert(std::is_unsigned_v<T>, "only unsigned type is supported");
-    return std::numeric_limits<T>::digits - countl_zero(v) - 1;
+inline constexpr int bit_width(const T v) {
+    LIB_STATUC_ASSERT_UNSIGNED(T);
+    return std::numeric_limits<T>::digits - countl_zero(v);
 }
 
+template<class T>
+inline constexpr int highest_bit_pos(const T v) {
+    LIB_STATUC_ASSERT_UNSIGNED(T);
+    return bit_width(v) - 1;
+}
+
+
+#undef LIB_STATUC_ASSERT_UNSIGNED
 
 } // namespace lib

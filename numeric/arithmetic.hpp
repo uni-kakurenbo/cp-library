@@ -7,7 +7,6 @@
 
 #include "internal/types.hpp"
 #include "snippet/aliases.hpp"
-#include "internal/dev_assert.hpp"
 
 #include "numeric/internal/number_base.hpp"
 
@@ -16,8 +15,8 @@ namespace lib {
 
 template<class T>
 T nPr(const T n, T r) {
-    dev_assert(0 <= n);
-    dev_assert(0 <= r);
+    assert(0 <= n);
+    assert(0 <= r);
     if(n < r) return 0;
 
     T res = 1;
@@ -28,8 +27,8 @@ T nPr(const T n, T r) {
 
 template<class T>
 T nCr(const T n, T r) {
-    dev_assert(0 <= n);
-    dev_assert(0 <= r);
+    assert(0 <= n);
+    assert(0 <= r);
     if(n == r) return 1;
     if(n < r) return 0;
 

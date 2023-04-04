@@ -10,6 +10,8 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
+#include "numeric/bit.hpp"
+
 #include "internal/types.hpp"
 #include "utility/hilbert_order.hpp"
 
@@ -49,7 +51,7 @@ class interval_plannner {
         for(auto query=query_first; query!=query_last; ++query) {
             chmax(n, std::max(query->first, query->second));
         }
-        n = 1 << atcoder::internal::ceil_pow2(n);
+        n = 1 << bit_width<unsigned>(n);
 
         std::vector<i64> orders(q);
         {

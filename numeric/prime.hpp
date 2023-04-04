@@ -19,7 +19,7 @@ namespace lib {
 namespace internal {
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-prime_factors.hpp
-namespace fast_factorize_lib {
+namespace fast_factorize_impl {
 
 
 using value_type = uint64_t;
@@ -176,15 +176,15 @@ std::vector<int64_t> divisors(value_type n) {
 }
 
 
-} // namespace fast_factorize_lib
+} // namespace fast_factorize_impl
 
 } // namespace internal
 
 
-using internal::fast_factorize_lib::divisors;
-using internal::fast_factorize_lib::factorize;
-using internal::fast_factorize_lib::prime_factors;
-using internal::fast_factorize_lib::is_prime;
+using internal::fast_factorize_impl::divisors;
+using internal::fast_factorize_impl::factorize;
+using internal::fast_factorize_impl::prime_factors;
+using internal::fast_factorize_impl::is_prime;
 
 
 } // namespace lib

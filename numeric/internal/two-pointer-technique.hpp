@@ -13,7 +13,7 @@ namespace lib {
 
 namespace internal {
 
-namespace interval_scanner_lib {
+namespace interval_scanner_impl {
 
 
 template<class T> using interval = std::pair<T, T>;
@@ -70,13 +70,13 @@ template<class T> struct base {
 };
 
 
-} // namespace interval_scanner_lib
+} // namespace interval_scanner_impl
 
 } // namespace internal
 
 
 template<class T>
-struct exclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
+struct exclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
   protected:
     std::function<void(T)> init;
     std::function<bool(T)> can_expand;
@@ -84,8 +84,8 @@ struct exclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
     std::function<void(T, T)> apply;
 
   public:
-    using interval = internal::interval_scanner_lib::interval<T>;
-    using intervals = internal::interval_scanner_lib::intervals<T>;
+    using interval = internal::interval_scanner_impl::interval<T>;
+    using intervals = internal::interval_scanner_impl::intervals<T>;
 
     exclusive_interval_scanner(
         std::function<bool(T)> validate,
@@ -94,7 +94,7 @@ struct exclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : internal::interval_scanner_lib::base<T>(validate), init(init), can_expand(can_expand), expand(expand), contract(contract), apply(apply) {}
+    ) : internal::interval_scanner_impl::base<T>(validate), init(init), can_expand(can_expand), expand(expand), contract(contract), apply(apply) {}
 
     template<const bool FOLLOWING = true>
     void scan(const T start, const T end) const {
@@ -122,7 +122,7 @@ struct exclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
 
 
 template<class T>
-struct inclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
+struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
   protected:
     std::function<void()> init;
     std::function<bool()> valid;
@@ -130,8 +130,8 @@ struct inclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
     std::function<void(T, T)> apply;
 
   public:
-    using interval = internal::interval_scanner_lib::interval<T>;
-    using intervals = internal::interval_scanner_lib::intervals<T>;
+    using interval = internal::interval_scanner_impl::interval<T>;
+    using intervals = internal::interval_scanner_impl::intervals<T>;
 
     inclusive_interval_scanner(
         std::function<bool(T)> validate,
@@ -140,7 +140,7 @@ struct inclusive_interval_scanner : internal::interval_scanner_lib::base<T> {
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : internal::interval_scanner_lib::base<T>(validate), init(init), valid(valid), expand(expand), contract(contract), apply(apply) {}
+    ) : internal::interval_scanner_impl::base<T>(validate), init(init), valid(valid), expand(expand), contract(contract), apply(apply) {}
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan(const T start, const T end) const {

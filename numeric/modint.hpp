@@ -5,7 +5,6 @@
 
 #include <atcoder/modint>
 
-#include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 
 
@@ -61,12 +60,12 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
     static uint64_t mod() { return _mod; }
 
     static void set_mod(const uint64_t m) {
-        dev_assert(m < (1UL << 63));
-        dev_assert((m & 1) == 1);
+        assert(m < (1UL << 63));
+        assert((m & 1) == 1);
         _mod = m;
         n2 = -static_cast<uint128_t>(m) % m;
         r = get_r();
-        dev_assert(r * _mod == 1);
+        assert(r * _mod == 1);
     }
 
     uint64_t _val;

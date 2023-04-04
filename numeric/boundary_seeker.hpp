@@ -5,13 +5,12 @@
 #include <type_traits>
 
 #include "internal/types.hpp"
-#include "internal/dev_assert.hpp"
 
 namespace lib {
 
 namespace internal {
 
-namespace boundary_seeker_lib {
+namespace boundary_seeker_impl {
 
 
 template<class T>
@@ -136,13 +135,13 @@ struct seeker<T,false> : floating_point<T> {
 };
 
 
-} // namespace boundary_seeker_lib
+} // namespace boundary_seeker_impl
 
 } // namespace internal
 
 
 template<class T>
-using boundary_seeker = internal::boundary_seeker_lib::seeker<T,std::is_integral_v<T>>;
+using boundary_seeker = internal::boundary_seeker_impl::seeker<T,std::is_integral_v<T>>;
 
 
 } // namespace lib
