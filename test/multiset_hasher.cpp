@@ -1,5 +1,6 @@
 #include "template.hpp"
 
+#include <cassert>
 #include <random>
 
 #include "hash/multiset_hasher.hpp"

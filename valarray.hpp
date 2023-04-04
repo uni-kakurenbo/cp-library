@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <valarray>
 #include <algorithm>
 #include <type_traits>

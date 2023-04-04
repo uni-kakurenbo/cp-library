@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <tuple>
 
 #include "internal/iterator.hpp"

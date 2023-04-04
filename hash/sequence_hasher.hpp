@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <cassert>
 #include <vector>
 #include <chrono>
 #include <algorithm>
@@ -13,7 +13,6 @@
 #include "internal/types.hpp"
 
 #include "random/xorshift.hpp"
-
 
 namespace lib {
 

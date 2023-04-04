@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <cassert>
 #include <vector>
 #include <map>
 #include <tuple>
@@ -13,7 +13,6 @@
 #include "internal/types.hpp"
 
 #include "graph.hpp"
-
 
 namespace lib {
 

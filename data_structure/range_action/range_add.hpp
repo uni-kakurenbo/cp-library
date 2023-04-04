@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <cassert>
 #include <vector>
 
 #include "internal/point_reference.hpp"

@@ -1,10 +1,9 @@
 #pragma once
 
-
+#include <cassert>
 #include <iterator>
 
 #include "constants.hpp"
-
 
 namespace lib {
 

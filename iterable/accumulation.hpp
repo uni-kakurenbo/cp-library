@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <iterator>
 #include <vector>
 #include <functional>
@@ -8,7 +9,6 @@
 #include "internal/types.hpp"
 
 #include "valarray.hpp"
-
 
 namespace lib {
 

@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <random>
 #include <unordered_set>
 #include <unordered_map>
@@ -8,7 +7,6 @@
 
 #include "snippet/iterations.hpp"
 #include "internal/types.hpp"
-
 
 namespace lib {
 

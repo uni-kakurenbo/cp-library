@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <tuple>
 #include <vector>
 #include <iostream>

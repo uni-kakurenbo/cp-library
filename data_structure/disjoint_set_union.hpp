@@ -1,12 +1,13 @@
 #pragma once
 
 
-#include "internal/types.hpp"
-// #include <atcoder/dsu>
-
+#include <cassert>
 #include <algorithm>
 #include <cassert>
 #include <vector>
+
+#include "internal/types.hpp"
+// #include <atcoder/dsu>
 
 
 namespace lib {

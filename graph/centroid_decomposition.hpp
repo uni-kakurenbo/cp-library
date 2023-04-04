@@ -1,11 +1,10 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <utility>
 
-
 #include "graph.hpp"
-
 
 namespace lib {
 
