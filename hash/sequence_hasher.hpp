@@ -11,7 +11,6 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 #include "internal/types.hpp"
-#include "internal/dev_assert.hpp"
 
 #include "random/xorshift.hpp"
 
@@ -119,7 +118,7 @@ struct sequence_hasher {
     inline size_type size() const { return this->_n; }
 
     inline hash get(const size_type l, const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->_n);
+        assert(0 <= l and l <= r and r <= this->_n);
         hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r-l));
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
         return { res, r-l };
