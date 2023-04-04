@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include "internal/dev_assert.hpp"
 
 
 namespace lib {
@@ -32,7 +31,7 @@ template<class Engine> struct random_engine {
         return (*this)() % max;
     }
     inline signed_result_type operator()(signed_result_type min, signed_result_type max) const {
-        dev_assert(min <= max);
+        assert(min <= max);
         return min + (*this)(max - min);
     };
 
