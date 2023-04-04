@@ -6,7 +6,7 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/addition.hpp"
+#include "algebraic/addition.hpp"
 
 
 namespace lib {
@@ -15,20 +15,18 @@ namespace actions {
 
 
 template<class T> struct range_sum : base<> {
-    static constexpr flags tags{ flags::fenwick_tree, flags::segment_tree, flags::disjoint_sparse_table };
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::addition<T>;
-
-    static operand rev(const operand& x, const operand& y) { return x.val() - y.val(); }
+    using operand = algebraic::addition<T>;
 };
 
 
 } // namespace actions
 
 
-template<class T> struct fenwick_tree<actions::range_sum<T>> : internal::fenwick_tree_lib::core<actions::range_sum<T>> {
+template<class T> struct fenwick_tree<actions::range_sum<T>> : internal::fenwick_tree_impl::core<actions::range_sum<T>,void> {
   private:
-    using base = internal::fenwick_tree_lib::core<actions::range_sum<T>>;
+    using base = internal::fenwick_tree_impl::core<actions::range_sum<T>,void>;
 
   public:
     using base::base;

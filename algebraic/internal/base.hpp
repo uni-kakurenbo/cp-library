@@ -1,18 +1,14 @@
 #pragma once
 
-
 namespace lib {
 
-namespace semigroups {
+namespace algebraic {
 
 namespace internal {
 
-struct base {};
 
-} // namespace internal
-
-
-template<class T> struct base : internal::base {
+template<class T>
+struct base {
     using value_type = T;
 
   protected:
@@ -32,6 +28,17 @@ template<class T> struct base : internal::base {
 };
 
 
+struct magma {};
+
+struct semigroup : magma {};
+
+struct monoid : semigroup {};
+
+struct group : monoid {};
+
+
 } // namespace internal
+
+} // namespace algebraic
 
 } // namespace lib

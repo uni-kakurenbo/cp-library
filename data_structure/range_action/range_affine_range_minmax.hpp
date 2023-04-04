@@ -6,8 +6,8 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/minmax.hpp"
-#include "data_structure/monoid/affine.hpp"
+#include "algebraic/minmax.hpp"
+#include "algebraic/affine.hpp"
 
 
 namespace lib {
@@ -16,11 +16,11 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_affine_range_minmax : base<monoids::affine<T>> {
-    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
+template<class T> struct range_affine_range_minmax : base<algebraic::affine<T>> {
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::minmax<T>;
-    using operation = monoids::affine<T>;
+    using operand = algebraic::minmax<T>;
+    using operation = algebraic::affine<T>;
 
     static operand map(const operand& x, const operation& y) {
         auto res = operand({ x->first * y->first + y->second, x->second * y->first + y->second });
@@ -33,9 +33,9 @@ template<class T> struct range_affine_range_minmax : base<monoids::affine<T>> {
 } // namespace actions
 
 
-template<class T> struct lazy_segment_tree<actions::range_affine_range_minmax<T>> : internal::lazy_segment_tree_lib::core<actions::range_affine_range_minmax<T>> {
+template<class T> struct lazy_segment_tree<actions::range_affine_range_minmax<T>> : internal::lazy_segment_tree_impl::core<actions::range_affine_range_minmax<T>> {
   private:
-    using base = internal::lazy_segment_tree_lib::core<actions::range_affine_range_minmax<T>>;
+    using base = internal::lazy_segment_tree_impl::core<actions::range_affine_range_minmax<T>>;
 
   public:
     using base::base;

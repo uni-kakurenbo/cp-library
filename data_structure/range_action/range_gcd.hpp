@@ -6,7 +6,7 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/gcd.hpp"
+#include "algebraic/gcd.hpp"
 
 
 namespace lib {
@@ -15,9 +15,9 @@ namespace actions {
 
 
 template<class T> struct range_gcd : base<> {
-    static constexpr flags tags{ flags::segment_tree, flags::disjoint_sparse_table };
+    static constexpr flags tags{ flags::range_folding };
 
-    using operand = monoids::gcd<T>;
+    using operand = algebraic::gcd<T>;
 };
 
 

@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "internal/dev_assert.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
 
@@ -16,7 +15,7 @@ namespace lib {
 namespace actions {
 
 template<class T> struct range_add {
-    static constexpr flags tags{ flags::fenwick_tree };
+    static constexpr flags tags{ flags::range_operation };
 };
 
 } // namespace actions
@@ -31,14 +30,14 @@ template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<acti
     using size_type = typename core::size_type;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
+    inline bool _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
+        return 0 <= p and p < this->size();
     }
-    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
+    inline bool _validate_index_in_closed([[maybe_unused]] const size_type p) const {
+        return 0 <= p and p <= this->size();
     }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
+    inline bool _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
+        return 0 <= l and l <= r and r <= this->size();
     }
 
     inline size_type _positivize_index(const size_type p) const {
@@ -133,26 +132,26 @@ template<class T> struct fenwick_tree<actions::range_add<T>> : fenwick_tree<acti
     };
 
 
-    inline void add(const size_type first, const size_type last, const value_type& v) {
+    inline auto& add(const size_type first, const size_type last, const value_type& v) {
         this->core::apply(first, v), this->core::apply(last, -v);
+        return *this;
     }
-    inline void add(const size_type p, const value_type& v) { this->apply(p, p+1, v); }
-    inline void add(const value_type& v) { this->apply(0, this->size(), v); }
-    inline void operator+=(const value_type& v) { this->apply(0, this->size(), v); }
-    inline void operator-=(const value_type& v) { this->apply(0, this->size(), -v); }
+    inline auto& add(const size_type p, const value_type& v) { this->apply(p, p+1, v); return *this; }
+    inline auto& add(const value_type& v) { this->apply(0, this->size(), v); return *this; }
+    inline auto& operator+=(const value_type& v) { this->apply(0, this->size(), v); return *this; }
+    inline auto& operator-=(const value_type& v) { this->apply(0, this->size(), -v); return *this; }
 
-    inline void apply(const size_type first, const size_type last, const value_type& v) {
+    inline auto& apply(const size_type first, const size_type last, const value_type& v) {
         this->core::apply(first, v), this->core::apply(last, -v);
+        return *this;
     }
-    inline void apply(const size_type p, const value_type& v) { this->apply(p, p+1, v); }
-    inline void apply(const value_type& v) { this->apply(0, this->size(), v); }
+    inline auto& apply(const size_type p, const value_type& v) { this->apply(p, p+1, v); return *this; }
+    inline auto& apply(const value_type& v) { this->apply(0, this->size(), v); return *this; }
 
-    inline void set(const size_type p, const value_type& v) {
-        this->add(p, actions::range_sum<T>::rev(v, this->get(p)).val());
-    }
+    inline auto& set(const size_type p, const value_type& v) { this->add(p, v + -this->get(p)).val(); return *this; }
 
     inline value_type get(const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
+        assert(0 <= p and p < this->size());
         return this->core::fold(p+1);
     }
     inline point_reference operator[](const size_type p) { return point_reference(this, p); }

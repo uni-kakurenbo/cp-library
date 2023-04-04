@@ -1,21 +1,21 @@
 #include "template.hpp"
 
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/monoid/affine.hpp"
-#include "data_structure/monoid/assignment.hpp"
+#include "algebraic/affine.hpp"
+#include "algebraic/assignment.hpp"
 
 #include "data_structure/range_action/flags.hpp"
 
 #include <vector>
 
-using lib::monoids::affine;
+using lib::algebraic::affine;
 using mint = atcoder::modint998244353;
 
 struct action {
-    static constexpr lib::actions::flags tags{lib::actions::flags::lazy_segment_tree};
+    static constexpr lib::actions::flags tags{};
 
     using operand = affine<mint,true>;
-    using operation = lib::monoids::assignment<std::pair<mint,mint>>;
+    using operation = lib::algebraic::assignment<std::pair<mint,mint>>;
 
     static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
     static operation fold(const operation& x, const lib::internal::size_t) { return x; }
@@ -38,7 +38,7 @@ signed main() {
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;
-            auto [a, b] = data.fold(l, r);
+            auto [a, b] = data.fold(l, r).val();
             print(a * x + b);
         }
         debug(data);

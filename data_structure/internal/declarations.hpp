@@ -5,39 +5,39 @@ namespace lib {
 
 namespace internal {
 
-namespace fenwick_tree_lib {
-
-template<class> struct core;
-
-} // namespace implici_treap_lib
-
-
-namespace segment_tree_lib {
+namespace fenwick_tree_impl {
 
 template<class,class> struct core;
 
-} // namespace segment_tree_lib
+} // namespace implici_treap_impl
 
 
-namespace lazy_segment_tree_lib {
-
-template<class> struct core;
-
-} // namespace lazy_segment_tree_lib
-
-
-namespace implicit_treap_lib {
-
-template<class> struct core;
-
-} // namespace implici_treap_lib
-
-
-namespace disjoint_sparse_table_lib {
+namespace segment_tree_impl {
 
 template<class,class> struct core;
 
-} // namespace disjoint_sparse_table_lib
+} // namespace segment_tree_impl
+
+
+namespace lazy_segment_tree_impl {
+
+template<class> struct core;
+
+} // namespace lazy_segment_tree_impl
+
+
+namespace implicit_treap_impl {
+
+template<class> struct core;
+
+} // namespace implici_treap_impl
+
+
+namespace disjoint_sparse_table_impl {
+
+template<class,class> struct core;
+
+} // namespace disjoint_sparse_table_impl
 
 
 } // namespace internal

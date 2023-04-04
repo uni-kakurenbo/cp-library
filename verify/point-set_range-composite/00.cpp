@@ -1,11 +1,11 @@
 #include "template.hpp"
 
 #include "data_structure/segment_tree.hpp"
-#include "data_structure/monoid/affine.hpp"
+#include "algebraic/affine.hpp"
 
 #include <vector>
 
-using lib::monoids::affine;
+using lib::algebraic::affine;
 using mint = atcoder::modint998244353;
 
 signed main() {
@@ -24,7 +24,7 @@ signed main() {
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;
-            auto [a, b] = data.fold(l, r);
+            auto [a, b] = data.fold(l, r).val();
             print(a * x + b);
         }
         debug(data);

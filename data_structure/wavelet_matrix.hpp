@@ -13,7 +13,6 @@
 #include <atcoder/internal_bit>
 
 #include "snippet/iterations.hpp"
-#include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 #include "internal/range_reference.hpp"
@@ -26,7 +25,7 @@ namespace lib {
 
 namespace internal {
 
-namespace wavelet_matrix_lib {
+namespace wavelet_matrix_impl {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
@@ -248,7 +247,7 @@ template<class T, class dict_type> struct base {
 };
 
 
-} // namespace wavelet_matrix_lib
+} // namespace wavelet_matrix_impl
 
 } // namespace internal
 
@@ -256,27 +255,17 @@ template<class T, class dict_type> struct base {
 template<class T, class dict_type = std::unordered_map<T,internal::size_t>> struct compressed_wavelet_matrix;
 
 template<class T, class dict_type = std::unordered_map<T,internal::size_t>>
-struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
+struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
     using compressed = compressed_wavelet_matrix<T,dict_type>;
 
   private:
-    using base = typename internal::wavelet_matrix_lib::base<T,dict_type>;
+    using base = typename internal::wavelet_matrix_impl::base<T,dict_type>;
 
   public:
     using value_type = T;
     using size_type = typename base::size_type;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-    }
-    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
-    }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
-    }
-
     inline size_type _positivize_index(const size_type p) const {
         return p < 0 ? this->size() + p : p;
     }
@@ -286,15 +275,13 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
 
     bool empty() const { return this->size() == 0; }
 
-    inline T get(size_type k) const {
-        k = this->_positivize_index(k);
-        this->_validate_index_in_right_open(k);
-
-        return this->base::get(k);
+    inline T get(size_type p) const {
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
+        return this->base::get(p);
     }
-    inline T operator[](const size_type k) const { return this->get(k); }
+    inline T operator[](const size_type p) const { return this->get(p); }
 
-    inline size_type select(const T& v, const size_type k) const { return this->base::select(v, k); }
+    inline size_type select(const T& v, const size_type p) const { return this->base::select(v, p); }
 
     struct iterator;
     struct range_reference;
@@ -317,12 +304,12 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
         range_reference(const wavelet_matrix *const super, const size_type l, const size_type r)
           : internal::range_reference<const wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
         inline T get(const size_type k) const {
             k = this->_super->_positivize_index(k);
-            dev_assert(0 <= k and k < this->size());
+            assert(0 <= k and k < this->size());
 
             return this->_super->get(this->_begin + k);
         }
@@ -330,22 +317,22 @@ struct wavelet_matrix : internal::wavelet_matrix_lib::base<T,dict_type> {
 
 
         inline T kth_smallest(const size_type k) const {
-            dev_assert(0 <= k and k < this->size());
+            assert(0 <= k && k < this->size());
             return this->_super->base::kth_smallest(this->_begin, this->_end, k);
         }
         inline auto kth_smallest_element(const size_type k) const {
             if(k == this->size()) return this->end();
-            dev_assert(0 <= k and k < this->size());
+            assert(0 <= k && k < this->size());
             return std::next(this->_super->begin(), this->_super->base::kth_smallest_index(this->_begin, this->_end, k));
         }
 
         inline T kth_largest(const size_type k) const {
-            dev_assert(0 <= k and k < this->size());
+            assert(0 <= k && k < this->size());
             return this->_super->base::kth_largest(this->_begin, this->_end, k);
         }
         inline auto kth_largest_element(const size_type k) const {
             if(k == this->size()) return this->end();
-            dev_assert(0 <= k and k < this->size());
+            assert(0 <= k && k < this->size());
             return std::next(this->_super->begin(), this->_super->base::kth_largest_index(this->_begin, this->_end, k));
         }
 
@@ -508,7 +495,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
         range_reference(const compressed_wavelet_matrix *const super, const size_type l, const size_type r)
           : internal::range_reference<const compressed_wavelet_matrix>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
       private:

@@ -10,9 +10,10 @@
 
 #include "snippet/iterations.hpp"
 
+#include "numeric/bit.hpp"
+
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-#include "internal/dev_assert.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
 
@@ -23,10 +24,10 @@ namespace lib {
 
 namespace internal {
 
-namespace lazy_segment_tree_lib {
+namespace lazy_segment_tree_impl {
 
 // Thanks to: atcoder::lazy_segtree
-template<class S, class F, S (*map)(const S&, const F&), F (*fold)(const F&, const internal::size_t)>
+template<class S, class F, S (*_map)(const S&, const F&), F (*_fold)(const F&, const internal::size_t)>
 struct base {
     using size_type = internal::size_t;
 
@@ -37,11 +38,11 @@ struct base {
     mutable F* _lazy;
 
     inline void update(const size_type p) {
-        this->_values[p] = this->_values[p << 1] * this->_values[p << 1 | 1];
+        this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
     }
     inline void all_apply(const size_type p, const F& f) const {
-        this->_values[p] = map(this->_values[p], fold(f, this->_lengths[p]));
-        if(p < this->_size) this->_lazy[p] = f * this->_lazy[p];
+        this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
+        if(p < this->_size) this->_lazy[p] = f + this->_lazy[p];
     }
     inline void push(const size_type p) const {
         this->all_apply(p << 1, this->_lazy[p]);
@@ -50,7 +51,7 @@ struct base {
     }
 
   protected:
-    explicit base(const size_type n = 0) : _n(n), _depth(atcoder::internal::ceil_pow2(_n)) {
+    explicit base(const size_type n = 0) : _n(n), _depth(bit_width<unsigned>(_n)) {
         this->_size = 1 << this->_depth;
         this->_lengths = new size_type[2*this->_size]();
         this->_values = new S[2*this->_size]();
@@ -100,21 +101,21 @@ struct base {
 
         S sml, smr;
         while(l < r) {
-            if(l & 1) sml = sml * this->_values[l++];
-            if(r & 1) smr = this->_values[--r] * smr;
+            if(l & 1) sml = sml + this->_values[l++];
+            if(r & 1) smr = this->_values[--r] + smr;
             l >>= 1;
             r >>= 1;
         }
 
-        return sml * smr;
+        return sml + smr;
     }
 
-    inline S all_prod() const { return this->_values[1]; }
+    inline S fold_all() const { return this->_values[1]; }
 
     inline void apply(size_type p, const F& f) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
-        this->_values[p] = map(this->_values[p], fold(f, this->_lengths[p]));
+        this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
         FOR(i, 1, this->_depth) this->update(p >> i);
     }
     inline void apply(size_type l, size_type r, const F& f) {
@@ -150,26 +151,26 @@ struct base {
         return this->max_right(l, [](S x) { return g(x); });
     }
     template<class G> inline size_type max_right(size_type l, G g) const {
-        dev_assert(0 <= l && l <= _n);
-        dev_assert(g({}));
+        assert(0 <= l && l <= _n);
+        assert(g({}));
         if(l == _n) return _n;
         l += this->_size;
         FORD(i, 1, this->_depth) this->push(l >> i);
         S sm;
         do {
             while(l % 2 == 0) l >>= 1;
-            if(!g(sm * this->_values[l])) {
+            if(!g(sm + this->_values[l])) {
                 while(l < this->_size) {
                     this->push(l);
                     l = (2 * l);
-                    if(g(sm * this->_values[l])) {
-                        sm = sm * this->_values[l];
+                    if(g(sm + this->_values[l])) {
+                        sm = sm + this->_values[l];
                         l++;
                     }
                 }
                 return l - this->_size;
             }
-            sm = sm * this->_values[l];
+            sm = sm + this->_values[l];
             l++;
         } while((l & -l) != l);
         return _n;
@@ -179,8 +180,8 @@ struct base {
         return min_left(r, [](S x) { return g(x); });
     }
     template<class G> inline size_type min_left(size_type r, G g) const {
-        dev_assert(0 <= r && r <= _n);
-        dev_assert(g({}));
+        assert(0 <= r && r <= _n);
+        assert(g({}));
         if(r == 0) return 0;
         r += this->_size;
         FORD(i, 1, this->_depth) this->push((r - 1) >> i);
@@ -188,18 +189,18 @@ struct base {
         do {
             r--;
             while(r > 1 && (r % 2)) r >>= 1;
-            if(!g(this->_values[r] * sm)) {
+            if(!g(this->_values[r] + sm)) {
                 while(r < this->_size) {
                     this->push(r);
                     r = (2 * r + 1);
-                    if(g(this->_values[r] * sm)) {
-                        sm = this->_values[r] * sm;
+                    if(g(this->_values[r] + sm)) {
+                        sm = this->_values[r] + sm;
                         r--;
                     }
                 }
                 return r + 1 - this->_size;
             }
-            sm = this->_values[r] * sm;
+            sm = this->_values[r] + sm;
         } while((r & -r) != r);
         return 0;
     }
@@ -208,6 +209,11 @@ struct base {
 
 template<class Action>
 struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
+    static_assert(
+        Action::tags.none() or
+        Action::tags.has(actions::flags::range_folding, actions::flags::range_operation)
+    );
+
   public:
     using action = Action;
 
@@ -215,32 +221,23 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     using operation = typename action::operation;
 
   private:
-    using base = lazy_segment_tree_lib::base<operand, operation, action::map, action::fold>;
+    using operand_value = typename operand::value_type;
+    using base = lazy_segment_tree_impl::base<operand, operation, action::map, action::fold>;
 
   public:
-    using value_type = typename operand::value_type;
+    using value_type = operand;
     using action_type = typename operation::value_type;
 
     using size_type = typename base::size_type;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-    }
-    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
-    }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
-    }
-
     inline size_type _positivize_index(const size_type p) const {
         return p < 0 ? this->size() + p : p;
     }
 
   public:
-    explicit core(const size_type n = 0, const value_type& v = {}) : base(n) {
-        static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::lazy_segment_tree));
+    explicit core(const size_type n = 0, const operand_value& v = {}) : base(n) {
+        static_assert(action::tags.none() or action::tags.has(actions::flags::lazy_segment_tree));
         REP(p, 0, this->_n) this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         this->initialize();
     }
@@ -249,7 +246,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     explicit core(const I first, const I last) : base(std::distance(first, last)) {
-        static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::lazy_segment_tree));
+        static_assert(action::tags.none() or action::tags.has(actions::flags::lazy_segment_tree));
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = operand(*itr);
@@ -263,26 +260,26 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            this->_super->_validate_index_in_right_open(this->_pos);
+            assert(0 <= this->_pos && this->_pos < this->size());
         }
 
-        operator value_type() const { return this->_super->get(this->_pos); }
-        value_type val() const { return this->_super->get(this->_pos); }
+        operator operand_value() const { return this->_super->get(this->_pos); }
+        operand_value val() const { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const value_type& v) {
+        inline point_reference& set(const operand_value& v) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const value_type& v) {
+        inline point_reference& operator=(const operand_value& v) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const value_type& v) {
+        inline point_reference& apply(const action_type& v) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const value_type& v) {
+        inline point_reference& operator<<=(const action_type& v) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -292,14 +289,14 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         range_reference(core *const super, const size_type l, const size_type r)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline range_reference& apply(const value_type& v) {
+        inline range_reference& apply(const action_type& v) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator<<=(const value_type& v) {
+        inline range_reference& operator<<=(const action_type& v) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
@@ -315,15 +312,15 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     };
 
 
-    inline auto& set(size_type p, const value_type& v) {
-        p = this->_positivize_index(p), this->_validate_index_in_right_open(p);
+    inline auto& set(size_type p, const operand_value& v) {
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::set(p, v);
          return *this;
     }
 
     inline auto& apply(size_type l, size_type r, const action_type& v) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        assert(0 <= l && l <= r && r <= this->_super->size());
         this->base::apply(l, r, v);
         return *this;
     }
@@ -333,8 +330,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
 
     inline value_type get(size_type p) const {
-        p = this->_positivize_index(p);
-        this->_validate_index_in_right_open(p);
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::get(p).val();
     }
 
@@ -343,10 +339,10 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+        assert(0 <= l && l <= r && r <= this->_super->size());
         return this->base::fold(l, r).val();
     }
-    inline value_type fold() const { return this->all_prod(); }
+    inline value_type fold() const { return this->fold_all(); }
 
 
   protected:
@@ -364,13 +360,13 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 };
 
 
-} // namespace lazy_segment_tree_lib
+} // namespace lazy_segment_tree_impl
 
 } // namespace internal
 
 
-template<class action> struct lazy_segment_tree : internal::lazy_segment_tree_lib::core<action> {
-    using internal::lazy_segment_tree_lib::core<action>::core;
+template<class action> struct lazy_segment_tree : internal::lazy_segment_tree_impl::core<action> {
+    using internal::lazy_segment_tree_impl::core<action>::core;
 };
 
 

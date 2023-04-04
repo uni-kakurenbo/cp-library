@@ -6,8 +6,8 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/maximum.hpp"
-#include "data_structure/monoid/addition.hpp"
+#include "algebraic/maximum.hpp"
+#include "algebraic/addition.hpp"
 
 
 namespace lib {
@@ -15,11 +15,11 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_add_range_max : base<monoids::addition<T>> {
-    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
+template<class T> struct range_add_range_max : base<algebraic::addition<T>> {
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::maximum<T>;
-    using operation = monoids::addition<T>;
+    using operand = algebraic::maximum<T>;
+    using operation = algebraic::addition<T>;
 
     static operand map(const operand& x, const operation& y) { return x.val() + y.val(); }
 };
@@ -28,9 +28,9 @@ template<class T> struct range_add_range_max : base<monoids::addition<T>> {
 } // namespace actions
 
 
-template<class T> struct lazy_segment_tree<actions::range_add_range_max<T>> : internal::lazy_segment_tree_lib::core<actions::range_add_range_max<T>> {
+template<class T> struct lazy_segment_tree<actions::range_add_range_max<T>> : internal::lazy_segment_tree_impl::core<actions::range_add_range_max<T>> {
   private:
-    using base = internal::lazy_segment_tree_lib::core<actions::range_add_range_max<T>>;
+    using base = internal::lazy_segment_tree_impl::core<actions::range_add_range_max<T>>;
 
   public:
     using base::base;

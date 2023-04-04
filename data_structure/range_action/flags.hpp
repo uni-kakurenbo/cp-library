@@ -13,11 +13,8 @@ namespace internal {
 
 
 enum class tags : std::int8_t {
-    fenwick_tree = 1 << 0,
-    segment_tree = 1 << 1,
-    lazy_segment_tree = 1 << 2,
-    implicit_treap = 1 << 3,
-    disjoint_sparse_table = 1 << 4,
+    range_folding = 1 << 0,
+    range_operation = 1 << 1,
 };
 
 
@@ -27,11 +24,8 @@ enum class tags : std::int8_t {
 struct flags : lib::internal::bit_field::base<internal::tags> {
     using lib::internal::bit_field::base<internal::tags>::base;
 
-    static constexpr internal::tags fenwick_tree = internal::tags::fenwick_tree;
-    static constexpr internal::tags segment_tree = internal::tags::segment_tree;
-    static constexpr internal::tags lazy_segment_tree = internal::tags::lazy_segment_tree;
-    static constexpr internal::tags implicit_treap = internal::tags::implicit_treap;
-    static constexpr internal::tags disjoint_sparse_table = internal::tags::disjoint_sparse_table;
+    static constexpr internal::tags range_folding = internal::tags::range_folding;
+    static constexpr internal::tags range_operation = internal::tags::range_operation;
 };
 
 

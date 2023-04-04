@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include "internal/dev_assert.hpp"
 #include "internal/types.hpp"
 // #include <atcoder/dsu>
 
@@ -30,8 +29,8 @@ struct dsu {
     inline size_type group_count() const { return this->_group_count; }
 
     inline size_type merge(const size_type a, const size_type b) {
-        dev_assert(0 <= a && a < _n);
-        dev_assert(0 <= b && b < _n);
+        assert(0 <= a && a < _n);
+        assert(0 <= b && b < _n);
         size_type x = this->leader(a), y = this->leader(b);
         if (x == y) return x;
         --this->_group_count;
@@ -42,19 +41,19 @@ struct dsu {
     }
 
     inline bool same(const size_type a, const size_type b) const {
-        dev_assert(0 <= a && a < _n);
-        dev_assert(0 <= b && b < _n);
+        assert(0 <= a && a < _n);
+        assert(0 <= b && b < _n);
         return this->leader(a) == this->leader(b);
     }
 
     inline size_type leader(const size_type a) const {
-        dev_assert(0 <= a && a < _n);
+        assert(0 <= a && a < _n);
         if (_parent_or_size[a] < 0) return a;
         return _parent_or_size[a] = this->leader(_parent_or_size[a]);
     }
 
     inline size_type size(const size_type a) const {
-        dev_assert(0 <= a && a < _n);
+        assert(0 <= a && a < _n);
         return -_parent_or_size[this->leader(a)];
     }
 

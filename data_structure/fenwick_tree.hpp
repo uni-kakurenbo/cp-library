@@ -6,40 +6,32 @@
 
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-#include "internal/dev_assert.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
 
 #include "snippet/iterations.hpp"
 
 #include "data_structure/range_action/flags.hpp"
+#include "data_structure/internal/is_action.hpp"
+#include "algebraic/internal/is_algebraic.hpp"
+#include "algebraic/internal/is_commutative.hpp"
 
 
 namespace lib {
 
 namespace internal {
 
-namespace fenwick_tree_lib {
+namespace fenwick_tree_impl {
 
 
 // Thanks to: atcoder::fenwick_tree
-template<class S,S (*r_op)(const S&,const S&)>
+template<class S>
 struct base {
     using size_type = internal::size_t;
 
   private:
     size_t _n;
     S *const _data;
-
-  protected:
-    S fold(size_type r) const {
-        S s = S{0};
-        while (r > 0) {
-            s = s * _data[r-1];
-            r -= r & -r;
-        }
-        return s;
-    }
 
   protected:
     explicit base(const size_type n = 0) : _n(n), _data(new S[n]()) {}
@@ -52,54 +44,50 @@ struct base {
     inline void apply(size_type p, const S& x) {
         p++;
         while (p <= _n) {
-            _data[p-1] = _data[p-1] * x;
+            _data[p-1] = _data[p-1] + x;
             p += p & -p;
         }
     }
 
     inline void set(const size_type p, const S& x) {
-        this->apply(p, r_op(x, this->fold(p, p+1)));
+        this->apply(p, x + -this->fold(p, p+1));
+    }
+
+    inline S fold(size_type r) const {
+        S s = S{0};
+        while (r > 0) {
+            s = s + _data[r-1];
+            r -= r & -r;
+        }
+        return s;
     }
 
     inline S fold(const size_type l, const size_type r) const {
-        return r_op(this->fold(r), this->fold(l));
+        return this->fold(r) + -this->fold(l);
     }
 };
 
 
-template<class Action>
-struct core : base<typename Action::operand,Action::rev> {
-  public:
-    using action = Action;
+template<class, class = std::void_t<>> struct core {};
 
-    using operand = typename action::operand;
+template<class monoid>
+struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>>> : base<monoid> {
+    static_assert(algebraic::internal::is_commutative_v<monoid>, "commutative property is required");
 
   private:
-    using base = typename fenwick_tree_lib::base<operand,action::rev>;
+    using base = typename fenwick_tree_impl::base<monoid>;
 
   public:
-    using value_type = typename operand::value_type;
+    using value_type = monoid;
     using size_type = typename base::size_type;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-    }
-    inline void _validate_index_in_closed([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
-    }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
-    }
-
     inline size_type _positivize_index(const size_type p) const {
         return p < 0 ? this->size() + p : p;
     }
 
   public:
-    explicit core(const size_type n = 0) : base(n) {
-        static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::fenwick_tree));
-    }
+    explicit core(const size_type n = 0) : base(n) {}
     explicit core(const size_type n, const value_type& v) : base(n) { REP(i, n) this->base::apply(i, v); }
     template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
@@ -115,7 +103,7 @@ struct core : base<typename Action::operand,Action::rev> {
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            this->_super->_validate_index_in_right_open(this->_pos);
+            assert(0 <= this->_pos && this->_pos < this->size());
         }
 
         operator value_type() const { return this->_super->get(this->_pos); }
@@ -144,34 +132,38 @@ struct core : base<typename Action::operand,Action::rev> {
         range_reference(core *const super, const size_type l, const size_type r)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
         inline value_type fold() {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+            if(this->_begin == 0) return this->_super->fold(this->_end);
             return this->_super->fold(this->_begin, this->_end);
         }
         inline value_type operator*() {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+            if(this->_begin == 0) return this->_super->fold(this->_end);
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
     inline auto& apply(const size_type p, const value_type& x) {
-        dev_assert(0 <= p and p < this->size());
+        assert(0 <= p && p < this->size());
         this->base::apply(p, x);
          return *this;
     }
 
     inline auto& set(const size_type p, const value_type& x) {
-        dev_assert(0 <= p and p < this->size());
+        static_assert(algebraic::internal::is_group_v<value_type>, "point setting requires inverse element");
+        assert(0 <= p && p < this->size());
         this->base::set(p, x);
          return *this;
     }
 
     inline value_type get(const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
+        static_assert(algebraic::internal::is_group_v<value_type>, "point getting requires inverse element");
+        assert(0 <= p && p < this->size());
         return this->base::fold(p, p+1);
     }
 
@@ -181,15 +173,16 @@ struct core : base<typename Action::operand,Action::rev> {
     inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
 
     inline value_type fold(const size_type l, const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
+        static_assert(algebraic::internal::is_group_v<value_type>, "range folding requires inverse element");
+        assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
     inline value_type fold(const size_type r) const {
-        dev_assert(0 <= r and r <= this->size());
-        return this->base::fold(0, r);
+        assert(0 <= r && r <= this->size());
+        return this->base::fold(r);
     }
     inline value_type fold() const {
-        return this->base::fold(0, this->size());
+        return this->base::fold(this->size());
     }
 
 
@@ -208,14 +201,22 @@ struct core : base<typename Action::operand,Action::rev> {
     inline iterator end() const { return iterator(this, this->size()); }
 };
 
+template<class Action>
+struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand> {
+    using action = Action;
+    using core<typename action::operand>::core;
 
-} // namespace fenwick_tree_lib
+    static_assert(action::tags.none() or action::tags.has(actions::flags::range_folding));
+};
+
+
+} // namespace fenwick_tree_impl
 
 } // namespace internal
 
 
-template<class action> struct fenwick_tree : internal::fenwick_tree_lib::core<action> {
-    using internal::fenwick_tree_lib::core<action>::core;
+template<class action> struct fenwick_tree : internal::fenwick_tree_impl::core<action> {
+    using internal::fenwick_tree_impl::core<action>::core;
 };
 
 

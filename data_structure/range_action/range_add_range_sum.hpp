@@ -6,7 +6,7 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/addition.hpp"
+#include "algebraic/addition.hpp"
 
 
 namespace lib {
@@ -15,10 +15,10 @@ namespace actions {
 
 
 template<class T> struct range_add_range_sum : base<> {
-    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::addition<T>;
-    using operation = monoids::addition<T>;
+    using operand = algebraic::addition<T>;
+    using operation = algebraic::addition<T>;
 
     static operand map(const operand& x, const operation& y) { return x.val() + y.val(); }
     static operation fold(const operation& x, const lib::internal::size_t length) { return x.val() * length; }
@@ -28,9 +28,9 @@ template<class T> struct range_add_range_sum : base<> {
 } // namespace actions
 
 
-template<class T> struct lazy_segment_tree<actions::range_add_range_sum<T>> : internal::lazy_segment_tree_lib::core<actions::range_add_range_sum<T>> {
+template<class T> struct lazy_segment_tree<actions::range_add_range_sum<T>> : internal::lazy_segment_tree_impl::core<actions::range_add_range_sum<T>> {
   private:
-    using base = internal::lazy_segment_tree_lib::core<actions::range_add_range_sum<T>>;
+    using base = internal::lazy_segment_tree_impl::core<actions::range_add_range_sum<T>>;
 
   public:
     using base::base;

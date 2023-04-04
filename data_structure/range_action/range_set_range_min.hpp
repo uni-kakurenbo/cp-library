@@ -6,8 +6,8 @@
 #include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
-#include "data_structure/monoid/minimum.hpp"
-#include "data_structure/monoid/assignment.hpp"
+#include "algebraic/minimum.hpp"
+#include "algebraic/assignment.hpp"
 
 
 namespace lib {
@@ -15,11 +15,11 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_set_range_min : base<monoids::assignment<T>> {
-    static constexpr flags tags{ flags::implicit_treap, flags::lazy_segment_tree };
+template<class T> struct range_set_range_min : base<algebraic::assignment<T>> {
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::minimum<T>;
-    using operation = monoids::assignment<T>;
+    using operand = algebraic::minimum<T>;
+    using operation = algebraic::assignment<T>;
 
     static operand map(const operand& x, const operation& y) { return y->value_or(x.val()); }
 };
@@ -28,8 +28,8 @@ template<class T> struct range_set_range_min : base<monoids::assignment<T>> {
 } // namespace actions
 
 
-template<class T> struct lazy_segment_tree<actions::range_set_range_min<T>> : internal::lazy_segment_tree_lib::core<actions::range_set_range_min<T>> {
-    using internal::lazy_segment_tree_lib::core<actions::range_set_range_min<T>>::core;
+template<class T> struct lazy_segment_tree<actions::range_set_range_min<T>> : internal::lazy_segment_tree_impl::core<actions::range_set_range_min<T>> {
+    using internal::lazy_segment_tree_impl::core<actions::range_set_range_min<T>>::core;
 
     inline auto set(const size_t first, const size_t last, const T& val) { return this->apply(first, last, val); }
     inline auto set(const size_t pos, const T& val) { return this->apply(pos, val); }

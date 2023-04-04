@@ -9,7 +9,6 @@
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
 
-#include "internal/dev_assert.hpp"
 
 #include "internal/uncopyable.hpp"
 #include "internal/types.hpp"
@@ -27,11 +26,11 @@ namespace lib {
 
 namespace internal {
 
-namespace implicit_treap_lib {
+namespace implicit_treap_impl {
 
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
-template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*fold)(const OperatorMonoid&, internal::size_t)>
+template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)>
 struct base : private uncopyable {
     using operand = OperandMonoid;
     using operation = OperatorMonoid;
@@ -72,7 +71,7 @@ struct base : private uncopyable {
     inline void update_cnt(const Tree tree) const { if(tree) tree->cnt = 1 + this->cnt(tree->left) + this->cnt(tree->right); }
 
     inline void update_acc(const Tree tree) const {
-        if(tree) tree->acc = this->acc(tree->left) * tree->v * this->acc(tree->right);
+        if(tree) tree->acc = this->acc(tree->left) + tree->v + this->acc(tree->right);
     }
 
     inline void pushup(const Tree tree) const { this->update_cnt(tree), update_acc(tree); }
@@ -86,14 +85,14 @@ struct base : private uncopyable {
         }
         if(tree and tree->lazy != operation{}) {
             if(tree->left) {
-                tree->left->lazy = tree->lazy * tree->left->lazy;
-                tree->left->acc = map(tree->left->acc, fold(tree->lazy, this->cnt(tree->left)));
+                tree->left->lazy = tree->lazy + tree->left->lazy;
+                tree->left->acc = _map(tree->left->acc, _fold(tree->lazy, this->cnt(tree->left)));
             }
             if(tree->right) {
-                tree->right->lazy = tree->lazy * tree->right->lazy;
-                tree->right->acc = map(tree->right->acc, fold(tree->lazy, this->cnt(tree->right)));
+                tree->right->lazy = tree->lazy + tree->right->lazy;
+                tree->right->acc = _map(tree->right->acc, _fold(tree->lazy, this->cnt(tree->right)));
             }
-            tree->v = map(tree->v, fold(tree->lazy, 1));
+            tree->v = _map(tree->v, _fold(tree->lazy, 1));
             tree->lazy = operation{};
         }
         // this->pushup(tree);
@@ -151,8 +150,8 @@ struct base : private uncopyable {
         Tree t1, t2, t3;
         this->split(tree, l, t1, t2);
         this->split(t2, r - l, t2, t3);
-        t2->lazy = v * t2->lazy;
-        // t2->acc = map(t2->acc, fold(v, cnt(t2)));
+        t2->lazy = v + t2->lazy;
+        // t2->acc = _map(t2->acc, _fold(v, cnt(t2)));
         this->merge(t2, t2, t3);
         this->merge(tree, t1, t2);
     }
@@ -170,20 +169,20 @@ struct base : private uncopyable {
 
     // [l, r)の中で左から何番目か
     inline size_type find(const Tree tree, operand& v, const size_type offset, const bool dir_left = true) const {
-        if(tree->acc * v == v) {
+        if(tree->acc + v == v) {
             return -1;
         } else {
             if(dir_left) {
-                if(tree->left and tree->left->acc * v != v) {
+                if(tree->left and tree->left->acc + v != v) {
                     return this->find(tree->left, v, offset, dir_left);
                 } else {
-                    return tree->v * v != v ? offset + this->cnt(tree->left) : this->find(tree->right, v, offset + this->cnt(tree->left) + 1, dir_left);
+                    return tree->v + v != v ? offset + this->cnt(tree->left) : this->find(tree->right, v, offset + this->cnt(tree->left) + 1, dir_left);
                 }
             } else {
-                if(tree->right and tree->right->acc * v != v) {
+                if(tree->right and tree->right->acc + v != v) {
                     return this->find(tree->right, v, offset + this->cnt(tree->left) + 1, dir_left);
                 } else {
-                    return tree->v * v != v ? offset + this->cnt(tree->left) : this->find(tree->left, v, offset, dir_left);
+                    return tree->v + v != v ? offset + this->cnt(tree->left) : this->find(tree->left, v, offset, dir_left);
                 }
             }
         }
@@ -240,38 +239,34 @@ struct base : private uncopyable {
     }
 };
 
-template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*fold)(const OperatorMonoid&, internal::size_t)>
-xorshift base<OperandMonoid,OperatorMonoid,map,fold>::rand(std::random_device{}());
+template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)>
+xorshift base<OperandMonoid,OperatorMonoid,_map,_fold>::rand(std::random_device{}());
 
 
 template<class Action>
-struct core : implicit_treap_lib::base<typename Action::operand,typename Action::operation,Action::map,Action::fold> {
+struct core : base<typename Action::operand,typename Action::operation,Action::map,Action::fold> {
+    static_assert(
+        Action::tags.none() or
+        Action::tags.has(actions::flags::range_folding, actions::flags::range_operation)
+    );
+
   public:
     using action = Action;
 
     using operand = typename action::operand;
     using operation = typename action::operation;
 
-    using value_type = typename operand::value_type;
+    using value_type = operand;
     using action_type = typename operation::value_type;
 
   private:
-    using base = implicit_treap_lib::base<operand,operation,Action::map,Action::fold>;
+    using operand_value = typename operand::value_type;
+    using base = implicit_treap_impl::base<operand,operation,Action::map,Action::fold>;
 
   public:
     using size_type = typename base::size_type;
 
   protected:
-    inline void _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p < this->size());
-    }
-    inline void _validate_index_in_closed ([[maybe_unused]] const size_type p) const {
-        dev_assert(0 <= p and p <= this->size());
-    }
-    inline void _validate_rigth_open_interval([[maybe_unused]] const size_type l, [[maybe_unused]] const size_type r) const {
-        dev_assert(0 <= l and l <= r and r <= this->size());
-    }
-
     inline size_type _positivize_index(const size_type p) const {
         return p < 0 ? this->size() + p : p;
     }
@@ -280,7 +275,7 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
     template<class... Args>
     explicit core(Args... args) : core() { this->assign(std::forward<Args>(args)...); }
     template<class T> core(const std::initializer_list<T>& values) : core(std::begin(values), std::end(values)) {}
-    core() { static_assert(action::tags.bits() == 0 or action::tags.has(actions::flags::implicit_treap)); }
+    core() {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void insert(size_type p, const I first, const I last) {
@@ -295,26 +290,26 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
         point_reference(core *const super, const size_type p)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
-            this->_super->_validate_index_in_right_open(this->_pos);
+            assert(0 <= this->_pos && this->_pos < this->size());
         }
 
         operator value_type() const { return this->_super->get(this->_pos); }
         value_type val() const { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const value_type& v) {
+        inline point_reference& set(const operand_value& v) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const value_type& v) {
+        inline point_reference& operator=(const operand_value& v) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const value_type& v) {
+        inline point_reference& apply(const action_type& v) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const value_type& v) {
+        inline point_reference& operator<<=(const action_type& v) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -324,7 +319,7 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
         range_reference(core *const super, const size_type l, const size_type r)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            this->_super->_validate_rigth_open_interval(this->_begin, this->_end);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
         inline value_type fold() {
@@ -335,49 +330,48 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
             return this->_super->fold(this->_begin, this->_end);
         }
 
-        inline range_reference& fill(const value_type& v) {
+        inline range_reference& fill(const operand_value& v) {
             this->_super->fill(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator=(const value_type& v) {
+        inline range_reference& operator=(const operand_value& v) {
             this->_super->fill(this->_begin, this->_end, v);
             return *this;
         }
 
-        inline range_reference& apply(const value_type& v) {
+        inline range_reference& apply(const action_type& v) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator<<=(const value_type& v) {
+        inline range_reference& operator<<=(const action_type& v) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
 
-        inline size_type find(const value_type& v, const bool dir_left = true) const {
+        inline size_type find(const operand_value& v, const bool dir_left = true) const {
             return this->_super->base::find(this->_begin, this->_end, v, dir_left);
         }
     };
 
 
-    inline void insert(size_type p, const value_type& v) {
-        p = this->_positivize_index(p);
-        this->_validate_index_in_closed(p);
+    inline void insert(size_type p, const operand_value& v) {
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::insert(p, v);
     }
 
-    inline void insert(const size_type p, const value_type& v, const size_type count) {
+    inline void insert(const size_type p, const operand_value& v, const size_type count) {
         REP(k, count) this->insert(p + k, v);
     }
 
-    inline void push_front(const value_type& v, const size_type count = 1) { this->insert(0, v, count); }
-    inline void push_back(const value_type& v, const size_type count = 1) { this->insert(this->size(), v, count); }
+    inline void push_front(const operand_value& v, const size_type count = 1) { this->insert(0, v, count); }
+    inline void push_back(const operand_value& v, const size_type count = 1) { this->insert(this->size(), v, count); }
 
-    inline void resize(const size_type size, const value_type& v = value_type{}) {
+    inline void resize(const size_type size, const operand_value& v = operand_value{}) {
         REP(this->size() - size) this->erase(-1);
         REP(i, this->size(), size) this->push_back(v);
     }
 
-    inline void assign(const size_type size, const value_type& v = value_type{}) {
+    inline void assign(const size_type size, const operand_value& v = operand_value{}) {
         this->clear(), this->insert(0, v, size);
     }
 
@@ -386,17 +380,16 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void assign(const I first, const I last) { this->clear(), this->insert(0, first, last); }
 
-    inline void fill(const value_type& v) {
+    inline void fill(const operand_value& v) {
         const size_type count = this->size();
         this->clear(), this->insert(0, v, count);
     }
-    inline void fill(const size_type l, const size_type r, const value_type& v) {
+    inline void fill(const size_type l, const size_type r, const operand_value& v) {
         REP(p, l, r) this->erase(p), this->insert(p, v);
     }
 
     inline void erase(size_type p) {
-        p = this->_positivize_index(p);
-        this->_validate_index_in_right_open(p);
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::erase(p);
     }
     inline void erase(const size_type p, const size_type count) { REP(count) this->erase(p); }
@@ -408,7 +401,7 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
 
     inline void apply(size_type l, size_type r, const action_type& v) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+            assert(0 <= l && l <= r && r <= this->_super->size());
         this->base::apply(l, r, v);
     }
     inline void apply(const size_type p, const action_type& v) { this->apply(p, p+1, v); }
@@ -416,8 +409,7 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
 
 
     inline value_type get(size_type p) const {
-        p = this->_positivize_index(p);
-        this->_validate_index_in_right_open(p);
+        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::fold(p, p+1).val();
     }
 
@@ -429,31 +421,31 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
 
     inline value_type fold(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+            assert(0 <= l && l <= r && r <= this->_super->size());
         return this->base::fold(l, r).val();
     }
     inline value_type fold() const { return this->fold(0, this->size()); }
 
     inline void reverse(size_type l, size_type r) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r);
+            assert(0 <= l && l <= r && r <= this->_super->size());
         this->base::reverse(l, r);
     }
     inline void reverse() const { this->reverse(0, this->size()); }
 
     inline void rotate(size_type l, size_type m, size_type r) const {
         l = this->_positivize_index(l), m = this->_positivize_index(m), r = this->_positivize_index(r);
-        this->_validate_rigth_open_interval(l, r), dev_assert(l <= m and m < r);
+        assert(0 <= l && l <= m && m < r && r <= this->size());
         this->base::rotate(l, m, r);
     }
     inline void rotate(const size_type m) const { this->rotate(0, m, this->size()); }
 
-    inline size_type find(size_type l, size_type r, const value_type& v, const bool dir_left = true) const {
+    inline size_type find(size_type l, size_type r, const operand_value& v, const bool dir_left = true) const {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        this->_validate_index_right_closed(l), this->_validate_index_right_closed(r);
+            assert(0 <= l && l <= r && r <= this->_super->size());
         return this->base::find(l, r, v, dir_left);
     }
-    inline size_type find(const value_type& v, const bool dir_left = true) const {
+    inline size_type find(const operand_value& v, const bool dir_left = true) const {
         return this->find(0, this->size(), v, dir_left);
     }
 
@@ -473,13 +465,13 @@ struct core : implicit_treap_lib::base<typename Action::operand,typename Action:
 };
 
 
-} // namespace implicit_treap_lib
+} // namespace implicit_treap_impl
 
 } // namespace internal
 
 
-template<class action> struct implicit_treap : internal::implicit_treap_lib::core<action> {
-    using internal::implicit_treap_lib::core<action>::core;
+template<class action> struct implicit_treap : internal::implicit_treap_impl::core<action> {
+    using internal::implicit_treap_impl::core<action>::core;
 };
 
 

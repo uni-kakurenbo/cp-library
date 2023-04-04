@@ -4,7 +4,7 @@
 
 #include "data_structure/lazy_segment_tree.hpp"
 #include "data_structure/range_action/range_add_range_sum.hpp"
-#include "data_structure/monoid/addition.hpp"
+#include "algebraic/addition.hpp"
 
 // #include "template.hpp"
 
