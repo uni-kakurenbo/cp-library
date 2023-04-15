@@ -193,10 +193,10 @@ template<class T, class dict_type> struct base {
     inline T sum_over(const size_type l, const size_type r, const T& v) const {
         return this->sum_in_range(l, r, v+1, std::numeric_limits<T>::max());
     }
-    inline T sum_under_or(const size_type l, const size_type r, const T& v) const {
+    inline T sum_or_under(const size_type l, const size_type r, const T& v) const {
         return this->sum_in_range(l, r, 0, v+1);
     }
-    inline T sum_over_or(const size_type l, const size_type r, const T& v) const {
+    inline T sum_or_over(const size_type l, const size_type r, const T& v) const {
         return this->sum_in_range(l, r, v, std::numeric_limits<T>::max());
     }
     inline T sum(const size_type l, const size_type r) const {
@@ -224,13 +224,13 @@ template<class T, class dict_type> struct base {
     inline size_type count_in_range(const size_type l, const size_type r, const T& x, const T& y) const {
         return this->count_under(l, r, y) - this->count_under(l, r, x);
     }
-    inline size_type count_under_or(size_type l, size_type r, const T& v) const {
+    inline size_type count_or_under(size_type l, size_type r, const T& v) const {
         return this->count_under(l, r, v+1);
     }
     inline size_type count_over(size_type l, size_type r, const T& v) const {
-        return this->count_over_or(l, r, v+1);
+        return this->count_or_over(l, r, v+1);
     }
-    inline size_type count_over_or(size_type l, size_type r, const T& v) const {
+    inline size_type count_or_over(size_type l, size_type r, const T& v) const {
         return r - l - this->count_under(l, r, v);
     }
     inline size_type count_equal_to(const size_type l, const size_type r, const T& v) const {
@@ -348,8 +348,8 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
         inline T sum_under(const T& v) const { return this->_super->base::sum_under(this->_begin, this->_end, v); }
         inline T sum_over(const T& v) const { return this->_super->base::sum_over(this->_begin, this->_end, v); }
-        inline T sum_under_or(const T& v) const { return this->_super->base::sum_under_or(this->_begin, this->_end, v); }
-        inline T sum_over_or(const T& v) const { return this->_super->base::sum_over_or(this->_begin, this->_end, v); }
+        inline T sum_or_under(const T& v) const { return this->_super->base::sum_or_under(this->_begin, this->_end, v); }
+        inline T sum_or_over(const T& v) const { return this->_super->base::sum_or_over(this->_begin, this->_end, v); }
 
         inline T sum(const T& x, const T& y) const { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
         inline T sum() const { return this->_super->base::sum(this->_begin, this->_end); }
@@ -358,8 +358,8 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
         inline size_type sum(const T& v) const {
             if constexpr(com == comp::under) return this->sum_under(v);
             if constexpr(com == comp::over) return this->sum_over(v);
-            if constexpr(com == comp::under_or) return this->sum_under_or(v);
-            if constexpr(com == comp::over_or) return this->sum_over_or(v);
+            if constexpr(com == comp::or_under) return this->sum_or_under(v);
+            if constexpr(com == comp::or_over) return this->sum_or_over(v);
             assert(false);
         }
 
@@ -368,16 +368,16 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
         inline size_type count_under(const T& v) const { return this->_super->base::count_under(this->_begin, this->_end, v); }
         inline size_type count_over(const T& v) const { return this->_super->base::count_over(this->_begin, this->_end, v); }
-        inline size_type count_under_or(const T& v) const { return this->_super->base::count_under_or(this->_begin, this->_end, v); }
-        inline size_type count_over_or(const T& v) const { return this->_super->base::count_over_or(this->_begin, this->_end, v); }
+        inline size_type count_or_under(const T& v) const { return this->_super->base::count_or_under(this->_begin, this->_end, v); }
+        inline size_type count_or_over(const T& v) const { return this->_super->base::count_or_over(this->_begin, this->_end, v); }
 
         template<comp com = comp::equal_to>
         inline size_type count(const T& v) const {
             if constexpr(com == comp::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
             if constexpr(com == comp::under) return this->count_under(v);
             if constexpr(com == comp::over) return this->count_over(v);
-            if constexpr(com == comp::under_or) return this->count_under_or(v);
-            if constexpr(com == comp::over_or) return this->count_over_or(v);
+            if constexpr(com == comp::or_under) return this->count_or_under(v);
+            if constexpr(com == comp::or_over) return this->count_or_over(v);
             assert(false);
         }
 
@@ -408,8 +408,8 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
     inline T sum_under(const T& v) const { return this->range().sum_under(v); }
     inline T sum_over(const T& v) const { return this->range().sum_over(v); }
-    inline T sum_under_or(const T& v) const { return this->range().sum_under_or(v); }
-    inline T sum_over_or(const T& v) const { return this->range().sum_over_or(v); }
+    inline T sum_or_under(const T& v) const { return this->range().sum_or_under(v); }
+    inline T sum_or_over(const T& v) const { return this->range().sum_or_over(v); }
 
     inline T sum(const T& x, const T& y) const { return this->range().sum_in_range(x, y); }
     inline T sum() const { return this->range().sum(); }
@@ -422,8 +422,8 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
     inline size_type count_under(const T& v) const { return this->range().count_under(v); }
     inline size_type count_over(const T& v) const { return this->range().count_over(v); }
-    inline size_type count_under_or(const T& v) const { return this->range().count_under_or(v); }
-    inline size_type count_over_or(const T& v) const { return this->range().count_over_or(v); }
+    inline size_type count_or_under(const T& v) const { return this->range().count_or_under(v); }
+    inline size_type count_or_over(const T& v) const { return this->range().count_or_over(v); }
 
     inline size_type count(const T& x, const T& y) const { return this->range().count(x, y); }
 
@@ -531,8 +531,8 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
 
         inline size_type count_under(const T& v) const { return this->_range().count_under(this->_super->compressed.rank(v)); }
         inline size_type count_over(const T& v) const { return this->_range().count_over(this->_super->compressed.rank2(v)); }
-        inline size_type count_under_or(const T& v) const { return this->_range().count_under_or(this->_super->compressed.rank2(v)); }
-        inline size_type count_over_or(const T& v) const { return this->_range().count_over_or(this->_super->compressed.rank(v)); }
+        inline size_type count_or_under(const T& v) const { return this->_range().count_or_under(this->_super->compressed.rank2(v)); }
+        inline size_type count_or_over(const T& v) const { return this->_range().count_or_over(this->_super->compressed.rank(v)); }
 
         template<comp com = comp::equal_to>
         inline size_type count(const T& v) const { return this->_range().template count<com>(this->_super->compressed.rank(v)); }
@@ -572,8 +572,8 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
 
     inline size_type count_under(const T& v) const { return this->range().count_under(v); }
     inline size_type count_over(const T& v) const { return this->range().count_over(v); }
-    inline size_type count_under_or(const T& v) const { return this->range().count_under_or(v); }
-    inline size_type count_over_or(const T& v) const { return this->range().count_over_or(v); }
+    inline size_type count_or_under(const T& v) const { return this->range().count_or_under(v); }
+    inline size_type count_or_over(const T& v) const { return this->range().count_or_over(v); }
 
     template<comp com = comp::equal_to> inline size_type count(const T& v) const { return this->range().template count<com>(v); }
 

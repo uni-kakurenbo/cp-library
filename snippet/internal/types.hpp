@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+namespace lib {
+
+
 using i16 = std::int16_t;
 using u16 = std::uint16_t;
 
@@ -16,6 +19,10 @@ using i128 = __int128_t;
 using u128 = __uint128_t;
 #endif
 
+using uint = unsigned;
 using ll = long long;
 using ull = unsigned long long;
 using ld = long double;
+
+
+} // namespace lib

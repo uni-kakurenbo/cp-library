@@ -337,6 +337,10 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
+        inline range_reference& operator<<=(const action_type& v) {
+            this->_super->apply(this->_begin, this->_end, v);
+            return *this;
+        }
 
         inline size_type find(const operand_value& v, const bool dir_left = true) const {
             return this->_super->base::find(this->_begin, this->_end, v, dir_left);

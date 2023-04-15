@@ -12,7 +12,7 @@ namespace lib {
 
 template <class T>
 struct quotient_enumerator {
-    using value_type = std::tuple<T,T,T>; // (q, (l, r))
+    using value_type = std::tuple<T,T,T>; // (q, l, r)
     using size_type = internal::size_t;
 
   private:

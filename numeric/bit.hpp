@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <cstdint>
 #include <limits>
 
@@ -48,6 +49,17 @@ template<class T>
 inline constexpr int highest_bit_pos(const T v) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     return bit_width(v) - 1;
+}
+
+template<class T>
+inline constexpr T bit_ceil(const T v) {
+    LIB_STATUC_ASSERT_UNSIGNED(T);
+    if(v <= 1U) return 1;
+    if constexpr(std::is_same_v<T,decltype(+v)>) return T{1} << bit_width<T>(v - 1);
+    else {
+        constexpr int d = std::numeric_limits<unsigned>::digits - std::numeric_limits<T>::digits;
+        return T(1U << bit_width<T>(v - 1) + d) >> d;
+    }
 }
 
 

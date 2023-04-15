@@ -44,6 +44,21 @@ using std::max_element;
 
 // using boost::dynamic_bitset
 
+using lib::i32;
+using lib::u32;
+using lib::i64;
+using lib::u64;
+
+#ifdef __GNUC__
+using lib::i128;
+using lib::u128;
+#endif
+
+using lib::uint;
+using lib::ll;
+using lib::ull;
+using lib::ld;
+
 using lib::INF32;
 using lib::INF64;
 

@@ -14,7 +14,7 @@ template<class source = std::istream>
 struct input_adapter {
   private:
     template<class T>
-    auto _set(lib::internal::resolving_rank<3>, T *const val) -> decltype(std::declval<source>() >> *val, 0) {
+    auto _set(lib::internal::resolving_rank<3>, T *const val) -> decltype(std::declval<source&>() >> *val, 0) {
         *this->in >> *val;
         return 0;
     }

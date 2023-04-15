@@ -6,12 +6,12 @@
 #include "data_structure/range_action/range_add_range_sum.hpp"
 #include "algebraic/addition.hpp"
 
-// #include "template.hpp"
+#include "template.hpp"
 
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::lazy_segment_tree<lib::actions::range_add_range_sum<ll>> data(n);
+    lib::lazy_segment_tree<lib::actions::range_add_range_sum<lib::ll>> data(n);
     // debug(data, data._values, data._lengths);
 
     for(;q--;) {
@@ -24,6 +24,6 @@ signed main() {
             int l, r; std::cin >> l >> r; --l;
             std::cout << data.sum(l, r) << "\n";
         }
-        // debug(data);
+        debug(data);
     }
 }

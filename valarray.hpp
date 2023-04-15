@@ -16,6 +16,9 @@ namespace lib {
 template<class T> struct valarray : std::valarray<T> {
     using size_type = internal::size_t;
 
+    using iterator = T*;
+    using const_iterator = const T*;
+
   protected:
     inline bool _validate_index_in_right_open([[maybe_unused]] const size_type p) const {
         return 0 <= p and p < this->size();

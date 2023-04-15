@@ -28,13 +28,18 @@ struct base {
 };
 
 
+struct commutative {};
+
+struct invertible {};
+
+
 struct magma {};
 
 struct semigroup : magma {};
 
 struct monoid : semigroup {};
 
-struct group : monoid {};
+struct group : monoid, invertible {};
 
 
 } // namespace internal

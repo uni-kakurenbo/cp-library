@@ -12,7 +12,7 @@ template<class destination = std::ostream, class Terminator = std::string, class
 struct output_adapter {
   private:
     template<class T>
-    auto _put(lib::internal::resolving_rank<2>, const T &val) -> decltype(std::declval<destination>() << val, 0) {
+    auto _put(lib::internal::resolving_rank<2>, const T &val) -> decltype(std::declval<destination&>() << val, 0) {
         *this->out << val;
         return 0;
     }

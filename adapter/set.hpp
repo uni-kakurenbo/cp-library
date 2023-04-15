@@ -17,7 +17,10 @@ template<class set> struct set_wrapper : set {
     using set::set;
     using size_type = internal::size_t;
 
+    inline size_type size() const { return this->set::size(); }
+
     inline bool contains(const typename set::key_type& key) { return static_cast<bool>(this->count(key)); }
+
     inline auto remove(const typename set::key_type& key) { return this->erase(this->find(key)); }
 
     inline auto min_element() { return this->begin(); }

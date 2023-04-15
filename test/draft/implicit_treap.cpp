@@ -1,5 +1,5 @@
 #include "algebraic/addition.hpp"
-#include "algebraic/internal/is_algebraic.hpp"
+#include "algebraic/internal/traits.hpp"
 #include "algebraic/assignment.hpp"
 
 #include "template.hpp"

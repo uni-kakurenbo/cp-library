@@ -10,7 +10,7 @@
 
 #include "numeric/bit.hpp"
 
-#include "algebraic/internal/is_algebraic.hpp"
+#include "algebraic/internal/traits.hpp"
 #include "data_structure/internal/is_action.hpp"
 #include "data_structure/range_action/flags.hpp"
 

@@ -40,8 +40,8 @@ template<class T, T INF, T SUP> struct static_restrictor {
     restrictor& operator+=(const restrictor& rhs) { return this->_assign(this->_v + rhs.val()); }
     restrictor& operator-=(const restrictor& rhs) { return this->_assign(this->_v - rhs.val()); }
     restrictor& operator*=(const restrictor& rhs) {
-        if(lib::mul_over(this->_v, rhs.val(), SUP)) return this->_assign(SUP);
-        if(lib::mul_under(this->_v, rhs.val(), INF)) return this->_assign(INF);
+        if(mul_over(this->_v, rhs.val(), SUP)) return this->_assign(SUP);
+        if(mul_under(this->_v, rhs.val(), INF)) return this->_assign(INF);
         return this->_assign(this->_v * rhs.val());
     }
     restrictor& operator/=(const restrictor& rhs) { return this->_assign(this->_v / rhs.val()); }

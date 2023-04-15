@@ -15,7 +15,7 @@ void solve();
 
 signed main() {
     int $ = 1;
-    std::cin >> $;
+    // std::cin >> $;
     for(int _ = 0; _ < $; ++_) {
         DEBUG("Case: #" + std::to_string(_));
         solve();
@@ -23,8 +23,7 @@ signed main() {
     return 0;
 }
 
-
 void solve() {
-    i128 a, b; cin >> a >> b;
-    print(a + b);
+    string s; input >> s;
+    print(lib::sorted(s));
 }

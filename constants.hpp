@@ -29,19 +29,19 @@ enum class comp : std::int8_t {
 
     under,
     over,
-    under_or,
-    over_or,
+    or_under,
+    or_over,
 
     less = under,
     more = over,
 
     less_than = under,
     more_than = over,
-    not_less_than = over_or,
-    not_more_than = under_or,
+    not_less_than = or_over,
+    not_more_than = or_under,
 
-    leq = under_or,
-    geq = over_or
+    leq = or_under,
+    geq = or_over
 }; // namespace comp
 
 enum class interval : std::int8_t {

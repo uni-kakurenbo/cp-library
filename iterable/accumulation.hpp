@@ -13,7 +13,7 @@
 namespace lib {
 
 
-template<class T = i64, class container = lib::valarray<T>>
+template<class T = i64, class container = valarray<T>>
 struct accumulation : container {
     using size_type = internal::size_t;
 
@@ -41,7 +41,7 @@ struct accumulation : container {
 };
 
 
-template<class T, class container = lib::valarray<lib::valarray<T>>, class Operator = std::plus<T>>
+template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>
 struct accumulation_2d : container {
     using size_type = internal::size_t;
 

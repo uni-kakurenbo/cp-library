@@ -13,6 +13,7 @@
 #include "internal/iterator.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
+#include "internal/uncopyable.hpp"
 
 #include "snippet/iterations.hpp"
 
@@ -20,7 +21,7 @@
 
 #include "data_structure/range_action/flags.hpp"
 #include "data_structure/internal/is_action.hpp"
-#include "algebraic/internal/is_algebraic.hpp"
+#include "algebraic/internal/traits.hpp"
 
 
 namespace lib {
@@ -31,17 +32,18 @@ namespace segment_tree_impl {
 
 
 // Thanks to: atcoder::segtree
-template<class S> struct base {
+template<class S> struct base : private lib::internal::uncopyable {
     using size_type = internal::size_t;
 
   protected:
-    size_type _n, _size, _depth;
-    S* _data;
+    size_type _n = 0, _size = 0, _depth = 0;
+    S* _data = nullptr;
 
     inline void update(const size_type k) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
   protected:
-    explicit base(const size_type n = 0) : _n(n), _depth(bit_width<unsigned>(n)) {
+    base() {}
+    explicit base(const size_type n) : _n(n), _depth(bit_width<unsigned>(n - 1)) {
         this->_size = 1 << this->_depth;
         this->_data = new S[this->_size << 1]();
     }
@@ -52,6 +54,7 @@ template<class S> struct base {
     inline size_type allocated() const { return this->_size; }
     inline size_type depth() const { return this->_depth; }
 
+  protected:
     inline void apply(size_type p, const S& x) {
         this->set(p, this->_data[p + this->_size] + x);
     }
@@ -71,9 +74,9 @@ template<class S> struct base {
         l += this->_size;
         r += this->_size;
 
-        while (l < r) {
-            if (l & 1) sml = sml + this->_data[l++];
-            if (r & 1) smr = this->_data[--r] + smr;
+        while(l < r) {
+            if(l & 1) sml = sml + this->_data[l++];
+            if(r & 1) smr = this->_data[--r] + smr;
             l >>= 1;
             r >>= 1;
         }
@@ -82,21 +85,22 @@ template<class S> struct base {
 
     inline S fold_all() const { return this->_data[1]; }
 
-    template<bool (*f)(S)> inline size_type max_right(size_type l) const {
+  public:
+    template<bool (*f)(S)> inline size_type max_right(const size_type l) const {
         return this->max_right(l, [](S x) { return f(x); });
     }
-    template<class F> inline size_type max_right(size_type l, F f) const {
-        assert(0 <= l && l <= _n);
+    template<class F> inline size_type max_right(size_type l, const F& f) const {
+        assert(0 <= l && l <= this->_n);
         assert(f(S{}));
-        if (l == this->_n) return this->_n;
+        if(l == this->_n) return this->_n;
         l += this->_size;
         S sm;
         do {
-            while (l % 2 == 0) l >>= 1;
-            if (!f(sm + this->_data[l])) {
-                while (l < this->_size) {
-                    l = (2 * l);
-                    if (f(sm + this->_data[l])) {
+            while(l%2 == 0) l >>= 1;
+            if(!f(sm + this->_data[l])) {
+                while(l < this->_size) {
+                    l <<= 1;
+                    if(f(sm + this->_data[l])) {
                         sm = sm + this->_data[l];
                         ++l;
                     }
@@ -105,26 +109,26 @@ template<class S> struct base {
             }
             sm = sm + this->_data[l];
             ++l;
-        } while ((l & -l) != l);
+        } while((l & -l) != l);
         return this->_n;
     }
 
-    template<bool (*f)(S)> inline size_type min_left(size_type r) const {
+    template<bool (*f)(S)> inline size_type min_left(const size_type r) const {
         return this->min_left(r, [](S x) { return f(x); });
     }
-    template<class F> inline size_type min_left(size_type r, F f) const {
-        assert(0 <= r && r <= _n);
+    template<class F> inline size_type min_left(size_type r, const F& f) const {
+        assert(0 <= r && r <= this->_n);
         assert(f(S()));
         if (r == 0) return 0;
         r += this->_size;
         S sm;
         do {
             --r;
-            while (r > 1 and (r % 2)) r >>= 1;
-            if (!f(this->_data[r] + sm)) {
-                while (r < this->_size) {
-                    r = (2 * r + 1);
-                    if (f(this->_data[r] + sm)) {
+            while(r > 1 and (r%2)) r >>= 1;
+            if(!f(this->_data[r] + sm)) {
+                while(r < this->_size) {
+                    r = (r << 1 | 1);
+                    if(f(this->_data[r] + sm)) {
                         sm = this->_data[r] + sm;
                         --r;
                     }
@@ -132,7 +136,7 @@ template<class S> struct base {
                 return r + 1 - this->_size;
             }
             sm = this->_data[r] + sm;
-        } while ((r & -r) != r);
+        } while((r & -r) != r);
         return 0;
     }
 };
@@ -156,20 +160,31 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     }
 
   public:
-    explicit core(const size_type n = 0) : base(n) {}
+    core() : base() {}
+    explicit core(const size_type n, const monoid_value& v = {}) : base(n) { this->fill(v); }
 
-    explicit core(const size_type n, const monoid_value& v) : core(n) {
-        REP(p, this->_n) this->_data[this->_size + p] = v;
-        REPD(p, 1, this->_size) this->update(p);
-    }
-
-    template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
+    template<class T>
+    core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) : core(std::distance(first, last)) {
+    explicit core(const I first, const I last) : core(std::distance(first, last)) { this->assign(first, last); }
+
+    template<class T>
+    inline auto& assign(const std::initializer_list<T>& init_list) { return this->assign(ALL(init_list)); }
+
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
+    inline auto& assign(const I first, const I last) {
+        assert(std::distance(first, last) == this->size());
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = monoid(*itr);
         REPD(p, 1, this->_size) this->update(p);
+        return *this;
+    }
+
+    inline auto& fill(const monoid_value& v = {}) {
+        REP(p, this->_n) this->_data[this->_size + p] = v;
+        REPD(p, 1, this->_size) this->update(p);
+        return *this;
     }
 
     bool empty() const { return this->size() == 0; }

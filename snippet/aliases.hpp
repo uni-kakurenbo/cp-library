@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "snippet/internal/types.hpp"
 
@@ -16,8 +17,15 @@
 
 namespace lib {
 
-
 template<class T> using spair = std::pair<T,T>;
 
+}
+
+namespace std {
+
+using bit_reference = std::vector<bool>::reference;
+
+bit_reference operator |= (bit_reference a, const bool b) { return a = a | b; }
+bit_reference operator &= (bit_reference a, const bool b) { return a = a & b; }
 
 }

@@ -15,7 +15,7 @@ void solve();
 
 signed main() {
     int $ = 1;
-    std::cin >> $;
+    // std::cin >> $;
     for(int _ = 0; _ < $; ++_) {
         DEBUG("Case: #" + std::to_string(_));
         solve();
@@ -23,8 +23,16 @@ signed main() {
     return 0;
 }
 
+#include "iterable/compression.hpp"
+#include "data_structure/fenwick_tree.hpp"
+#include "data_structure/adapter/set.hpp"
 
 void solve() {
-    i128 a, b; cin >> a >> b;
-    print(a + b);
+    string s; cin >> s;
+    std::vector<int> cnt(26);
+    ITR(v, s) cnt[v-'a']++;
+    lib::multiset_adapter st(ALL(cnt));
+    string res;
+    REP(i, s.size()) res += st.kth_smallest(i).value() + 'a';
+    print(res);
 }

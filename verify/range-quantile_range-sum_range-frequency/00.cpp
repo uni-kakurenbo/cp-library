@@ -19,7 +19,7 @@ signed main() {
         ll med = range.median();
 
         ll costl = med * range.count_under(med) - range.sum_under(med);
-        ll costr = range.sum_over_or(med) - med * range.count_over_or(med);
+        ll costr = range.sum_or_over(med) - med * range.count_or_over(med);
 
         chmin(ans, costl + costr);
     }

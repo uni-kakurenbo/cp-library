@@ -171,7 +171,7 @@ std::string lit(const T& val, Brackets brcs, std::string sep) {
 
 template<class T, std::enable_if_t<internal::is_loggable_v<T>>*>
 std::string lit(const T &val) {
-    auto res = _debug(val);
+    const auto& res = _debug(val);
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
     } else {

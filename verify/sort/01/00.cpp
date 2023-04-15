@@ -15,7 +15,7 @@ void solve();
 
 signed main() {
     int $ = 1;
-    std::cin >> $;
+    // std::cin >> $;
     for(int _ = 0; _ < $; ++_) {
         DEBUG("Case: #" + std::to_string(_));
         solve();
@@ -23,8 +23,16 @@ signed main() {
     return 0;
 }
 
+#include "iterable/compression.hpp"
+#include "data_structure/fenwick_tree.hpp"
+#include "data_structure/adapter/set.hpp"
+#include <boost/range/join.hpp>
 
 void solve() {
-    i128 a, b; cin >> a >> b;
-    print(a + b);
+    int n, m; cin >> n >> m;
+    valarray<i64> a(n), b(m); input >> a >> b;
+    auto rng = boost::join(a, b);
+    lib::compression comp(ALL(rng));
+    ITR(v, a) print(comp.rank(v) + 1);
+    ITR(v, b) print(comp.rank(v) + 1);
 }

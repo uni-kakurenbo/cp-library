@@ -1,35 +1,39 @@
 #pragma once
 
 #include <vector>
+#include <iterator>
 
 #include "geometry/basic.hpp"
 
 namespace lib {
 
 
-template<class T>
-std::vector<point<T>> convex_hull(std::vector<point<T>> points) {
+template<class I, class P = typename std::iterator_traits<I>::value_type>
+std::vector<P> convex_hull(const I first, const I last, const bool margin = false) {
     using size_t = internal::size_t;
 
-    size_t n = points.size();
+    std::vector<P> points(first, last);
+
+    const size_t n = points.size();
     std::sort(points.begin(), points.end());
 
-    std::vector<point<T>> res;
+    std::vector<P> res;
 
-    for(const auto p : points) {
-        while(res.size() >= 2UL and cross(res.end()[-1], res.end()[-2], p) >= 0) {
+    for(const auto& p : points) {
+        while(res.size() >= 2UL and cross(p, res.end()[-2], res.end()[-1]) <= 0) {
             res.pop_back();
         }
-        res.push_back(p);
+        res.emplace_back(p);
     }
 
-    size_t t = res.size();
+    const size_t t = res.size();
     for(auto i=n-2; i>=0; --i) {
         const auto p = points[i];
-        while(static_cast<size_t>(res.size()) > t and cross(res.end()[-1], res.end()[-2], p) >= 0) {
+        while(static_cast<size_t>(res.size()) > t and cross(p, res.end()[-2], res.end()[-1]) <= 0) {
             res.pop_back();
         }
-        res.push_back(p);
+        if(not margin and i == 0) break;
+        res.emplace_back(p);
     }
 
     return res;

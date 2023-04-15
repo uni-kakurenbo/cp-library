@@ -32,10 +32,10 @@ struct base {
     using size_type = internal::size_t;
 
   public:
-    size_type _n, _size, _depth;
-    mutable size_type* _lengths;
-    mutable S* _values;
-    mutable F* _lazy;
+    size_type _n = 0, _size = 0, _depth = 0;
+    mutable size_type* _lengths = nullptr;
+    mutable S* _values = nullptr;
+    mutable F* _lazy = nullptr;
 
     inline void update(const size_type p) {
         this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
@@ -51,7 +51,9 @@ struct base {
     }
 
   protected:
-    explicit base(const size_type n = 0) : _n(n), _depth(bit_width<unsigned>(_n)) {
+    base() {}
+
+    explicit base(const size_type n) : _n(n), _depth(bit_width<unsigned>(n - 1)) {
         this->_size = 1 << this->_depth;
         this->_lengths = new size_type[2*this->_size]();
         this->_values = new S[2*this->_size]();
@@ -99,7 +101,7 @@ struct base {
             if(((r >> i) << i) != r) this->push((r - 1) >> i);
         }
 
-        S sml, smr;
+        S sml = S{}, smr = S{};
         while(l < r) {
             if(l & 1) sml = sml + this->_values[l++];
             if(r & 1) smr = this->_values[--r] + smr;
@@ -156,7 +158,7 @@ struct base {
         if(l == _n) return _n;
         l += this->_size;
         FORD(i, 1, this->_depth) this->push(l >> i);
-        S sm;
+        S sm = S{};
         do {
             while(l % 2 == 0) l >>= 1;
             if(!g(sm + this->_values[l])) {
@@ -185,7 +187,7 @@ struct base {
         if(r == 0) return 0;
         r += this->_size;
         FORD(i, 1, this->_depth) this->push((r - 1) >> i);
-        S sm;
+        S sm = S{};
         do {
             r--;
             while(r > 1 && (r % 2)) r >>= 1;
@@ -236,20 +238,34 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     }
 
   public:
-    explicit core(const size_type n = 0, const operand_value& v = {}) : base(n) {
-        REP(p, 0, this->_n) this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
-        this->initialize();
-    }
+    core() : base() {}
+    explicit core(const size_type n, const operand_value& v = {}) : base(n) { this->fill(v); }
 
     template<class T> core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) : base(std::distance(first, last)) {
+    explicit core(const I first, const I last) : base(std::distance(first, last)) { this->assign(first, last); }
+
+    template<class T>
+    inline auto& assign(const std::initializer_list<T>& init_list) { return this->assign(ALL(init_list)); }
+
+    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
+    inline auto& assign(const I first, const I last) {
+        assert(std::distance(first, last) == this->_n);
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = operand(*itr);
         }
         this->initialize();
+        return *this;
+    }
+
+    inline auto& fill( const operand_value& v = {}) {
+        REP(p, 0, this->_n) {
+            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
+        }
+        this->initialize();
+        return *this;
     }
 
     bool empty() const { return this->size() == 0; }

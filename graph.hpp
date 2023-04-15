@@ -137,7 +137,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     inline cost_t maximum_spanning_tree_cost() const;
 
     // graph/connected_components.hpp
-    inline lib::dsu components() const;
+    inline dsu components() const;
 
     // graph/from_grid.hpp
     template<class G, class U = char>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "algebraic/internal/base.hpp"
-#include "algebraic/internal/commutative.hpp"
 
 namespace lib {
 
