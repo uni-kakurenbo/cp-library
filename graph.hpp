@@ -53,7 +53,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     enum class edge_type { undirected, directed };
 
   private:
-    size_type _directed_edge_count, _undirected_edge_count;
+    size_type _directed_edge_count = 0, _undirected_edge_count = 0;
 
   protected:
     inline void _add_edge(const size_type u, const size_type v, const cost_type w) {
@@ -64,7 +64,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
   public:
     explicit graph(const size_type n = 0) : std::vector<std::vector<edge>>(n) {}
 
-    inline void clear() { ITR(row, *this) row.clear(); }
+    inline void clear() { this->std::vector<std::vector<edge>>::clear(); }
 
     // using std::vector<std::vector<edge>>::size;
 
@@ -130,11 +130,11 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
 
     // graph/spanning_tree_cost.hpp
     template<class cost_t = cost_type>
-    inline cost_t minimum_spanning_tree_cost() const;
+    inline cost_t minimum_spanning_tree(graph *const = nullptr) const;
 
     // graph/spanning_tree_cost.hpp
     template<class cost_t = cost_type>
-    inline cost_t maximum_spanning_tree_cost() const;
+    inline cost_t maximum_spanning_tree(graph *const = nullptr) const;
 
     // graph/connected_components.hpp
     inline dsu components() const;
