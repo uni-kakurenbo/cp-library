@@ -18,7 +18,7 @@ namespace lib {
 
 
 // Thanks to: https://github.com/tatyam-prime/kyopro_library/blob/master/RollingHash.cpp
-template<std::uint64_t MOD = 0x1fffffffffffffff>
+template<std::uint64_t MOD = 0x1fffffffffffffff, std::uint64_t BASE = 0>
 struct sequence_hasher {
   private:
     using uint64_t = std::uint64_t;
@@ -32,7 +32,7 @@ struct sequence_hasher {
     static hash_type base;
 
   private:
-    size_type _n;
+    size_type _n = 0, _front = 0;
     std::vector<hash_type> _hashed;
     static std::vector<hash_type> _powers;
 
@@ -70,11 +70,18 @@ struct sequence_hasher {
 
         #endif
 
-        res = (res >> 61) + (res & sequence_hasher::mod);
-        if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
+        if constexpr(sequence_hasher::mod == 0x1fffffffffffffff) {
+            res = (res >> 61) + (res & sequence_hasher::mod);
+            if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
+        }
+        else {
+            res %= sequence_hasher::mod;
+        }
 
         return res;
     }
+
+    size_type index(size_type k) const { return this->_front + k; }
 
   public:
     struct hash {
@@ -86,6 +93,8 @@ struct sequence_hasher {
         hash(const hash_type _val, const size_type _len) : _val(_val), _len(_len) {}
 
         inline hash_type val() const { return this->_val; }
+        inline operator hash_type() const { return this->_val; }
+
         inline size_type size() const { return this->_len; }
 
         inline bool operator==(const hash& other) const { return this->_val == other._val and this->_len == other._len; }
@@ -114,13 +123,15 @@ struct sequence_hasher {
         }
     }
 
-    inline size_type size() const { return this->_n; }
+    inline size_type size() const { return this->_n - this->_front; }
 
-    inline hash get(const size_type l, const size_type r) const {
-        assert(0 <= l and l <= r and r <= this->_n);
+    inline hash get(size_type l, size_type r) const {
+        assert(0 <= l and l <= r and r <= this->size());
+        l = this->index(l), r = this->index(r);
         hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r-l));
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
-        return { res, r-l };
+
+        return { res, r - l };
     }
     inline hash get() const { return this->get(0, this->size()); }
     inline hash operator()(const size_type l, const size_type r) const { return this->get(l, r); }
@@ -146,6 +157,18 @@ struct sequence_hasher {
         this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + std::hash<T>{}(v);
         if(this->hashed(this->_n) >= sequence_hasher::mod) this->hashed(this->_n-1) -= sequence_hasher::mod;
 
+        return *this;
+    }
+
+    inline sequence_hasher& pop_back() {
+        assert(this->_n > 0);
+        this->_n--;
+        return *this;
+    }
+
+    inline sequence_hasher& pop_front() {
+        this->_front++;
+        assert(this->_front <= this->_n);
         return *this;
     }
 
@@ -179,8 +202,8 @@ struct sequence_hasher {
     }
 };
 
-template<std::uint64_t mod> std::uint64_t sequence_hasher<mod>::base = 0;
-template<std::uint64_t mod> std::vector<std::uint64_t> sequence_hasher<mod>::_powers;
+template<std::uint64_t mod, std::uint64_t Base> std::uint64_t sequence_hasher<mod,Base>::base = Base;
+template<std::uint64_t mod, std::uint64_t base> std::vector<std::uint64_t> sequence_hasher<mod,base>::_powers;
 
 
 } // namespace lib
