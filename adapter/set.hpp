@@ -21,7 +21,11 @@ template<class set> struct set_wrapper : set {
 
     inline bool contains(const typename set::key_type& key) { return static_cast<bool>(this->count(key)); }
 
-    inline auto remove(const typename set::key_type& key) { return this->erase(this->find(key)); }
+    inline std::optional<typename set::iterator> remove(const typename set::key_type& key) {
+        const auto itr = this->find(key);
+        if(itr == this->set::end()) return {};
+        return this->erase(itr);
+    }
 
     inline auto min_element() { return this->begin(); }
     inline auto max_element() { return this->begin(); }
