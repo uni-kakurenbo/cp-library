@@ -33,8 +33,8 @@ template<class set> struct set_wrapper : set {
     inline auto min() { return *this->begin(); }
     inline auto max() { return *this->end(); }
 
-    inline void pop_min() { return this->erase(this->begin()); }
-    inline void pop_max() { return this->erase(this->end()); }
+    inline auto pop_min() { this->erase(this->begin()); return *this; }
+    inline auto pop_max() { this->erase(this->end()); return *this; }
 
     inline auto next_element(const typename set::key_type& key, const size_type _count = 0) {
         size_type count = std::abs(_count);
@@ -78,8 +78,15 @@ template<class set> struct set_wrapper : set {
     }
 };
 
-
 } //namespace internal
+
+
+template<class S, class T>
+inline S operator+(const S s, const T t) {
+    S res;
+    std::set_union(std::begin(s), std::end(s), std::begin(t), std::end(t), std::inserter(res, std::begin(res)));
+    return res;
+}
 
 
 template<class... Args> using set = internal::set_wrapper<std::set<Args...>>;
