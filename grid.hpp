@@ -22,7 +22,7 @@ namespace grid_impl {
 
 template<class T>
 struct interface {
-    virtual void assign(const size_t, const size_t, const T&&) = 0;
+    virtual void assign(const size_t, const size_t, const T&) = 0;
 
     virtual void resize(const size_t, const size_t) = 0;
 
@@ -75,7 +75,7 @@ template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
 struct container : base, container_base<T>, virtual interface<T> {
 
     container(const size_t n = 0) : container(n, n) {}
-    container(const size_t h, const size_t w, const T &&val = T{}) : base(h, Row(w, std::forward<const T>(val))), container_base<T>(h, w) {}
+    container(const size_t h, const size_t w, const T &val = T{}) : base(h, Row(w, val)), container_base<T>(h, w) {}
 
     container(const std::initializer_list<Row> init_list) : base(init_list) {
         const size_t rows = std::distance(ALL(init_list));
@@ -91,10 +91,10 @@ struct container : base, container_base<T>, virtual interface<T> {
         this->base::assign(ALL(source));
     }
 
-    inline void assign(const size_t h, const size_t w, const T &&val = T{}) override {
+    inline void assign(const size_t h, const size_t w, const T &val = T{}) override {
         this->container_base<T>::resize(h, w);
         this->base::resize(h);
-        ITRR(row, *this) row.assign(w, std::forward<const T>(val));
+        ITRR(row, *this) row.assign(w, val);
     }
 
     inline void resize(const size_t h, const size_t w) override {
@@ -122,7 +122,7 @@ template<class T, class base = std::vector<T>>
 struct unfolded_container : base, container_base<T>, virtual interface<T> {
 
     unfolded_container(size_t n = 0) : unfolded_container(n, n) {}
-    unfolded_container(const size_t h, const size_t w, const T &&val = T{}) : base(h*w, std::forward<const T>(val)), container_base<T>(h, w) {}
+    unfolded_container(const size_t h, const size_t w, const T &val = T{}) : base(h*w, val), container_base<T>(h, w) {}
 
     unfolded_container(std::initializer_list<std::initializer_list<T>> init_list) {
         const size_t rows = std::distance(init_list.begin(), init_list.end());
@@ -141,9 +141,9 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
         this->base::assign(ALL(source));
     }
 
-    inline void assign(const size_t h, const size_t w, const T &&val = T{}) override {
+    inline void assign(const size_t h, const size_t w, const T &val = T{}) override {
         this->container_base<T>::resize(h, w);
-        this->base::assign(h*w, std::forward<const T>(val));
+        this->base::assign(h*w, val);
     }
 
     inline void resize(const size_t h, const size_t w) override {
