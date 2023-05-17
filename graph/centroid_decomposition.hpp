@@ -24,7 +24,7 @@ struct centroid_decomposition {
   public:
     centroid_decomposition(const graph& G)
       : G(G),
-        _size(G.vertexes()), _parent(G.vertexes()), _used(G.vertexes())
+        _size(G.vertices()), _parent(G.vertices()), _used(G.vertices())
     {}
 
     inline const auto& sizes() const { return this->_size; }
@@ -32,15 +32,15 @@ struct centroid_decomposition {
     inline const auto& used() const { return this->_used; }
 
     inline size_type size(const size_type v) const {
-        assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertices());
         return this->_size[v];
     }
     inline size_type parent(const size_type v) const {
-        assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertices());
         return this->_parent[v];
     }
     inline bool used(const size_type v) const {
-        assert(0 <= v && v < this->G.vertexes());
+        assert(0 <= v && v < this->G.vertices());
         return this->_used[v];
     }
 
@@ -88,7 +88,7 @@ struct centroid_decomposition {
     }
 
     auto decompose(const size_type root = 0) {
-        return this->decompose(root, this->G.vertexes());
+        return this->decompose(root, this->G.vertices());
     }
 };
 

@@ -13,7 +13,7 @@
 template<class edge_cost>
 template<class cost_t>
 void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vector<cost_t> *dists) const {
-    dists->assign(this->size(), -1);
+    dists->assign(this->size(), std::numeric_limits<cost_t>::max());
 
     std::queue<size_type> que;
     que.push(s), (*dists)[s] = 0;
@@ -21,7 +21,7 @@ void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vecto
     while(not que.empty()) {
         const size_type v = que.front(); que.pop();
         ITR(nv, (*this)[v]) {
-            if((*dists)[nv.to] >= 0) continue;
+            if((*dists)[nv.to] < std::numeric_limits<cost_t>::max()) continue;
             (*dists)[nv.to] = (*dists)[v] + 1;
             que.push(nv.to);
         }

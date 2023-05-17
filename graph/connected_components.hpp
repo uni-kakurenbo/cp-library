@@ -11,7 +11,7 @@
 
 template<class edge_cost>
 lib::dsu lib::graph<edge_cost>::components() const {
-    lib::dsu dsu(this->vertexes());
+    lib::dsu dsu(this->vertices());
     ITR(edges, *this) ITR(u, v, _w, edges) {
         dsu.merge(u, v);
     }

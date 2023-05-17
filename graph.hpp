@@ -32,6 +32,8 @@ template<class cost_t, class size_type> struct edge {
 
     edge(const size_type u, const size_type v, const cost_t w) : from(u), to(v), cost(w) {}
 
+    operator size_type() const { return this->to; }
+
     std::tuple<size_type,size_type,cost_t> _debug() const { return { from, to, cost }; };
 
     friend bool operator==(const edge& lhs, const edge& rhs) { return lhs.id == rhs.id; }
@@ -73,12 +75,14 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     // using std::vector<std::vector<edge>>::end;
     // using std::vector<std::vector<edge>>::cend;
 
-    inline size_type vertexes() const { return this->size(); }
-    inline size_type edges() const { return this->inputted.size(); }
+    inline size_type vertices() const { return this->size(); }
+
+    inline size_type edges() const { return this->_undirected_edge_count; }
+    inline size_type directed_edges() const { return this->_directed_edge_count; }
 
     template<const edge_type EDGE_TYPE = edge_type::directed>
     inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) {
-        assert(0 <= u and u < this->vertexes()), assert(0 <= v and v < this->vertexes());
+        assert(0 <= u and u < this->vertices()), assert(0 <= v and v < this->vertices());
         this->_add_edge(u, v, w);
         if constexpr(EDGE_TYPE == edge_type::undirected) this->_add_edge(v, u, w);
         ++this->_undirected_edge_count;
@@ -140,7 +144,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     inline dsu components() const;
 
     // graph/from_grid.hpp
-    template<class G, class U = char>
+    template<bool = false, class G, class U = char>
     inline void from_grid(const G&, U = '.');
 
     // graph/manhattan_minimum_spanning_tree.hpp
