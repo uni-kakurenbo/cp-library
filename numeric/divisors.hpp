@@ -12,8 +12,8 @@ template<class T> std::vector<T> divisors(const T k) {
 
     for(T i=1; i*i<=k; ++i) {
         if(k%i == 0) {
-            vector.emplace_back(i);
-            if(i*i < k) vector.emplace_back(k/i);
+            res.emplace_back(i);
+            if(i*i < k) res.emplace_back(k/i);
         }
     }
 

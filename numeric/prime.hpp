@@ -18,7 +18,7 @@ namespace lib {
 
 namespace internal {
 
-//Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-prime_factors.hpp
+//Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
 namespace fast_factorize_impl {
 
 
@@ -66,7 +66,7 @@ namespace internal {
 
 
 // Pollard's rho algorithm
-template <typename mint, typename T> T find_factor(T n) {
+template <typename mint, typename T> T find_factor(const T n) {
     if(~n & 1) return 2;
     if(is_prime(n)) return n;
 
@@ -110,7 +110,7 @@ template <typename mint, typename T> T find_factor(T n) {
 }
 
 
-std::vector<int64_t> prime_factors(value_type n) {
+std::vector<int64_t> factorize(const value_type n) {
     if(n <= 1) return {};
 
     value_type p;
@@ -119,8 +119,8 @@ std::vector<int64_t> prime_factors(value_type n) {
 
     if(p == n) return { int64_t(p) };
 
-    auto l = internal::prime_factors(p);
-    auto r = internal::prime_factors(n / p);
+    auto l = internal::factorize(p);
+    auto r = internal::factorize(n / p);
 
     std::copy(std::begin(r), std::end(r), std::back_inserter(l));
 
@@ -131,23 +131,29 @@ std::vector<int64_t> prime_factors(value_type n) {
 } // namespace internal
 
 
-std::vector<int64_t> prime_factors(value_type n) {
-    auto res = internal::prime_factors(n);
+std::vector<int64_t> factorize(const value_type n) {
+    auto res = internal::factorize(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-std::map<int64_t, int64_t> factorize(value_type n) {
-    std::map<int64_t, int64_t> mp;
-    for(auto &x : internal::prime_factors(n)) mp[x]++;
+std::set<int64_t> prime_factors(const value_type n) {
+    auto factors = factorize(n);
+    std::set<int64_t> res(std::begin(factors), std::end(factors));
+    return res;
+}
+
+std::map<int64_t,int64_t> count_factors(const value_type n) {
+    std::map<int64_t,int64_t> mp;
+    for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }
 
-std::vector<int64_t> divisors(value_type n) {
+std::vector<int64_t> divisors(const value_type n) {
     if(n == 0) return {};
 
     std::vector<std::pair<int64_t, int64_t>> v;
-    for(auto &p : prime_factors(n)) {
+    for(auto &p : factorize(n)) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
         } else {
@@ -183,6 +189,7 @@ std::vector<int64_t> divisors(value_type n) {
 
 using internal::fast_factorize_impl::divisors;
 using internal::fast_factorize_impl::factorize;
+using internal::fast_factorize_impl::count_factors;
 using internal::fast_factorize_impl::prime_factors;
 using internal::fast_factorize_impl::is_prime;
 

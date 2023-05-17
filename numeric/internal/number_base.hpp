@@ -13,12 +13,12 @@ namespace lib {
 template<std::size_t B = 2, class T>
 std::string base_n_string(T v) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static_assert(0 < B <= std::strlen(CHARS));
+    static_assert(0 < B and B <= std::strlen(CHARS));
     assert(0 <= v);
 
     std::string res;
     while(v > 0) {
-        res += CHARS[v%B] + '0';
+        res += CHARS[v%B];
         v /= B;
     }
     std::reverse(ALL(res));
@@ -26,8 +26,9 @@ std::string base_n_string(T v) {
     return res;
 }
 
+
 template<class T>
-std::string base_n_string(T v, std::size_t b = 2) {
+std::string base_n_string(T v, std::size_t b) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     assert(1 < b && b <= std::strlen(CHARS));
     assert(0 <= v);
