@@ -76,7 +76,7 @@ class centroid_path_decomposition {
     }
 
     template<class F>
-    void path(size_type u, size_type v, const F&& f) {
+    void edges_on_path(size_type u, size_type v, const F&& f) {
         while(true) {
             if(this->in[u] > this->in[v]) std::swap(u, v);
             if(this->head[u] != this->head[v]) {
@@ -84,6 +84,19 @@ class centroid_path_decomposition {
                 v = this->parent[this->head[v]];
             } else {
                 if(u != v) f(this->in[u], this->in[v]);
+                break;
+            }
+        }
+    }
+
+    template<class F>
+    void nodes_on_path(int u, int v, const F&& f) {
+        while (true) {
+            if (this->in[u] > this->in[v]) std::swap(u, v);
+            f(std::max(this->in[this->head[v]] - 1, this->in[u]), this->in[v]);
+            if (this->head[u] != this->head[v])
+                v = this->parent[this->head[v]];
+            else {
                 break;
             }
         }

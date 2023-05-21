@@ -57,6 +57,8 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
   private:
     size_type _directed_edge_count = 0, _undirected_edge_count = 0;
 
+    std::vector<edge> _edges;
+
   protected:
     inline void _add_edge(const size_type u, const size_type v, const cost_type w) {
         this->operator[](u).emplace_back(u, v, w);
@@ -75,17 +77,18 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     // using std::vector<std::vector<edge>>::end;
     // using std::vector<std::vector<edge>>::cend;
 
+    inline const auto& edges() const { return this->_edges; }
+
     inline size_type vertices() const { return this->size(); }
 
-    inline size_type edges() const { return this->_undirected_edge_count; }
-    inline size_type directed_edges() const { return this->_directed_edge_count; }
+    inline size_type directed_edges_count() const { return this->_directed_edge_count; }
 
     template<const edge_type EDGE_TYPE = edge_type::directed>
     inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) {
         assert(0 <= u and u < this->vertices()), assert(0 <= v and v < this->vertices());
+        this->_edges.emplace_back(u, v, w);
         this->_add_edge(u, v, w);
         if constexpr(EDGE_TYPE == edge_type::undirected) this->_add_edge(v, u, w);
-        ++this->_undirected_edge_count;
     }
 
     inline void add_edge_bidirectionally(const size_type u, const size_type v, const cost_type w = 1) {
