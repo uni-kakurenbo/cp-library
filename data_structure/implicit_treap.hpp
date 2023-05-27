@@ -190,7 +190,7 @@ struct base : private uncopyable {
     }
 
     inline void reverse(Tree tree, const size_type l, const size_type r) const {
-        if(l > r) return;
+        if(l >= r) return;
         Tree t1, t2, t3;
         this->split(tree, l, t1, t2);
         this->split(t2, r - l, t2, t3);
