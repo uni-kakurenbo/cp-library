@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <bitset>
 #include <deque>
 #include <set>
 #include <unordered_set>
@@ -84,6 +85,13 @@ std::string lit(const char val[]) {
 std::string lit(const bool &val) {
     std::stringstream res;
     res << COLOR_NUMERIC << (val ? "true" : "false" ) << COLOR_INIT;
+    return res.str();
+}
+
+template<std::size_t N>
+std::string lit(const std::bitset<N>& val) {
+    std::stringstream res;
+    res << COLOR_NUMERIC << val.to_string() << COLOR_INIT;
     return res.str();
 }
 
