@@ -12,11 +12,11 @@
 namespace lib {
 
 
-template<class T = i64, bool STRICT, class container = std::vector<T>>
+template<bool STRICT, class T = i64, class container = std::vector<T>>
 struct lis : container {
     using size_type = typename internal::size_t;
 
-    std::vector<T> indices;
+    std::vector<int> indices;
 
     lis() {}
     template<class I> lis(const I first, const I last) {
@@ -36,6 +36,7 @@ struct lis : container {
         }
 
         size_type target = *std::max_element(positions.begin(), positions.end());
+
         for(size_type i = positions.size(); --i >= 0;){
             if(positions[i] == target){
                 (*this)[target] = *(first + i);
@@ -43,6 +44,7 @@ struct lis : container {
                 --target;
             }
         }
+
         std::reverse(this->indices.begin(), this->indices.end());
     }
 };
