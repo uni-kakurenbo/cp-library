@@ -15,7 +15,7 @@ namespace actions {
 
 
 template<class T> struct range_sum : base<> {
-    static constexpr flags tags{ flags::range_folding, flags::range_operation };
+    static constexpr flags tags{ flags::range_folding };
 
     using operand = algebraic::addition<T>;
 };
