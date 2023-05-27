@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include "internal/dev_env.hpp"
+#include "internal/exception.hpp"
+
 #include "data_structure/internal/declarations.hpp"
 
 #include "data_structure/range_action/base.hpp"
@@ -8,8 +11,6 @@
 
 #include "algebraic/addition.hpp"
 #include "algebraic/null.hpp"
-
-#include "internal/exception.hpp"
 
 
 namespace lib {
@@ -23,7 +24,7 @@ template<class T> struct null : base<algebraic::null<T>> {
     using operand = monoids::addition<T>;
     using operation = algebraic::null<T>;
 
-    static operand map(const operand& x, const operation&) { return x; }
+    static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }
 };
 
 

@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include "internal/dev_env.hpp"
+
 #include "data_structure/internal/declarations.hpp"
 
 #include "data_structure/range_action/base.hpp"
@@ -8,6 +10,7 @@
 
 #include "algebraic/maximum.hpp"
 #include "algebraic/addition.hpp"
+
 
 
 namespace lib {
@@ -21,7 +24,7 @@ template<class T> struct range_add_range_max : base<algebraic::addition<T>> {
     using operand = algebraic::maximum<T>;
     using operation = algebraic::addition<T>;
 
-    static operand map(const operand& x, const operation& y) { return x.val() + y.val(); }
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) { return x.val() + y.val(); }
 };
 
 
@@ -39,30 +42,30 @@ template<class T> struct lazy_segment_tree<actions::range_add_range_max<T>> : in
     struct point_reference : base::point_reference {
         using base::point_reference::point_reference;
 
-        inline point_reference& add(const T& val) { this->_super->apply(this->_pos, val); return *this; }
-        inline point_reference& operator+=(const T& val) { this->_super->apply(this->_pos, val); return *this; }
-        inline point_reference& operator-=(const T& val) { this->_super->apply(this->_pos, -val); return *this; }
+        inline point_reference& add(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_pos, val); return *this; }
+        inline point_reference& operator+=(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_pos, val); return *this; }
+        inline point_reference& operator-=(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_pos, -val); return *this; }
     };
 
     struct range_reference : base::range_reference {
         using base::range_reference::range_reference;
 
-        inline range_reference& add(const T& val) { this->_super->apply(this->_begin, this->_end, val); return *this; }
-        inline range_reference& operator+=(const T& val) { this->_super->apply(this->_begin, this->_end, val); return *this; }
-        inline range_reference& operator-=(const T& val) { this->_super->apply(this->_begin, this->_end, -val); return *this; }
+        inline range_reference& add(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_begin, this->_end, val); return *this; }
+        inline range_reference& operator+=(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_begin, this->_end, val); return *this; }
+        inline range_reference& operator-=(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_begin, this->_end, -val); return *this; }
 
-        inline auto max() const { return this->_super->fold(this->_begin, this->_end); }
+        inline auto max() const noexcept(NO_EXCEPT) { return this->_super->fold(this->_begin, this->_end); }
     };
 
-    inline point_reference operator[](const size_type p) { return point_reference(this, p); }
-    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
+    inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
-    inline auto& add(const size_type first, const size_type last, const T& val) { this->apply(first, last, val); return *this; }
-    inline auto& add(const size_type pos, const T& val) { this->apply(pos, val); return *this; }
-    inline auto& add(const T& val) { this->apply(val); return *this; }
+    inline auto& add(const size_type first, const size_type last, const T& val) noexcept(NO_EXCEPT) { this->apply(first, last, val); return *this; }
+    inline auto& add(const size_type pos, const T& val) noexcept(NO_EXCEPT) { this->apply(pos, val); return *this; }
+    inline auto& add(const T& val) noexcept(NO_EXCEPT) { this->apply(val); return *this; }
 
-    inline auto max(const size_type first, const size_type last) { return this->fold(first, last); }
-    inline auto max() { return this->fold(); }
+    inline auto max(const size_type first, const size_type last) noexcept(NO_EXCEPT) { return this->fold(first, last); }
+    inline auto max() noexcept(NO_EXCEPT) { return this->fold(); }
 };
 
 

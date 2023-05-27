@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "snippet/iterations.hpp"
+
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 #include "graph.hpp"
@@ -18,7 +20,7 @@ struct lowest_common_ancestor {
 
   private:
     template<class graph>
-    void dfs(const graph &G, const size_type v, const size_type p, const size_type d) {
+    void dfs(const graph &G, const size_type v, const size_type p, const size_type d) noexcept(DEV_ENV) {
         this->parent[0][v] = p;
         this->dists[v] = d;
         ITR(e, G[v]) {
@@ -28,12 +30,12 @@ struct lowest_common_ancestor {
 
   public:
     template<class graph>
-    lowest_common_ancestor(const graph &G, const size_type root = 0) { this->init(G, root); }
+    lowest_common_ancestor(const graph &G, const size_type root = 0) noexcept(DEV_ENV) { this->init(G, root); }
 
     template<class graph>
-    void init(const graph &G, const size_type root = 0) {
+    void init(const graph &G, const size_type root = 0) noexcept(DEV_ENV) {
         const size_type V = G.size();
-        const size_type K = lib::bit_width(V);
+        const size_type K = lib::bit_width<std::make_unsigned_t<size_type>>(V);
 
         this->parent.assign(K, std::vector<size_type>(V, -1));
         this->dists.assign(V, -1);
@@ -46,11 +48,11 @@ struct lowest_common_ancestor {
         }
     }
 
-    size_type operator()(const size_type u, const size_type v) const {
+    size_type operator()(const size_type u, const size_type v) const noexcept(DEV_ENV) {
         return this->find(u, v);
     }
 
-    size_type find(size_type u, size_type v) const {
+    size_type find(size_type u, size_type v) const noexcept(DEV_ENV) {
         if(this->dists[u] < this->dists[v]) std::swap(u, v);
         size_type K = this->parent.size();
 
@@ -70,7 +72,7 @@ struct lowest_common_ancestor {
         return this->parent[0][u];
     }
 
-    size_type distance(const size_type u, const size_type v) const {
+    size_type distance(const size_type u, const size_type v) const noexcept(DEV_ENV) {
         return this->dists[u] + this->dists[v] - 2 * this->dists[find(u, v)];
     }
 };

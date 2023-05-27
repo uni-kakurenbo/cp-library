@@ -1,8 +1,10 @@
 #pragma once
 
+
 #include <iterator>
 #include <algorithm>
 
+#include "internal/types.hpp"
 #include "internal/types.hpp"
 
 
@@ -10,7 +12,7 @@ namespace lib {
 
 
 template<class I, class T = typename std::iterator_traits<I>::value_type>
-T mex(const I first, const I last, const T& base = 0) {
+T mex(const I first, const I last, const T& base = 0) noexcept(DEV_ENV) {
     std::vector<T> val(first, last);
     std::sort(val.begin(), val.end());
     val.erase(std::unique(val.begin(), val.end()), val.end());
@@ -23,7 +25,7 @@ T mex(const I first, const I last, const T& base = 0) {
 }
 
 template<class V, class T = typename V::value_type>
-auto mex(const V v, const T& base = 0) {
+auto mex(const V v, const T& base = 0) noexcept(DEV_ENV) {
     return mex(v.begin(), v.end(), base);
 }
 

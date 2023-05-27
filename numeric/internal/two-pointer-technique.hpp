@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cassert>
 #include <iterator>
 #include <vector>
@@ -8,7 +9,10 @@
 #include <valarray>
 
 #include "snippet/iterations.hpp"
+
+#include "internal/dev_env.hpp"
 #include "internal/exception.hpp"
+
 
 namespace lib {
 

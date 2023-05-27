@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <iterator>
 
+#include "internal/dev_env.hpp"
+
 
 namespace lib {
 
@@ -31,7 +33,7 @@ struct set_hasher : protected set<T> {
 
     hash_type _hash = 0;
 
-    static inline hash_type id(const T& v) {
+    static inline hash_type id(const T& v) noexcept(DEV_ENV) {
         if(set_hasher::_ids.count(v)) return set_hasher::_ids[v];
         return set_hasher::_ids[v] = set_hasher::rand();
     }
@@ -39,28 +41,28 @@ struct set_hasher : protected set<T> {
   public:
     set_hasher() {}
 
-    template<class I> set_hasher(const I first, const I last) {
+    template<class I> set_hasher(const I first, const I last) noexcept(DEV_ENV) {
         for(auto itr=first; itr != last; ++itr) this->_insert(*itr);
     }
 
     template<class U>
-    set_hasher(const std::initializer_list<U>& init_list) : set_hasher(std::begin(init_list), std::end(init_list)) {}
+    set_hasher(const std::initializer_list<U>& init_list) noexcept(DEV_ENV) : set_hasher(std::begin(init_list), std::end(init_list)) {}
 
-    inline size_type empty() const { return this->base::empty(); }
-    inline size_type size() const { return this->base::size(); }
-    inline size_type max_size() const { return this->base::max_size(); }
+    inline size_type empty() const noexcept(DEV_ENV) { return this->base::empty(); }
+    inline size_type size() const noexcept(DEV_ENV) { return this->base::size(); }
+    inline size_type max_size() const noexcept(DEV_ENV) { return this->base::max_size(); }
 
-    inline void clear() const { this->_hash = 0, this->base::clear(); }
+    inline void clear() const noexcept(DEV_ENV) { this->_hash = 0, this->base::clear(); }
 
     using base::count;
     using base::find;
     using base::equal_range;
 
-    template<class... Args> auto lower_bound(const Args&... args) const { return this->base::lower_bound(args...); }
-    template<class... Args> auto upper_bound(const Args&... args) const { return this->base::upper_bound(args...); }
+    template<class... Args> auto lower_bound(const Args&... args) const noexcept(DEV_ENV) { return this->base::lower_bound(args...); }
+    template<class... Args> auto upper_bound(const Args&... args) const noexcept(DEV_ENV) { return this->base::upper_bound(args...); }
 
     // return: whether inserted newly
-    inline bool insert(const T& v) {
+    inline bool insert(const T& v) noexcept(DEV_ENV) {
         if(this->base::count(v)) return false;
         this->base::insert(v);
         this->_hash ^= set_hasher::id(v);
@@ -68,18 +70,18 @@ struct set_hasher : protected set<T> {
     }
 
     // return: number of erased elements (0 or 1)
-    inline size_type erase(const T& v) {
+    inline size_type erase(const T& v) noexcept(DEV_ENV) {
         if(not this->base::count(v)) return 0;
         this->base::erase(v);
         this->_hash ^= set_hasher::id(v);
         return 1;
     }
 
-    inline hash_type get() const { return this->_hash; }
-    inline hash_type operator()() const { return this->_hash; }
+    inline hash_type get() const noexcept(DEV_ENV) { return this->_hash; }
+    inline hash_type operator()() const noexcept(DEV_ENV) { return this->_hash; }
 
-    inline bool operator==(const set_hasher& other) const { return this->_hash == other._hash; }
-    inline bool operator!=(const set_hasher& other) const { return this->_hash != other._hash; }
+    inline bool operator==(const set_hasher& other) const noexcept(DEV_ENV) { return this->_hash == other._hash; }
+    inline bool operator!=(const set_hasher& other) const noexcept(DEV_ENV) { return this->_hash != other._hash; }
 };
 
 template<class T, int id, class E, template<class...> class S, template<class...> class M>

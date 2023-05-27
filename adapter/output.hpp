@@ -6,30 +6,31 @@
 #include <vector>
 #include <iterator>
 
+#include "internal/dev_env.hpp"
 #include "internal/resolving_rank.hpp"
 
 template<class destination = std::ostream, class Terminator = std::string, class Separator = std::string>
 struct output_adapter {
   private:
     template<class T>
-    auto _put(lib::internal::resolving_rank<2>, const T &val) -> decltype(std::declval<destination&>() << val, 0) {
+    auto _put(lib::internal::resolving_rank<2>, const T &val) noexcept(NO_EXCEPT)-> decltype(std::declval<destination&>() << val, 0) {
         *this->out << val;
         return 0;
     }
     template<class T>
-    auto _put(lib::internal::resolving_rank<1>, const T &val) -> decltype(val.val(), 0) {
+    auto _put(lib::internal::resolving_rank<1>, const T &val) noexcept(NO_EXCEPT)-> decltype(val.val(), 0) {
         this->put(val.val());
         return 0;
     }
     template<class T>
-    auto _put(lib::internal::resolving_rank<0>, const T &val) -> decltype(std::begin(val), std::end(val), 0) {
+    auto _put(lib::internal::resolving_rank<0>, const T &val) noexcept(NO_EXCEPT)-> decltype(std::begin(val), std::end(val), 0) {
         (*this)(std::begin(val), std::end(val), false);
         return 0;
     }
 
   protected:
     template<class T>
-    destination *put(const T &val) {
+    destination *put(const T &val) noexcept(NO_EXCEPT){
         this->_put(lib::internal::resolving_rank<2>{}, val);
         return this->out;
     }
@@ -42,29 +43,29 @@ struct output_adapter {
     Terminator endline;
     Separator separator;
 
-    output_adapter(destination *out = &std::cout, Terminator endline = "\n", Separator separator = " ")
+    output_adapter(destination *out = &std::cout, Terminator endline = "\n", Separator separator = " ") noexcept
       : out(out), endline(endline), separator(separator)
     {
         *this << std::fixed << std::setprecision(20);
     }
 
-    inline void seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) { this->out->seekp(off, dir); };
+    inline void seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) noexcept(NO_EXCEPT){ this->out->seekp(off, dir); };
 
-    template<class T> inline output_adapter& operator<<(const T &s) {
+    template<class T> inline output_adapter& operator<<(const T &s) noexcept(NO_EXCEPT){
         this->put(s);
         return *this;
     }
 
-    template<class T = std::string> inline void operator()(const T &val = "") {
+    template<class T = std::string> inline void operator()(const T &val = "") noexcept(NO_EXCEPT){
         *this << val << this->endline;
     }
 
-    template<class T, class ...Args> inline void operator()(const T &head, const Args& ...tail) {
+    template<class T, class ...Args> inline void operator()(const T &head, const Args& ...tail) noexcept(NO_EXCEPT){
         *this << head << this->separator;
         (*this)(tail...);
     }
 
-    template<class I, class = typename std::iterator_traits<I>::iterator_category> inline void operator()(const I first, const I last, const bool terminate = true) {
+    template<class I, class = typename std::iterator_traits<I>::iterator_category> inline void operator()(const I first, const I last, const bool terminate = true) noexcept(NO_EXCEPT){
         for(I itr=first; itr!=last;) {
             *this << *itr;
             if(++itr == last) {
@@ -74,12 +75,12 @@ struct output_adapter {
         }
     }
 
-    template<class T> inline void operator()(const std::initializer_list<T> vals) {
+    template<class T> inline void operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT){
         std::vector wrapped(vals.begin(), vals.end());
         (*this)(wrapped.begin(), wrapped.end());
     }
 
-    template<class F, class S> inline void operator()(const std::pair<F,S> &p) {
+    template<class F, class S> inline void operator()(const std::pair<F,S> &p) noexcept(NO_EXCEPT){
         (*this)(p.first, p.second);
     }
 };

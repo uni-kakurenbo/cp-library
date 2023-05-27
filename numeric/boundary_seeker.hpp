@@ -1,10 +1,13 @@
 #pragma once
 
+
 #include <functional>
 #include <utility>
 #include <type_traits>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
 
 namespace lib {
 
@@ -19,10 +22,10 @@ struct integal {
     std::function<bool(T)> validate;
 
   public:
-    integal(std::function<bool(T)> validate) : validate(validate) {}
+    integal(std::function<bool(T)> validate) noexcept(DEV_ENV) : validate(validate) {}
 
     template<const bool REVERSE = false>
-    T bound(const T _ok, const T _ng) const {
+    T bound(const T _ok, const T _ng) const noexcept(DEV_ENV) {
         T ok = _ok, ng = _ng;
         if constexpr(REVERSE) std::swap(ng, ok);
         while(std::abs(ok-ng) > 1) {
@@ -33,14 +36,14 @@ struct integal {
     }
 
     template<const bool REVERSE = false>
-    T bound(const T ok) const {
+    T bound(const T ok) const noexcept(DEV_ENV) {
         T ng = ok + REVERSE ? -1 : 1;
         while(this->validate(ng)) ng += REVERSE ? -ng : ng;
         return this->bound(ok, ng);
     }
 
     template<const bool REVERSE = false>
-    T bound() const {
+    T bound() const noexcept(DEV_ENV) {
         return this->bound<REVERSE>(
             REVERSE ?
             std::numeric_limits<T>::max() / 2 - 1 :
@@ -49,19 +52,19 @@ struct integal {
     }
 
     template<const bool REVERSE = false>
-    T bound_or(const T ok, const T ng, const T proxy) const {
+    T bound_or(const T ok, const T ng, const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE>(ok, ng);
         return this->validate(res) ? res : proxy;
     }
 
     template<const bool REVERSE = false>
-    T bound_or(const T ok, const T proxy) const {
+    T bound_or(const T ok, const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE>(ok);
         return this->validate(res) ? res : proxy;
     }
 
     template<const bool REVERSE = false>
-    T bound_or(const T proxy) const {
+    T bound_or(const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE>();
         return this->validate(res) ? res : proxy;
     }
@@ -73,10 +76,10 @@ struct floating_point {
     std::function<bool(T)> validate;
 
   public:
-    floating_point(std::function<bool(T)> validate) : validate(validate) {}
+    floating_point(std::function<bool(T)> validate) noexcept(DEV_ENV) : validate(validate) {}
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound(const T _ok, const T _ng) const {
+    T bound(const T _ok, const T _ng) const noexcept(DEV_ENV) {
         T ok = _ok, ng = _ng;
         if constexpr(REVERSE) std::swap(ng, ok);
         REP(ITERATIONS) {
@@ -87,14 +90,14 @@ struct floating_point {
     }
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound(const T ok) const {
+    T bound(const T ok) const noexcept(DEV_ENV) {
         T ng = ok + REVERSE ? -1 : 1;
         while(this->validate(ng)) ng += REVERSE ? -ng : ng;
         return this->bound<false,ITERATIONS>(ok, ng);
     }
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound() const {
+    T bound() const noexcept(DEV_ENV) {
         return this->bound<REVERSE,ITERATIONS>(
             REVERSE ?
             std::numeric_limits<T>::max() / 2 - 1 :
@@ -103,19 +106,19 @@ struct floating_point {
     }
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound_or(const T ok, const T ng, const T proxy) const {
+    T bound_or(const T ok, const T ng, const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE,ITERATIONS>(ok, ng);
         return this->validate(res) ? res : proxy;
     }
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound_or(const T ok, const T proxy) const {
+    T bound_or(const T ok, const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE,ITERATIONS>(ok);
         return this->validate(res) ? res : proxy;
     }
 
     template<const bool REVERSE = false, const internal::size_t ITERATIONS = 100'000>
-    T bound_or(const T proxy) const {
+    T bound_or(const T proxy) const noexcept(DEV_ENV) {
         const T res = this->bound<REVERSE,ITERATIONS>();
         return this->validate(res) ? res : proxy;
     }

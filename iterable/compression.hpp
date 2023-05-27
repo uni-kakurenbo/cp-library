@@ -1,11 +1,14 @@
 #pragma once
 
+
 #include <iterator>
 #include <vector>
 #include <map>
 #include <algorithm>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
 
 namespace lib {
 
@@ -17,8 +20,8 @@ struct compression : container {
     std::vector<T> values;
 
   public:
-    explicit compression() {}
-    template<class I> compression(const I first, const I last) {
+    explicit compression() noexcept(DEV_ENV) {}
+    template<class I> compression(const I first, const I last) noexcept(DEV_ENV) {
         this->values.assign(first, last);
         std::sort(this->values.begin(), this->values.end());
         this->values.erase(std::unique(this->values.begin(), this->values.end()), this->values.end());
@@ -28,15 +31,15 @@ struct compression : container {
         }
     }
 
-    inline size_type rank(const T& val) const {
+    inline size_type rank(const T& val) const noexcept(DEV_ENV) {
         return std::distance(this->values.begin(), std::lower_bound(this->values.begin(), this->values.end(), val));
     }
-    inline size_type rank2(const T& val) const {
+    inline size_type rank2(const T& val) const noexcept(DEV_ENV) {
         return std::distance(this->values.begin(), std::upper_bound(this->values.begin(), this->values.end(), val)) - 1;
     }
 
-    inline T value(const size_type rank) const { return this->values[rank]; }
-    inline T operator()(const internal::size_t val) const { return this->values[val]; }
+    inline T value(const size_type rank) const noexcept(DEV_ENV) { return this->values[rank]; }
+    inline T operator()(const internal::size_t val) const noexcept(DEV_ENV) { return this->values[val]; }
 };
 
 } // namespace lib

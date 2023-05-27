@@ -6,7 +6,7 @@
 signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n); input >> a;
-    lib::lis<int,true> lis(ALL(a));
+    lib::lis<true,int> lis(ALL(a));
 
     debug(lis);
     print(lis.size(), lis.indices);

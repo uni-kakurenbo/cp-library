@@ -1,7 +1,11 @@
 #pragma once
 
+
 #include <cstdint>
 #include <limits>
+
+#include "internal/dev_env.hpp"
+
 
 namespace lib {
 
@@ -11,15 +15,15 @@ struct xorshift {
     static constexpr result_type MIN = std::numeric_limits<result_type>::min();
     static constexpr result_type MAX = std::numeric_limits<result_type>::max();
 
-    static constexpr result_type min() { return MIN; }
-    static constexpr result_type max() { return MAX; }
+    static constexpr result_type min() noexcept(DEV_ENV) { return MIN; }
+    static constexpr result_type max() noexcept(DEV_ENV) { return MAX; }
 
-    inline void seed(unsigned int seed) { this->w = seed; }
+    inline void seed(unsigned int seed) noexcept(DEV_ENV) { this->w = seed; }
 
     constexpr xorshift() {};
-    constexpr xorshift(const std::uint32_t seed) : w(seed) {};
+    constexpr xorshift(const std::uint32_t seed) noexcept(DEV_ENV) : w(seed) {};
 
-    inline std::uint32_t operator()() {
+    inline std::uint32_t operator()() noexcept(DEV_ENV) {
         std::uint32_t t;
 
         t = x ^ (x << 11);
@@ -40,15 +44,15 @@ struct xorshift64 {
     static constexpr result_type MIN = std::numeric_limits<result_type>::min();
     static constexpr result_type MAX = std::numeric_limits<result_type>::max();
 
-    static constexpr result_type min() { return MIN; }
-    static constexpr result_type max() { return MAX; }
+    static constexpr result_type min() noexcept(DEV_ENV) { return MIN; }
+    static constexpr result_type max() noexcept(DEV_ENV) { return MAX; }
 
-    inline void seed(unsigned int seed) { this->x = seed; }
+    inline void seed(unsigned int seed) noexcept(DEV_ENV) { this->x = seed; }
 
-    constexpr xorshift64() {};
-    constexpr xorshift64(const std::uint64_t seed) : x(seed) {};
+    constexpr xorshift64() noexcept(DEV_ENV) {};
+    constexpr xorshift64(const std::uint64_t seed) noexcept(DEV_ENV) : x(seed) {};
 
-    inline std::uint64_t operator()() {
+    inline std::uint64_t operator()() noexcept(DEV_ENV) {
         x = x ^ (x << 13), x = x ^ (x <<  7), x = x ^ (x << 17);
         return x;
     }

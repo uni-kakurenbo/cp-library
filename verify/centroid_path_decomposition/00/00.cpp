@@ -48,7 +48,7 @@ void solve() {
     ITR(u, v, _w, es) {
         i64 w = _w;
         debug(u, v);
-        HLD.path(u, v, [&](int l, int r) { debug(l, r); costs[l].add(w); });
+        HLD.edges_on_path(u, v, [&](int l, int r) { debug(l, r); costs[l].add(w); });
     }
     debug(costs);
 
@@ -58,13 +58,13 @@ void solve() {
         if(t == 1) {
             i64 i, w; cin >> i >> w; --i;
             auto [ u, v, _ ] = es[i];
-            HLD.path(u, v, [&](int l, int) { costs[l].set(w); });
+            HLD.edges_on_path(u, v, [&](int l, int) { costs[l].set(w); });
         }
         if(t == 2) {
             int u, v; cin >> u >> v; --u, --v;
             debug(u, v);
             i64 res = 0;
-            HLD.path(u, v, [&](int l, int r) { debug(l, r, costs(l, r).sum()); res += costs(l, r).sum(); });
+            HLD.edges_on_path(u, v, [&](int l, int r) { debug(l, r, costs(l, r).sum()); res += costs(l, r).sum(); });
             print(res);
         }
     }

@@ -1,13 +1,16 @@
 #pragma once
 
+
 #include <cassert>
 #include <vector>
 #include <array>
 
+#include "internal/dev_env.hpp"
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
 #include "valarray.hpp"
+
 
 namespace lib {
 
@@ -20,10 +23,10 @@ template<class container> struct base : container {
     using container::container;
 
     protected:
-    inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const {
+    inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const noexcept(DEV_ENV) {
         assert(0 <= index and index < (internal::size_t)this->size());
     }
-    inline internal::size_t _positivize_index(const internal::size_t x) const {
+    inline internal::size_t _positivize_index(const internal::size_t x) const noexcept(DEV_ENV) {
         return x < 0 ? this->size() + x : x;
     }
 };
@@ -39,12 +42,12 @@ struct multi_container : internal::multi_container_impl::base<container<multi_co
     using internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>::base;
 
     template<class Head, class... Tail>
-    multi_container(const Head head, const Tail... tail)
+    multi_container(const Head head, const Tail... tail) noexcept(DEV_ENV)
     : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) {
         static_assert(std::is_integral_v<Head>, "size must be integral");
     }
 
-    template<class Head, class... Tail> T& operator()(const Head _head, const Tail... tail) {
+    template<class Head, class... Tail> T& operator()(const Head _head, const Tail... tail) noexcept(DEV_ENV) {
         static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const internal::size_t head = this->_positivize_index(_head);
@@ -52,7 +55,7 @@ struct multi_container : internal::multi_container_impl::base<container<multi_co
         return (*this)[head](tail...);
     }
 
-    template<class Head, class... Tail> const T& operator()(const Head _head, const Tail... tail) const {
+    template<class Head, class... Tail> const T& operator()(const Head _head, const Tail... tail) const noexcept(DEV_ENV) {
         static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const internal::size_t head = this->_positivize_index(_head);
@@ -65,14 +68,14 @@ template<class T, template<class...> class container>
 struct multi_container<T,1,container> : internal::multi_container_impl::base<container<T>> {
     using internal::multi_container_impl::base<container<T>>::base;
 
-    template<class... Args> multi_container(const Args&... args) : internal::multi_container_impl::base<container<T>>(args...) {}
+    template<class... Args> multi_container(const Args&... args) noexcept(DEV_ENV) : internal::multi_container_impl::base<container<T>>(args...) {}
 
-    T& operator()(const internal::size_t _index) {
+    T& operator()(const internal::size_t _index) noexcept(DEV_ENV) {
         const internal::size_t index = this->_positivize_index(_index);
         this->_validate_index(index);
         return (*this)[index];
     }
-    const T& operator()(const internal::size_t _index) const {
+    const T& operator()(const internal::size_t _index) const noexcept(DEV_ENV) {
         const internal::size_t index = this->_positivize_index(_index);
         this->_validate_index(index);
         return (*this)[index];
@@ -114,7 +117,7 @@ struct multi_container<T,1,container> : internal::multi_container_impl::base<con
 //         }
 //     }
 
-//     template<class Head, class... Tail> const T& operator()(Head head, Tail... tail) const {
+//     template<class Head, class... Tail> const T& operator()(Head head, Tail... tail) const noexcept(DEV_ENV) {
 //     }
 // };
 

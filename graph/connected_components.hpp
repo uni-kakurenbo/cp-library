@@ -6,11 +6,12 @@
 #include "snippet/iterations.hpp"
 // #include "snippet/internal/types.hpp"
 
+#include "internal/dev_env.hpp"
 #include "graph.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 
 template<class edge_cost>
-lib::dsu lib::graph<edge_cost>::components() const {
+lib::dsu lib::graph<edge_cost>::components() const noexcept(DEV_ENV) {
     lib::dsu dsu(this->vertices());
     ITR(edges, *this) ITR(u, v, _w, edges) {
         dsu.merge(u, v);

@@ -2,6 +2,7 @@
 
 #include <atcoder/dsu>
 
+#include "internal/dev_env.hpp"
 #include "graph.hpp"
 
 namespace lib {
@@ -12,7 +13,7 @@ namespace graph_impl {
 
 
 template<class G, class cost_type, class Compare>
-cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr) {
+cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr) noexcept(DEV_ENV) {
     atcoder::dsu ds(graph.size());
 
     std::vector<std::tuple<typename G::edge::cost_type,size_t,size_t>> edges;
@@ -45,13 +46,13 @@ cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr)
 
 template<class edge_cost>
 template<class cost_type>
-cost_type graph<edge_cost>::minimum_spanning_tree(graph<edge_cost> *const mst) const {
+cost_type graph<edge_cost>::minimum_spanning_tree(graph<edge_cost> *const mst) const noexcept(DEV_ENV) {
     return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::less<tuple<cost_type,size_type,size_type>>>(*this, {}, mst);
 }
 
 template<class edge_cost>
 template<class cost_type>
-inline cost_type graph<edge_cost>::maximum_spanning_tree(graph<edge_cost> *const mst) const {
+inline cost_type graph<edge_cost>::maximum_spanning_tree(graph<edge_cost> *const mst) const noexcept(DEV_ENV) {
     return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::greater<tuple<cost_type,size_type,size_type>>>(*this, {}, mst);
 }
 

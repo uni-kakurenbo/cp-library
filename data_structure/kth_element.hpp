@@ -4,6 +4,7 @@
 #include <functional>
 #include <queue>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 namespace lib {
@@ -17,12 +18,12 @@ struct kth_element {
     std::priority_queue<T,container,rev_comparer> large;
 
   public:
-    kth_element(internal::size_t k = 0) : _k(k) {}
+    kth_element(internal::size_t k = 0) noexcept(DEV_ENV) : _k(k) {}
 
-    inline T get() const { return small.top(); }
-    inline bool has() const { return small.size() == _k; }
+    inline T get() const noexcept(DEV_ENV) { return small.top(); }
+    inline bool has() const noexcept(DEV_ENV) { return small.size() == _k; }
 
-    inline void push(T v) {
+    inline void push(T v) noexcept(DEV_ENV) {
         if(small.size() < _k) {
             small.push(v);
             return;
@@ -37,7 +38,7 @@ struct kth_element {
         }
     }
 
-    inline void pop() {
+    inline void pop() noexcept(DEV_ENV) {
         small.pop();
         if(large.empty()) return;
         T v = large.top(); large.pop();

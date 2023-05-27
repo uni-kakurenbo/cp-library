@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 
+#include "internal/dev_env.hpp"
 #include "graph.hpp"
 
 namespace lib {
@@ -22,29 +23,29 @@ struct centroid_decomposition {
     std::vector<bool> _used;
 
   public:
-    centroid_decomposition(const graph& G)
+    centroid_decomposition(const graph& G) noexcept(DEV_ENV)
       : G(G),
         _size(G.vertices()), _parent(G.vertices()), _used(G.vertices())
     {}
 
-    inline const auto& sizes() const { return this->_size; }
-    inline const auto& parents() const { return this->_parent; }
-    inline const auto& used() const { return this->_used; }
+    inline const auto& sizes() const noexcept(DEV_ENV) { return this->_size; }
+    inline const auto& parents() const noexcept(DEV_ENV) { return this->_parent; }
+    inline const auto& used() const noexcept(DEV_ENV) { return this->_used; }
 
-    inline size_type size(const size_type v) const {
+    inline size_type size(const size_type v) const noexcept(DEV_ENV) {
         assert(0 <= v && v < this->G.vertices());
         return this->_size[v];
     }
-    inline size_type parent(const size_type v) const {
+    inline size_type parent(const size_type v) const noexcept(DEV_ENV) {
         assert(0 <= v && v < this->G.vertices());
         return this->_parent[v];
     }
-    inline bool used(const size_type v) const {
+    inline bool used(const size_type v) const noexcept(DEV_ENV) {
         assert(0 <= v && v < this->G.vertices());
         return this->_used[v];
     }
 
-    const std::vector<size_type>& find(const size_type v, const size_type sz, const size_type p = -1) {
+    const std::vector<size_type>& find(const size_type v, const size_type sz, const size_type p = -1) noexcept(DEV_ENV) {
         assert(not this->_used[v]);
 
         this->_size[v] = 1, this->_parent[v] = p;
@@ -63,7 +64,7 @@ struct centroid_decomposition {
         return this->centroids;
     }
 
-    auto decompose(const size_type root, const size_type sz) {
+    auto decompose(const size_type root, const size_type sz) noexcept(DEV_ENV) {
     assert(not this->_used[root]);
 
         std::vector<std::pair<size_type,size_type>> subtrees;
@@ -87,7 +88,7 @@ struct centroid_decomposition {
         return std::make_pair(centroid, subtrees);
     }
 
-    auto decompose(const size_type root = 0) {
+    auto decompose(const size_type root = 0) noexcept(DEV_ENV) {
         return this->decompose(root, this->G.vertices());
     }
 };

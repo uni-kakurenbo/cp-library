@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cassert>
 #include <vector>
 #include <chrono>
@@ -10,9 +11,12 @@
 
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
+
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 #include "random/xorshift.hpp"
+
 
 namespace lib {
 
@@ -37,7 +41,7 @@ struct sequence_hasher {
     static std::vector<hash_type> _powers;
 
   protected:
-    static inline hash_type power(const size_type p) {
+    static inline hash_type power(const size_type p) noexcept(DEV_ENV) {
         if(static_cast<size_type>(sequence_hasher::_powers.size()) <= p) {
             size_type n = sequence_hasher::_powers.size();
             sequence_hasher::_powers.resize(p+1);
@@ -47,15 +51,15 @@ struct sequence_hasher {
         return sequence_hasher::_powers[p];
     }
 
-    inline hash_type& hashed(const size_type p) {
+    inline hash_type& hashed(const size_type p) noexcept(DEV_ENV) {
         if(static_cast<size_type>(this->_hashed.size()) <= p) this->_hashed.resize(p+1);
         return this->_hashed[p];
     }
-    inline const hash_type& hashed(const size_type p) const { return this->_hashed[p]; }
+    inline const hash_type& hashed(const size_type p) const noexcept(DEV_ENV) { return this->_hashed[p]; }
 
-    static constexpr hash_type mask(const size_type a){ return (1ULL << a) - 1; }
+    static constexpr hash_type mask(const size_type a) noexcept(DEV_ENV) { return (1ULL << a) - 1; }
 
-    static constexpr hash_type mul(hash_type a, hash_type b) {
+    static constexpr hash_type mul(hash_type a, hash_type b) noexcept(DEV_ENV) {
         #ifdef __SIZEOF_INT128__
 
         uint128_t res = static_cast<uint128_t>(a) * b;
@@ -81,7 +85,7 @@ struct sequence_hasher {
         return res;
     }
 
-    size_type index(size_type k) const { return this->_front + k; }
+    size_type index(size_type k) const noexcept(DEV_ENV) { return this->_front + k; }
 
   public:
     struct hash {
@@ -90,21 +94,21 @@ struct sequence_hasher {
         const size_type _len;
 
       public:
-        hash(const hash_type _val, const size_type _len) : _val(_val), _len(_len) {}
+        hash(const hash_type _val, const size_type _len) noexcept(DEV_ENV) : _val(_val), _len(_len) {}
 
-        inline hash_type val() const { return this->_val; }
-        inline operator hash_type() const { return this->_val; }
+        inline hash_type val() const noexcept(DEV_ENV) { return this->_val; }
+        inline operator hash_type() const noexcept(DEV_ENV) { return this->_val; }
 
-        inline size_type size() const { return this->_len; }
+        inline size_type size() const noexcept(DEV_ENV) { return this->_len; }
 
-        inline bool operator==(const hash& other) const { return this->_val == other._val and this->_len == other._len; }
-        inline bool operator!=(const hash& other) const { return this->_val != other._val or this->_len != other._len; }
+        inline bool operator==(const hash& other) const noexcept(DEV_ENV) { return this->_val == other._val and this->_len == other._len; }
+        inline bool operator!=(const hash& other) const noexcept(DEV_ENV) { return this->_val != other._val or this->_len != other._len; }
 
-        inline hash concat(const hash& other) const { return sequence_hasher::concat(*this, other); }
-        inline hash operator+(const hash& other) const { return sequence_hasher::concat(*this, other); }
+        inline hash concat(const hash& other) const noexcept(DEV_ENV) { return sequence_hasher::concat(*this, other); }
+        inline hash operator+(const hash& other) const noexcept(DEV_ENV) { return sequence_hasher::concat(*this, other); }
     };
 
-    sequence_hasher(const size_type n = 0) : _n(n) {
+    sequence_hasher(const size_type n = 0) noexcept(DEV_ENV) : _n(n) {
         if(sequence_hasher::base <= 0) {
             xorshift64 rand64(std::random_device{}());
             sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
@@ -112,20 +116,20 @@ struct sequence_hasher {
     }
 
     template<class I>
-    sequence_hasher(const I first, const I last) : sequence_hasher(std::distance(first, last)) {
+    sequence_hasher(const I first, const I last) noexcept(DEV_ENV) : sequence_hasher(std::distance(first, last)) {
         this->_hashed.resize(this->_n);
         this->_hashed.assign(this->_n+1, 0);
 
         size_type i = 0;
-        for(auto itr=first; itr!=last; ++i, ++itr) {
+        for(auto itr=first; itr!=last; ++i, ++itr) noexcept(DEV_ENV) {
             this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
             if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
     }
 
-    inline size_type size() const { return this->_n - this->_front; }
+    inline size_type size() const noexcept(DEV_ENV) { return this->_n - this->_front; }
 
-    inline hash get(size_type l, size_type r) const {
+    inline hash get(size_type l, size_type r) const noexcept(DEV_ENV) {
         assert(0 <= l and l <= r and r <= this->size());
         l = this->index(l), r = this->index(r);
         hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r-l));
@@ -133,25 +137,25 @@ struct sequence_hasher {
 
         return { res, r - l };
     }
-    inline hash get() const { return this->get(0, this->size()); }
-    inline hash operator()(const size_type l, const size_type r) const { return this->get(l, r); }
+    inline hash get() const noexcept(DEV_ENV) { return this->get(0, this->size()); }
+    inline hash operator()(const size_type l, const size_type r) const noexcept(DEV_ENV) { return this->get(l, r); }
 
-    inline hash subseq(const size_type p, const size_type c) const { return this->get(p, p+c); }
-    inline hash subseq(const size_type p) const {  return this->get(p, this->size()); }
+    inline hash subseq(const size_type p, const size_type c) const noexcept(DEV_ENV) { return this->get(p, p+c); }
+    inline hash subseq(const size_type p) const noexcept(DEV_ENV) {  return this->get(p, this->size()); }
 
 
-    static constexpr hash_type concat(const hash_type h0, const hash_type h1, const size_type len1) {
+    static constexpr hash_type concat(const hash_type h0, const hash_type h1, const size_type len1) noexcept(DEV_ENV) {
         hash_type res = sequence_hasher::mul(h0, sequence_hasher::power(len1)) + h1;
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
 
         return res;
     }
-    static constexpr hash concat(const hash& h0, const hash& h1) {
+    static constexpr hash concat(const hash& h0, const hash& h1) noexcept(DEV_ENV) {
         return { sequence_hasher::concat(h0.val(), h1.val(), h1.size()), h0.size() + h1.size() };
     }
 
 
-    template<class T> inline sequence_hasher& push_back(const T& v) {
+    template<class T> inline sequence_hasher& push_back(const T& v) noexcept(DEV_ENV) {
         this->_n++;
 
         this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + std::hash<T>{}(v);
@@ -160,20 +164,20 @@ struct sequence_hasher {
         return *this;
     }
 
-    inline sequence_hasher& pop_back() {
+    inline sequence_hasher& pop_back() noexcept(DEV_ENV) {
         assert(this->_n > 0);
         this->_n--;
         return *this;
     }
 
-    inline sequence_hasher& pop_front() {
+    inline sequence_hasher& pop_front() noexcept(DEV_ENV) {
         this->_front++;
         assert(this->_front <= this->_n);
         return *this;
     }
 
 
-    template<class I> inline sequence_hasher& concat(const I first, const I last) {
+    template<class I> inline sequence_hasher& concat(const I first, const I last) noexcept(DEV_ENV) {
         size_type n = this->_n;
         this->_n += std::distance(first, last);
 
@@ -186,9 +190,9 @@ struct sequence_hasher {
         return *this;
     }
 
-    template<class T>inline sequence_hasher& concat(const T& v) { return this->concat(ALL(v)); }
+    template<class T>inline sequence_hasher& concat(const T& v) noexcept(DEV_ENV) { return this->concat(ALL(v)); }
 
-    inline size_type lcp(size_type l0, size_type r0, size_type l1, size_type r1) {
+    inline size_type lcp(size_type l0, size_type r0, size_type l1, size_type r1) noexcept(DEV_ENV) {
         size_type size = std::min(r0 - l0, r1 - l1);
         size_type low = -1, high = size + 1;
 

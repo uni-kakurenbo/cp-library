@@ -4,11 +4,9 @@
 #include <cassert>
 #include <algorithm>
 #include <vector>
-
 #include <type_traits>
 
-#include <atcoder/internal_bit>
-
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 #include "internal/point_reference.hpp"
@@ -39,37 +37,37 @@ template<class S> struct base : private lib::internal::uncopyable {
     size_type _n = 0, _size = 0, _depth = 0;
     S* _data = nullptr;
 
-    inline void update(const size_type k) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
+    inline void update(const size_type k) noexcept(DEV_ENV) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
   protected:
-    base() {}
-    explicit base(const size_type n) : _n(n), _depth(bit_width<unsigned>(n - 1)) {
+    base() noexcept(DEV_ENV) {}
+    explicit base(const size_type n) noexcept(DEV_ENV) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
         this->_size = 1 << this->_depth;
         this->_data = new S[this->_size << 1]();
     }
     ~base() { delete[] this->_data; }
 
   public:
-    inline size_type size() const { return this->_n; }
-    inline size_type allocated() const { return this->_size; }
-    inline size_type depth() const { return this->_depth; }
+    inline size_type size() const noexcept(DEV_ENV) { return this->_n; }
+    inline size_type allocated() const noexcept(DEV_ENV) { return this->_size; }
+    inline size_type depth() const noexcept(DEV_ENV) { return this->_depth; }
 
   protected:
-    inline void apply(size_type p, const S& x) {
+    inline void apply(size_type p, const S& x) noexcept(DEV_ENV) {
         this->set(p, this->_data[p + this->_size] + x);
     }
 
-    inline void set(size_type p, const S& x) {
+    inline void set(size_type p, const S& x) noexcept(DEV_ENV) {
         p += this->_size;
         this->_data[p] = x;
         FOR(i, 1, this->_depth) this->update(p >> i);
     }
 
-    inline S get(size_type p) const {
+    inline S get(size_type p) const noexcept(DEV_ENV) {
         return this->_data[p + this->_size];
     }
 
-    inline S fold(size_type l, size_type r) const {
+    inline S fold(size_type l, size_type r) const noexcept(DEV_ENV) {
         S sml, smr;
         l += this->_size;
         r += this->_size;
@@ -83,13 +81,13 @@ template<class S> struct base : private lib::internal::uncopyable {
         return sml + smr;
     }
 
-    inline S fold_all() const { return this->_data[1]; }
+    inline S fold_all() const noexcept(DEV_ENV) { return this->_data[1]; }
 
   public:
-    template<bool (*f)(S)> inline size_type max_right(const size_type l) const {
+    template<bool (*f)(S)> inline size_type max_right(const size_type l) const noexcept(DEV_ENV) {
         return this->max_right(l, [](S x) { return f(x); });
     }
-    template<class F> inline size_type max_right(size_type l, const F& f) const {
+    template<class F> inline size_type max_right(size_type l, const F& f) const noexcept(DEV_ENV) {
         assert(0 <= l && l <= this->_n);
         assert(f(S{}));
         if(l == this->_n) return this->_n;
@@ -113,10 +111,10 @@ template<class S> struct base : private lib::internal::uncopyable {
         return this->_n;
     }
 
-    template<bool (*f)(S)> inline size_type min_left(const size_type r) const {
+    template<bool (*f)(S)> inline size_type min_left(const size_type r) const noexcept(DEV_ENV) {
         return this->min_left(r, [](S x) { return f(x); });
     }
-    template<class F> inline size_type min_left(size_type r, const F& f) const {
+    template<class F> inline size_type min_left(size_type r, const F& f) const noexcept(DEV_ENV) {
         assert(0 <= r && r <= this->_n);
         assert(f(S()));
         if (r == 0) return 0;
@@ -155,25 +153,25 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     using size_type = typename base::size_type;
 
   protected:
-    inline size_type _positivize_index(const size_type p) const {
+    inline size_type _positivize_index(const size_type p) const noexcept(DEV_ENV) {
         return p < 0 ? this->size() + p : p;
     }
 
   public:
     core() : base() {}
-    explicit core(const size_type n, const monoid_value& v = {}) : base(n) { this->fill(v); }
+    explicit core(const size_type n, const monoid_value& v = {}) noexcept(DEV_ENV) : base(n) { this->fill(v); }
 
     template<class T>
-    core(const std::initializer_list<T>& init_list) : core(ALL(init_list)) {}
+    core(const std::initializer_list<T>& init_list) noexcept(DEV_ENV) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) : core(std::distance(first, last)) { this->assign(first, last); }
+    explicit core(const I first, const I last) noexcept(DEV_ENV) : core(std::distance(first, last)) { this->assign(first, last); }
 
     template<class T>
-    inline auto& assign(const std::initializer_list<T>& init_list) { return this->assign(ALL(init_list)); }
+    inline auto& assign(const std::initializer_list<T>& init_list) noexcept(DEV_ENV) { return this->assign(ALL(init_list)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline auto& assign(const I first, const I last) {
+    inline auto& assign(const I first, const I last) noexcept(DEV_ENV) {
         assert(std::distance(first, last) == this->size());
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = monoid(*itr);
@@ -181,101 +179,101 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
         return *this;
     }
 
-    inline auto& fill(const monoid_value& v = {}) {
+    inline auto& fill(const monoid_value& v = {}) noexcept(DEV_ENV) {
         REP(p, this->_n) this->_data[this->_size + p] = v;
         REPD(p, 1, this->_size) this->update(p);
         return *this;
     }
 
-    bool empty() const { return this->size() == 0; }
+    bool empty() const noexcept(DEV_ENV) { return this->size() == 0; }
 
     struct point_reference : internal::point_reference<core> {
-        point_reference(core *const super, const size_type p)
+        point_reference(core *const super, const size_type p) noexcept(DEV_ENV)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
-        operator monoid_value() const { return this->_super->get(this->_pos); }
-        monoid_value val() const { return this->_super->get(this->_pos); }
+        operator monoid_value() const noexcept(DEV_ENV) { return this->_super->get(this->_pos); }
+        monoid_value val() const noexcept(DEV_ENV) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const monoid_value& v) {
+        inline point_reference& set(const monoid_value& v) noexcept(DEV_ENV) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const monoid_value& v) {
+        inline point_reference& operator=(const monoid_value& v) noexcept(DEV_ENV) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const monoid_value& v) {
+        inline point_reference& apply(const monoid_value& v) noexcept(DEV_ENV) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const monoid_value& v) {
+        inline point_reference& operator<<=(const monoid_value& v) noexcept(DEV_ENV) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
     };
 
     struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r)
+        range_reference(core *const super, const size_type l, const size_type r) noexcept(DEV_ENV)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline value_type fold() {
+        inline value_type fold() noexcept(DEV_ENV) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() {
+        inline value_type operator*() noexcept(DEV_ENV) {
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
-    inline auto& apply(const size_type p, const monoid_value& x) {
+    inline auto& apply(const size_type p, const monoid_value& x) noexcept(DEV_ENV) {
         assert(0 <= p && p < this->size());
         this->base::apply(p, x);
          return *this;
     }
 
-    inline auto& set(const size_type p, const monoid_value& x) {
+    inline auto& set(const size_type p, const monoid_value& x) noexcept(DEV_ENV) {
         assert(0 <= p && p < this->size());
         this->base::set(p, x);
          return *this;
     }
 
-    inline value_type get(const size_type p) const {
+    inline value_type get(const size_type p) const noexcept(DEV_ENV) {
         assert(0 <= p && p < this->size());
         return this->base::fold(p, p+1);
     }
 
-    inline point_reference operator[](const size_type p) { return point_reference(this, p); }
-    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
+    inline point_reference operator[](const size_type p) noexcept(DEV_ENV) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(DEV_ENV) { return range_reference(this, l, r); }
 
-    inline value_type fold(const size_type l, const size_type r) const {
+    inline value_type fold(const size_type l, const size_type r) const noexcept(DEV_ENV) {
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
-    inline value_type fold(const size_type r) const {
+    inline value_type fold(const size_type r) const noexcept(DEV_ENV) {
         assert(0 <= r && r <= this->size());
         return this->base::fold(0, r);
     }
-    inline value_type fold() const {
+    inline value_type fold() const noexcept(DEV_ENV) {
         return this->base::fold_all();
     }
 
 
     struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type p) : internal::container_iterator_interface<value_type,core>(ref, p) {}
+        iterator(const core *const ref, const size_type p) noexcept(DEV_ENV) : internal::container_iterator_interface<value_type,core>(ref, p) {}
 
-        inline value_type operator*() const { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const noexcept(DEV_ENV) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() const { return iterator(this, 0); }
-    inline iterator end() const { return iterator(this, this->size()); }
+    inline iterator begin() const noexcept(DEV_ENV) { return iterator(this, 0); }
+    inline iterator end() const noexcept(DEV_ENV) { return iterator(this, this->size()); }
 };
 
 template<class Action>

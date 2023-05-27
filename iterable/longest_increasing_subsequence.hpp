@@ -5,7 +5,9 @@
 #include <algorithm>
 #include <iterator>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
 #include "grid.hpp"
 
 
@@ -18,8 +20,8 @@ struct lis : container {
 
     std::vector<int> indices;
 
-    lis() {}
-    template<class I> lis(const I first, const I last) {
+    lis() noexcept(DEV_ENV) {}
+    template<class I> lis(const I first, const I last) noexcept(DEV_ENV) {
         std::vector<size_type> positions(std::distance(first, last), -1);
 
         size_type pos = 0;

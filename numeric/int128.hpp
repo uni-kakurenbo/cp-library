@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cctype>
 #include <cassert>
 #include <iostream>
@@ -9,9 +10,11 @@
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
 
+#include "internal/dev_env.hpp"
+
 
 template<class C, class S>
-std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) {
+std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) noexcept(DEV_ENV) {
     std::string str; in >> str;
     v = 0;
     bool negative = (str[0] == '-');
@@ -24,7 +27,7 @@ std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) {
 }
 
 template<class C, class S>
-std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) {
+std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexcept(DEV_ENV) {
     if(v == 0) return out << 0;
     if(v < 0) out << '-', v *= -1;
     std::string str;

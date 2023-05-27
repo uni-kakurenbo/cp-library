@@ -5,8 +5,11 @@
 #include <iterator>
 #include <algorithm>
 
-#include "internal/types.hpp"
 #include "snippet/iterations.hpp"
+
+#include "internal/dev_env.hpp"
+#include "internal/types.hpp"
+
 #include "grid.hpp"
 
 
@@ -15,9 +18,10 @@ namespace lib {
 
 template<class container = grid<std::size_t>>
 struct lcs_sizes : container {
-    lcs_sizes() {}
+    lcs_sizes() noexcept(DEV_ENV) {}
     template<class I>
-    lcs_sizes(const I first0, const I last0, const I first1, const I last1) : container(std::distance(first0, last0)+1, std::distance(first1, last1)+1) {
+    lcs_sizes(const I first0, const I last0, const I first1, const I last1) noexcept(DEV_ENV)
+      : container(std::distance(first0, last0)+1, std::distance(first1, last1)+1) {
         std::size_t pos0 = 0;
         for(auto itr0=first0; itr0!=last0; ++pos0, ++itr0) {
             std::size_t pos1 = 0;

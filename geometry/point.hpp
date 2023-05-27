@@ -1,46 +1,50 @@
 #pragma once
 
+
 #include <complex>
 #include <cmath>
 #include <iostream>
 #include <utility>
+
+#include "internal/dev_env.hpp"
+
 
 namespace lib {
 
 template <class T> struct point : protected std::pair<T,T> {
   public:
     constexpr point() {}
-    constexpr point(const T& x, const T& y) : std::pair<T,T>(x, y) {}
-    template<class U> constexpr point(const point<U>& p) : point(p.x(), p.y()) {};
-    template<class U> constexpr point(point<U>&& p) : point(p.x(), p.y()) {};
+    constexpr point(const T& x, const T& y) noexcept(DEV_ENV) : std::pair<T,T>(x, y) {}
+    template<class U> constexpr point(const point<U>& p) noexcept(DEV_ENV) : point(p.x(), p.y()) {};
+    template<class U> constexpr point(point<U>&& p) noexcept(DEV_ENV) : point(p.x(), p.y()) {};
 
     template<class U>
-    constexpr point& operator=(const point<U>& p) & { this->x() = p.x(),this->y() = p.y(); return *this; };
+    constexpr point& operator=(const point<U>& p) & noexcept(DEV_ENV) { this->x() = p.x(),this->y() = p.y(); return *this; };
     template<class U>
-    constexpr point& operator=(point<U>&& p) && { this->x() = p.x(), this->y() = p.y(); return *this; };
+    constexpr point& operator=(point<U>&& p) && noexcept(DEV_ENV) { this->x() = p.x(), this->y() = p.y(); return *this; };
 
 
-    inline T& x() { return this->first; }
-    inline T& y() { return this->second; }
-    inline const T& x() const { return this->first; }
-    inline const T& y() const { return this->second; }
+    inline T& x() noexcept(DEV_ENV) { return this->first; }
+    inline T& y() noexcept(DEV_ENV) { return this->second; }
+    inline const T& x() const noexcept(DEV_ENV) { return this->first; }
+    inline const T& y() const noexcept(DEV_ENV) { return this->second; }
 
-    inline constexpr point& operator+=(const point& v) { this->x() += v.x(), this->y() += v.y(); return *this; }
-    inline constexpr point& operator-=(const point& v) { this->x() -= v.x(), this->y() -= v.y(); return *this; }
+    inline constexpr point& operator+=(const point& v) noexcept(DEV_ENV) { this->x() += v.x(), this->y() += v.y(); return *this; }
+    inline constexpr point& operator-=(const point& v) noexcept(DEV_ENV) { this->x() -= v.x(), this->y() -= v.y(); return *this; }
 
-    friend inline constexpr point operator+(point a, const point& b) { return a += b; }
-    friend inline constexpr point operator-(point a, const point& b) { return a -= b; }
-    friend inline constexpr point operator*(const point& a, const point& b) { return a.x() * b.x() + a.y() * b.y(); }
+    friend inline constexpr point operator+(point a, const point& b) noexcept(DEV_ENV) { return a += b; }
+    friend inline constexpr point operator-(point a, const point& b) noexcept(DEV_ENV) { return a -= b; }
+    friend inline constexpr point operator*(const point& a, const point& b) noexcept(DEV_ENV) { return a.x() * b.x() + a.y() * b.y(); }
 
-    friend inline constexpr bool operator==(const point& a, const point& b) { return a.x() == b.x() && a.y() == b.y(); }
-    friend inline constexpr bool operator!=(const point& a, const point& b) { return a.x() != b.x() or a.y() != b.y(); }
+    friend inline constexpr bool operator==(const point& a, const point& b) noexcept(DEV_ENV) { return a.x() == b.x() && a.y() == b.y(); }
+    friend inline constexpr bool operator!=(const point& a, const point& b) noexcept(DEV_ENV) { return a.x() != b.x() or a.y() != b.y(); }
 
-    friend inline constexpr bool operator<(const point& a, const point& b) { return a.x() != b.x() ? a.x() < b.x() : a.y() < b.y(); }
-    friend inline constexpr bool operator>(const point& a, const point& b) { return a.x() != b.x() ? a.x() > b.x() : a.y() > b.y(); }
-    friend inline constexpr bool operator<=(const point& a, const point& b) { return !(a > b); }
-    friend inline constexpr bool operator>=(const point& a, const point& b) { return !(a < b); }
+    friend inline constexpr bool operator<(const point& a, const point& b) noexcept(DEV_ENV) { return a.x() != b.x() ? a.x() < b.x() : a.y() < b.y(); }
+    friend inline constexpr bool operator>(const point& a, const point& b) noexcept(DEV_ENV) { return a.x() != b.x() ? a.x() > b.x() : a.y() > b.y(); }
+    friend inline constexpr bool operator<=(const point& a, const point& b) noexcept(DEV_ENV) { return !(a > b); }
+    friend inline constexpr bool operator>=(const point& a, const point& b) noexcept(DEV_ENV) { return !(a < b); }
 
-    std::pair<T,T> _debug() const { return { this->x(), this->y() }; }
+    std::pair<T,T> _debug() const noexcept(DEV_ENV) { return { this->x(), this->y() }; }
 };
 
 

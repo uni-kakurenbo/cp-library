@@ -1,12 +1,16 @@
 #pragma once
 
+
 #include <set>
 #include <unordered_set>
 #include <iterator>
 #include <optional>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
 #include "utility/functional.hpp"
+
 
 namespace lib {
 
@@ -17,26 +21,26 @@ template<class set> struct set_wrapper : set {
     using set::set;
     using size_type = internal::size_t;
 
-    inline size_type size() const { return this->set::size(); }
+    inline size_type size() const noexcept(DEV_ENV) { return this->set::size(); }
 
-    inline bool contains(const typename set::key_type& key) { return static_cast<bool>(this->count(key)); }
+    inline bool contains(const typename set::key_type& key) noexcept(DEV_ENV) { return static_cast<bool>(this->count(key)); }
 
-    inline std::optional<typename set::iterator> remove(const typename set::key_type& key) {
+    inline std::optional<typename set::iterator> remove(const typename set::key_type& key) noexcept(DEV_ENV) {
         const auto itr = this->find(key);
         if(itr == this->set::end()) return {};
         return this->erase(itr);
     }
 
-    inline auto min_element() { return this->begin(); }
-    inline auto max_element() { return this->begin(); }
+    inline auto min_element() noexcept(DEV_ENV) { return this->begin(); }
+    inline auto max_element() noexcept(DEV_ENV) { return this->begin(); }
 
-    inline auto min() { return *this->begin(); }
-    inline auto max() { return *this->end(); }
+    inline auto min() noexcept(DEV_ENV) { return *this->begin(); }
+    inline auto max() noexcept(DEV_ENV) { return *this->end(); }
 
-    inline auto pop_min() { this->erase(this->begin()); return *this; }
-    inline auto pop_max() { this->erase(this->end()); return *this; }
+    inline auto pop_min() noexcept(DEV_ENV) { this->erase(this->begin()); return *this; }
+    inline auto pop_max() noexcept(DEV_ENV) { this->erase(this->end()); return *this; }
 
-    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) {
+    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) noexcept(DEV_ENV) {
         size_type count = std::abs(_count);
         auto itr = this->lower_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -48,7 +52,7 @@ template<class set> struct set_wrapper : set {
         }
         return itr;
     }
-    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) {
+    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) noexcept(DEV_ENV) {
         size_type count = std::abs(_count);
         auto itr = this->upper_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -61,7 +65,7 @@ template<class set> struct set_wrapper : set {
         return itr;
     }
 
-    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) {
+    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) noexcept(DEV_ENV) {
         auto itr = this->lower_bound(key);
         const auto end = this->end();
         if(itr == end) return {};
@@ -69,25 +73,23 @@ template<class set> struct set_wrapper : set {
         return { *itr };
     }
 
-    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) {
+    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) noexcept(DEV_ENV) {
         auto itr = this->upper_bound(key);
         const auto begin = this->begin();
         if(itr-- == begin) return {};
         while(count--) if(itr-- == begin) return {};
         return { *itr };
     }
+
+
+    friend inline set_wrapper operator|(const set_wrapper s, const set_wrapper t) noexcept(DEV_ENV) {
+        set_wrapper res;
+        std::set_union(std::begin(s), std::end(s), std::begin(t), std::end(t), std::inserter(res, std::begin(res)));
+        return res;
+    }
 };
 
 } //namespace internal
-
-
-template<class S, class T>
-inline S operator+(const S s, const T t) {
-    S res;
-    std::set_union(std::begin(s), std::end(s), std::begin(t), std::end(t), std::inserter(res, std::begin(res)));
-    return res;
-}
-
 
 template<class... Args> using set = internal::set_wrapper<std::set<Args...>>;
 template<class... Args> using unordered_set = internal::set_wrapper<std::unordered_set<Args...>>;

@@ -4,6 +4,8 @@
 #include <vector>
 #include <queue>
 
+#include "internal/dev_env.hpp"
+
 #include "snippet/iterations.hpp"
 #include "snippet/internal/types.hpp"
 
@@ -12,7 +14,7 @@
 
 template<class edge_cost>
 template<class cost_t>
-void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vector<cost_t> *dists) const {
+void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vector<cost_t> *dists) const noexcept(DEV_ENV) {
     dists->assign(this->size(), std::numeric_limits<cost_t>::max());
 
     std::queue<size_type> que;
@@ -30,7 +32,7 @@ void lib::graph<edge_cost>::distances_without_cost(const size_type s, std::vecto
 
 template<class edge_cost>
 template<class cost_t>
-std::vector<cost_t> lib::graph<edge_cost>::distances_without_cost(const size_type s) const {
+std::vector<cost_t> lib::graph<edge_cost>::distances_without_cost(const size_type s) const noexcept(DEV_ENV) {
     std::vector<cost_t> dists;
     this->distances_without_cost<cost_t>(s, &dists);
     return dists;

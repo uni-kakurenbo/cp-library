@@ -3,11 +3,13 @@
 
 #include <vector>
 
+#include "internal/dev_env.hpp"
+
 
 namespace lib {
 
 
-template<class T> std::vector<T> divisors(const T k) {
+template<class T> std::vector<T> divisors(const T k) noexcept(DEV_ENV) {
     std::vector<T> res;
 
     for(T i=1; i*i<=k; ++i) {

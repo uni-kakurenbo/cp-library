@@ -4,7 +4,9 @@
 #include <vector>
 #include <iterator>
 #include <utility>
+#include <type_traits>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/range_reference.hpp"
 
@@ -35,13 +37,13 @@ struct base {
     std::vector<std::vector<S>> _table = {};
 
   public:
-    explicit base(const size_type n = 0) : _n(n) {
-        this->_depth = bit_width<unsigned>(n);
+    explicit base(const size_type n = 0) noexcept(DEV_ENV) : _n(n) {
+        this->_depth = bit_width<std::make_unsigned_t<size_type>>(n);
         this->_table.resize(this->_depth+1, std::vector<S>(n));
     }
 
     template<bool FORCE = false>
-    inline auto& build() {
+    inline auto& build() noexcept(DEV_ENV) {
         if(!FORCE and this->_built) return *this;
         for(size_type i=2; i<=this->_depth; ++i) {
             const size_type len = 1 << i;
@@ -60,14 +62,14 @@ struct base {
         return *this;
     }
 
-    inline auto& raw() {
+    inline auto& raw() noexcept(DEV_ENV) {
         return this->_table.front();
         this->_built = false;
     }
-    inline const auto& raw() const { return this->_table.front(); }
-    inline const auto& data() const { return this->_table.front(); }
+    inline const auto& raw() const noexcept(DEV_ENV) { return this->_table.front(); }
+    inline const auto& data() const noexcept(DEV_ENV) { return this->_table.front(); }
 
-    size_type size() const { return this->_n; }
+    size_type size() const noexcept(DEV_ENV) { return this->_n; }
 
     S fold(const size_type l, size_type r) {
         if(l == r) return S{};
@@ -75,7 +77,7 @@ struct base {
 
         this->build();
 
-        const size_type p = highest_bit_pos<unsigned>(l ^ r);
+        const size_type p = highest_bit_pos<std::make_unsigned_t<size_type>>(l ^ r);
         return this->_table[p][l] + this->_table[p][r];
     }
 };
@@ -92,49 +94,49 @@ struct core<semigroup, std::void_t<typename algebraic::internal::is_semigroup_t<
     using base = internal::disjoint_sparse_table_impl::base<semigroup>;
 
   protected:
-    inline size_type _positivize_index(const size_type p) const {
+    inline size_type _positivize_index(const size_type p) const noexcept(DEV_ENV) {
         return p < 0 ? this->size() + p : p;
     }
 
   public:
     using base::base;
 
-    explicit core(const size_type n, const semigroup& val) : core(n) {
+    explicit core(const size_type n, const semigroup& val) noexcept(DEV_ENV) : core(n) {
         this->_table.begin()->assign(n, val);
     }
 
     template<class I>
-    explicit core(const I first, const I last) : core(std::distance(first, last)) {
+    explicit core(const I first, const I last) noexcept(DEV_ENV) : core(std::distance(first, last)) {
         std::copy(first, last, this->_table.begin()->begin());
     }
 
     struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r)
+        range_reference(core *const super, const size_type l, const size_type r) noexcept(DEV_ENV)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline value_type fold() {
+        inline value_type fold() noexcept(DEV_ENV) {
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() {
+        inline value_type operator*() noexcept(DEV_ENV) {
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
-    inline value_type fold(size_type l, size_type r) {
+    inline value_type fold(size_type l, size_type r) noexcept(DEV_ENV) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
-    inline value_type fold() { return this->fold(0, this->size()); }
+    inline value_type fold() noexcept(DEV_ENV) { return this->fold(0, this->size()); }
 
-    inline auto operator[](const size_type index) const { return this->_table.front()[index]; }
-    inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
+    inline auto operator[](const size_type index) const noexcept(DEV_ENV) { return this->_table.front()[index]; }
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(DEV_ENV) { return range_reference(this, l, r); }
 
-    inline auto begin() const { return this->_table.begin()->begin(); }
-    inline auto end() const { return this->_table.begin()->end(); }
+    inline auto begin() const noexcept(DEV_ENV) { return this->_table.begin()->begin(); }
+    inline auto end() const noexcept(DEV_ENV) { return this->_table.begin()->end(); }
 };
 
 

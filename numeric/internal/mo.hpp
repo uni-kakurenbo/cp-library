@@ -1,18 +1,20 @@
 #pragma once
 
+
 #include <vector>
 #include <numeric>
 #include <algorithm>
 #include <iterator>
-
-#include <atcoder/internal_bit.hpp>
+#include <type_traits>
 
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
+#include "internal/dev_env.hpp"
+#include "internal/types.hpp"
+
 #include "numeric/bit.hpp"
 
-#include "internal/types.hpp"
 #include "utility/hilbert_order.hpp"
 
 
@@ -32,26 +34,26 @@ class interval_plannner {
         const EF& expand_front, const EB& expand_back,
         const PF& contract_front, const PB& contract_back,
         const R& evaluate
-    )
+    ) noexcept(DEV_ENV)
       : expand_front(expand_front), expand_back(expand_back),
         contract_front(contract_front), contract_back(contract_back),
         evaluate(evaluate)
     {}
 
-    interval_plannner(const EF& expand, const PF& contract, const R& evaluate)
+    interval_plannner(const EF& expand, const PF& contract, const R& evaluate) noexcept(DEV_ENV)
       : interval_plannner(expand, expand, contract, contract, evaluate)
     {}
 
 
     template<class QI, class RI>
-    void scan(const QI query_first, const QI query_last, const RI res_first) {
+    void scan(const QI query_first, const QI query_last, const RI res_first) noexcept(DEV_ENV) {
         const size_t q = std::distance(query_first, query_last);
 
         size_t n = 0;
         for(auto query=query_first; query!=query_last; ++query) {
             chmax(n, std::max(query->first, query->second));
         }
-        n = 1 << bit_width<unsigned>(n);
+        n = 1 << bit_width<std::make_unsigned_t<size_type>>(n);
 
         std::vector<i64> orders(q);
         {
@@ -76,14 +78,14 @@ class interval_plannner {
     }
 
     template<class QI>
-    auto scan(const QI query_first, const QI query_last) {
+    auto scan(const QI query_first, const QI query_last) noexcept(DEV_ENV) {
         std::vector<std::invoke_result_t<R>> res(std::distance(query_first, query_last));
         this->scan(query_first, query_last, res.begin());
         return res;
     }
 
     template<class Q>
-    auto scan(const Q queries) {
+    auto scan(const Q queries) noexcept(DEV_ENV) {
         std::vector<std::invoke_result_t<R>> res(std::distance(std::begin(queries), std::end(queries)));
         this->interval_scan(std::begin(queries), std::end(queries), res.begin());
         return res;

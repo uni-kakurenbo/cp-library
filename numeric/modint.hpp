@@ -6,6 +6,7 @@
 
 #include <atcoder/modint>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 
@@ -45,22 +46,22 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
     static uint64_t r;
     static uint64_t n2;
 
-    static uint64_t get_r() {
+    static uint64_t get_r() noexcept(DEV_ENV) {
         uint64_t res = _mod;
         for(int64_t i = 0; i < 5; ++i)
             res *= 2 - _mod * res;
         return res;
     }
 
-    static uint64_t reduce(const uint128_t &b) {
+    static uint64_t reduce(const uint128_t &b) noexcept(DEV_ENV) {
         return (b + uint128_t(uint64_t(b) * uint64_t(-r)) * _mod) >> 64;
     }
 
 
   public:
-    static uint64_t mod() { return _mod; }
+    static uint64_t mod() noexcept(DEV_ENV) { return _mod; }
 
-    static void set_mod(const uint64_t m) {
+    static void set_mod(const uint64_t m) noexcept(DEV_ENV) {
         assert(m < (1UL << 63));
         assert((m & 1) == 1);
         _mod = m;
@@ -71,46 +72,46 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
 
     uint64_t _val;
 
-    dynamic_modint_64bit() : _val(0) {}
-    dynamic_modint_64bit(const std::int64_t b)
+    dynamic_modint_64bit() noexcept(DEV_ENV) : _val(0) {}
+    dynamic_modint_64bit(const std::int64_t b) noexcept(DEV_ENV)
     : _val(this->reduce((static_cast<uint128_t>(b) + this->_mod) * this->n2)) {};
 
-    mint &operator+=(const mint &b) {
+    mint &operator+=(const mint &b) noexcept(DEV_ENV) {
         if(static_cast<int64_t>(_val += b._val - 2 * _mod) < 0) this->_val += 2 * this->_mod;
         return *this;
     }
 
-    mint &operator-=(const mint &b) {
+    mint &operator-=(const mint &b) noexcept(DEV_ENV) {
         if(static_cast<int64_t>(this->_val -= b._val) < 0)
             this->_val += 2 * this->_mod;
         return *this;
     }
 
-    mint &operator*=(const mint &b) {
+    mint &operator*=(const mint &b) noexcept(DEV_ENV) {
         this->_val = reduce(static_cast<uint128_t>(this->_val) * b._val);
         return *this;
     }
 
-    mint &operator/=(const mint &b) {
+    mint &operator/=(const mint &b) noexcept(DEV_ENV) {
         *this *= b.inv();
         return *this;
     }
 
-    mint operator+(const mint &b) const { return mint(*this) += b; }
-    mint operator-(const mint &b) const { return mint(*this) -= b; }
-    mint operator*(const mint &b) const { return mint(*this) *= b; }
-    mint operator/(const mint &b) const { return mint(*this) /= b; }
+    mint operator+(const mint &b) const noexcept(DEV_ENV) { return mint(*this) += b; }
+    mint operator-(const mint &b) const noexcept(DEV_ENV) { return mint(*this) -= b; }
+    mint operator*(const mint &b) const noexcept(DEV_ENV) { return mint(*this) *= b; }
+    mint operator/(const mint &b) const noexcept(DEV_ENV) { return mint(*this) /= b; }
 
-    bool operator==(const mint &b) const {
+    bool operator==(const mint &b) const noexcept(DEV_ENV) {
         return (this->_val >= this->_mod ? this->_val - this->_mod : this->_val) == (b._val >= this->_mod ? b._val - this->_mod : b._val);
     }
-    bool operator!=(const mint &b) const {
+    bool operator!=(const mint &b) const noexcept(DEV_ENV) {
         return (this->_val >= this->_mod ? this->_val - this->_mod : this->_val) != (b._val >= this->_mod ? b._val - this->_mod : b._val);
     }
 
-    mint operator-() const { return mint{} - static_cast<mint>(*this); }
+    mint operator-() const noexcept(DEV_ENV) { return mint{} - static_cast<mint>(*this); }
 
-    mint pow(uint128_t n) const {
+    mint pow(uint128_t n) const noexcept(DEV_ENV) {
         mint res(1), mul(*this);
         while(n > 0) {
             if(n & 1)
@@ -121,9 +122,9 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
         return res;
     }
 
-    mint inv() const { return this->pow(this->_mod - 2); }
+    mint inv() const noexcept(DEV_ENV) { return this->pow(this->_mod - 2); }
 
-    uint64_t val() const {
+    uint64_t val() const noexcept(DEV_ENV) {
         uint64_t res = this->reduce(this->_val);
         return res >= this->_mod ? res - this->_mod : res;
     }

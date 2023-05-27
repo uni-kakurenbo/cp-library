@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 
@@ -18,7 +19,7 @@ struct base {};
 
 
 template<class operation = std::nullptr_t> struct base : internal::base {
-    static operation fold(const operation& x, const lib::internal::size_t) { return x; }
+    static operation fold(const operation& x, const lib::internal::size_t) noexcept(NO_EXCEPT) { return x; }
 };
 
 

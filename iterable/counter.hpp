@@ -3,14 +3,15 @@
 #include <iterator>
 #include <unordered_map>
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 namespace lib {
 
 template<class T = i64, class container = std::unordered_map<T,internal::size_t>>
 struct counter : container {
-    counter() {}
-    template<class I> counter(const I first, const I last) {
+    counter() noexcept(DEV_ENV) {}
+    template<class I> counter(const I first, const I last) noexcept(DEV_ENV) {
         for(auto itr=first; itr!=last; ++itr) ++(*this)[*itr];
     }
 };

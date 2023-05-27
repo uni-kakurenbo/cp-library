@@ -1,5 +1,8 @@
 #pragma once
 
+#include "internal/dev_env.hpp"
+
+
 namespace lib {
 
 namespace algebraic {
@@ -15,16 +18,16 @@ struct base {
     value_type _value;
 
   public:
-    base(const value_type& value = {}) : _value(value) {};
+    base(const value_type& value = {}) noexcept(NO_EXCEPT) : _value(value) {};
 
-    inline operator value_type() const { return this->_value; }
-    inline value_type val() const { return this->_value; };
+    inline operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
+    inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; };
 
-    inline const value_type* operator->() const { return &this->_value; };
-    inline value_type* operator->() { return &this->_value; };
+    inline const value_type* operator->() const noexcept(NO_EXCEPT) { return &this->_value; };
+    inline value_type* operator->() noexcept(NO_EXCEPT) { return &this->_value; };
 
-    inline bool operator==(const base& other) const { return this->_value == other._value; };
-    inline bool operator!=(const base& other) const { return this->_value != other._value; };
+    inline bool operator==(const base& other) const noexcept(NO_EXCEPT) { return this->_value == other._value; };
+    inline bool operator!=(const base& other) const noexcept(NO_EXCEPT) { return this->_value != other._value; };
 };
 
 

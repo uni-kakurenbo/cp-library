@@ -5,12 +5,13 @@
 #include <queue>
 
 #include "snippet/iterations.hpp"
+#include "internal/dev_env.hpp"
 #include "graph.hpp"
 
 
 template<class edge_cost>
 template<class comparer>
-bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<size_type> *const sorted) const {
+bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<size_type> *const sorted) const noexcept(DEV_ENV) {
     sorted->clear();
 
     std::vector<size_type> in_degs(this->size());
@@ -30,14 +31,14 @@ bool lib::graph<edge_cost>::sort_topologically_with_priority(std::vector<size_ty
 
 template<class edge_cost>
 template<class comparer>
-bool lib::graph<edge_cost>::sort_topologically_with_priority() const {
+bool lib::graph<edge_cost>::sort_topologically_with_priority() const noexcept(DEV_ENV) {
     std::vector<size_type> vs;
     return this->sort_topologically_with_priority<comparer>(&vs);
 }
 
 
 template<class edge_cost>
-bool lib::graph<edge_cost>::sort_topologically(std::vector<size_type> *const sorted) const {
+bool lib::graph<edge_cost>::sort_topologically(std::vector<size_type> *const sorted) const noexcept(DEV_ENV) {
     sorted->clear();
 
     std::vector<size_type> in_degs(this->size());
@@ -56,7 +57,7 @@ bool lib::graph<edge_cost>::sort_topologically(std::vector<size_type> *const sor
 }
 
 template<class edge_cost>
-bool lib::graph<edge_cost>::sort_topologically() const {
+bool lib::graph<edge_cost>::sort_topologically() const noexcept(DEV_ENV) {
     std::vector<size_type> vs;
     return this->sort_topologically(&vs);
 }

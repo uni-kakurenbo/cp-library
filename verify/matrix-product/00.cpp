@@ -1,7 +1,12 @@
-#include <bits/stdc++.h>
 #include <atcoder/modint>
-#include "template.hpp"
+
+#include "snippet/fast_io.hpp"
+#include "adapter/input.hpp"
+#include "adapter/output.hpp"
 #include "numeric/matrix.hpp"
+
+input_adapter input;
+output_adapter print;
 
 signed main() {
     int n, m, k; std::cin >> n >> m >> k;

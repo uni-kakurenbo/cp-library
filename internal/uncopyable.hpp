@@ -6,7 +6,7 @@ namespace internal {
 
 
 struct uncopyable {
-    uncopyable(){}
+    uncopyable() noexcept(DEV_ENV) {}
     uncopyable(const uncopyable&) = delete;
     uncopyable& operator=(const uncopyable&) = delete;
 };

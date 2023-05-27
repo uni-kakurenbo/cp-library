@@ -6,8 +6,10 @@
 #include <algorithm>
 #include <atcoder/math.hpp>
 
-#include "internal/types.hpp"
 #include "snippet/aliases.hpp"
+
+#include "internal/dev_env.hpp"
+#include "internal/types.hpp"
 
 #include "numeric/internal/number_base.hpp"
 
@@ -15,7 +17,27 @@ namespace lib {
 
 
 template<class T>
-T nPr(const T n, T r) {
+T sqrt_floor(const T x) noexcept(DEV_ENV) {
+    T ok = 0, ng = x / 2 + 2;
+    while(ng - ok > 1) {
+        T mid = (ok + ng) / 2;
+        (x / mid < mid ? ng : ok) = mid;
+    }
+    return ok;
+}
+
+template<class T>
+T sqrt_ceil(const T x) noexcept(DEV_ENV) {
+    T ok = 0, ng = x / 2 + 2;
+    while(ng - ok > 1) {
+        T mid = (ok + ng) / 2;
+        ((x + mid - 1) / mid < mid ? ng : ok) = mid;
+    }
+    return ok;
+}
+
+template<class T>
+T nPr(const T n, const T r) noexcept(DEV_ENV) {
     assert(0 <= n);
     assert(0 <= r);
     if(n < r) return 0;
@@ -27,7 +49,7 @@ T nPr(const T n, T r) {
 }
 
 template<class T>
-T nCr(const T n, T r) {
+T nCr(const T n, const T r) noexcept(DEV_ENV) {
     assert(0 <= n);
     assert(0 <= r);
     if(n == r) return 1;
@@ -42,7 +64,7 @@ T nCr(const T n, T r) {
 
 
 template<class T, class U>
-T pow(T x, U n) {
+T pow(T x, U n) noexcept(DEV_ENV) {
     T res = 1;
     while(n > 0) {
         if(n & 1) res *= x;
@@ -56,14 +78,14 @@ using atcoder::pow_mod;
 using atcoder::inv_mod;
 using atcoder::crt;
 
-template<class T, class U, class V>inline bool mul_over(T x, U y, V s){
+template<class T, class U, class V>inline bool mul_over(const T x, const U y, const V s) noexcept(DEV_ENV) {
     if(x >= s) return true;
     if(x >= 0 && y >= 0) return x > s/y;
     if(x <= 0 && y <= 0) return x < s/y;
     return false;
 }
 
-template<class T, class U, class V>inline bool mul_under(T x, U y, V s){
+template<class T, class U, class V>inline bool mul_under(const T x, const U y, const V s) noexcept(DEV_ENV) {
     if(x <= s) return true;
     if(x >= 0 && y <= 0) return x > s/y;
     if(x <= 0 && y >= 0) return x < s/y;

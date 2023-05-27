@@ -9,7 +9,7 @@ signed main() {
     REP(i, n) std::cin >> xs[i] >> ys[i];
 
     ll cost = 0;
-    auto edges = lib::manhattan_mst_edges(xs, ys, &cost);
+    auto edges = lib::manhattan_mst_edges(ALL(xs), ALL(ys), &cost);
 
     print(cost);
     ITR(u, v, w, edges) print(u, v);

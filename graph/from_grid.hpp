@@ -1,11 +1,13 @@
 #pragma once
 
+#include "internal/dev_env.hpp"
+
 #include "grid.hpp"
 #include "graph.hpp"
 
 template<class edge_cost>
 template<bool REV, class G, class U>
-void lib::graph<edge_cost>::from_grid(const G &grid, U available) {
+void lib::graph<edge_cost>::from_grid(const G &grid, U available) noexcept(DEV_ENV) {
     this->clear();
     this->resize(grid.height() * grid.width());
 
