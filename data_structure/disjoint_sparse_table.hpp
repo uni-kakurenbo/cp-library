@@ -21,46 +21,59 @@ namespace internal {
 
 namespace disjoint_sparse_table_impl {
 
-
+// Thanks to: https://noshi91.hatenablog.com/entry/2018/05/08/183946
 template<class S>
 struct base {
     using size_type = internal::size_t;
     using iterator = std::vector<std::vector<S>>;
 
   private:
-    size_type _n = 0;
+    size_type _n = 0, _depth = 0;
+    bool _built = false;
 
   protected:
     std::vector<std::vector<S>> _table = {};
 
   public:
-    base() {}
+    explicit base(const size_type n = 0) : _n(n) {
+        this->_depth = bit_width<unsigned>(n);
+        this->_table.resize(this->_depth+1, std::vector<S>(n));
+    }
 
-    template<class I>
-    explicit base(const I first, const I last) : _n(std::distance(first, last)) {
-        const size_type depth = bit_width<unsigned>(this->_n);
-        this->_table.resize(depth+1, std::vector<S>(this->_n));
-        std::copy(first, last, this->_table.begin()->begin());
-        for(size_type i=2; i<=depth; ++i) {
+    template<bool FORCE = false>
+    inline auto& build() {
+        if(!FORCE and this->_built) return *this;
+        for(size_type i=2; i<=this->_depth; ++i) {
             const size_type len = 1 << i;
             for(size_type l = 0, m = len/2; m < this->_n; l += len, m = l + len/2) {
-                this->_table[i-1][m - 1] = first[m - 1];
+                this->_table[i-1][m - 1] = this->_table.front()[m - 1];
                 for(size_type j = m-2; j>=l; --j) {
-                    this->_table[i-1][j] = this->_table[i-1][j + 1] + S{first[j]};
+                    this->_table[i-1][j] = this->_table[i-1][j + 1] + this->_table.front()[j];
                 }
-                this->_table[i-1][m] = first[m];
+                this->_table[i-1][m] = this->_table.front()[m];
                 for(size_type j = m+1; j<std::min(l + len, this->_n); ++j) {
-                    this->_table[i-1][j] = this->_table[i-1][j - 1] +  S{first[j]};
+                    this->_table[i-1][j] = this->_table[i-1][j - 1] +  this->_table.front()[j];
                 }
             }
         }
+        this->_built = true;
+        return *this;
     }
+
+    inline auto& raw() {
+        return this->_table.front();
+        this->_built = false;
+    }
+    inline const auto& raw() const { return this->_table.front(); }
+    inline const auto& data() const { return this->_table.front(); }
 
     size_type size() const { return this->_n; }
 
-    S fold(const size_type l, size_type r) const {
+    S fold(const size_type l, size_type r) {
         if(l == r) return S{};
         if(l == --r) return this->_table.front()[l];
+
+        this->build();
 
         const size_type p = highest_bit_pos<unsigned>(l ^ r);
         return this->_table[p][l] + this->_table[p][r];
@@ -84,12 +97,20 @@ struct core<semigroup, std::void_t<typename algebraic::internal::is_semigroup_t<
     }
 
   public:
-    template<class I>
-    explicit core(const I first, const I last) : base(first, last) {}
+    using base::base;
 
-    struct range_reference : internal::range_reference<const core> {
-        range_reference(const core *const super, const size_type l, const size_type r)
-          : internal::range_reference<const core>(super, super->_positivize_index(l), super->_positivize_index(r))
+    explicit core(const size_type n, const semigroup& val) : core(n) {
+        this->_table.begin()->assign(n, val);
+    }
+
+    template<class I>
+    explicit core(const I first, const I last) : core(std::distance(first, last)) {
+        std::copy(first, last, this->_table.begin()->begin());
+    }
+
+    struct range_reference : internal::range_reference<core> {
+        range_reference(core *const super, const size_type l, const size_type r)
+          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
@@ -102,12 +123,12 @@ struct core<semigroup, std::void_t<typename algebraic::internal::is_semigroup_t<
         }
     };
 
-    inline value_type fold(size_type l, size_type r) const {
+    inline value_type fold(size_type l, size_type r) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
-    inline value_type fold() const { return this->fold(0, this->size()); }
+    inline value_type fold() { return this->fold(0, this->size()); }
 
     inline auto operator[](const size_type index) const { return this->_table.front()[index]; }
     inline range_reference operator()(const size_type l, const size_type r) { return range_reference(this, l, r); }
