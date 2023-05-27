@@ -6,14 +6,16 @@
 #include "internal/iterator.hpp"
 #include "internal/types.hpp"
 
+#include "numeric/arithmetic.hpp"
 
 namespace lib {
 
-
-template <class T>
+template<class T, bool CEIL = false>
 struct quotient_enumerator {
     using value_type = std::tuple<T,T,T>; // (q, l, r)
-    using size_type = internal::size_t;
+    using size_type = T;
+
+    T n = 0;
 
   private:
     T _n = 0;
@@ -23,22 +25,24 @@ struct quotient_enumerator {
     using iterator_interface = internal::bidirectional_iterator_interface<const value_type>;
 
   public:
-    quotient_enumerator(const T n) : _n(n) { assert(n > 0); }
+    // Enumerate tuple of (q, l, r), which means (floor/ceil)(n/k) == q (l <= k <= r).
+    quotient_enumerator(const T n) : n(n), _n(n - CEIL) { assert(n > 0); }
 
     struct iterator;
     using const_iterator = iterator;
 
-    inline iterator begin() const { return iterator(_n, 1); }
-    inline iterator end() const { return iterator(_n, _n+1); }
+    inline iterator begin() const { return iterator(this->_n, 1); }
+    inline iterator end() const { return iterator(this->_n, this->n + 1); }
 
     inline auto rbegin() { return std::make_reverse_iterator(this->end()); }
     inline auto rend() { return std::make_reverse_iterator(this->begin()); }
 
     inline size_type size() {
-        if(_size >= 0) return _size;
-        _size = 0;
-        for(T l = 1; l <= _n; l = _n / (_n / l) + 1) _size++;
-        return _size;
+        if(this->_size < 0) {
+            size_type r = lib::sqrt_floor(this->_n);
+            this->_size = 2 * r - (this->_n < r * (r + 1)) + CEIL;
+        }
+        return this->_size;
     }
 
     struct iterator : virtual iterator_interface {
@@ -49,12 +53,18 @@ struct quotient_enumerator {
         T _q = 0, _l = 0, _r = 0;
 
         void _set_l(const T l) {
-            _l = l, _q = _n / l;
-            if(_q != 0) _r = _n / _q ;
+            this->_l = l, this->_q = this->_n / l;
+            if(this->_q == 0) {
+                if(CEIL) {
+                    if(l == this->_n + 1) this->_r = l;
+                }
+                return;
+            }
+            this->_r = this->_n / this->_q;
         }
         void _set_r(const T r) {
-            _r = r, _q = _n / r;
-            _l = _n / (_q + 1) + 1;
+            this->_r = r, this->_q = this->_n / r;
+            this->_l = this->_n / (this->_q + 1) + 1;
         }
 
       public:
@@ -65,13 +75,13 @@ struct quotient_enumerator {
         friend inline bool operator==(const iterator& lhs, const iterator& rhs) { return lhs._l == rhs._l; };
         friend inline bool operator!=(const iterator& lhs, const iterator& rhs) { return lhs._l != rhs._l; };
 
-        inline value_type operator*() const { return { _q, _l, _r }; }
+        inline value_type operator*() const { return { this->_q + CEIL, this->_l, this->_r }; }
 
-        inline iterator& operator++(int) { this->_set_l(this->_r + 1); return *this; }
-        inline iterator operator++() { const auto res = *this; this->_set_l(this->_r + 1); return res; }
+        inline iterator& operator++() { this->_set_l(this->_r + 1); return *this; }
+        inline iterator operator++(int) { const auto res = *this; this->_set_l(this->_r + 1); return res; }
 
-        inline iterator& operator--(int) { this->_set_r(this->_l - 1); return *this; }
-        inline iterator operator--() { const auto res = *this; this->_set_r(this->_l - 1); return res; }
+        inline iterator& operator--() { this->_set_r(this->_l - 1); return *this; }
+        inline iterator operator--(int) { const auto res = *this; this->_set_r(this->_l - 1); return res; }
     };
 
 };
