@@ -36,6 +36,12 @@ template<class cost_t, class size_type> struct edge {
 
     operator size_type() const noexcept(DEV_ENV) { return this->to; }
 
+    inline size_type opposite(const size_type v) const noexcept(DEV_ENV) {
+        if(this->from == v) return this->to;
+        if(this->to == v) return this->from;
+        assert(false);
+    }
+
     std::tuple<size_type,size_type,cost_t> _debug() const noexcept(DEV_ENV) { return { from, to, cost }; };
 
     friend bool operator==(const edge& lhs, const edge& rhs) noexcept(DEV_ENV) { return lhs.id == rhs.id; }
@@ -52,52 +58,66 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     using size_type = internal::size_t;
     using cost_type = C;
 
-    using edge = typename internal::graph_impl::edge<cost_type,size_type>;
+    using edge_type = typename internal::graph_impl::edge<cost_type,size_type>;
 
-    enum class edge_type { undirected, directed };
+    enum class edge_kind { undirected, directed };
 
   private:
     size_type _directed_edge_count = 0, _undirected_edge_count = 0;
 
-    std::vector<edge> _edges;
+    std::vector<edge_type> _edges;
+    std::vector<size_type> _out_degs, _in_degs;
 
   protected:
     inline void _add_edge(const size_type u, const size_type v, const cost_type w) noexcept(DEV_ENV) {
         this->operator[](u).emplace_back(u, v, w);
+        ++_out_degs[u], ++_in_degs[v];
         ++this->_directed_edge_count;
     }
 
   public:
-    explicit graph(const size_type n = 0) noexcept(DEV_ENV) : std::vector<std::vector<edge>>(n) {}
+    explicit graph(const size_type n = 0) noexcept(DEV_ENV)
+      : std::vector<std::vector<edge_type>>(n), _out_degs(n), _in_degs(n)
+    {}
 
-    inline void clear() noexcept(DEV_ENV) { this->std::vector<std::vector<edge>>::clear(); }
+    inline void clear() noexcept(DEV_ENV) { this->std::vector<std::vector<edge_type>>::clear(); }
 
-    // using std::vector<std::vector<edge>>::size;
+    // using std::vector<std::vector<edge_type>>::size;
 
-    // using std::vector<std::vector<edge>>::begin;
-    // using std::vector<std::vector<edge>>::cbegin;
-    // using std::vector<std::vector<edge>>::end;
-    // using std::vector<std::vector<edge>>::cend;
+    // using std::vector<std::vector<edge_type>>::begin;
+    // using std::vector<std::vector<edge_type>>::cbegin;
+    // using std::vector<std::vector<edge_type>>::end;
+    // using std::vector<std::vector<edge_type>>::cend;
 
     inline const auto& edges() const noexcept(DEV_ENV) { return this->_edges; }
+    inline const auto& edge(const size_type k) const noexcept(DEV_ENV) { return this->_edges[k]; }
+
+    inline const auto& degrees() const noexcept(DEV_ENV) { return this->_in_degs; }
+    inline const auto& degree(const size_type k) const noexcept(DEV_ENV) { return this->_in_degs[k]; }
+
+    inline const auto& in_degrees() const noexcept(DEV_ENV) { return this->_in_degs; }
+    inline const auto& in_degree(const size_type k) const noexcept(DEV_ENV) { return this->_in_degs[k]; }
+
+    inline const auto& out_degrees() const noexcept(DEV_ENV) { return this->_out_degs; }
+    inline const auto& out_degree(const size_type k) const noexcept(DEV_ENV) { return this->_out_degs[k]; }
 
     inline size_type vertices() const noexcept(DEV_ENV) { return this->size(); }
 
     inline size_type directed_edges_count() const noexcept(DEV_ENV) { return this->_directed_edge_count; }
 
-    template<const edge_type EDGE_TYPE = edge_type::directed>
+    template<const edge_kind EDGE_TYPE = edge_kind::directed>
     inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) noexcept(DEV_ENV) {
         assert(0 <= u and u < this->vertices()), assert(0 <= v and v < this->vertices());
         this->_edges.emplace_back(u, v, w);
         this->_add_edge(u, v, w);
-        if constexpr(EDGE_TYPE == edge_type::undirected) this->_add_edge(v, u, w);
+        if constexpr(EDGE_TYPE == edge_kind::undirected) this->_add_edge(v, u, w);
     }
 
     inline void add_edge_bidirectionally(const size_type u, const size_type v, const cost_type w = 1) noexcept(DEV_ENV) {
         this->add_edge<edge_type::undirected>(u, v, w);
     }
 
-    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_type EDGE_TYPE = edge_type::directed, class Stream = std::istream>
+    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = std::istream>
     void inline read(const size_type edges, Stream *const ist = &std::cin) noexcept(DEV_ENV) {
         REP(edges) {
             size_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
@@ -110,7 +130,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
         REP(edges) {
             size_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
-            this->add_edge<edge_type::undirected>(u, v, w);
+            this->add_edge<edge_kind::undirected>(u, v, w);
         }
     }
 

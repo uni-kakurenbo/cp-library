@@ -16,7 +16,7 @@ template<class G, class cost_type, class Compare>
 cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr) noexcept(DEV_ENV) {
     atcoder::dsu ds(graph.size());
 
-    std::vector<std::tuple<typename G::edge::cost_type,size_t,size_t>> edges;
+    std::vector<std::tuple<typename G::edge_type::cost_type,size_t,size_t>> edges;
 
     REP(u, graph.size()) ITR(e, graph[u]) {
         edges.emplace_back(e.cost, u, e.to);
