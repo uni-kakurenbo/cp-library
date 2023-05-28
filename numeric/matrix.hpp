@@ -9,7 +9,7 @@
 #include "internal/dev_env.hpp"
 
 #include "grid.hpp"
-#include "valarray.hpp"
+#include "adapter/valarray.hpp"
 
 
 namespace lib {

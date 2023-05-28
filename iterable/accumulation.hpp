@@ -10,7 +10,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "valarray.hpp"
+#include "adapter/valarray.hpp"
 
 
 namespace lib {

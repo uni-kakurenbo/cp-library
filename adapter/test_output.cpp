@@ -24,7 +24,7 @@ template<class T = int, class C = vector<T>> struct prime_table : C {
     vector<bool> is_prime;
 };
 
-#include <output>
+#include "adapter/output.hpp"
 using namespace std;
 
 output_adapter print(&cout, output_adapter<>::sendl);

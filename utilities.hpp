@@ -9,7 +9,7 @@
 
 #include "constants.hpp"
 #include "multi_container.hpp"
-#include "valarray.hpp"
+#include "adapter/valarray.hpp"
 #include "grid.hpp"
 #include "graph.hpp"
 #include "string.hpp"

@@ -9,8 +9,8 @@
 using namespace std;
 using namespace atcoder;
 
-#include <input>
-#include <output>
+#include "adapter/input.hpp"
+#include "adapter/output.hpp"
 using namespace std;
 
 input_adapter _input;

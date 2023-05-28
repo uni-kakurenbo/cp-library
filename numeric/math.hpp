@@ -8,7 +8,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/modint.hpp"
-#include "valarray.hpp"
+#include "adapter/valarray.hpp"
 
 
 namespace lib {

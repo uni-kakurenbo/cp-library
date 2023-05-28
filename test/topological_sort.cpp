@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 
 #include "template.hpp"
-#include "output.hpp"
+#include "adapter/output.hpp"
 
 #include "graph/topological_sort.hpp"
 

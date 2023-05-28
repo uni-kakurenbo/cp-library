@@ -17,7 +17,7 @@
 #include "utilities.hpp"
 
 #include "input.hpp"
-#include "output.hpp"
+#include "adapter/output.hpp"
 
 input_adapter _input;
 output_adapter _print;

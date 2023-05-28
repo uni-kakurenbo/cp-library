@@ -9,7 +9,7 @@
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
 
-#include "valarray.hpp"
+#include "adapter/valarray.hpp"
 
 
 namespace lib {

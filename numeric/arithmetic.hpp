@@ -31,7 +31,7 @@ T sqrt_ceil(const T x) noexcept(DEV_ENV) {
     T ok = 0, ng = x / 2 + 2;
     while(ng - ok > 1) {
         T mid = (ok + ng) / 2;
-        ((x + mid - 1) / mid < mid ? ng : ok) = mid;
+        (x <= (mid - 1) * (mid - 1) ? ng : ok) = mid;
     }
     return ok;
 }
