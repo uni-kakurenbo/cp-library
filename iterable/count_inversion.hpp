@@ -21,7 +21,7 @@ namespace lib {
 template<const bool STRICT = true, class T = std::int64_t>
 struct inversion {
     template<class I>
-    static inline T count(const I first, const I last) noexcept(DEV_ENV) {
+    static inline T count(const I first, const I last) noexcept(NO_EXCEPT) {
         const internal::size_t n = std::distance(first, last);
         const auto [ min, max ] = std::minmax_element(first, last);
         const auto m = *max - *min + 1;
@@ -39,7 +39,7 @@ struct inversion {
     }
 
     template<class I>
-    static inline T count_with_compressing(const I first, const I last) noexcept(DEV_ENV) {
+    static inline T count_with_compressing(const I first, const I last) noexcept(NO_EXCEPT) {
         compression<typename std::iterator_traits<I>::value_type> comp(first, last);
         return inversion::count(std::begin(comp), std::end(comp));
     }

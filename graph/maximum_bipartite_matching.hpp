@@ -19,7 +19,7 @@ struct maximum_bipartite_matching {
     MF mf;
 
   public:
-    maximum_bipartite_matching(size_type n = 0) noexcept(DEV_ENV) : _n(n), mf(2*n+2) {
+    maximum_bipartite_matching(size_type n = 0) noexcept(NO_EXCEPT) : _n(n), mf(2*n+2) {
         REP(i, n) {
             this->mf.add_edge(2*n, i, 1);
             this->mf.add_edge(n+i, 2*n+1, 1);

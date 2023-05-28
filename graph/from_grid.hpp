@@ -7,7 +7,7 @@
 
 template<class edge_cost>
 template<bool REV, class G, class U>
-void lib::graph<edge_cost>::from_grid(const G &grid, U available) noexcept(DEV_ENV) {
+void lib::graph<edge_cost>::from_grid(const G &grid, U available) noexcept(NO_EXCEPT) {
     this->clear();
     this->resize(grid.height() * grid.width());
 

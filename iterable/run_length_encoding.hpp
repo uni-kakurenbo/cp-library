@@ -13,8 +13,8 @@ namespace lib {
 
 template<class T, class container = std::vector<std::pair<T,internal::size_t>>>
 struct run_length : container {
-    run_length() noexcept(DEV_ENV) {}
-    template<class I> run_length(const I first, const I last) noexcept(DEV_ENV) {
+    run_length() noexcept(NO_EXCEPT) {}
+    template<class I> run_length(const I first, const I last) noexcept(NO_EXCEPT) {
         this->clear();
         typename container::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {

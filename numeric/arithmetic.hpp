@@ -17,7 +17,7 @@ namespace lib {
 
 
 template<class T>
-T sqrt_floor(const T x) noexcept(DEV_ENV) {
+T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
     T ok = 0, ng = x / 2 + 2;
     while(ng - ok > 1) {
         T mid = (ok + ng) / 2;
@@ -27,7 +27,7 @@ T sqrt_floor(const T x) noexcept(DEV_ENV) {
 }
 
 template<class T>
-T sqrt_ceil(const T x) noexcept(DEV_ENV) {
+T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
     T ok = 0, ng = x / 2 + 2;
     while(ng - ok > 1) {
         T mid = (ok + ng) / 2;
@@ -37,7 +37,7 @@ T sqrt_ceil(const T x) noexcept(DEV_ENV) {
 }
 
 template<class T>
-T nPr(const T n, const T r) noexcept(DEV_ENV) {
+T nPr(const T n, const T r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n < r) return 0;
@@ -49,7 +49,7 @@ T nPr(const T n, const T r) noexcept(DEV_ENV) {
 }
 
 template<class T>
-T nCr(const T n, const T r) noexcept(DEV_ENV) {
+T nCr(const T n, const T r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n == r) return 1;
@@ -64,7 +64,7 @@ T nCr(const T n, const T r) noexcept(DEV_ENV) {
 
 
 template<class T, class U>
-T pow(T x, U n) noexcept(DEV_ENV) {
+T pow(T x, U n) noexcept(NO_EXCEPT) {
     T res = 1;
     while(n > 0) {
         if(n & 1) res *= x;
@@ -78,14 +78,14 @@ using atcoder::pow_mod;
 using atcoder::inv_mod;
 using atcoder::crt;
 
-template<class T, class U, class V>inline bool mul_over(const T x, const U y, const V s) noexcept(DEV_ENV) {
+template<class T, class U, class V>inline bool mul_over(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
     if(x >= s) return true;
     if(x >= 0 && y >= 0) return x > s/y;
     if(x <= 0 && y <= 0) return x < s/y;
     return false;
 }
 
-template<class T, class U, class V>inline bool mul_under(const T x, const U y, const V s) noexcept(DEV_ENV) {
+template<class T, class U, class V>inline bool mul_under(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
     if(x <= s) return true;
     if(x >= 0 && y <= 0) return x > s/y;
     if(x <= 0 && y >= 0) return x < s/y;

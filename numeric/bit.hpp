@@ -13,7 +13,7 @@ namespace lib {
 #define LIB_STATUC_ASSERT_UNSIGNED(T) static_assert(std::is_unsigned_v<T>, "only unsigned type is supported")
 
 template<class T>
-inline constexpr int countl_zero(const T v) noexcept(DEV_ENV) {
+inline constexpr int countl_zero(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
 
     using ull = unsigned long long;
@@ -44,19 +44,19 @@ inline constexpr int countl_zero(const T v) noexcept(DEV_ENV) {
 }
 
 template<class T>
-inline constexpr int bit_width(const T v) noexcept(DEV_ENV) {
+inline constexpr int bit_width(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     return std::numeric_limits<T>::digits - countl_zero(v);
 }
 
 template<class T>
-inline constexpr int highest_bit_pos(const T v) noexcept(DEV_ENV) {
+inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     return bit_width(v) - 1;
 }
 
 template<class T>
-inline constexpr T bit_ceil(const T v) noexcept(DEV_ENV) {
+inline constexpr T bit_ceil(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     if(v <= 1U) return 1;
     if constexpr(std::is_same_v<T,decltype(+v)>) return T{1} << bit_width<T>(v - 1);

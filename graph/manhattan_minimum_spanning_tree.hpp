@@ -23,7 +23,7 @@ namespace lib {
 template <class I, class J = I, class cost_type = typename std::iterator_traits<I>::value_type, class size_type = internal::size_t>
 std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_candidate_edges(
     const I x_first, const I x_last, const J y_first, const J y_last
-) noexcept(DEV_ENV) {
+) noexcept(NO_EXCEPT) {
     std::vector<cost_type> xs(x_first, x_last), ys(y_first, y_last);
     assert(xs.size() == ys.size());
 
@@ -61,7 +61,7 @@ template<class I, class J = I, class cost_type = typename std::iterator_traits<I
 std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
     const I x_first, const I x_last, const J y_first, const J y_last,
     cost_type *const cost_sum = nullptr
-) noexcept(DEV_ENV) {
+) noexcept(NO_EXCEPT) {
     assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
 
     if(cost_sum) *cost_sum = 0;
@@ -83,7 +83,7 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
 
 template<class edge_cost>
 template <class I, class J, class cost_type, class size_type>
-cost_type graph<edge_cost>::build_manhattan_mst(const I x_first, const I x_last, const J y_first, const J y_last) noexcept(DEV_ENV) {
+cost_type graph<edge_cost>::build_manhattan_mst(const I x_first, const I x_last, const J y_first, const J y_last) noexcept(NO_EXCEPT) {
     assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
 
     cost_type res = 0;

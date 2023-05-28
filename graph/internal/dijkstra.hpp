@@ -14,7 +14,7 @@
 
 template<class edge_cost>
 template<class cost_t>
-void lib::graph<edge_cost>::distances(const size_type s, std::vector<cost_t> *const dists) const noexcept(DEV_ENV) {
+void lib::graph<edge_cost>::distances(const size_type s, std::vector<cost_t> *const dists) const noexcept(NO_EXCEPT) {
     using state = std::pair<cost_t,size_type>;
     std::priority_queue<state,std::vector<state>,std::greater<state>> que;
 
@@ -40,7 +40,7 @@ void lib::graph<edge_cost>::distances(const size_type s, std::vector<cost_t> *co
 
 template<class edge_cost>
 template<class cost_t>
-std::vector<cost_t> lib::graph<edge_cost>::distances(const size_type s) const noexcept(DEV_ENV) {
+std::vector<cost_t> lib::graph<edge_cost>::distances(const size_type s) const noexcept(NO_EXCEPT) {
     std::vector<cost_t> dists;
     this->distances<cost_t>(s, &dists);
     return dists;

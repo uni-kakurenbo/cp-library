@@ -9,7 +9,7 @@
 namespace lib {
 
 
-template<class T> std::vector<T> divisors(const T k) noexcept(DEV_ENV) {
+template<class T> std::vector<T> divisors(const T k) noexcept(NO_EXCEPT) {
     std::vector<T> res;
 
     for(T i=1; i*i<=k; ++i) {

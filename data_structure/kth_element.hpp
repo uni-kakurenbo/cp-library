@@ -18,12 +18,12 @@ struct kth_element {
     std::priority_queue<T,container,rev_comparer> large;
 
   public:
-    kth_element(internal::size_t k = 0) noexcept(DEV_ENV) : _k(k) {}
+    kth_element(internal::size_t k = 0) noexcept(NO_EXCEPT) : _k(k) {}
 
-    inline T get() const noexcept(DEV_ENV) { return small.top(); }
-    inline bool has() const noexcept(DEV_ENV) { return small.size() == _k; }
+    inline T get() const noexcept(NO_EXCEPT) { return small.top(); }
+    inline bool has() const noexcept(NO_EXCEPT) { return small.size() == _k; }
 
-    inline void push(T v) noexcept(DEV_ENV) {
+    inline void push(T v) noexcept(NO_EXCEPT) {
         if(small.size() < _k) {
             small.push(v);
             return;
@@ -38,7 +38,7 @@ struct kth_element {
         }
     }
 
-    inline void pop() noexcept(DEV_ENV) {
+    inline void pop() noexcept(NO_EXCEPT) {
         small.pop();
         if(large.empty()) return;
         T v = large.top(); large.pop();

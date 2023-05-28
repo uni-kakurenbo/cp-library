@@ -26,8 +26,8 @@ struct small_binomial {
     std::vector<lib::valarray<T>> _nPr, _nCr;
 
   public:
-    constexpr small_binomial(const size_type max_n) noexcept(DEV_ENV) : small_binomial(max_n, max_n) {};
-    constexpr small_binomial(const size_type max_n, const size_type max_r) noexcept(DEV_ENV) : _nPr(max_n+1, max_r+1), _nCr(max_n+1, max_r/2+1) {
+    constexpr small_binomial(const size_type max_n) noexcept(NO_EXCEPT) : small_binomial(max_n, max_n) {};
+    constexpr small_binomial(const size_type max_n, const size_type max_r) noexcept(NO_EXCEPT) : _nPr(max_n+1, max_r+1), _nCr(max_n+1, max_r/2+1) {
         this->_nPr[0][0] = this->_nCr[0][0] = 1;
         FOR(i, 1, max_n) {
             this->_nPr[i][0] = this->_nCr[i][0] = 1;
@@ -40,14 +40,14 @@ struct small_binomial {
         }
     }
 
-    inline constexpr T nPr(const size_type n, size_type r) const noexcept(DEV_ENV) {
+    inline constexpr T nPr(const size_type n, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         assert(0 <= r);
         if(n < r) return 0;
         return this->_nPr[n][r];
     }
 
-    inline constexpr T nCr(const size_type n, size_type r) const noexcept(DEV_ENV) {
+    inline constexpr T nCr(const size_type n, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         assert(0 <= r);
         if(n < r) return 0;
@@ -67,7 +67,7 @@ struct small_binomial_prime_mod {
     lib::valarray<T> _inv, _fact, _fact_inv;
 
   public:
-    small_binomial_prime_mod(const size_type max_n) noexcept(DEV_ENV) : _inv(max_n+1), _fact(max_n+1), _fact_inv(max_n+1) {
+    small_binomial_prime_mod(const size_type max_n) noexcept(NO_EXCEPT) : _inv(max_n+1), _fact(max_n+1), _fact_inv(max_n+1) {
         this->_fact[0] = this->_fact[1] = 1;
         this->_fact_inv[0] = this->_fact_inv[1] = 1;
         this->_inv[1] = 1;
@@ -79,14 +79,14 @@ struct small_binomial_prime_mod {
         }
     }
 
-    T nPr(size_type n, size_type r) const noexcept(DEV_ENV) {
+    T nPr(size_type n, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         assert(0 <= r);
         if(n < r) return 0;
         return this->_fact[n] * this->_fact_inv[n-r];
     }
 
-    T nCr(size_type n, size_type r) const noexcept(DEV_ENV) {
+    T nCr(size_type n, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         assert(0 <= r);
         if(n < r) return 0;
@@ -105,7 +105,7 @@ struct large_binomial_prime_mod {
     lib::valarray<T> _inv, _fact_inv;
 
   public:
-    large_binomial_prime_mod(const size_type max_r) noexcept(DEV_ENV) : _inv(max_r/2+1), _fact_inv(max_r/2+1) {
+    large_binomial_prime_mod(const size_type max_r) noexcept(NO_EXCEPT) : _inv(max_r/2+1), _fact_inv(max_r/2+1) {
         this->_fact_inv[0] = this->_fact_inv[1] = 1;
         this->_inv[1] = 1;
         const auto mod = T::mod();
@@ -115,7 +115,7 @@ struct large_binomial_prime_mod {
         }
     }
 
-    T nPr(size_type n, size_type r) const noexcept(DEV_ENV) {
+    T nPr(size_type n, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         assert(0 <= r);
         if(n < r) return 0;
@@ -142,11 +142,11 @@ struct large_binomial_fixed_power_prime_mod {
     lib::valarray<T> _nCr, _inv, _fact;
 
   public:
-    inline N n() const noexcept(DEV_ENV) { return this->_n; }
+    inline N n() const noexcept(NO_EXCEPT) { return this->_n; }
 
 
-    large_binomial_fixed_power_prime_mod(const N n) noexcept(DEV_ENV) : large_binomial_fixed_power_prime_mod(n, n) {}
-    large_binomial_fixed_power_prime_mod(const N n, const size_type max_r) noexcept(DEV_ENV)
+    large_binomial_fixed_power_prime_mod(const N n) noexcept(NO_EXCEPT) : large_binomial_fixed_power_prime_mod(n, n) {}
+    large_binomial_fixed_power_prime_mod(const N n, const size_type max_r) noexcept(NO_EXCEPT)
       : _n(n), _nCr(max_r/2+1), _inv(max_r/2+1), _fact(max_r+1)
     {
         assert(0 <= n);
@@ -166,11 +166,11 @@ struct large_binomial_fixed_power_prime_mod {
         }
     }
 
-    T nPr(size_type r) noexcept(DEV_ENV) {
+    T nPr(size_type r) noexcept(NO_EXCEPT) {
         return this->nCr(r) * this->_fact[r];
     }
 
-    T nCr(size_type r) noexcept(DEV_ENV) {
+    T nCr(size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= r);
         if(this->_n < r) return 0;
         if(this->_n < r*2) r = this->_n-r;

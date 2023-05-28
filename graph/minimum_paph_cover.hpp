@@ -9,7 +9,7 @@
 #include "graph/maximum_bipartite_matching.hpp"
 
 template<class edge_cost>
-typename lib::graph<edge_cost>::size_type lib::graph<edge_cost>::minimum_paph_cover_size_as_dag() const noexcept(DEV_ENV) {
+typename lib::graph<edge_cost>::size_type lib::graph<edge_cost>::minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT) {
     lib::maximum_bipartite_matching bm(this->size());
 
     REP(i, this->size()) ITR(j, (*this)[i]) {

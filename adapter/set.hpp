@@ -21,26 +21,26 @@ template<class set> struct set_wrapper : set {
     using set::set;
     using size_type = internal::size_t;
 
-    inline size_type size() const noexcept(DEV_ENV) { return this->set::size(); }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->set::size(); }
 
-    inline bool contains(const typename set::key_type& key) noexcept(DEV_ENV) { return static_cast<bool>(this->count(key)); }
+    inline bool contains(const typename set::key_type& key) noexcept(NO_EXCEPT) { return static_cast<bool>(this->count(key)); }
 
-    inline std::optional<typename set::iterator> remove(const typename set::key_type& key) noexcept(DEV_ENV) {
+    inline std::optional<typename set::iterator> remove(const typename set::key_type& key) noexcept(NO_EXCEPT) {
         const auto itr = this->find(key);
         if(itr == this->set::end()) return {};
         return this->erase(itr);
     }
 
-    inline auto min_element() noexcept(DEV_ENV) { return this->begin(); }
-    inline auto max_element() noexcept(DEV_ENV) { return this->begin(); }
+    inline auto min_element() noexcept(NO_EXCEPT) { return this->begin(); }
+    inline auto max_element() noexcept(NO_EXCEPT) { return this->begin(); }
 
-    inline auto min() noexcept(DEV_ENV) { return *this->begin(); }
-    inline auto max() noexcept(DEV_ENV) { return *this->end(); }
+    inline auto min() noexcept(NO_EXCEPT) { return *this->begin(); }
+    inline auto max() noexcept(NO_EXCEPT) { return *this->end(); }
 
-    inline auto pop_min() noexcept(DEV_ENV) { this->erase(this->begin()); return *this; }
-    inline auto pop_max() noexcept(DEV_ENV) { this->erase(this->end()); return *this; }
+    inline auto pop_min() noexcept(NO_EXCEPT) { this->erase(this->begin()); return *this; }
+    inline auto pop_max() noexcept(NO_EXCEPT) { this->erase(this->end()); return *this; }
 
-    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) noexcept(DEV_ENV) {
+    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) noexcept(NO_EXCEPT) {
         size_type count = std::abs(_count);
         auto itr = this->lower_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -52,7 +52,7 @@ template<class set> struct set_wrapper : set {
         }
         return itr;
     }
-    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) noexcept(DEV_ENV) {
+    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) noexcept(NO_EXCEPT) {
         size_type count = std::abs(_count);
         auto itr = this->upper_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -65,7 +65,7 @@ template<class set> struct set_wrapper : set {
         return itr;
     }
 
-    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) noexcept(DEV_ENV) {
+    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) noexcept(NO_EXCEPT) {
         auto itr = this->lower_bound(key);
         const auto end = this->end();
         if(itr == end) return {};
@@ -73,7 +73,7 @@ template<class set> struct set_wrapper : set {
         return { *itr };
     }
 
-    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) noexcept(DEV_ENV) {
+    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) noexcept(NO_EXCEPT) {
         auto itr = this->upper_bound(key);
         const auto begin = this->begin();
         if(itr-- == begin) return {};
@@ -82,7 +82,7 @@ template<class set> struct set_wrapper : set {
     }
 
 
-    friend inline set_wrapper operator|(const set_wrapper s, const set_wrapper t) noexcept(DEV_ENV) {
+    friend inline set_wrapper operator|(const set_wrapper s, const set_wrapper t) noexcept(NO_EXCEPT) {
         set_wrapper res;
         std::set_union(std::begin(s), std::end(s), std::begin(t), std::end(t), std::inserter(res, std::begin(res)));
         return res;

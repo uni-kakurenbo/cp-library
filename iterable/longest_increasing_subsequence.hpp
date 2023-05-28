@@ -20,8 +20,8 @@ struct lis : container {
 
     std::vector<int> indices;
 
-    lis() noexcept(DEV_ENV) {}
-    template<class I> lis(const I first, const I last) noexcept(DEV_ENV) {
+    lis() noexcept(NO_EXCEPT) {}
+    template<class I> lis(const I first, const I last) noexcept(NO_EXCEPT) {
         std::vector<size_type> positions(std::distance(first, last), -1);
 
         size_type pos = 0;

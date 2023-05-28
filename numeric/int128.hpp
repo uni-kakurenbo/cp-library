@@ -14,7 +14,7 @@
 
 
 template<class C, class S>
-std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) noexcept(DEV_ENV) {
+std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) noexcept(NO_EXCEPT) {
     std::string str; in >> str;
     v = 0;
     bool negative = (str[0] == '-');
@@ -27,7 +27,7 @@ std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) n
 }
 
 template<class C, class S>
-std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexcept(DEV_ENV) {
+std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexcept(NO_EXCEPT) {
     if(v == 0) return out << 0;
     if(v < 0) out << '-', v *= -1;
     std::string str;

@@ -12,7 +12,7 @@ namespace lib {
 
 
 template<class I, class P = typename std::iterator_traits<I>::value_type>
-std::vector<P> convex_hull(const I first, const I last, const bool margin = false) noexcept(DEV_ENV) {
+std::vector<P> convex_hull(const I first, const I last, const bool margin = false) noexcept(NO_EXCEPT) {
     using size_t = internal::size_t;
 
     std::vector<P> points(first, last);

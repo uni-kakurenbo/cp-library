@@ -46,22 +46,22 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
     static uint64_t r;
     static uint64_t n2;
 
-    static uint64_t get_r() noexcept(DEV_ENV) {
+    static uint64_t get_r() noexcept(NO_EXCEPT) {
         uint64_t res = _mod;
         for(int64_t i = 0; i < 5; ++i)
             res *= 2 - _mod * res;
         return res;
     }
 
-    static uint64_t reduce(const uint128_t &b) noexcept(DEV_ENV) {
+    static uint64_t reduce(const uint128_t &b) noexcept(NO_EXCEPT) {
         return (b + uint128_t(uint64_t(b) * uint64_t(-r)) * _mod) >> 64;
     }
 
 
   public:
-    static uint64_t mod() noexcept(DEV_ENV) { return _mod; }
+    static uint64_t mod() noexcept(NO_EXCEPT) { return _mod; }
 
-    static void set_mod(const uint64_t m) noexcept(DEV_ENV) {
+    static void set_mod(const uint64_t m) noexcept(NO_EXCEPT) {
         assert(m < (1UL << 63));
         assert((m & 1) == 1);
         _mod = m;
@@ -72,46 +72,46 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
 
     uint64_t _val;
 
-    dynamic_modint_64bit() noexcept(DEV_ENV) : _val(0) {}
-    dynamic_modint_64bit(const std::int64_t b) noexcept(DEV_ENV)
+    dynamic_modint_64bit() noexcept(NO_EXCEPT) : _val(0) {}
+    dynamic_modint_64bit(const std::int64_t b) noexcept(NO_EXCEPT)
     : _val(this->reduce((static_cast<uint128_t>(b) + this->_mod) * this->n2)) {};
 
-    mint &operator+=(const mint &b) noexcept(DEV_ENV) {
+    mint &operator+=(const mint &b) noexcept(NO_EXCEPT) {
         if(static_cast<int64_t>(_val += b._val - 2 * _mod) < 0) this->_val += 2 * this->_mod;
         return *this;
     }
 
-    mint &operator-=(const mint &b) noexcept(DEV_ENV) {
+    mint &operator-=(const mint &b) noexcept(NO_EXCEPT) {
         if(static_cast<int64_t>(this->_val -= b._val) < 0)
             this->_val += 2 * this->_mod;
         return *this;
     }
 
-    mint &operator*=(const mint &b) noexcept(DEV_ENV) {
+    mint &operator*=(const mint &b) noexcept(NO_EXCEPT) {
         this->_val = reduce(static_cast<uint128_t>(this->_val) * b._val);
         return *this;
     }
 
-    mint &operator/=(const mint &b) noexcept(DEV_ENV) {
+    mint &operator/=(const mint &b) noexcept(NO_EXCEPT) {
         *this *= b.inv();
         return *this;
     }
 
-    mint operator+(const mint &b) const noexcept(DEV_ENV) { return mint(*this) += b; }
-    mint operator-(const mint &b) const noexcept(DEV_ENV) { return mint(*this) -= b; }
-    mint operator*(const mint &b) const noexcept(DEV_ENV) { return mint(*this) *= b; }
-    mint operator/(const mint &b) const noexcept(DEV_ENV) { return mint(*this) /= b; }
+    mint operator+(const mint &b) const noexcept(NO_EXCEPT) { return mint(*this) += b; }
+    mint operator-(const mint &b) const noexcept(NO_EXCEPT) { return mint(*this) -= b; }
+    mint operator*(const mint &b) const noexcept(NO_EXCEPT) { return mint(*this) *= b; }
+    mint operator/(const mint &b) const noexcept(NO_EXCEPT) { return mint(*this) /= b; }
 
-    bool operator==(const mint &b) const noexcept(DEV_ENV) {
+    bool operator==(const mint &b) const noexcept(NO_EXCEPT) {
         return (this->_val >= this->_mod ? this->_val - this->_mod : this->_val) == (b._val >= this->_mod ? b._val - this->_mod : b._val);
     }
-    bool operator!=(const mint &b) const noexcept(DEV_ENV) {
+    bool operator!=(const mint &b) const noexcept(NO_EXCEPT) {
         return (this->_val >= this->_mod ? this->_val - this->_mod : this->_val) != (b._val >= this->_mod ? b._val - this->_mod : b._val);
     }
 
-    mint operator-() const noexcept(DEV_ENV) { return mint{} - static_cast<mint>(*this); }
+    mint operator-() const noexcept(NO_EXCEPT) { return mint{} - static_cast<mint>(*this); }
 
-    mint pow(uint128_t n) const noexcept(DEV_ENV) {
+    mint pow(uint128_t n) const noexcept(NO_EXCEPT) {
         mint res(1), mul(*this);
         while(n > 0) {
             if(n & 1)
@@ -122,9 +122,9 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
         return res;
     }
 
-    mint inv() const noexcept(DEV_ENV) { return this->pow(this->_mod - 2); }
+    mint inv() const noexcept(NO_EXCEPT) { return this->pow(this->_mod - 2); }
 
-    uint64_t val() const noexcept(DEV_ENV) {
+    uint64_t val() const noexcept(NO_EXCEPT) {
         uint64_t res = this->reduce(this->_val);
         return res >= this->_mod ? res - this->_mod : res;
     }

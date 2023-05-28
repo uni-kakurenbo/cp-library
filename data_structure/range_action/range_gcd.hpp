@@ -41,10 +41,10 @@ template<class T> struct segment_tree<actions::range_gcd<T>> : internal::segment
         inline auto gcd() const noexcept(NO_EXCEPT) { return this->_super->fold(this->_begin, this->_end); }
     };
 
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(DEV_ENV) { return range_reference(this, l, r); }
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
-    inline auto gcd(const size_t first, const size_t last) noexcept(DEV_ENV) { return this->fold(first, last); }
-    inline auto gcd() noexcept(DEV_ENV) { return this->fold(); }
+    inline auto gcd(const size_t first, const size_t last) noexcept(NO_EXCEPT) { return this->fold(first, last); }
+    inline auto gcd() noexcept(NO_EXCEPT) { return this->fold(); }
 };
 
 

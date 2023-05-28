@@ -20,8 +20,8 @@ struct compression : container {
     std::vector<T> values;
 
   public:
-    explicit compression() noexcept(DEV_ENV) {}
-    template<class I> compression(const I first, const I last) noexcept(DEV_ENV) {
+    explicit compression() noexcept(NO_EXCEPT) {}
+    template<class I> compression(const I first, const I last) noexcept(NO_EXCEPT) {
         this->values.assign(first, last);
         std::sort(this->values.begin(), this->values.end());
         this->values.erase(std::unique(this->values.begin(), this->values.end()), this->values.end());
@@ -31,15 +31,15 @@ struct compression : container {
         }
     }
 
-    inline size_type rank(const T& val) const noexcept(DEV_ENV) {
+    inline size_type rank(const T& val) const noexcept(NO_EXCEPT) {
         return std::distance(this->values.begin(), std::lower_bound(this->values.begin(), this->values.end(), val));
     }
-    inline size_type rank2(const T& val) const noexcept(DEV_ENV) {
+    inline size_type rank2(const T& val) const noexcept(NO_EXCEPT) {
         return std::distance(this->values.begin(), std::upper_bound(this->values.begin(), this->values.end(), val)) - 1;
     }
 
-    inline T value(const size_type rank) const noexcept(DEV_ENV) { return this->values[rank]; }
-    inline T operator()(const internal::size_t val) const noexcept(DEV_ENV) { return this->values[val]; }
+    inline T value(const size_type rank) const noexcept(NO_EXCEPT) { return this->values[rank]; }
+    inline T operator()(const internal::size_t val) const noexcept(NO_EXCEPT) { return this->values[val]; }
 };
 
 } // namespace lib

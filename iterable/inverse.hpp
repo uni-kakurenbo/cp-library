@@ -11,8 +11,8 @@ namespace lib {
 
 template<class T = i64, class V = std::vector<internal::size_t>, class container = std::unordered_map<T,V>>
 struct inverse : container {
-    inverse() noexcept(DEV_ENV) {}
-    template<class I> inverse(const I first, const I last) noexcept(DEV_ENV) {
+    inverse() noexcept(NO_EXCEPT) {}
+    template<class I> inverse(const I first, const I last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr!=last; ++itr) (*this)[*itr].push_back(std::distance(first,itr));
     }
 };

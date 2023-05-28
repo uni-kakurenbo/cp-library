@@ -47,30 +47,30 @@ struct view : internal::view_impl::base {
     size_type _pos = 0, _taken = 0;
 
   private:
-    __attribute__((always_inline)) inline void _validate() const noexcept(DEV_ENV) {
+    __attribute__((always_inline)) inline void _validate() const noexcept(NO_EXCEPT) {
         assert(0 <= this->_pos && this->_pos < static_cast<size_type>(this->_ref->size()));
         assert(0 <= this->_taken);
         assert(this->_pos + this->_taken <= static_cast<size_type>(this->_ref->size()));
     }
 
   public:
-    view(Ref *const ref) noexcept(DEV_ENV) : _ref(ref) {}
+    view(Ref *const ref) noexcept(NO_EXCEPT) : _ref(ref) {}
 
-    inline view& reset(Ref *const ref) noexcept(DEV_ENV) { this->_ref = ref; return *this; }
+    inline view& reset(Ref *const ref) noexcept(NO_EXCEPT) { this->_ref = ref; return *this; }
 
     inline Ref* operator->() const noexcept { return this->_ref; }
     inline Ref& operator*() const noexcept { return *this->_ref; }
 
-    inline size_type size() const noexcept(DEV_ENV) { return this->_taken; }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_taken; }
 
-    // inline auto begin() const noexcept(DEV_ENV) { return std::next(std::begin(*this->_ref), this->_pos); }
-    // inline auto end() const noexcept(DEV_ENV) { return std::next(this->begin(), this->_taken); }
+    // inline auto begin() const noexcept(NO_EXCEPT) { return std::next(std::begin(*this->_ref), this->_pos); }
+    // inline auto end() const noexcept(NO_EXCEPT) { return std::next(this->begin(), this->_taken); }
 
-    inline view& drop(const size_type pos = 0) noexcept(DEV_ENV) { this->_pos = pos; this->_validate(); return *this; }
-    inline view& shift(const size_type count = 1) noexcept(DEV_ENV) { this->_pos += count; this->_validate(); return *this; };
+    inline view& drop(const size_type pos = 0) noexcept(NO_EXCEPT) { this->_pos = pos; this->_validate(); return *this; }
+    inline view& shift(const size_type count = 1) noexcept(NO_EXCEPT) { this->_pos += count; this->_validate(); return *this; };
 
-    inline view& take(const size_type count) noexcept(DEV_ENV) { this->_taken = count; this->_validate(); return *this; }
-    inline view& take() noexcept(DEV_ENV) { this->_taken = std::size(*this->_ref); return *this; }
+    inline view& take(const size_type count) noexcept(NO_EXCEPT) { this->_taken = count; this->_validate(); return *this; }
+    inline view& take() noexcept(NO_EXCEPT) { this->_taken = std::size(*this->_ref); return *this; }
 
     inline view& transpose(const transposer& f) noexcept { this->_transposer = f; return *this; }
 
@@ -90,14 +90,14 @@ struct view : internal::view_impl::base {
 
   public:
     struct iterator : virtual iterator_interface {
-        iterator(const view *const ref, const size_type pos) noexcept(DEV_ENV) : iterator_interface(ref, pos) {}
+        iterator(const view *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline value_type operator*() const noexcept(DEV_ENV) { return this->ref()->operator[](this->pos()); }
-        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(DEV_ENV) { return *(*this + count); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->operator[](this->pos()); }
+        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
-    inline iterator begin() const noexcept(DEV_ENV) { return iterator(this, 0); }
-    inline iterator end() const noexcept(DEV_ENV) { return iterator(this, this->size()); }
+    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
 template<class Ref, class Size = std::make_signed_t<std::size_t>>
@@ -119,20 +119,20 @@ struct cyclic_view : internal::view_impl::base {
     }
 
   public:
-    cyclic_view(Ref *const ref) noexcept(DEV_ENV) : _ref(ref), _taken(std::size(*ref)) {}
+    cyclic_view(Ref *const ref) noexcept(NO_EXCEPT) : _ref(ref), _taken(std::size(*ref)) {}
 
-    inline cyclic_view& reset(Ref *const ref) noexcept(DEV_ENV) { this->_ref = ref, this->_taken = std::size(*ref); return *this; }
+    inline cyclic_view& reset(Ref *const ref) noexcept(NO_EXCEPT) { this->_ref = ref, this->_taken = std::size(*ref); return *this; }
 
     inline Ref* operator->() const noexcept { return this->_ref; }
     inline Ref& operator*() const noexcept { return *this->_ref; }
 
-    inline size_type size() const noexcept(DEV_ENV) { return this->_taken; }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_taken; }
 
-    inline cyclic_view& drop(const size_type pos = 0) noexcept(DEV_ENV) { this->_pos = pos; return *this; }
-    inline cyclic_view& shift(const size_type count = 1) noexcept(DEV_ENV) { this->_pos += count; return *this; };
+    inline cyclic_view& drop(const size_type pos = 0) noexcept(NO_EXCEPT) { this->_pos = pos; return *this; }
+    inline cyclic_view& shift(const size_type count = 1) noexcept(NO_EXCEPT) { this->_pos += count; return *this; };
 
-    inline cyclic_view& take(const size_type count) noexcept(DEV_ENV) { this->_taken = count; return *this; }
-    inline cyclic_view& take() noexcept(DEV_ENV) { this->_taken = std::size(*this->_ref); return *this; }
+    inline cyclic_view& take(const size_type count) noexcept(NO_EXCEPT) { this->_taken = count; return *this; }
+    inline cyclic_view& take() noexcept(NO_EXCEPT) { this->_taken = std::size(*this->_ref); return *this; }
 
     inline cyclic_view& transpose(const transposer& f) noexcept { this->_transposer = f; return *this; }
 
@@ -150,14 +150,14 @@ struct cyclic_view : internal::view_impl::base {
 
   public:
     struct iterator : virtual iterator_interface {
-        iterator(const cyclic_view *const ref, const size_type pos) noexcept(DEV_ENV) : iterator_interface(ref, pos) {}
+        iterator(const cyclic_view *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline value_type operator*() const noexcept(DEV_ENV) { return this->ref()->operator[](this->pos()); }
-        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(DEV_ENV) { return *(*this + count); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->operator[](this->pos()); }
+        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
-    inline iterator begin() const noexcept(DEV_ENV) { return iterator(this, 0); }
-    inline iterator end() const noexcept(DEV_ENV) { return iterator(this, this->size()); }
+    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
 template<class Ref, internal::size_t D>
@@ -175,7 +175,7 @@ struct multi_view : internal::view_impl::base {
     template<class R, class I, size_type d = 0> inline auto& _access(
         R *const r,
         const I p
-    ) noexcept(DEV_ENV) {
+    ) noexcept(NO_EXCEPT) {
         if constexpr(d == D) {
             return *r;
         }
@@ -190,37 +190,37 @@ struct multi_view : internal::view_impl::base {
     }
 
   public:
-    multi_view(Ref *const ref) noexcept(DEV_ENV) : _ref(ref) {}
+    multi_view(Ref *const ref) noexcept(NO_EXCEPT) : _ref(ref) {}
 
-    inline multi_view& reset(Ref *const ref) noexcept(DEV_ENV) { this->_ref = ref; return *this; }
+    inline multi_view& reset(Ref *const ref) noexcept(NO_EXCEPT) { this->_ref = ref; return *this; }
 
-    inline Ref* operator->() const noexcept(DEV_ENV) { return this->_ref; }
-    inline Ref& operator*() const noexcept(DEV_ENV) { return *this->_ref; }
+    inline Ref* operator->() const noexcept(NO_EXCEPT) { return this->_ref; }
+    inline Ref& operator*() const noexcept(NO_EXCEPT) { return *this->_ref; }
 
-    inline size_type size() const noexcept(DEV_ENV) { return std::size(*this->_ref); }
+    inline size_type size() const noexcept(NO_EXCEPT) { return std::size(*this->_ref); }
 
-    inline multi_view& drop(const std::initializer_list<size_type> pos) noexcept(DEV_ENV) {
+    inline multi_view& drop(const std::initializer_list<size_type> pos) noexcept(NO_EXCEPT) {
         assert(pos.size() == std::size(this->_pos));
         for(auto a=pos.begin(),b=std::begin(this->_pos); a != pos.end(); ++a, ++b) *b = *a;
         return *this;
     }
-    template<class... Pos> inline multi_view& drop(const Pos... pos) noexcept(DEV_ENV) { return this->drop({ pos... }); }
-    inline multi_view& drop() noexcept(DEV_ENV) { std::memset(this->_pos, 0, sizeof(this->_pos)); return *this; }
+    template<class... Pos> inline multi_view& drop(const Pos... pos) noexcept(NO_EXCEPT) { return this->drop({ pos... }); }
+    inline multi_view& drop() noexcept(NO_EXCEPT) { std::memset(this->_pos, 0, sizeof(this->_pos)); return *this; }
 
-    inline const multi_view& transpose(const transposer& f) noexcept(DEV_ENV) { this->_transposer = f; return *this; }
+    inline const multi_view& transpose(const transposer& f) noexcept(NO_EXCEPT) { this->_transposer = f; return *this; }
 
 
-    inline auto& operator[](const std::initializer_list<size_type> pos_) noexcept(DEV_ENV) {
+    inline auto& operator[](const std::initializer_list<size_type> pos_) noexcept(NO_EXCEPT) {
         const auto pos = this->_transposer(pos_);
         return this->_access(this->_ref, pos.begin());
     }
-    inline const auto& operator[](std::initializer_list<size_type> pos_) const noexcept(DEV_ENV) {
+    inline const auto& operator[](std::initializer_list<size_type> pos_) const noexcept(NO_EXCEPT) {
         const auto pos = this->_transposer(pos_);
         return this->_access(this->_ref, pos.begin());
     }
 
-    template<class... Pos> inline auto& operator()(const Pos... pos) noexcept(DEV_ENV) { return this->operator[]({ pos... }); }
-    template<class... Pos> inline const auto& operator()(const Pos... pos) const noexcept(DEV_ENV) { return this->operator[]({ pos... }); }
+    template<class... Pos> inline auto& operator()(const Pos... pos) noexcept(NO_EXCEPT) { return this->operator[]({ pos... }); }
+    template<class... Pos> inline const auto& operator()(const Pos... pos) const noexcept(NO_EXCEPT) { return this->operator[]({ pos... }); }
 };
 
 template<class Ref> struct view_2d : internal::view_impl::base {
@@ -235,35 +235,35 @@ template<class Ref> struct view_2d : internal::view_impl::base {
     size_type _pos0, _pos1;
 
   public:
-    view_2d(Ref *const ref) noexcept(DEV_ENV) : _ref(ref) {}
+    view_2d(Ref *const ref) noexcept(NO_EXCEPT) : _ref(ref) {}
 
     inline view_2d& reset(Ref *const ref) { this->_ref = ref; return *this; }
 
-    inline Ref* operator->() const noexcept(DEV_ENV) { return this->_ref; }
-    inline Ref& operator*() const noexcept(DEV_ENV) { return *this->_ref; }
+    inline Ref* operator->() const noexcept(NO_EXCEPT) { return this->_ref; }
+    inline Ref& operator*() const noexcept(NO_EXCEPT) { return *this->_ref; }
 
-    inline size_type size() const noexcept(DEV_ENV) { return std::size(*this->_ref); }
-    inline size_type height() const noexcept(DEV_ENV) { return std::size(*this->_ref); }
-    inline size_type width() const noexcept(DEV_ENV) { return std::size(*this->_ref->begin()); }
+    inline size_type size() const noexcept(NO_EXCEPT) { return std::size(*this->_ref); }
+    inline size_type height() const noexcept(NO_EXCEPT) { return std::size(*this->_ref); }
+    inline size_type width() const noexcept(NO_EXCEPT) { return std::size(*this->_ref->begin()); }
 
-    inline view_2d& drop(const std::initializer_list<size_type> pos) noexcept(DEV_ENV) {
+    inline view_2d& drop(const std::initializer_list<size_type> pos) noexcept(NO_EXCEPT) {
         assert(pos.size() == std::size(this->_pos));
         for(auto a=pos.begin(),b=std::begin(this->_pos); a != pos.end(); ++a, ++b) *b = *a;
         return *this;
     }
-    template<class... Pos> inline view_2d& drop(const Pos... pos) noexcept(DEV_ENV) { return this->drop({ pos... }); }
-    inline view_2d& drop() noexcept(DEV_ENV) { std::memset(this->_pos, 0, sizeof(this->_pos)); return *this; }
+    template<class... Pos> inline view_2d& drop(const Pos... pos) noexcept(NO_EXCEPT) { return this->drop({ pos... }); }
+    inline view_2d& drop() noexcept(NO_EXCEPT) { std::memset(this->_pos, 0, sizeof(this->_pos)); return *this; }
 
-    inline const view_2d& transpose(const transposer& f) noexcept(DEV_ENV) { this->_transposer = f; return *this; }
+    inline const view_2d& transpose(const transposer& f) noexcept(NO_EXCEPT) { this->_transposer = f; return *this; }
 
-    inline auto& operator()(const size_type i, const size_type j) noexcept(DEV_ENV) { return this->operator[]({ i, j }); }
-    inline const auto& operator()(const size_type i, const size_type j) const noexcept(DEV_ENV) { return this->operator[]({ i, j }); }
+    inline auto& operator()(const size_type i, const size_type j) noexcept(NO_EXCEPT) { return this->operator[]({ i, j }); }
+    inline const auto& operator()(const size_type i, const size_type j) const noexcept(NO_EXCEPT) { return this->operator[]({ i, j }); }
 
-    inline auto& operator[](std::pair<size_type,size_type> pos) noexcept(DEV_ENV) {
+    inline auto& operator[](std::pair<size_type,size_type> pos) noexcept(NO_EXCEPT) {
         pos = this->_transposer(pos);
         return this->_ref->operator[](pos.first)[pos.second];
     }
-    inline const auto& operator[](std::pair<size_type,size_type> pos) const noexcept(DEV_ENV) {
+    inline const auto& operator[](std::pair<size_type,size_type> pos) const noexcept(NO_EXCEPT) {
         pos = this->_transposer(pos);
         return this->_ref->operator[](pos.first)[pos.second];
     }

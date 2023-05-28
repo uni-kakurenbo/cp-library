@@ -26,7 +26,7 @@ class centroid_path_decomposition {
   private:
     size_type _cur = 0;
 
-    void _erase_parent(const size_type v, const size_type p) noexcept(DEV_ENV) {
+    void _erase_parent(const size_type v, const size_type p) noexcept(NO_EXCEPT) {
         this->parent[v] = p;
         ITRR(nv, G[v]) {
             if(nv == this->G[v].back()) break;
@@ -36,7 +36,7 @@ class centroid_path_decomposition {
         this->G[v].pop_back();
     }
 
-    void _race_size(const size_type v) noexcept(DEV_ENV) {
+    void _race_size(const size_type v) noexcept(NO_EXCEPT) {
         ITRR(nv, this->G[v]) {
             this->_race_size(nv);
             this->size[v] += this->size[nv];
@@ -44,7 +44,7 @@ class centroid_path_decomposition {
         }
     }
 
-    void _race_path(const size_type v) noexcept(DEV_ENV) {
+    void _race_path(const size_type v) noexcept(NO_EXCEPT) {
         this->in[v] = this->_cur++;
         ITR(nv, this->G[v]) {
             this->head[nv] = (nv == this->G[v].front() ? this->head[v] : nv);
@@ -55,23 +55,23 @@ class centroid_path_decomposition {
 
   public:
     template<class graph>
-    centroid_path_decomposition(const graph& G, const size_type root = 0) noexcept(DEV_ENV)
+    centroid_path_decomposition(const graph& G, const size_type root = 0) noexcept(NO_EXCEPT)
       : G(G.size()), in(G.size(), -1), out(G.size(), -1), size(G.size(), 1), head(G.size()), parent(G.size(), -1)
     {
         REP(v, G.size()) ITR(nv, G[v]) this->G[v].push_back(nv);
         this->build(root);
     }
 
-    void build(const size_type root = 0) noexcept(DEV_ENV) {
+    void build(const size_type root = 0) noexcept(NO_EXCEPT) {
         ITR(v, this->G[root]) this->_erase_parent(v, root);
         this->_race_size(root);
         this->head[root] = root;
         this->_race_path(root);
     }
 
-    size_type id(const size_type v) noexcept(DEV_ENV) { return this->in[v]; }
+    size_type id(const size_type v) noexcept(NO_EXCEPT) { return this->in[v]; }
 
-    size_type lca(size_type u, size_type v) const noexcept(DEV_ENV) {
+    size_type lca(size_type u, size_type v) const noexcept(NO_EXCEPT) {
         while(true) {
             if(this->in[u] > this->in[v]) std::swap(u, v);
             if(this->head[u] == this->head[v]) return u;
@@ -80,7 +80,7 @@ class centroid_path_decomposition {
     }
 
     template<class F>
-    void edges_on_path(size_type u, size_type v, const F&& f) noexcept(DEV_ENV) {
+    void edges_on_path(size_type u, size_type v, const F&& f) noexcept(NO_EXCEPT) {
         while(true) {
             if(this->in[u] > this->in[v]) std::swap(u, v);
             if(this->head[u] != this->head[v]) {
@@ -94,7 +94,7 @@ class centroid_path_decomposition {
     }
 
     template<class F>
-    void nodes_on_path(int u, int v, const F&& f) noexcept(DEV_ENV) {
+    void nodes_on_path(int u, int v, const F&& f) noexcept(NO_EXCEPT) {
         while (true) {
             if (this->in[u] > this->in[v]) std::swap(u, v);
             f(std::max(this->in[this->head[v]] - 1, this->in[u]), this->in[v]);
@@ -107,7 +107,7 @@ class centroid_path_decomposition {
     }
 
     template<class F>
-    void subtree(const size_type v, const F&& f) noexcept(DEV_ENV) { f(this->in[v], this->out[v]); }
+    void subtree(const size_type v, const F&& f) noexcept(NO_EXCEPT) { f(this->in[v], this->out[v]); }
 };
 
 

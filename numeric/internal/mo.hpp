@@ -34,19 +34,19 @@ class interval_plannner {
         const EF& expand_front, const EB& expand_back,
         const PF& contract_front, const PB& contract_back,
         const R& evaluate
-    ) noexcept(DEV_ENV)
+    ) noexcept(NO_EXCEPT)
       : expand_front(expand_front), expand_back(expand_back),
         contract_front(contract_front), contract_back(contract_back),
         evaluate(evaluate)
     {}
 
-    interval_plannner(const EF& expand, const PF& contract, const R& evaluate) noexcept(DEV_ENV)
+    interval_plannner(const EF& expand, const PF& contract, const R& evaluate) noexcept(NO_EXCEPT)
       : interval_plannner(expand, expand, contract, contract, evaluate)
     {}
 
 
     template<class QI, class RI>
-    void scan(const QI query_first, const QI query_last, const RI res_first) noexcept(DEV_ENV) {
+    void scan(const QI query_first, const QI query_last, const RI res_first) noexcept(NO_EXCEPT) {
         const size_t q = std::distance(query_first, query_last);
 
         size_t n = 0;
@@ -78,14 +78,14 @@ class interval_plannner {
     }
 
     template<class QI>
-    auto scan(const QI query_first, const QI query_last) noexcept(DEV_ENV) {
+    auto scan(const QI query_first, const QI query_last) noexcept(NO_EXCEPT) {
         std::vector<std::invoke_result_t<R>> res(std::distance(query_first, query_last));
         this->scan(query_first, query_last, res.begin());
         return res;
     }
 
     template<class Q>
-    auto scan(const Q queries) noexcept(DEV_ENV) {
+    auto scan(const Q queries) noexcept(NO_EXCEPT) {
         std::vector<std::invoke_result_t<R>> res(std::distance(std::begin(queries), std::end(queries)));
         this->interval_scan(std::begin(queries), std::end(queries), res.begin());
         return res;

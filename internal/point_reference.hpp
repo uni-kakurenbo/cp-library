@@ -22,7 +22,7 @@ template<class Super> struct point_reference {
     Super *const _super;
     const size_type _pos;
 
-    point_reference(Super *const super, const size_type pos) noexcept(DEV_ENV) : _super(super), _pos(pos) {}
+    point_reference(Super *const super, const size_type pos) noexcept(NO_EXCEPT) : _super(super), _pos(pos) {}
 };
 
 

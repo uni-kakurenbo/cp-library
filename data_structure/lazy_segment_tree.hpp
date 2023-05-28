@@ -37,23 +37,23 @@ struct base {
     mutable S* _values = nullptr;
     mutable F* _lazy = nullptr;
 
-    inline void update(const size_type p) noexcept(DEV_ENV) {
+    inline void update(const size_type p) noexcept(NO_EXCEPT) {
         this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
     }
-    inline void all_apply(const size_type p, const F& f) const noexcept(DEV_ENV) {
+    inline void all_apply(const size_type p, const F& f) const noexcept(NO_EXCEPT) {
         this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
         if(p < this->_size) this->_lazy[p] = f + this->_lazy[p];
     }
-    inline void push(const size_type p) const noexcept(DEV_ENV) {
+    inline void push(const size_type p) const noexcept(NO_EXCEPT) {
         this->all_apply(p << 1, this->_lazy[p]);
         this->all_apply(p << 1 | 1, this->_lazy[p]);
         this->_lazy[p] = {};
     }
 
   protected:
-    base() noexcept(DEV_ENV) {}
+    base() noexcept(NO_EXCEPT) {}
 
-    explicit base(const size_type n) noexcept(DEV_ENV) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
+    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
         this->_size = 1 << this->_depth;
         this->_lengths = new size_type[2*this->_size]();
         this->_values = new S[2*this->_size]();
@@ -65,7 +65,7 @@ struct base {
         delete[] this->_lazy;
     }
 
-    inline void initialize() noexcept(DEV_ENV) {
+    inline void initialize() noexcept(NO_EXCEPT) {
         REPD(p, 1, this->_size) {
             this->_lengths[p] = this->_lengths[p << 1] + this->_lengths[p << 1 | 1];
             this->update(p);
@@ -73,24 +73,24 @@ struct base {
     }
 
   public:
-    inline size_type size() const noexcept(DEV_ENV) { return this->_n; }
-    inline size_type allocated() const noexcept(DEV_ENV) { return this->_size; }
-    inline size_type depth() const noexcept(DEV_ENV) { return this->_depth; }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_size; }
+    inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
-    inline void set(size_type p, const S& x) noexcept(DEV_ENV) {
+    inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         this->_values[p] = x;
         FOR(i, 1, this->_depth) this->update(p >> i);
     }
 
-    inline S get(size_type p) const noexcept(DEV_ENV) {
+    inline S get(size_type p) const noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         return this->_values[p];
     }
 
-    inline S fold(size_type l, size_type r) const noexcept(DEV_ENV) {
+    inline S fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         if(l == r) return {};
 
         l += this->_size;
@@ -112,15 +112,15 @@ struct base {
         return sml + smr;
     }
 
-    inline S fold_all() const noexcept(DEV_ENV) { return this->_values[1]; }
+    inline S fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
 
-    inline void apply(size_type p, const F& f) noexcept(DEV_ENV) {
+    inline void apply(size_type p, const F& f) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
         FOR(i, 1, this->_depth) this->update(p >> i);
     }
-    inline void apply(size_type l, size_type r, const F& f) noexcept(DEV_ENV) {
+    inline void apply(size_type l, size_type r, const F& f) noexcept(NO_EXCEPT) {
         if(l == r) return;
 
         l += this->_size;
@@ -149,10 +149,10 @@ struct base {
         }
     }
 
-    template<bool (*g)(S)> inline size_type max_right(size_type l) const noexcept(DEV_ENV) {
+    template<bool (*g)(S)> inline size_type max_right(size_type l) const noexcept(NO_EXCEPT) {
         return this->max_right(l, [](S x) { return g(x); });
     }
-    template<class G> inline size_type max_right(size_type l, G g) const noexcept(DEV_ENV) {
+    template<class G> inline size_type max_right(size_type l, G g) const noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= _n);
         assert(g({}));
         if(l == _n) return _n;
@@ -178,10 +178,10 @@ struct base {
         return _n;
     }
 
-    template<bool (*g)(S)> inline size_type min_left(size_type r) const noexcept(DEV_ENV) {
+    template<bool (*g)(S)> inline size_type min_left(size_type r) const noexcept(NO_EXCEPT) {
         return min_left(r, [](S x) { return g(x); });
     }
-    template<class G> inline size_type min_left(size_type r, G g) const noexcept(DEV_ENV) {
+    template<class G> inline size_type min_left(size_type r, G g) const noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= _n);
         assert(g({}));
         if(r == 0) return 0;
@@ -233,24 +233,24 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     using size_type = typename base::size_type;
 
   protected:
-    inline size_type _positivize_index(const size_type p) const noexcept(DEV_ENV) {
+    inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
         return p < 0 ? this->size() + p : p;
     }
 
   public:
     core() : base() {}
-    explicit core(const size_type n, const operand_value& v = {}) noexcept(DEV_ENV) : base(n) { this->fill(v); }
+    explicit core(const size_type n, const operand_value& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
-    template<class T> core(const std::initializer_list<T>& init_list) noexcept(DEV_ENV) : core(ALL(init_list)) {}
+    template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(DEV_ENV) : base(std::distance(first, last)) { this->assign(first, last); }
+    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : base(std::distance(first, last)) { this->assign(first, last); }
 
     template<class T>
-    inline auto& assign(const std::initializer_list<T>& init_list) noexcept(DEV_ENV) { return this->assign(ALL(init_list)); }
+    inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline auto& assign(const I first, const I last) noexcept(DEV_ENV) {
+    inline auto& assign(const I first, const I last) noexcept(NO_EXCEPT) {
         assert(std::distance(first, last) == this->_n);
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
@@ -260,7 +260,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         return *this;
     }
 
-    inline auto& fill( const operand_value& v = {}) noexcept(DEV_ENV) {
+    inline auto& fill( const operand_value& v = {}) noexcept(NO_EXCEPT) {
         REP(p, 0, this->_n) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         }
@@ -268,94 +268,94 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         return *this;
     }
 
-    bool empty() const noexcept(DEV_ENV) { return this->size() == 0; }
+    bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
     struct point_reference : internal::point_reference<core> {
-        point_reference(core *const super, const size_type p) noexcept(DEV_ENV)
+        point_reference(core *const super, const size_type p) noexcept(NO_EXCEPT)
           : internal::point_reference<core>(super, super->_positivize_index(p))
         {
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
-        operator operand_value() const noexcept(DEV_ENV) { return this->_super->get(this->_pos); }
-        operand_value val() const noexcept(DEV_ENV) { return this->_super->get(this->_pos); }
+        operator operand_value() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        operand_value val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const operand_value& v) noexcept(DEV_ENV) {
+        inline point_reference& set(const operand_value& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const operand_value& v) noexcept(DEV_ENV) {
+        inline point_reference& operator=(const operand_value& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const action_type& v) noexcept(DEV_ENV) {
+        inline point_reference& apply(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const action_type& v) noexcept(DEV_ENV) {
+        inline point_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
     };
 
     struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r) noexcept(DEV_ENV)
+        range_reference(core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
           : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline range_reference& apply(const action_type& v) noexcept(DEV_ENV) {
+        inline range_reference& apply(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator<<=(const action_type& v) noexcept(DEV_ENV) {
+        inline range_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
 
-        inline value_type fold() noexcept(DEV_ENV) {
+        inline value_type fold() noexcept(NO_EXCEPT) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() noexcept(DEV_ENV) {
+        inline value_type operator*() noexcept(NO_EXCEPT) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
-    inline auto& set(size_type p, const operand_value& v) noexcept(DEV_ENV) {
+    inline auto& set(size_type p, const operand_value& v) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::set(p, v);
          return *this;
     }
 
-    inline auto& apply(size_type l, size_type r, const action_type& v) noexcept(DEV_ENV) {
+    inline auto& apply(size_type l, size_type r, const action_type& v) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         this->base::apply(l, r, v);
         return *this;
     }
-    inline auto& apply(const size_type p, const action_type& v) noexcept(DEV_ENV) { this->apply(p, p+1, v); return *this; }
-    inline auto& apply(const action_type& v) noexcept(DEV_ENV) { this->apply(0, this->size(), v);  return *this; }
+    inline auto& apply(const size_type p, const action_type& v) noexcept(NO_EXCEPT) { this->apply(p, p+1, v); return *this; }
+    inline auto& apply(const action_type& v) noexcept(NO_EXCEPT) { this->apply(0, this->size(), v);  return *this; }
 
 
-    inline value_type get(size_type p) const noexcept(DEV_ENV) {
+    inline value_type get(size_type p) const noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::get(p).val();
     }
 
-    inline point_reference operator[](const size_type p) noexcept(DEV_ENV) { return point_reference(this, p); }
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(DEV_ENV) { return range_reference(this, l, r); }
+    inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
-    inline value_type fold(size_type l, size_type r) const noexcept(DEV_ENV) {
+    inline value_type fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r).val();
     }
-    inline value_type fold() const noexcept(DEV_ENV) { return this->fold_all(); }
+    inline value_type fold() const noexcept(NO_EXCEPT) { return this->fold_all(); }
 
 
   protected:
@@ -363,13 +363,13 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
   public:
     struct iterator : virtual iterator_interface {
-        iterator(const core *const ref, const size_type p) noexcept(DEV_ENV) : iterator_interface(ref, p) {}
+        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : iterator_interface(ref, p) {}
 
-        inline value_type operator*() const noexcept(DEV_ENV) { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() const noexcept(DEV_ENV) { return iterator(this, 0); }
-    inline iterator end() const noexcept(DEV_ENV) { return iterator(this, this->size()); }
+    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
 

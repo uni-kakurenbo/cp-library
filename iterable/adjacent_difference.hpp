@@ -13,10 +13,10 @@ namespace lib {
 template<class T = i64, class container = std::vector<T>>
 struct adjacent_difference : container {
   public:
-    adjacent_difference() noexcept(DEV_ENV) {}
+    adjacent_difference() noexcept(NO_EXCEPT) {}
 
     template<class I, class Operator = std::minus<T>>
-    adjacent_difference(const I first, const I last, const bool remove_first = true, const Operator op = std::minus<T>{}) noexcept(DEV_ENV) {
+    adjacent_difference(const I first, const I last, const bool remove_first = true, const Operator op = std::minus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::distance(first, last));
         std::adjacent_difference(first, last, begin(*this), op);
         if(remove_first) this->erase(begin(*this));

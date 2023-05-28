@@ -32,7 +32,7 @@ namespace internal {
 
 
 // Miller-Rabin primality test
-template<typename mint> bool primality_test(const value_type n, const std::initializer_list<value_type> as) noexcept(DEV_ENV) {
+template<typename mint> bool primality_test(const value_type n, const std::initializer_list<value_type> as) noexcept(NO_EXCEPT) {
     if(static_cast<value_type>(mint::mod()) != n) mint::set_mod(n);
 
     value_type d = n-1;
@@ -55,7 +55,7 @@ template<typename mint> bool primality_test(const value_type n, const std::initi
 } // namespace internal
 
 
-bool is_prime(const value_type n) noexcept(DEV_ENV) {
+bool is_prime(const value_type n) noexcept(NO_EXCEPT) {
     if(~n & 1) return n == 2;
     if(n <= 1) return false;
 
@@ -69,7 +69,7 @@ namespace internal {
 
 
 // Pollard's rho algorithm
-template <typename mint, typename T> T find_factor(const T n) noexcept(DEV_ENV) {
+template <typename mint, typename T> T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
     if(is_prime(n)) return n;
 
@@ -77,10 +77,10 @@ template <typename mint, typename T> T find_factor(const T n) noexcept(DEV_ENV) 
 
     mint R, one = 1;
 
-    auto f = [&](mint x) noexcept(DEV_ENV) { return x * x + R; };
+    auto f = [&](mint x) noexcept(NO_EXCEPT) { return x * x + R; };
 
     static xorshift64 rand(std::random_device{}());
-    auto rand_ = [&]() noexcept(DEV_ENV) { return rand() % (n - 2) + 2; };
+    auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
 
@@ -113,7 +113,7 @@ template <typename mint, typename T> T find_factor(const T n) noexcept(DEV_ENV) 
 }
 
 
-std::vector<int64_t> factorize(const value_type n) noexcept(DEV_ENV) {
+std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     value_type p;
@@ -134,25 +134,25 @@ std::vector<int64_t> factorize(const value_type n) noexcept(DEV_ENV) {
 } // namespace internal
 
 
-std::vector<int64_t> factorize(const value_type n) noexcept(DEV_ENV) {
+std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
     auto res = internal::factorize(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-std::set<int64_t> prime_factors(const value_type n) noexcept(DEV_ENV) {
+std::set<int64_t> prime_factors(const value_type n) noexcept(NO_EXCEPT) {
     auto factors = factorize(n);
     std::set<int64_t> res(std::begin(factors), std::end(factors));
     return res;
 }
 
-std::map<int64_t,int64_t> count_factors(const value_type n) noexcept(DEV_ENV) {
+std::map<int64_t,int64_t> count_factors(const value_type n) noexcept(NO_EXCEPT) {
     std::map<int64_t,int64_t> mp;
     for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }
 
-std::vector<int64_t> divisors(const value_type n) noexcept(DEV_ENV) {
+std::vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
     if(n == 0) return {};
 
     std::vector<std::pair<int64_t, int64_t>> v;
@@ -165,7 +165,7 @@ std::vector<int64_t> divisors(const value_type n) noexcept(DEV_ENV) {
     }
 
     std::vector<int64_t> res;
-    auto f = [&](auto rc, int i, int64_t x) noexcept(DEV_ENV) -> void {
+    auto f = [&](auto rc, int i, int64_t x) noexcept(NO_EXCEPT) -> void {
         if(i == (int)v.size()) {
             res.push_back(x);
             return;

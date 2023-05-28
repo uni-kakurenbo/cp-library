@@ -27,7 +27,7 @@ namespace std {
 
 using bit_reference = std::vector<bool>::reference;
 
-bit_reference operator |= (bit_reference a, const bool b) noexcept(DEV_ENV) { return a = a | b; }
-bit_reference operator &= (bit_reference a, const bool b) noexcept(DEV_ENV) { return a = a & b; }
+bit_reference operator |= (bit_reference a, const bool b) noexcept(NO_EXCEPT) { return a = a | b; }
+bit_reference operator &= (bit_reference a, const bool b) noexcept(NO_EXCEPT) { return a = a & b; }
 
 }
