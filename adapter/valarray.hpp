@@ -49,7 +49,7 @@ template<class T> struct valarray : std::valarray<T> {
 
     inline size_type size() const noexcept(DEV_ENV) { return this->std::valarray<T>::size(); }
 
-    inline void reserve(const size_type) noexcept(DEV_ENV) {}
+    inline void reserve(const size_type) noexcept(DEV_ENV) { /* do nothing */ }
 
     template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
     inline void assign(const I first, const I last) noexcept(DEV_ENV) {

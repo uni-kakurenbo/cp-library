@@ -9,12 +9,13 @@
 
 #include "constants.hpp"
 #include "multi_container.hpp"
-#include "adapter/valarray.hpp"
 #include "grid.hpp"
 #include "graph.hpp"
 #include "string.hpp"
 
 #include "adapter/set.hpp"
+#include "adapter/valarray.hpp"
+#include "adapter/vector.hpp"
 
 #include "utility/applier.hpp"
 #include "utility/functional.hpp"

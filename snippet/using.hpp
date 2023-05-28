@@ -22,7 +22,6 @@ using std::cout;
 using std::pair;
 using std::tuple;
 
-using std::vector;
 using std::array;
 using std::string;
 
@@ -76,7 +75,6 @@ using lib::pow_mod;
 using lib::inv_mod;
 
 using lib::spair;
-using lib::valarray;
 
 using lib::multi_container;
 
@@ -106,3 +104,6 @@ using lib::set;
 using lib::unordered_set;
 using lib::multiset;
 using lib::unordered_multiset;
+
+using lib::valarray;
+using lib::vector;
