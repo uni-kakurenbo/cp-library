@@ -114,7 +114,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     }
 
     inline void add_edge_bidirectionally(const size_type u, const size_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
-        this->add_edge<edge_type::undirected>(u, v, w);
+        this->add_edge<edge_kind::undirected>(u, v, w);
     }
 
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = std::istream>
