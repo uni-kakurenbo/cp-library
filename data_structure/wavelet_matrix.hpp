@@ -10,8 +10,7 @@
 #include <iterator>
 #include <optional>
 #include <limits>
-
-#include <atcoder/internal_bit>
+#include <type_traits>
 
 #include "snippet/iterations.hpp"
 
@@ -23,6 +22,7 @@
 #include "constants.hpp"
 
 #include "iterable/compression.hpp"
+#include "numeric/bit.hpp"
 #include "data_structure/bit_vector.hpp"
 
 
@@ -56,7 +56,7 @@ template<class T, class dict_type> struct base {
     template<class I> __attribute__((optimize("O3"))) void build(const I first, const I last) noexcept(NO_EXCEPT) {
         this->_n = std::distance(first, last);
         this->_max = first == last ? -1 : *std::max_element(first, last);
-        this->_bits = atcoder::internal::ceil_pow2(this->_max + 1);
+        this->_bits = bit_width<std::make_unsigned_t<T>>(this->_max + 1);
 
         this->_index.assign(this->_bits, this->_n);
 

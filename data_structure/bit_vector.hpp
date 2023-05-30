@@ -27,11 +27,11 @@ struct bit_vector {
   public:
     bit_vector(const size_type _n = 0) noexcept(NO_EXCEPT) { this->init(_n); }
 
-    template<class I> explicit bit_vector(const I first, const I last) : bit_vector(std::distance(first, last)) noexcept(NO_EXCEPT) {
+    template<class I> explicit bit_vector(const I first, const I last) noexcept(NO_EXCEPT) : bit_vector(std::distance(first, last)) {
         size_type pos = 0;
         for(auto itr=first; itr != last; ++pos, ++itr) if(*itr) this->set(pos);
     }
-    template<class T> bit_vector(const std::initializer_list<T>& init_list) : bit_vector(std::begin(init_list), std::end(init_list)) noexcept(NO_EXCEPT) {}
+    template<class T> bit_vector(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : bit_vector(std::begin(init_list), std::end(init_list)) {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
