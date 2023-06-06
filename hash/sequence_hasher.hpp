@@ -121,7 +121,7 @@ struct sequence_hasher {
         this->_hashed.assign(this->_n+1, 0);
 
         size_type i = 0;
-        for(auto itr=first; itr!=last; ++i, ++itr) noexcept(NO_EXCEPT) {
+        for(auto itr=first; itr!=last; ++i, ++itr) {
             this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
             if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
