@@ -21,7 +21,7 @@ constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 
 constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
 
-enum class comp : std::int8_t {
+enum class comp : std::uint8_t {
     equal_to,
     not_equal_to,
 
@@ -43,14 +43,13 @@ enum class comp : std::int8_t {
 
     leq = or_under,
     geq = or_over
-}; // namespace comp
+};
 
-enum class interval : std::int8_t {
+enum class interval : std::uint8_t {
     right_open,
     left_open,
     open,
     closed,
-}; // namespace comp
-
+};
 
 } // namespace lib

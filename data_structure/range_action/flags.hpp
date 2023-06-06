@@ -12,7 +12,7 @@ namespace actions {
 namespace internal {
 
 
-enum class tags : std::int8_t {
+enum class tags : std::uint8_t {
     range_folding = 1 << 0,
     range_operation = 1 << 1,
 };
