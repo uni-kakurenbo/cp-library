@@ -73,15 +73,20 @@ std::string lit(const std::string &val) {
 }
 std::string lit(const char &val) {
     std::stringstream res;
-    res << COLOR_STRING << "\'", res << val, res << "\'" << COLOR_INIT;
+    res << COLOR_STRING << "\'" << val << "\'" << COLOR_INIT;
     return res.str();
 }
 std::string lit(const char val[]) {
     std::stringstream res;
-    res << COLOR_STRING << "\"", res << val, res << "\"" <<  COLOR_INIT;
+    res << COLOR_STRING << "\"" << val << "\"" <<  COLOR_INIT;
     return res.str();
 }
 
+std::string lit(const unsigned char &val) {
+    std::stringstream res;
+    res << COLOR_NUMERIC << static_cast<int>(val) << COLOR_INIT;
+    return res.str();
+}
 std::string lit(const bool &val) {
     std::stringstream res;
     res << COLOR_NUMERIC << (val ? "true" : "false" ) << COLOR_INIT;

@@ -15,8 +15,8 @@ template<class T = int> struct matrix : vector<vector<T>> {
     inline T& operator()(size_t i, size_t j) { return (*this)[i][j]; }
 };
 
-template<class T = int, class C = vector<T>> struct prime_table : C {
-    prime_table(size_t max) : is_prime(max+1, true) {
+template<class T = int, class C = vector<T>> struct prime_sieve : C {
+    prime_sieve(size_t max) : is_prime(max+1, true) {
         is_prime[0] = is_prime[1] = false;
         for(size_t p=2; p<=max; p++) if(is_prime[p]) {
             for(size_t i=p*p; i<=max; i+=p) is_prime[i] = false;
@@ -106,7 +106,7 @@ signed main() {
     // unordered_map<int,int> unord_map__int_int = { { 0, 3 }, { 6, 1 }, { 2, 3 } };
     // debug(unord_map__int_int);
 
-    debug(prime_table(100));
+    debug(prime_sieve(100));
 
     // debug(MyString{"abcdefg"});
     debug(string{string{"abcdefg"}});
