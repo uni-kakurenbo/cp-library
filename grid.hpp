@@ -54,7 +54,7 @@ template<class T> struct container_base : virtual interface<T> {
 
   public:
     container_base() noexcept(NO_EXCEPT) = default;
-    container_base(const size_t _h, const size_t _w) noexcept(NO_EXCEPT) : _h(_h), _w(_w) {}
+    container_base(const size_t h, const size_t w) noexcept(NO_EXCEPT) : _h(h), _w(w) {}
 
     virtual void resize(const size_t h, const size_t w) noexcept(NO_EXCEPT) /*override*/ {
         this->_h = h, this->_w = w;
