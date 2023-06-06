@@ -4,7 +4,7 @@
 
 #define LOOP(n) REPI($_, (n))
 
-#define REPI(i,n) for(int i=0, i##_length=(n); i<i##_length; ++i)
+#define REPI(i,n) for(int i=0, i##_length=static_cast<int>(n); i<i##_length; ++i)
 #define REPF(i,l,r) for(auto i=(l), i##_last=(r); i<i##_last; ++i)
 #define REPIS(i,l,r,s) for(auto i=(l), i##_last=(r); i<i##_last; i+=(s))
 
@@ -15,7 +15,7 @@
 #define REP(...) $OVERLOAD4(__VA_ARGS__, REPIS, REPF, REPI, LOOP)(__VA_ARGS__)
 #define REPD(...) $OVERLOAD4(__VA_ARGS__, REPRS, REPB, REPR)(__VA_ARGS__)
 
-#define FORO(i,n) for(int i=0, i##_last=(n); i<=i##_last; ++i)
+#define FORO(i,n) for(int i=0, i##_last=static_cast<int>(n); i<=i##_last; ++i)
 #define FORI(i,l,r) for(auto i=(l), i##_last=(r); i<=i##_last; ++i)
 #define FORIS(i,l,r,s) for(auto i=(l), i##_last=(r); i<=i##_last; i+=(s))
 
