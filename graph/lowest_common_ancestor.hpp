@@ -54,7 +54,7 @@ struct lowest_common_ancestor {
 
     size_type find(size_type u, size_type v) const noexcept(NO_EXCEPT) {
         if(this->dists[u] < this->dists[v]) std::swap(u, v);
-        size_type K = this->parent.size();
+        size_type K = static_cast<size_type>(this->parent.size());
 
         REP(k, K) {
             if((this->dists[u] - this->dists[v]) >> k & 1) u = this->parent[k][u];

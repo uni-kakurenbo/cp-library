@@ -47,13 +47,13 @@ cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr)
 template<class edge_cost>
 template<class cost_type>
 cost_type graph<edge_cost>::minimum_spanning_tree(graph<edge_cost> *const mst) const noexcept(NO_EXCEPT) {
-    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::less<tuple<cost_type,size_type,size_type>>>(*this, {}, mst);
+    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::less<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
 }
 
 template<class edge_cost>
 template<class cost_type>
 inline cost_type graph<edge_cost>::maximum_spanning_tree(graph<edge_cost> *const mst) const noexcept(NO_EXCEPT) {
-    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::greater<tuple<cost_type,size_type,size_type>>>(*this, {}, mst);
+    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::greater<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
 }
 
 
