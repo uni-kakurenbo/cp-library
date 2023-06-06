@@ -19,9 +19,9 @@ namespace actions {
 
 
 template<class T> struct null : base<algebraic::null<T>> {
-    static constexpr flags tags{ flags::implicit_treap };
+    static constexpr flags tags{ flags::range_folding, flags::range_operation };
 
-    using operand = monoids::addition<T>;
+    using operand = algebraic::addition<T>;
     using operation = algebraic::null<T>;
 
     static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }

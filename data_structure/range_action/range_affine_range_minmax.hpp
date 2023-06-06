@@ -25,7 +25,7 @@ template<class T> struct range_affine_range_minmax : base<algebraic::affine<T>> 
     using operand = algebraic::minmax<T>;
     using operation = algebraic::affine<T>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) noexcept(NO_EXCEPT) {
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
         auto res = operand({ x->first * y->first + y->second, x->second * y->first + y->second });
         if (y->first < 0) std::swap(res->first, res->second);
         return res;
@@ -47,7 +47,7 @@ template<class T> struct lazy_segment_tree<actions::range_affine_range_minmax<T>
     struct point_reference : base::point_reference {
         using base::point_reference::point_reference;
 
-        inline point_reference& affine(const T& a, const T& b) noexcept(NO_EXCEPT) noexcept(NO_EXCEPT) { return this->_super->apply(this->_pos, { a, b }); return *this; }
+        inline point_reference& affine(const T& a, const T& b) noexcept(NO_EXCEPT) { return this->_super->apply(this->_pos, { a, b }); return *this; }
 
         inline point_reference& set(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_pos, { 0, val }); return *this; }
         inline point_reference& operator=(const T& val) noexcept(NO_EXCEPT) { this->_super->apply(this->_pos, { 0, val }); return *this; }

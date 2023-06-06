@@ -21,42 +21,42 @@ struct restorable_stack {
         node_ptr parent;
     };
 
-    node_ptr current;
-    storage<ID,node_ptr> storage;
+    node_ptr _current;
+    storage<ID,node_ptr> _storage;
 
   public:
     restorable_stack() noexcept(NO_EXCEPT) { this->clear(); };
 
     inline bool empty() const noexcept(NO_EXCEPT) {
-        return !current->val.has_value();
+        return !this->_current->val.has_value();
     }
     inline bool stored(ID x) const noexcept(NO_EXCEPT) {
-        return storage.count(x);
+        return this->_storage.count(x);
     }
 
     inline T top() const noexcept(NO_EXCEPT) {
-        return current->val.value();
+        return this->_current->val.value();
     }
 
     template<class U>
     inline auto top_or(const U &&v) const noexcept(NO_EXCEPT) {
-        return current->val.value_or(v);
+        return this->_current->val.value_or(v);
     }
 
     inline void push(const T x) noexcept(NO_EXCEPT) {
-        current.reset(new node{x, current});
+        this->_current.reset(new node{ x, this->_current });
     }
     inline void pop() noexcept(NO_EXCEPT) {
-        current = current->parent;
+        this->_current = this->_current->parent;
     }
     inline void save(const ID x) noexcept(NO_EXCEPT) {
-        storage[x] = current;
+        this->_storage[x] = this->_current;
     }
     inline void load(const ID x) noexcept(NO_EXCEPT) {
-        current = storage[x];
+        this->_current = this->_storage[x];
     }
     inline void clear() noexcept(NO_EXCEPT) {
-        current.reset(new node{});
+        this->_current.reset(new node{});
     }
 };
 

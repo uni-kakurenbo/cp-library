@@ -48,12 +48,12 @@ struct bit_vector {
     }
 
     __attribute__((target("popcnt"))) void build() noexcept(NO_EXCEPT) {
-        for(auto k = 1UL; k < this->_block.size(); ++k) this->_count[k] = this->_count[k-1] + _mm_popcnt_u64(this->_block[k-1]);
+        for(auto k = 1UL; k < this->_block.size(); ++k) this->_count[k] = this->_count[k-1] + static_cast<size_type>(_mm_popcnt_u64(this->_block[k-1]));
         this->_zeros = this->rank0(this->_n);
     }
 
     __attribute__((target("bmi2,popcnt"))) inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
-        return this->_count[k / w] + _mm_popcnt_u64(_bzhi_u64(this->_block[k / w], k % w));
+        return this->_count[k / w] + static_cast<size_type>(_mm_popcnt_u64(_bzhi_u64(this->_block[k / w], k % w)));
     }
     inline size_type rank0(size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
 
@@ -67,7 +67,7 @@ struct bit_vector {
 
         size_type block_pos = 0;
         {
-            size_type ng = -1, ok = this->_count.size();
+            size_type ng = -1, ok = static_cast<size_type>(this->_count.size());
             while(ok - ng > 1) {
                 size_type mid = (ng + ok) / 2;
 
@@ -86,7 +86,7 @@ struct bit_vector {
         size_type ng = -1, ok = w;
         while(ok - ng > 1) {
             const size_type mid = (ok + ng) / 2;
-            size_type r = count + _mm_popcnt_u64(_bzhi_u64(block, mid));
+            size_type r = count + static_cast<size_type>(_mm_popcnt_u64(_bzhi_u64(block, mid)));
             if(!bit) r = base_index + mid - r;
             (r >= rank ? ok : ng) = mid;
         }
