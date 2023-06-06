@@ -51,8 +51,6 @@
 #include "data_structure/restorable_stack.hpp"
 #include "data_structure/segment_tree.hpp"
 
-#include "debugger/debug.hpp"
-
 #include "geometry/basic.hpp"
 #include "geometry/convex_full.hpp"
 #include "geometry/point.hpp"
