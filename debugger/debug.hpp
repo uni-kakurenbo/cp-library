@@ -16,9 +16,15 @@
 
 #include <atcoder/modint>
 
-#include "./internal/type_traits.hpp"
+#include "internal/type_traits.hpp"
 
 namespace debugger {
+
+
+template<class T> auto _debug (T &val) -> decltype(val._debug()) {
+    return val._debug();
+}
+
 
 std::ostream *cdebug = &std::clog;
 
@@ -33,12 +39,12 @@ template<class T> int depth(const std::vector<T>&) { return depth(T ()) + 1; }
 
 using Brackets = std::pair<std::string, std::string>;
 
-// template<class T, std::enable_if_t<internal::is_iterable_v<T> && !internal::is_template<std::map,T>::value>* = nullptr>
+// template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 // std::string lit(T, Brackets = { "[", "]" }, std::string = ", ");
-template<class T, std::enable_if_t<internal::is_iterable_v<T> && !internal::is_template<std::map,T>::value>* = nullptr>
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 std::string lit(const T&, Brackets = { "[", "]" }, std::string = ", ");
 
-template<class T, std::enable_if_t<internal::is_template<std::map,T>::value>* = nullptr>
+template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
 std::string lit(const T&, Brackets = { "{", "}" }, std::string = ", ");
 
 template<class I> std::string lit(I, I, Brackets = { "[", "]" }, std::string = ", ");
@@ -48,7 +54,7 @@ template<class... T> std::string lit(const std::tuple<T...>&);
 
 template<size_t N = 0, class T> void iterate_tuple(const T&, std::stringstream&);
 
-template<class T, std::enable_if_t<internal::is_loggable_v<T>>* = nullptr> std::string lit(const T&);
+template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> std::string lit(const T&);
 
 template<class T> std::string lit(const T*);
 
@@ -103,7 +109,7 @@ std::string lit(const std::bitset<N>& val) {
 template<class T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr> std::string lit(T val) {
     std::stringstream res;
     res << COLOR_NUMERIC << std::fixed << std::setprecision(std::numeric_limits<T>::digits10);// << scientific;
-    res << val << COLOR_LITERAL_OPERATOR << internal::literal_operator_v<T>;
+    res << val << COLOR_LITERAL_OPERATOR << lib::internal::literal_operator_v<T>;
     res << COLOR_INIT;
     return res.str();
 };
@@ -168,21 +174,21 @@ template<size_t N, class T> void iterate_tuple(__attribute__ ((unused)) const T&
     }
 }
 
-// template<class T, std::enable_if_t<internal::is_iterable_v<T> && !internal::is_template<std::map,T>::value>*>
+// template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>*>
 // std::string lit(T val, Brackets brcs, std::string sep) {
-//     return lit(internal::iterator_resolver<T>::begin(val), internal::iterator_resolver<T>::end(val), brcs, sep);
+//     return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 // }
-template<class T, std::enable_if_t<internal::is_iterable_v<T> && !internal::is_template<std::map,T>::value>*>
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>*>
 std::string lit(const T& val, Brackets brcs, std::string sep) {
-    return lit(internal::iterator_resolver<T>::begin(val), internal::iterator_resolver<T>::end(val), brcs, sep);
+    return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 }
 
-template<class T, std::enable_if_t<internal::is_template<std::map,T>::value>*>
+template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
 std::string lit(const T& val, Brackets brcs, std::string sep) {
     return lit(val.begin(), val.end(), brcs, sep);
 }
 
-template<class T, std::enable_if_t<internal::is_loggable_v<T>>*>
+template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
 std::string lit(const T &val) {
     const auto& res = _debug(val);
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
