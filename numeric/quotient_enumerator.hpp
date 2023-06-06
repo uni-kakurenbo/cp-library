@@ -13,6 +13,7 @@
 
 namespace lib {
 
+
 template<class T, bool CEIL = false>
 struct quotient_enumerator {
     using value_type = std::tuple<T,T,T>; // (q, l, r)

@@ -53,7 +53,7 @@ class interval_plannner {
         for(auto query=query_first; query!=query_last; ++query) {
             chmax(n, std::max(query->first, query->second));
         }
-        n = 1 << bit_width<std::make_unsigned_t<size_type>>(n);
+        n = 1 << bit_width<std::make_unsigned_t<size_t>>(n);
 
         std::vector<i64> orders(q);
         {

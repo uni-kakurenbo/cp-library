@@ -117,7 +117,7 @@ std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     value_type p;
-    if(n <= (1UL << 31)) p = find_factor<modint,std::uint32_t>(n);
+    if(n <= (1UL << 31)) p = find_factor<modint>(static_cast<std::uint32_t>(n));
     else p = find_factor<modint64,std::uint64_t>(n);
 
     if(p == n) return { int64_t(p) };
