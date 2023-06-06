@@ -23,11 +23,12 @@ signed main() {
     return 0;
 }
 
+#include "convolution/gcd.hpp"
+
+using mint = lib::modint998244353;
+
 void solve() {
     int n; cin >> n;
-    REP(k, n) {
-        debug(k, lib::sqrt_floor(k), lib::sqrt_ceil(k));
-        assert(lib::sqrt_floor(k) == (int)std::floor(std::sqrt(k)));
-        assert(lib::sqrt_ceil(k) == (int)std::ceil(std::sqrt(k)));
-    }
+    valarray<mint> a(n), b(n); input >> a >> b;
+    print(lib::gcd_convolution(ALL(a), ALL(b)));
 }

@@ -7,7 +7,6 @@
 /* #language C++ GCC */
 /* #region template */
 #include <bits/stdc++.h>
-using namespace std;
 
 #include "template.hpp"
 /* #endregion */

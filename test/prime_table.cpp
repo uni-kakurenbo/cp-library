@@ -18,11 +18,11 @@ output_adapter _print;
 
 // https://atcoder.jp/contests/abc239/tasks/abc239_d
 
-#include "numeric/prime_table.hpp"
+#include "numeric/prime_sieve.hpp"
 
 signed main() {
     int a, b, c, d; cin >> a >> b >> c >> d;
-    prime_table primes(b+d);
+    prime_sieve primes(b+d);
     int max_np = 0, np = 0;
     FOR(i, a+c, b+d) {
         if(primes(i)) np = 0;

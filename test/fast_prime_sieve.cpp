@@ -23,11 +23,13 @@ signed main() {
     return 0;
 }
 
+#include "numeric/prime_enumerator.hpp"
+#include <boost/range/adaptor/reversed.hpp>
+
+
 void solve() {
-    int n; cin >> n;
-    REP(k, n) {
-        debug(k, lib::sqrt_floor(k), lib::sqrt_ceil(k));
-        assert(lib::sqrt_floor(k) == (int)std::floor(std::sqrt(k)));
-        assert(lib::sqrt_ceil(k) == (int)std::ceil(std::sqrt(k)));
-    }
+    long n; cin >> n;
+    debug(lib::prime_enumerator(n).size());
+    // debug(lib::prime_enumerator(n));
+    // debug(lib::prime_enumerator(n) | boost::adaptors::reversed);
 }

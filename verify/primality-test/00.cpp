@@ -1,6 +1,6 @@
 #include <iostream>
 #include "template.hpp"
-#include "numeric/prime.hpp"
+#include "numeric/fast_prime.hpp"
 
 int main() {
     int q; cin >> q;

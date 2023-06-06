@@ -23,11 +23,9 @@ signed main() {
     return 0;
 }
 
+#include "numeric/prime_enumerator.hpp"
+
 void solve() {
-    int n; cin >> n;
-    REP(k, n) {
-        debug(k, lib::sqrt_floor(k), lib::sqrt_ceil(k));
-        assert(lib::sqrt_floor(k) == (int)std::floor(std::sqrt(k)));
-        assert(lib::sqrt_ceil(k) == (int)std::ceil(std::sqrt(k)));
-    }
+    long n; cin >> n;
+    print(lib::prime_enumerator(n).size());
 }

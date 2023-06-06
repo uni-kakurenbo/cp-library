@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #include "template.hpp"
-#include "numeric/prime.hpp"
+#include "numeric/fast_prime.hpp"
 
 signed main() {
     int q; std::cin >> q;
