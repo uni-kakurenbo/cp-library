@@ -48,7 +48,7 @@ struct input_adapter {
 
     source *in;
 
-    input_adapter(source *in = &std::cin) noexcept(NO_EXCEPT) : in(in) {}
+    input_adapter(source *_in = &std::cin) noexcept(NO_EXCEPT) : in(_in) {}
 
     template<class T> inline input_adapter& operator>>(T &s) noexcept(NO_EXCEPT) {
         this->set(&s);

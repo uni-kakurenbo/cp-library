@@ -9,8 +9,8 @@
 using namespace std;
 using namespace atcoder;
 
-template<class T = int, class C = vector<T>> struct prime_table : C {
-    prime_table(size_t max) : is_prime(max+1, true) {
+template<class T = int, class C = vector<T>> struct prime_sieve : C {
+    prime_sieve(size_t max) : is_prime(max+1, true) {
         is_prime[0] = is_prime[1] = false;
         for(size_t p=2; p<=max; p++) if(is_prime[p]) {
             for(size_t i=p*p; i<=max; i+=p) is_prime[i] = false;
@@ -63,7 +63,7 @@ signed main() {
 
     print(pair<int,int>{10,24});
 
-    prime_table primes(100);
+    prime_sieve primes(100);
     print(primes);
 
     return 0;

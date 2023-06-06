@@ -43,8 +43,8 @@ struct output_adapter {
     Terminator endline;
     Separator separator;
 
-    output_adapter(destination *out = &std::cout, Terminator endline = "\n", Separator separator = " ") noexcept
-      : out(out), endline(endline), separator(separator)
+    output_adapter(destination *des = &std::cout, Terminator endl = "\n", Separator sep = " ") noexcept
+      : out(des), endline(endl), separator(sep)
     {
         *this << std::fixed << std::setprecision(20);
     }

@@ -47,7 +47,7 @@ template<class T> struct valarray : std::valarray<T> {
     template<class U> valarray(const std::initializer_list<U>& init) noexcept(NO_EXCEPT) : valarray(std::begin(init), std::end(init)) {}
 
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->std::valarray<T>::size(); }
+    inline auto size() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->std::valarray<T>::size()); }
 
     inline void reserve(const size_type) noexcept(NO_EXCEPT) { /* do nothing */ }
 

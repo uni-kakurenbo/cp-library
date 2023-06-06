@@ -24,6 +24,11 @@ struct vector : std::vector<T> {
         std::sort(this->begin(), this->end(), f);
         return *this;
     }
+
+    inline auto& reverse() noexcept(NO_EXCEPT) {
+        std::reverse(this->begin(), this->end());
+        return *this;
+    }
 };
 
 
