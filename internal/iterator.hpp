@@ -12,6 +12,7 @@ namespace lib {
 
 namespace internal {
 
+
 template<class T>
 struct iterator_interface {
     using iterator_category = std::output_iterator_tag;
