@@ -54,7 +54,7 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
     }
 
     static uint64_t reduce(const uint128_t &b) noexcept(NO_EXCEPT) {
-        return (b + uint128_t(uint64_t(b) * uint64_t(-r)) * _mod) >> 64;
+        return static_cast<uint64_t>((b + static_cast<uint128_t>(static_cast<uint64_t>(b) * static_cast<uint64_t>(-r)) * _mod) >> 64);
     }
 
 
@@ -65,7 +65,7 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
         assert(m < (1UL << 63));
         assert((m & 1) == 1);
         _mod = m;
-        n2 = -static_cast<uint128_t>(m) % m;
+        n2 = static_cast<uint64_t>(-static_cast<uint128_t>(m) % m);
         r = get_r();
         assert(r * _mod == 1);
     }

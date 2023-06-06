@@ -14,7 +14,7 @@ namespace lib {
 
 
 template<class T>
-inline constexpr int popcount(const T v) noexcept(NO_EXCEPT) {
+__attribute__((target("bmi,bmi2,popcnt"))) inline constexpr int popcount(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
 
     using u = unsigned int;
@@ -28,7 +28,7 @@ inline constexpr int popcount(const T v) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
-inline constexpr int countl_zero(const T v) noexcept(NO_EXCEPT) {
+__attribute__((target("bmi,bmi2,lzcnt"))) inline constexpr int countl_zero(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
 
     using u = unsigned int;
@@ -71,6 +71,7 @@ inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
+__attribute__((target("bmi,bmi2,lzcnt")))
 inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
 

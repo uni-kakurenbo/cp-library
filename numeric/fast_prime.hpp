@@ -33,7 +33,9 @@ namespace internal {
 
 // Miller-Rabin primality test
 template<typename mint> bool primality_test(const value_type n, const std::initializer_list<value_type> as) noexcept(NO_EXCEPT) {
+  #pragma GCC diagnostic ignored "-Wconversion"
     if(static_cast<value_type>(mint::mod()) != n) mint::set_mod(n);
+  #pragma GCC diagnostic warning "-Wconversion"
 
     value_type d = n-1;
 
@@ -166,11 +168,11 @@ std::vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
 
     std::vector<int64_t> res;
     auto f = [&](auto rc, int i, int64_t x) noexcept(NO_EXCEPT) -> void {
-        if(i == (int)v.size()) {
+        if(i == static_cast<int>(v.size())) {
             res.push_back(x);
             return;
         }
-        for(int j = v[i].second;; --j) {
+        for(int j = static_cast<int>(v[i].second);; --j) {
             rc(rc, i + 1, x);
             if(j == 0)
                 break;
