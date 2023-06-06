@@ -19,17 +19,17 @@ template<class container = std::vector<bool>> struct prime_flags : container {
     }
 };
 
-template<class T, class container = std::valarray<T>> struct prime_table : container {
+template<class T, class container = std::vector<T>> struct prime_sieve : container {
   protected:
     std::vector<bool> is_prime;
 
   public:
-    prime_table() noexcept(NO_EXCEPT) {}
-    prime_table(const T max) noexcept(NO_EXCEPT) : is_prime(max+1, true) {
+    prime_sieve() noexcept(NO_EXCEPT) {}
+    prime_sieve(const T max) noexcept(NO_EXCEPT) : is_prime(max+1, true) {
         is_prime[0] = is_prime[1] = false;
         FOR(p, T{2}, max) {
             if(is_prime[p]) {
-                for(T i=p*p; i<=max; i+=p) is_prime[i] = false;
+                for(T i = mul_overflow(p,p).value_or(max+1); i<=max; i+=p) is_prime[i] = false;
                 this->emplace_back(p);
             }
         }
