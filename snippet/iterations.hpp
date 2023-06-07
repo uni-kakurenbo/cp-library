@@ -1,27 +1,28 @@
 #pragma once
 
+#include <type_traits>
 #include "snippet/internal/overload.hpp"
 
 #define LOOP(n) REPI($_, (n))
 
 #define REPI(i,n) for(int i=0, i##_length=static_cast<int>(n); i<i##_length; ++i)
-#define REPF(i,l,r) for(auto i=(l), i##_last=(r); i<i##_last; ++i)
-#define REPIS(i,l,r,s) for(auto i=(l), i##_last=(r); i<i##_last; i+=(s))
+#define REPF(i,l,r) for(std::common_type_t<decltype(l),decltype(r)> i=(l), i##_last=(r); i<i##_last; ++i)
+#define REPIS(i,l,r,s) for(std::common_type_t<decltype(l),decltype(r),decltype(s)> i=(l), i##_last=(r); i<i##_last; i+=(s))
 
 #define REPR(i,n) for(auto i=(n); --i>=0;)
-#define REPB(i,l,r) for(auto i=(r), i##_last=(l); --i>=i##_last;)
-#define REPRS(i,l,r,s) for(auto i=(r), i##_last=(l); (i-=(s))>=i##_last;)
+#define REPB(i,l,r) for(std::common_type_t<decltype(l),decltype(r)> i=(r), i##_last=(l); --i>=i##_last;)
+#define REPRS(i,l,r,s) for(std::common_type_t<decltype(l),decltype(r),decltype(s)> i=(l)+((r)-(l)-1)/(s)*(s), i##_last=(l); i>=i##_last; (i-=(s)))
 
 #define REP(...) $OVERLOAD4(__VA_ARGS__, REPIS, REPF, REPI, LOOP)(__VA_ARGS__)
 #define REPD(...) $OVERLOAD4(__VA_ARGS__, REPRS, REPB, REPR)(__VA_ARGS__)
 
 #define FORO(i,n) for(int i=0, i##_last=static_cast<int>(n); i<=i##_last; ++i)
-#define FORI(i,l,r) for(auto i=(l), i##_last=(r); i<=i##_last; ++i)
-#define FORIS(i,l,r,s) for(auto i=(l), i##_last=(r); i<=i##_last; i+=(s))
+#define FORI(i,l,r) for(std::common_type_t<decltype(l),decltype(r)> i=(l), i##_last=(r); i<=i##_last; ++i)
+#define FORIS(i,l,r,s) for(std::common_type_t<decltype(l),decltype(r),decltype(s)> i=(l), i##_last=(r); i<=i##_last; i+=(s))
 
 #define FORRO(i,n) for(auto i=(n); i>=0; --i)
-#define FORR(i,l,r) for(auto i=(r), i##_last=(l); i>=i##_last; --i)
-#define FORRS(i,l,r,s) for(auto i=(r), i##_last=(l); i>=i##_last; i-=(s))
+#define FORR(i,l,r) for(std::common_type_t<decltype(l),decltype(r)> i=(r), i##_last=(l); i>=i##_last; --i)
+#define FORRS(i,l,r,s) for(std::common_type_t<decltype(l),decltype(r),decltype(s)> i=(l)+((r)-(l))/(s)*(s), i##_last=(l); i>=i##_last; i-=(s))
 
 #define FOR(...) $OVERLOAD4(__VA_ARGS__, FORIS, FORI, FORO)(__VA_ARGS__)
 #define FORD(...) $OVERLOAD4(__VA_ARGS__, FORRS, FORR, FORRO)(__VA_ARGS__)
