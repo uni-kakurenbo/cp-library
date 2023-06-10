@@ -3,6 +3,7 @@
 #include <iterator>
 #include <unordered_map>
 
+#include "snippet/aliases.hpp"
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 

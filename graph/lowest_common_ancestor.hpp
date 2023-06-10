@@ -34,7 +34,7 @@ struct lowest_common_ancestor {
 
     template<class graph>
     void init(const graph &G, const size_type root = 0) noexcept(NO_EXCEPT) {
-        const size_type V = G.size();
+        const size_type V = static_cast<size_type>(G.size());
         const size_type K = lib::bit_width<std::make_unsigned_t<size_type>>(V);
 
         this->parent.assign(K, std::vector<size_type>(V, -1));

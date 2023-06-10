@@ -223,7 +223,6 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     using operation = typename action::operation;
 
   private:
-    using operand_value = typename operand::value_type;
     using base = lazy_segment_tree_impl::base<operand, operation, action::map, action::fold>;
 
   public:
@@ -239,12 +238,12 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
   public:
     core() : base() {}
-    explicit core(const size_type n, const operand_value& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
     template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : base(std::distance(first, last)) { this->assign(first, last); }
+    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : base(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
 
     template<class T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
@@ -254,13 +253,13 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         assert(std::distance(first, last) == this->_n);
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
-            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = operand(*itr);
+            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = value_type(*itr);
         }
         this->initialize();
         return *this;
     }
 
-    inline auto& fill( const operand_value& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill( const value_type& v = {}) noexcept(NO_EXCEPT) {
         REP(p, 0, this->_n) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         }
@@ -277,14 +276,14 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
-        operator operand_value() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        operand_value val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const operand_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const operand_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
@@ -326,7 +325,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     };
 
 
-    inline auto& set(size_type p, const operand_value& v) noexcept(NO_EXCEPT) {
+    inline auto& set(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::set(p, v);
          return *this;

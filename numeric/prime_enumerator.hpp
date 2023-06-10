@@ -23,32 +23,28 @@ namespace lib {
 template<class T>
 struct prime_enumerator {
     using value_type = T;
-    using size_type = std::int32_t;
+    using size_type = internal::size_t;
     using impl_type = std::uint32_t;
 
     impl_type n = 0;
 
   protected:
-    using uint8_t = std::uint8_t;
-    using uint16_t = std::uint16_t;
-    using int32_t = std::int32_t;
-    using uint32_t = std::uint32_t;
-    using int64_t = std::int64_t;
-    using uint64_t = std::uint64_t;
+    using small_bit_type = std::uint8_t;
+    using large_bit_type = std::uint64_t;
 
     mutable size_type _size = -1;
 
     impl_type _sqrt_n = 0, _sqrt_ni = 0, _quart_n = 0;
 
-    std::valarray<uint8_t> _small;
-    std::valarray<uint64_t> _large;
-    std::vector<uint32_t> _indecies;
+    std::valarray<small_bit_type> _small;
+    std::valarray<large_bit_type> _large;
+    std::vector<impl_type> _indecies;
 
-    uint8_t* _flag = nullptr;
+    small_bit_type* _flag = nullptr;
 
     static constexpr impl_type SEGMENT_SIZE = 1'000'000;
     static constexpr impl_type  MOD30[] = { 1, 7, 11, 13, 17, 19, 23, 29 };
-    static constexpr uint8_t MASK[][8] = {
+    static constexpr small_bit_type MASK[][8] = {
         { 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f },
         { 0xfd, 0xdf, 0xef, 0xfe, 0x7f, 0xf7, 0xfb, 0xbf },
         { 0xfb, 0xef, 0xfe, 0xbf, 0xfd, 0x7f, 0xf7, 0xdf },
@@ -64,12 +60,12 @@ struct prime_enumerator {
         { 3, 3, 1, 2, 1, 3, 3, 1 }, { 4, 2, 2, 2, 2, 2, 4, 1 },
         { 5, 3, 1, 4, 1, 3, 5, 1 }, { 6, 4, 2, 4, 2, 4, 6, 1 },
     };
-    static constexpr uint32_t C1[] = { 6, 4, 2, 4, 2, 4, 6, 2 };
+    static constexpr impl_type C1[] = { 6, 4, 2, 4, 2, 4, 6, 2 };
 
     void _init(const value_type n, const impl_type size) noexcept(NO_EXCEPT) {
         const size_type blocks = size >> 3;
         this->_large.resize(blocks + 2, ~0UL);
-        this->_flag = reinterpret_cast<uint8_t*>(&(this->_large[0]));
+        this->_flag = reinterpret_cast<small_bit_type*>(&(this->_large[0]));
 
         this->_flag[0] = 0xfe;
 
@@ -91,47 +87,45 @@ struct prime_enumerator {
     }
 
     void _gen_small() noexcept(NO_EXCEPT) {
-        const uint32_t quart_ni = this->_quart_n / 30 + 1;
+        const impl_type quart_ni = this->_quart_n / 30 + 1;
 
         this->_small.resize(this->_sqrt_ni, 0xff);
         this->_small[0] = 0xfe;
 
-        for(uint32_t i=0; i<quart_ni; ++i) {
-            for(uint8_t flags = this->_small[i]; flags; flags &= flags - 1) {
+        REP(i, quart_ni) {
+            for(small_bit_type flags = this->_small[i]; flags; flags &= flags - 1) {
                 const int ibit = lowest_bit_pos(flags);
-                const uint32_t m = prime_enumerator::MOD30[ibit];
-                const uint32_t pm = 30 * i + 2 * m;
-                uint32_t j = i * pm + (m * m) / 30;
-                uint32_t k = ibit;
-                while(j < this->_sqrt_ni) {
+                const impl_type m = prime_enumerator::MOD30[ibit];
+                const impl_type pm = 30 * i + 2 * m;
+                for(
+                    impl_type j = i * pm + (m * m) / 30, k = ibit;
+                    j < this->_sqrt_ni;
+                    j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k], k = (k + 1) & 7
+                ) {
                     this->_small[j] &= prime_enumerator::MASK[ibit][k];
-                    j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k];
-                    k = (k + 1) & 7;
                 }
             }
         }
 
-        for(impl_type i = 0; i < this->_sqrt_ni; ++i) {
-            for(uint8_t flags = this->_small[i]; flags; flags &= flags - 1) {
+        REP(i, this->_sqrt_ni) {
+            for(small_bit_type flags = this->_small[i]; flags; flags &= flags - 1) {
                 int ibit = lowest_bit_pos(flags);
-                const int32_t m = prime_enumerator::MOD30[ibit];
+                const impl_type m = prime_enumerator::MOD30[ibit];
                 impl_type j = i * (30 * i + 2 * m) + (m * m) / 30;
                 this->_indecies.emplace_back(((j + prime_enumerator::SEGMENT_SIZE) << 3) | ibit);
             }
         }
     }
 
-    void _gen_core(uint8_t *const flags, const impl_type size) noexcept(NO_EXCEPT) {
+    void _gen_core(small_bit_type *const flags, const impl_type size) noexcept(NO_EXCEPT) {
         auto p_index = this->_indecies.begin();
-        for(impl_type i=0; i<this->_sqrt_ni; ++i) {
-            for(uint8_t primes = this->_small[i]; primes; primes &= primes - 1) {
+        REP(i, this->_sqrt_ni) {
+            for(small_bit_type primes = this->_small[i]; primes; primes &= primes - 1) {
                 const int ibit = lowest_bit_pos(primes);
                 impl_type j = (*p_index >> 3) - prime_enumerator::SEGMENT_SIZE;
                 impl_type k = *p_index & 7;
-                while(j < size) {
+                for(; j < size; j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k], k = (k + 1) & 7) {
                     flags[j] &= prime_enumerator::MASK[ibit][k];
-                    j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k];
-                    k = (k + 1) & 7;
                 }
                 *p_index = ((j << 3) | k);
                 ++p_index;
@@ -139,7 +133,6 @@ struct prime_enumerator {
         }
     }
 
-  protected:
     using iterator_interface = internal::bidirectional_iterator_interface<const value_type>;
 
   public:
@@ -150,16 +143,16 @@ struct prime_enumerator {
         assert(n >= 0);
         assert(internal::discern_endian() == internal::endian::little);
 
-        this->_sqrt_n = static_cast<uint32_t>(sqrt_ceil(this->n + 1));
+        this->_sqrt_n = static_cast<impl_type>(sqrt_ceil(this->n + 1));
         this->_sqrt_ni = this->_sqrt_n / 30 + 1;
-        this->_quart_n = static_cast<uint32_t>(sqrt_ceil(this->_sqrt_n));
+        this->_quart_n = static_cast<impl_type>(sqrt_ceil(this->_sqrt_n));
 
         this->_gen_small();
 
         impl_type size = this->n / 30 + 1;
         this->_init(this->n + 1, size);
 
-        for(uint8_t* seg = this->_flag; ; seg += prime_enumerator::SEGMENT_SIZE) {
+        for(small_bit_type* seg = this->_flag; ; seg += prime_enumerator::SEGMENT_SIZE) {
             if(size < prime_enumerator::SEGMENT_SIZE) {
                 this->_gen_core(seg, size);
                 break;
@@ -172,7 +165,7 @@ struct prime_enumerator {
     size_type size() const noexcept(NO_EXCEPT) {
         if(this->_size < 0) {
             this->_size = (this->n >= 2) + (this->n >= 3) + (this->n >= 5);
-            for(const uint64_t f : this->_large) this->_size += popcount(f);
+            for(const large_bit_type f : this->_large) this->_size += popcount(f);
         }
         return this->_size;
     }
@@ -204,7 +197,7 @@ struct prime_enumerator {
 
       protected:
         const value_type n = 0;
-        const std::valarray<uint64_t> *const _flags = nullptr;
+        const std::valarray<large_bit_type> *const _flags = nullptr;
         size_type _block = -1, _flag_size;
         int _bit = 0;
 
@@ -223,7 +216,7 @@ struct prime_enumerator {
 
       public:
         iterator() {}
-        iterator(const value_type n, const std::valarray<uint64_t> *const flags, const int bit) noexcept(NO_EXCEPT)
+        iterator(const value_type n, const std::valarray<large_bit_type> *const flags, const int bit) noexcept(NO_EXCEPT)
           : n(n), _flags(flags), _flag_size(static_cast<size_type>(flags->size())), _bit(bit) {
             if(bit < 0) {
                 this->_block = static_cast<size_type>(flags->size()) - 1;
@@ -249,7 +242,7 @@ struct prime_enumerator {
 
             int next;
             while(true) {
-                const uint64_t mask = this->_bit >= 63 ? 0UL : ~((1UL << (this->_bit + 1)) - 1);
+                const large_bit_type mask = this->_bit >= 63 ? 0UL : ~((1UL << (this->_bit + 1)) - 1);
                 next = lowest_bit_pos(this->_flags->operator[](this->_block) & mask);
                 if(next >= 0) break;
                 this->_block++;
@@ -270,7 +263,7 @@ struct prime_enumerator {
             int prev = -1;
             while(true) {
                 if(0 < this->_bit) {
-                    const uint64_t mask = this->_bit >= 64 ? ~0UL : ((1UL << this->_bit) - 1);
+                    const large_bit_type mask = this->_bit >= 64 ? ~0UL : ((1UL << this->_bit) - 1);
                     prev = highest_bit_pos(this->_flags->operator[](this->_block) & mask);
                 }
                 if(prev >= 0) break;

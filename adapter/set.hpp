@@ -81,7 +81,6 @@ template<class set> struct set_wrapper : set {
         return { *itr };
     }
 
-
     friend inline set_wrapper operator|(const set_wrapper s, const set_wrapper t) noexcept(NO_EXCEPT) {
         set_wrapper res;
         std::set_union(std::begin(s), std::end(s), std::begin(t), std::end(t), std::inserter(res, std::begin(res)));

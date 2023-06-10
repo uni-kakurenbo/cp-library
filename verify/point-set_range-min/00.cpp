@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
+#include <iostream>
+
+// #include "template.hpp"
 
 #include "snippet/iterations.hpp"
 #include "snippet/aliases.hpp"
@@ -6,7 +9,6 @@
 #include "data_structure/segment_tree.hpp"
 #include "data_structure/range_action/range_min.hpp"
 
-// #include "template.hpp"
 
 
 signed main() {

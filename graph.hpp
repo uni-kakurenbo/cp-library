@@ -101,7 +101,7 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     inline const auto& out_degrees() const noexcept(NO_EXCEPT) { return this->_out_degs; }
     inline const auto& out_degree(const size_type k) const noexcept(NO_EXCEPT) { return this->_out_degs[k]; }
 
-    inline size_type vertices() const noexcept(NO_EXCEPT) { return this->size(); }
+    inline size_type vertices() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->size()); }
 
     inline size_type directed_edges_count() const noexcept(NO_EXCEPT) { return this->_directed_edge_count; }
 

@@ -1,27 +1,27 @@
-#include <bits/stdc++.h>
-#include "template.hpp"
-
-#include "snippet/aliases.hpp"
+// #include <bits/stdc++.h>
+// #include "template.hpp"
+#include <iostream>
+#include "adapter/io.hpp"
+#include "utility/functional.hpp"
 #include "snippet/iterations.hpp"
 #include "data_structure/wavelet_matrix.hpp"
 
-
 signed main() {
-    int n, k; std::cin >> n >> k;
-    std::vector<ll> a(n); ITRR(v, a) std::cin >> v;
-    lib::wavelet_matrix<ll> data(ALL(a));
+    int n, k; input >> n >> k;
+    std::vector<long> a(n); input >> a;
+    lib::wavelet_matrix<long> data(ALL(a));
 
-    ll ans = LONG_LONG_MAX;
+    long ans = lib::INF64;
     FOR(i, 0, n-k) {
         auto range = data.subseq(i, k);
-        debug(range);
+        // debug(range);
 
-        ll med = range.median();
+        long med = range.median();
 
-        ll costl = med * range.count_under(med) - range.sum_under(med);
-        ll costr = range.sum_or_over(med) - med * range.count_or_over(med);
+        long costl = med * range.count_under(med) - range.sum_under(med);
+        long costr = range.sum_or_over(med) - med * range.count_or_over(med);
 
-        chmin(ans, costl + costr);
+        lib::chmin(ans, costl + costr);
     }
 
     print(ans);

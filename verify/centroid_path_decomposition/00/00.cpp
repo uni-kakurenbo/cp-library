@@ -6,7 +6,7 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 
 #include "template.hpp"
 /* #endregion */
@@ -37,7 +37,7 @@ void solve() {
 
     valarray<std::tuple<int,int,i64>> es(n - 1);
     REP(i, n - 1) {
-        i64 u, v, w; cin >> u >> v >> w; --u, --v;
+        int u, v, w; cin >> u >> v >> w; --u, --v;
         es[i] = { u, v, w };
         G.add_edge_bidirectionally(u, v);
     }
@@ -56,7 +56,7 @@ void solve() {
     REP(q) {
         int t; cin >> t;
         if(t == 1) {
-            i64 i, w; cin >> i >> w; --i;
+            int i, w; cin >> i >> w; --i;
             auto [ u, v, _ ] = es[i];
             HLD.edges_on_path(u, v, [&](int l, int) { costs[l].set(w); });
         }

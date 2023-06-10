@@ -261,7 +261,6 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     using action_type = typename operation::value_type;
 
   private:
-    using operand_value = typename operand::value_type;
     using base = implicit_treap_impl::base<operand,operation,Action::map,Action::fold>;
 
   public:
@@ -297,11 +296,11 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
         value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const operand_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const operand_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
@@ -328,7 +327,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             return this->_super->fold(this->_begin, this->_end);
         }
 
-        inline range_reference& fill(const operand_value& v) noexcept(NO_EXCEPT) {
+        inline range_reference& fill(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->fill(this->_begin, this->_end, v);
             return *this;
         }
@@ -342,30 +341,30 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             return *this;
         }
 
-        inline size_type find(const operand_value& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
+        inline size_type find(const value_type& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
             return this->_super->base::find(this->_begin, this->_end, v, dir_left);
         }
     };
 
 
-    inline void insert(size_type p, const operand_value& v) noexcept(NO_EXCEPT) {
+    inline void insert(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p <= this->size());
         this->base::insert(p, v);
     }
 
-    inline void insert(const size_type p, const operand_value& v, const size_type count) noexcept(NO_EXCEPT) {
+    inline void insert(const size_type p, const value_type& v, const size_type count) noexcept(NO_EXCEPT) {
         REP(k, count) this->insert(p + k, v);
     }
 
-    inline void push_front(const operand_value& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(0, v, count); }
-    inline void push_back(const operand_value& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(this->size(), v, count); }
+    inline void push_front(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(0, v, count); }
+    inline void push_back(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(this->size(), v, count); }
 
-    inline void resize(const size_type size, const operand_value& v = operand_value{}) noexcept(NO_EXCEPT) {
+    inline void resize(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
         REP(this->size() - size) this->erase(-1);
         REP(i, this->size(), size) this->push_back(v);
     }
 
-    inline void assign(const size_type size, const operand_value& v = operand_value{}) noexcept(NO_EXCEPT) {
+    inline void assign(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
         this->clear(), this->insert(0, v, size);
     }
 
@@ -374,11 +373,11 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void assign(const I first, const I last) noexcept(NO_EXCEPT) { this->clear(), this->insert(0, first, last); }
 
-    inline void fill(const operand_value& v) noexcept(NO_EXCEPT) {
+    inline void fill(const value_type& v) noexcept(NO_EXCEPT) {
         const size_type count = this->size();
         this->clear(), this->insert(0, v, count);
     }
-    inline void fill(const size_type l, const size_type r, const operand_value& v) noexcept(NO_EXCEPT) {
+    inline void fill(const size_type l, const size_type r, const value_type& v) noexcept(NO_EXCEPT) {
         REP(p, l, r) this->erase(p), this->insert(p, v);
     }
 
@@ -434,12 +433,12 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     }
     inline void rotate(const size_type m) const noexcept(NO_EXCEPT) { this->rotate(0, m, this->size()); }
 
-    inline size_type find(size_type l, size_type r, const operand_value& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
+    inline size_type find(size_type l, size_type r, const value_type& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::find(l, r, v, dir_left);
     }
-    inline size_type find(const operand_value& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
+    inline size_type find(const value_type& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
         return this->find(0, this->size(), v, dir_left);
     }
 

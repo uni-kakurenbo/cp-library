@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 #include "template.hpp"
 #include "graph.hpp"
 #include "graph/manhattan_minimum_spanning_tree.hpp"

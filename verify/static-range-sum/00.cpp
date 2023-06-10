@@ -1,11 +1,12 @@
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 #include "template.hpp"
 #include "iterable/accumulation.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); REP(i, n) std::cin >> a[i];
+    std::vector<int> a(n); input >> a;
     lib::accumulation<ll> sum(ALL(a));
+    debug(sum);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

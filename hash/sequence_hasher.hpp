@@ -43,7 +43,7 @@ struct sequence_hasher {
   protected:
     static inline hash_type power(const size_type p) noexcept(NO_EXCEPT) {
         if(static_cast<size_type>(sequence_hasher::_powers.size()) <= p) {
-            size_type n = sequence_hasher::_powers.size();
+            size_type n = static_cast<size_type>(sequence_hasher::_powers.size());
             sequence_hasher::_powers.resize(p+1);
             if(n == 0) sequence_hasher::_powers[0] = 1;
             REP(i, std::max(0, n-1), p) sequence_hasher::_powers[i+1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
@@ -82,7 +82,7 @@ struct sequence_hasher {
             res %= sequence_hasher::mod;
         }
 
-        return res;
+        return static_cast<hash_type>(res);
     }
 
     size_type index(size_type k) const noexcept(NO_EXCEPT) { return this->_front + k; }
@@ -116,7 +116,7 @@ struct sequence_hasher {
     }
 
     template<class I>
-    sequence_hasher(const I first, const I last) noexcept(NO_EXCEPT) : sequence_hasher(std::distance(first, last)) {
+    sequence_hasher(const I first, const I last) noexcept(NO_EXCEPT) : sequence_hasher(static_cast<size_type>(std::distance(first, last))) {
         this->_hashed.resize(this->_n);
         this->_hashed.assign(this->_n+1, 0);
 

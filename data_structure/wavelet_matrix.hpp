@@ -54,7 +54,7 @@ template<class T, class dict_type> struct base {
     inline size_type bits() const noexcept(NO_EXCEPT) { return this->_bits; }
 
     template<class I> __attribute__((optimize("O3"))) void build(const I first, const I last) noexcept(NO_EXCEPT) {
-        this->_n = std::distance(first, last);
+        this->_n = static_cast<size_type>(std::distance(first, last));
         this->_max = first == last ? -1 : *std::max_element(first, last);
         this->_bits = bit_width<std::make_unsigned_t<T>>(this->_max + 1);
 

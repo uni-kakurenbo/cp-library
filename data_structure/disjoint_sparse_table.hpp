@@ -106,7 +106,7 @@ struct core<semigroup, std::void_t<typename algebraic::internal::is_semigroup_t<
     }
 
     template<class I>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(std::distance(first, last)) {
+    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(static_cast<size_type>(std::distance(first, last))) {
         std::copy(first, last, this->_table.begin()->begin());
     }
 

@@ -30,9 +30,11 @@ struct accumulation : container {
 
     template<class I, class Operator = std::plus<T>>
     accumulation(const I first, const I last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) {
-        this->assign(std::distance(first, last) + 1, {});
+        this->resize(std::distance(first, last) + 1);
         std::exclusive_scan(first, last, std::begin(*this), head, op);
-        if(this->size() > 1) *std::prev(this->end()) = op(*std::prev(std::end(*this), 2), *std::prev(last));
+        const auto back = std::prev(std::end(*this));
+        debug(*back);
+        *back = op(*std::prev(back), *std::prev(last));
     }
 
     template<class Operaotr = std::minus<T>>

@@ -6,7 +6,7 @@
  */
 /* #language C++ GCC */
 /* #region template */
-// #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 
 #include "template.hpp"
 /* #endregion */
@@ -23,12 +23,28 @@ signed main() {
     return 0;
 }
 
-#include "convolution/gcd.hpp"
-
-using mint = lib::modint998244353;
-
 void solve() {
-    int n; cin >> n;
-    valarray<mint> a(n), b(n); input >> a >> b;
-    print(lib::gcd_convolution(ALL(a), ALL(b)));
+
+REP(30) debug("a");
+REP(i, 30) debug(i);
+REP(i, 5, 30) debug(i);
+REP(i, 5, 29, 3UL) debug(i);
+
+REPD(i, 30) debug(i);
+REPD(i, 5, 30) debug(i);
+REPD(i, 5, 29, 3UL) debug(i);
+
+
+FOR(i, 30) debug(i);
+FOR(i, 5, 30) debug(i);
+FOR(i, 5, 29, 3UL) debug(i);
+
+FORD(i, 30) debug(i);
+FORD(i, 5, 30) debug(i);
+FORD(i, 5, 29, 3UL) debug(i);
+
+
+vector<int> a = { 1, 2, 3 };
+REP(i, ALL(a)) debug(*i);
+
 }

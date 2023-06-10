@@ -6,7 +6,7 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 
 #include "template.hpp"
 /* #endregion */
@@ -22,7 +22,7 @@ signed main() {
     debug(poly);
 
     auto hull = lib::convex_hull(ALL(poly));
-    int m = hull.size();
+    int m = (int)hull.size();
     debug(m, hull);
 
     int p = -1, q = -1;

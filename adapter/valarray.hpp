@@ -39,7 +39,7 @@ template<class T> struct valarray : std::valarray<T> {
   public:
     valarray() noexcept(NO_EXCEPT) {}
 
-    valarray(const size_type length, const T& val = T{}) noexcept(NO_EXCEPT) : std::valarray<T>(std::forward<const T>(val), length) {}
+    valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : std::valarray<T>(std::forward<const T>(val), length) {}
 
     template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
     valarray(const I first, const I last) noexcept(NO_EXCEPT) : std::valarray<T>(first, last) {}
@@ -57,11 +57,11 @@ template<class T> struct valarray : std::valarray<T> {
         std::copy(first, last, begin(*this));
     }
 
-    inline void assign(const size_type length, const T& val = T{}) noexcept(NO_EXCEPT) {
+    inline void assign(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {
         this->std::valarray<T>::resize(length, val);
     }
 
-    inline void resize(const size_type length, const T& val = T{}) noexcept(NO_EXCEPT) {
+    inline void resize(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {
         std::valarray<T> temp = *this;
         this->assign(length, val);
         std::move(std::begin(temp), std::min(std::end(temp), std::next(std::begin(temp), length)), std::begin(*this));

@@ -67,7 +67,7 @@ std::vector<std::tuple<size_type,size_type,cost_type>> manhattan_mst_edges(
     if(cost_sum) *cost_sum = 0;
 
     std::vector<std::tuple<size_type,size_type,cost_type>> res;
-    atcoder::dsu uf(std::distance(x_first, x_last));
+    atcoder::dsu uf(static_cast<int>(std::distance(x_first, x_last)));
 
     ITR(u, v, w, (manhattan_mst_candidate_edges<I,J,cost_type,size_type>(x_first, x_last, y_first, y_last))) {
         if(not uf.same(u, v)) {

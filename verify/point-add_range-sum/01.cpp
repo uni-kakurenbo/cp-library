@@ -6,12 +6,6 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include <bits/stdc++.h>
-using namespace std;
-
-namespace atcoder {}
-using namespace atcoder;
-
 #include "template.hpp"
 /* #endregion */
 

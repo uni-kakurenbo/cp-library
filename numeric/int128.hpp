@@ -31,7 +31,7 @@ std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) n
     if(v == 0) return out << 0;
     if(v < 0) out << '-', v *= -1;
     std::string str;
-    while(v > 0) str += v%10 + '0', v /= 10;
+    while(v > 0) str += static_cast<char>(v%10) + '0', v /= 10;
     std::reverse(str.begin(), str.end());
     return out << str;
 }

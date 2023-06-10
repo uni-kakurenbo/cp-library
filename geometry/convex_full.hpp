@@ -17,7 +17,7 @@ std::vector<P> convex_hull(const I first, const I last, const bool margin = fals
 
     std::vector<P> points(first, last);
 
-    const size_t n = points.size();
+    const auto n = static_cast<size_t>(points.size());
     std::sort(points.begin(), points.end());
 
     std::vector<P> res;
@@ -29,7 +29,7 @@ std::vector<P> convex_hull(const I first, const I last, const bool margin = fals
         res.emplace_back(p);
     }
 
-    const size_t t = res.size();
+    const auto t = static_cast<size_t>(res.size());
     for(auto i=n-2; i>=0; --i) {
         const auto p = points[i];
         while(static_cast<size_t>(res.size()) > t and cross(p, res.end()[-2], res.end()[-1]) <= 0) {

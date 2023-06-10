@@ -15,11 +15,11 @@ signed main() {
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
-            ll l, r, b, c; std::cin >> l >> r >> b >> c;
+            int l, r, b, c; std::cin >> l >> r >> b >> c;
             data(l, r).affine(b, c);
         }
         if(t == 1) {
-            ll l, r; std::cin >> l >> r;
+            int l, r; std::cin >> l >> r;
             print(data(l, r).sum());
         }
         debug(data);

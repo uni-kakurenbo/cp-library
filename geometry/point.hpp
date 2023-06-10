@@ -54,7 +54,7 @@ template <class T> struct point : protected std::pair<T,T> {
 template<class T>
 inline constexpr T std::abs(const lib::point<T>& v) {
     T x = v.x(), y = v.y(), n = std::max(std::abs(x), std::abs(y));
-    if(n == 0) return 0;
+    if(0 <= n and n <= 0) return 0;
     x /= n, y /= n;
     return n * std::sqrt(x * x + y * y);
 }

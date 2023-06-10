@@ -16,7 +16,7 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             int p, x; std::cin >> p >> x;
-            data.insert(p, x);
+            data.insert(p, modint998244353{x});
         }
         if(t == 1) {
             int p; std::cin >> p;

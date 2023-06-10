@@ -119,7 +119,6 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
     static_assert(algebraic::internal::is_commutative_v<monoid>, "commutative property is required");
 
   private:
-    using monoid_value = typename monoid::value_type;
     using base = typename fenwick_tree_impl::base<monoid>;
 
   public:
@@ -133,11 +132,11 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
 
   public:
     core() noexcept(NO_EXCEPT) : base() {}
-    explicit core(const size_type n, const monoid_value& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
     template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(std::distance(first, last)) { this->assign(first, last); }
+    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
 
 
     template<class T>
@@ -151,7 +150,7 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
         return *this;
     }
 
-    inline auto& fill(const monoid_value& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         std::fill(this->data(), this->data() + this->size(), v);
         this->initialize();
         return *this;
@@ -170,20 +169,20 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
         operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
         value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& apply(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator<<=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -209,13 +208,13 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
     };
 
 
-    inline auto& apply(const size_type p, const monoid_value& x) noexcept(NO_EXCEPT) {
+    inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
         this->base::apply(p, x);
          return *this;
     }
 
-    inline auto& set(const size_type p, const monoid_value& x) noexcept(NO_EXCEPT) {
+    inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         static_assert(algebraic::internal::is_invertible_v<value_type>, "point setting requires inverse element");
         assert(0 <= p && p < this->size());
         this->base::set(p, x);

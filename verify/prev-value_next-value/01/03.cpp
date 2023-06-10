@@ -6,9 +6,6 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include <bits/stdc++.h>
-using namespace std;
-
 #include "template.hpp"
 /* #endregion */
 
@@ -24,9 +21,9 @@ signed main() {
         auto itr = wm.next_element(p);
 
         int s = itr == wm.end() ? 0 : k - abs(p - *itr);
-        int t = itr == wm.begin() ? 0 : k - abs(p - *prev(itr));
+        int t = itr == wm.begin() ? 0 : k - abs(p - *std::prev(itr));
 
-        print(max({ 0, s, t }));
+        print(std::max({ 0, s, t }));
     }
 
     return 0;

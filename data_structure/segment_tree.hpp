@@ -145,7 +145,6 @@ template<class, class = std::void_t<>> struct core {};
 template<class monoid>
 struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid>>> : base<monoid> {
   private:
-    using monoid_value = typename monoid::value_type;
     using base = typename segment_tree_impl::base<monoid>;
 
   public:
@@ -159,13 +158,13 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
 
   public:
     core() : base() {}
-    explicit core(const size_type n, const monoid_value& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
     template<class T>
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(std::distance(first, last)) { this->assign(first, last); }
+    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
 
     template<class T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
@@ -174,12 +173,12 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     inline auto& assign(const I first, const I last) noexcept(NO_EXCEPT) {
         assert(std::distance(first, last) == this->size());
         size_type p = 0;
-        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = monoid(*itr);
+        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = value_type(*itr);
         REPD(p, 1, this->_size) this->update(p);
         return *this;
     }
 
-    inline auto& fill(const monoid_value& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         REP(p, this->_n) this->_data[this->_size + p] = v;
         REPD(p, 1, this->_size) this->update(p);
         return *this;
@@ -194,23 +193,23 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
-        operator monoid_value() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        monoid_value val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator=(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& apply(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const monoid_value& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator<<=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -233,13 +232,13 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     };
 
 
-    inline auto& apply(const size_type p, const monoid_value& x) noexcept(NO_EXCEPT) {
+    inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
         this->base::apply(p, x);
          return *this;
     }
 
-    inline auto& set(const size_type p, const monoid_value& x) noexcept(NO_EXCEPT) {
+    inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
         this->base::set(p, x);
          return *this;

@@ -24,4 +24,3 @@
 #include "iterable/applied.hpp"
 #include "iterable/accumulation.hpp"
 #include "iterable/operation.hpp"
-#include "iterable/mex.hpp"
