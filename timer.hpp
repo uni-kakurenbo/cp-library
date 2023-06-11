@@ -44,7 +44,7 @@ struct timer {
     inline time elapsed() const noexcept {
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - this->clock_start).count();
     }
-    inline time remaining () const noexcept {
+    inline time remaining() const noexcept {
         return time_limit - this->elapsed();
     }
 
