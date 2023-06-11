@@ -1,18 +1,22 @@
 #pragma once
 
 #include "numeric/int128.hpp"
-#include "geometry.hpp"
-
 #include "numeric/arithmetic.hpp"
 #include "numeric/matrix.hpp"
 #include "numeric/modint.hpp"
+
+#include "numeric/fast_prime.hpp"
+#include "numeric/prime_enumerator.hpp"
+#include "numeric/prime_sieve.hpp"
+
+#include "geometry/basic.hpp"
 
 #include "constants.hpp"
 #include "multi_container.hpp"
 #include "grid.hpp"
 #include "graph.hpp"
 #include "string.hpp"
-#include "view.hpp"
+#include "views.hpp"
 
 #include "adapter/set.hpp"
 #include "adapter/valarray.hpp"

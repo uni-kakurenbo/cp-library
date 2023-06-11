@@ -51,10 +51,6 @@
 #include "data_structure/restorable_stack.hpp"
 #include "data_structure/segment_tree.hpp"
 
-#include "geometry/basic.hpp"
-#include "geometry/convex_full.hpp"
-#include "geometry/point.hpp"
-
 #include "graph/centroid_decomposition.hpp"
 #include "graph/centroid_path_decomposition.hpp"
 #include "graph/connected_components.hpp"
@@ -81,7 +77,6 @@
 #include "iterable/inverse.hpp"
 #include "iterable/longest_common_subsequence.hpp"
 #include "iterable/longest_increasing_subsequence.hpp"
-#include "iterable/mex.hpp"
 #include "iterable/operation.hpp"
 #include "iterable/run_length_encoding.hpp"
 
@@ -115,11 +110,12 @@
 #include "utility/hilbert_order.hpp"
 #include "utility/restrictor.hpp"
 
+#include "geometries.hpp"
+#include "views.hpp"
+
 #include "constants.hpp"
-#include "geometry.hpp"
 #include "graph.hpp"
 #include "multi_container.hpp"
 #include "string.hpp"
 #include "template.hpp"
 #include "utilities.hpp"
-#include "view.hpp"
