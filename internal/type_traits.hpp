@@ -1,5 +1,10 @@
 #pragma once
 
+
+#ifndef $TYPE_TRAITS // for debuggers
+#define $TYPE_TRAITS
+
+
 #include <iostream>
 #include <vector>
 #include <type_traits>
@@ -9,6 +14,7 @@
 namespace lib {
 
 namespace internal {
+
 
 template<class T> struct remove_cvref {
   using type = typename std::remove_cv_t<std::remove_reference_t<T>>;
@@ -115,6 +121,11 @@ template<class T> struct iterator_resolver {
   }
 };
 
+template<class C> using iterator_t = decltype(iterator_resolver<C>::begin(std::declval<C&>()));
+
+
 }  // namespace internal
 
 }  // namespace atcoder
+
+#endif //ifndef $TYPE_TRAITS
