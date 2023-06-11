@@ -42,7 +42,7 @@ template<class T> struct valarray : std::valarray<T> {
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : std::valarray<T>(std::forward<const T>(val), length) {}
 
     template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
-    valarray(const I first, const I last) noexcept(NO_EXCEPT) : std::valarray<T>(first, last) {}
+    valarray(const I first, const I last) noexcept(NO_EXCEPT) : std::valarray<T>(first, std::distance(first, last)) {}
 
     template<class U> valarray(const std::initializer_list<U>& init) noexcept(NO_EXCEPT) : valarray(std::begin(init), std::end(init)) {}
 
