@@ -14,15 +14,14 @@
 namespace lib {
 
 template<class T = i64, class container = std::vector<internal::size_t>>
-struct compression : container {
+struct compressed : container {
     using size_type = internal::size_t;
 
-  protected:
     std::vector<T> values;
 
   public:
-    explicit compression() noexcept(NO_EXCEPT) {}
-    template<class I> compression(const I first, const I last) noexcept(NO_EXCEPT) {
+    explicit compressed() noexcept(NO_EXCEPT) {}
+    template<class I> compressed(const I first, const I last) noexcept(NO_EXCEPT) {
         this->values.assign(first, last);
         std::sort(this->values.begin(), this->values.end());
         this->values.erase(std::unique(this->values.begin(), this->values.end()), this->values.end());
@@ -33,6 +32,8 @@ struct compression : container {
             *itr = this->rank(*e);
         }
     }
+
+    inline size_type rank_sup() const { return static_cast<size_type>(this->values.size()); }
 
     inline size_type rank(const T& val) const noexcept(NO_EXCEPT) {
         return static_cast<size_type>(std::distance(this->values.begin(), std::lower_bound(this->values.begin(), this->values.end(), val)));

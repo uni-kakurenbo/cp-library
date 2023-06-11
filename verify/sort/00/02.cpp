@@ -23,7 +23,7 @@ signed main() {
     return 0;
 }
 
-#include "iterable/compression.hpp"
+#include "iterable/compressed.hpp"
 #include "data_structure/segment_tree.hpp"
 #include "data_structure/adapter/set.hpp"
 

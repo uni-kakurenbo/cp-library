@@ -21,7 +21,7 @@
 
 #include "constants.hpp"
 
-#include "iterable/compression.hpp"
+#include "iterable/compressed.hpp"
 #include "numeric/bit.hpp"
 #include "data_structure/bit_vector.hpp"
 
@@ -459,11 +459,11 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
 
 template<class T, class dict_type>
-struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression<T>::size_type,dict_type> {
+struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<T>::size_type,dict_type> {
   protected:
-    using core = wavelet_matrix<typename compression<T>::size_type,dict_type>;
+    using core = wavelet_matrix<typename compressed<T>::size_type,dict_type>;
 
-    compression<T> compressed;
+    compressed<T> compressed;
 
   public:
     using value_type = typename core::value_type;
@@ -471,7 +471,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compression
 
     template<class I> compressed_wavelet_matrix(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
     template<class I> void build(const I first, const I last) noexcept(NO_EXCEPT) {
-        this->compressed = compression<T>(first, last);
+        this->compressed = compressed<T>(first, last);
         this->core::build(ALL(this->compressed));
     }
 

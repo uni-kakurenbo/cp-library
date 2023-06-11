@@ -12,6 +12,7 @@
 #include "grid.hpp"
 #include "graph.hpp"
 #include "string.hpp"
+#include "view.hpp"
 
 #include "adapter/set.hpp"
 #include "adapter/valarray.hpp"
@@ -22,5 +23,10 @@
 #include "utility/restrictor.hpp"
 
 #include "iterable/applied.hpp"
+#include "iterable/adjacent_difference.hpp"
 #include "iterable/accumulation.hpp"
+#include "iterable/compressed.hpp"
+#include "iterable/counter.hpp"
+#include "iterable/inverse.hpp"
+#include "iterable/run_length_encoding.hpp"
 #include "iterable/operation.hpp"

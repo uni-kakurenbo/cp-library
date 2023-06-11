@@ -23,7 +23,7 @@ signed main() {
     return 0;
 }
 
-#include "iterable/compression.hpp"
+#include "iterable/compressed.hpp"
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/adapter/set.hpp"
 

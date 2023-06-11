@@ -75,7 +75,7 @@
 #include "iterable/accumulation.hpp"
 #include "iterable/adjacent_difference.hpp"
 #include "iterable/applied.hpp"
-#include "iterable/compression.hpp"
+#include "iterable/compressed.hpp"
 #include "iterable/counter.hpp"
 #include "iterable/count_inversion.hpp"
 #include "iterable/inverse.hpp"

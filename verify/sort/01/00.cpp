@@ -23,7 +23,7 @@ signed main() {
     return 0;
 }
 
-#include "iterable/compression.hpp"
+#include "iterable/compressed.hpp"
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/adapter/set.hpp"
 #include <boost/range/join.hpp>
@@ -32,7 +32,7 @@ void solve() {
     int n, m; cin >> n >> m;
     valarray<i64> a(n), b(m); input >> a >> b;
     auto rng = boost::join(a, b);
-    lib::compression comp(ALL(rng));
+    lib::compressed comp(ALL(rng));
     ITR(v, a) print(comp.rank(v) + 1);
     ITR(v, b) print(comp.rank(v) + 1);
 }
