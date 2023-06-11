@@ -1,8 +1,9 @@
 #pragma once
 
-
+#include <iterator>
 #include <vector>
 #include <string>
+#include <utility>
 #include <iterator>
 #include <numeric>
 
@@ -22,6 +23,20 @@ std::string join(const I first, const I last, const std::string& sep = "") noexc
 template<class V>
 std::string join(const V& v, const std::string& sep = "") noexcept(NO_EXCEPT) {
     return join(std::begin(v), std::end(v), sep);
+}
+
+
+template<class V, class U>
+V concat(const V& v, const U& u) noexcept(NO_EXCEPT) {
+    V res(std::size(v) + std::size(u));
+    std::copy(std::begin(v), std::end(v), std::begin(res));
+    std::copy(std::begin(u), std::end(u), std::next(std::begin(res), std::size(v)));
+    return res;
+}
+
+template<class V, class... Us>
+V concat(const V& v, const Us&... tails) noexcept(NO_EXCEPT) {
+    return lib::concat(v, lib::concat(tails...));
 }
 
 
