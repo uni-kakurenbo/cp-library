@@ -9,6 +9,7 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/type_traits.hpp"
 
 #include "adapter/valarray.hpp"
 
@@ -16,7 +17,7 @@
 namespace lib {
 
 
-template<class T = i64, class container = valarray<T>>
+template<class T, class container = valarray<T>>
 struct accumulation : container {
     using size_type = internal::size_t;
 
@@ -58,12 +59,12 @@ struct accumulation_2d : container {
     Operator _op;
 
   public:
-    accumulation_2d() noexcept(NO_EXCEPT) {}
+    explicit accumulation_2d() noexcept(NO_EXCEPT) {}
 
     template<class I>
-    accumulation_2d(const I first, const I last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
-        const size_type h = std::distance(first, last);
-        const size_type w = std::distance(std::begin(*first), std::end(*first));
+    explicit accumulation_2d(const I first, const I last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
+        const size_type h = static_cast<size_type>(std::distance(first, last));
+        const size_type w = static_cast<size_type>(std::distance(std::begin(*first), std::end(*first)));
         {
             auto row = first;
             this->assign(h+1, head);
@@ -94,6 +95,11 @@ struct accumulation_2d : container {
     }
 };
 
+template<class I>
+explicit accumulation_2d(const I, const I) ->
+    accumulation_2d<
+        typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
+    >;
 
 
 } // namespace lib

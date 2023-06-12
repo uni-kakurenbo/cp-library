@@ -13,7 +13,7 @@
 
 namespace lib {
 
-template<class T = i64, class container = std::vector<internal::size_t>>
+template<class T, class container = std::vector<internal::size_t>>
 struct compressed : container {
     using size_type = internal::size_t;
 
@@ -45,5 +45,9 @@ struct compressed : container {
     inline T value(const size_type rank) const noexcept(NO_EXCEPT) { return this->values[rank]; }
     inline T operator()(const internal::size_t val) const noexcept(NO_EXCEPT) { return this->values[val]; }
 };
+
+template<class I>
+explicit compressed(const I, const I) -> compressed<typename std::iterator_traits<I>::value_type>;
+
 
 } // namespace lib

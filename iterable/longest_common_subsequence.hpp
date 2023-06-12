@@ -18,9 +18,10 @@ namespace lib {
 
 template<class container = grid<internal::size_t>>
 struct lcs_sizes : container {
-    lcs_sizes() noexcept(NO_EXCEPT) {}
+    explicit lcs_sizes() noexcept(NO_EXCEPT) {}
+
     template<class I>
-    lcs_sizes(const I first0, const I last0, const I first1, const I last1) noexcept(NO_EXCEPT)
+    explicit lcs_sizes(const I first0, const I last0, const I first1, const I last1) noexcept(NO_EXCEPT)
       : container(static_cast<internal::size_t>(std::distance(first0, last0))+1, static_cast<internal::size_t>(std::distance(first1, last1))+1) {
         internal::size_t pos0 = 0;
         for(auto itr0=first0; itr0!=last0; ++pos0, ++itr0) {

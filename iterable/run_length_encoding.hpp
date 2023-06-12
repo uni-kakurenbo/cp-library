@@ -13,8 +13,10 @@ namespace lib {
 
 template<class T, class container = std::vector<std::pair<T,internal::size_t>>>
 struct run_length : container {
-    run_length() noexcept(NO_EXCEPT) {}
-    template<class I> run_length(const I first, const I last) noexcept(NO_EXCEPT) {
+    explicit run_length() noexcept(NO_EXCEPT) {}
+
+    template<class I>
+    explicit run_length(const I first, const I last) noexcept(NO_EXCEPT) {
         this->clear();
         typename container::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {
@@ -25,5 +27,9 @@ struct run_length : container {
         this->emplace_back(*prev(last), cnt);
     }
 };
+
+template<class I>
+explicit run_length(const I, const I) -> run_length<typename std::iterator_traits<I>::value_type>;
+
 
 } // namespace lib
