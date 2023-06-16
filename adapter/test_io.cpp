@@ -13,9 +13,9 @@ using namespace atcoder;
 #include "adapter/output.hpp"
 using namespace std;
 
-input_adapter _input;
-output_adapter _print(&cout, output_adapter<>::sendl);
-output_adapter _info(&cout, "");
+lib::input_adapter _input;
+lib::output_adapter _print(&cout, lib::output_adapter<>::sendl);
+lib::output_adapter _info(&cout, "");
 
 #define input _input
 #define print _print

@@ -67,6 +67,9 @@ using lib::SPC;
 using lib::DIRS4;
 using lib::DIRS8;
 
+using lib::input_adapter;
+using lib::output_adapter;
+
 using lib::nPr;
 using lib::nCr;
 

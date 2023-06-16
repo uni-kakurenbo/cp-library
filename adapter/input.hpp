@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <atcoder/modint>
 
 #include <iostream>
@@ -11,6 +12,9 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/resolving_rank.hpp"
+
+
+namespace lib {
 
 template<class source = std::istream>
 struct input_adapter {
@@ -89,3 +93,6 @@ struct input_adapter {
         *this >> p->first >> p->second;
     }
 };
+
+
+} // namespace lib

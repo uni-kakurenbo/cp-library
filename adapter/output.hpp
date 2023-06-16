@@ -1,15 +1,21 @@
 #pragma once
 
+
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <vector>
 #include <iterator>
+#include <variant>
 
 #include "internal/dev_env.hpp"
 #include "internal/resolving_rank.hpp"
 
-template<class destination = std::ostream, class Terminator = std::string, class Separator = std::string>
+
+namespace lib {
+
+
+template<class destination = std::ostream>
 struct output_adapter {
   private:
     template<class T>
@@ -37,13 +43,33 @@ struct output_adapter {
 
   public:
     using char_type = typename destination::char_type;
+
     static constexpr auto sendl = std::endl<char_type,std::char_traits<char_type>>;
+    static constexpr auto sflush = std::flush<char_type,std::char_traits<char_type>>;
+
+  protected:
+    using sfunc_type = std::remove_const_t<decltype(output_adapter::sendl)>;
+
+  public:
+    using separator_type = std::variant<std::string,sfunc_type>;
 
     destination *out;
-    Terminator endline;
-    Separator separator;
+    separator_type endline;
+    separator_type separator;
 
-    output_adapter(destination *des = &std::cout, Terminator endl = "\n", Separator sep = " ") noexcept
+  protected:
+    void put_separator() noexcept(NO_EXCEPT) {
+        if(this->separator.index() == 0) *this->out << std::get<std::string>(this->separator);
+        if(this->separator.index() == 1) *this->out << std::get<sfunc_type>(this->separator);
+    }
+    void put_endline() noexcept(NO_EXCEPT) {
+        if(this->endline.index() == 0) *this->out << std::get<std::string>(this->endline);
+        if(this->endline.index() == 1) *this->out << std::get<sfunc_type>(this->endline);
+    }
+
+  public:
+    template<class Terminator = std::string, class Separator = std::string>
+    output_adapter(destination *des = &std::cout, Terminator endl = "\n", Separator sep = " ") noexcept(NO_EXCEPT)
       : out(des), endline(endl), separator(sep)
     {
         *this << std::fixed << std::setprecision(20);
@@ -57,11 +83,11 @@ struct output_adapter {
     }
 
     template<class T = std::string> inline void operator()(const T &val = "") noexcept(NO_EXCEPT){
-        *this << val << this->endline;
+        *this << val, this->put_endline();
     }
 
     template<class T, class ...Args> inline void operator()(const T &head, const Args& ...tail) noexcept(NO_EXCEPT){
-        *this << head << this->separator;
+        *this << head, this->put_separator();
         (*this)(tail...);
     }
 
@@ -69,9 +95,9 @@ struct output_adapter {
         for(I itr=first; itr!=last;) {
             *this << *itr;
             if(++itr == last) {
-                if(terminate) *this << this->endline;
+                if(terminate) *this << this->put_endline();
             }
-            else *this << this->separator;
+            else *this << this->put_separator();
         }
     }
 
@@ -84,3 +110,6 @@ struct output_adapter {
         (*this)(p.first, p.second);
     }
 };
+
+
+} // namespace lib

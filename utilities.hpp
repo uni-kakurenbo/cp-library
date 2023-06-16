@@ -1,5 +1,7 @@
 #pragma once
 
+#include "adapter/io.hpp"
+
 #include "numeric/int128.hpp"
 #include "numeric/arithmetic.hpp"
 #include "numeric/matrix.hpp"
