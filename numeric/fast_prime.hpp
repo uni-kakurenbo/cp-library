@@ -33,9 +33,10 @@ namespace internal {
 
 // Miller-Rabin primality test
 template<typename mint> bool primality_test(const value_type n, const std::initializer_list<value_type> as) noexcept(NO_EXCEPT) {
+  #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
     if(static_cast<value_type>(mint::mod()) != n) mint::set_mod(n);
-  #pragma GCC diagnostic warning "-Wconversion"
+  #pragma GCC diagnostic pop
 
     value_type d = n-1;
 
