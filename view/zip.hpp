@@ -107,7 +107,7 @@ struct zip_view : internal::view_impl::base {
 
 
 template<class... Containers>
-auto zip(Containers&... containers) { return zip_view(containers...); }
+constexpr inline auto zip(Containers&... containers) noexcept(NO_EXCEPT) { return zip_view(containers...); }
 
 
 } // namespace lib
