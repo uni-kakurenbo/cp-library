@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include <immintrin.h>
 #include <cstdint>
 #include <vector>
 #include <iterator>
@@ -10,13 +9,15 @@
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 
+#include "numeric/bit.hpp"
+
 
 namespace lib {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
 struct bit_vector {
-    using size_type = internal::size_t;
+    using size_type = std::uint_fast32_t;
 
   private:
     static constexpr size_type w = 64;
@@ -41,19 +42,19 @@ struct bit_vector {
     inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / w] |= 1LL << (k % w); }
     inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return std::uint32_t(this->_block[k / w] >> (k % w)) & 1U; }
 
-    __attribute__((optimize("O3", "unroll-loops"))) void init(const int _n) noexcept(NO_EXCEPT) {
+    __attribute__((optimize("O3", "unroll-loops"))) void init(const size_type _n) noexcept(NO_EXCEPT) {
         this->_n = this->_zeros = _n;
         this->_block.resize(_n / w + 1, 0);
         this->_count.resize(this->_block.size(), 0);
     }
 
-    __attribute__((target("popcnt"))) void build() noexcept(NO_EXCEPT) {
-        for(auto k = 1UL; k < this->_block.size(); ++k) this->_count[k] = this->_count[k-1] + static_cast<size_type>(_mm_popcnt_u64(this->_block[k-1]));
+    void build() noexcept(NO_EXCEPT) {
+        for(auto k = 1UL; k < this->_block.size(); ++k) this->_count[k] = this->_count[k-1] + static_cast<size_type>(lib::popcount(this->_block[k-1]));
         this->_zeros = this->rank0(this->_n);
     }
 
-    __attribute__((target("bmi2,popcnt"))) inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
-        return this->_count[k / w] + static_cast<size_type>(_mm_popcnt_u64(_bzhi_u64(this->_block[k / w], k % w)));
+    inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
+        return this->_count[k / w] + static_cast<size_type>(lib::popcount(lib::clear_higher_bits(this->_block[k / w], k % w)));
     }
     inline size_type rank0(size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
 
@@ -61,7 +62,7 @@ struct bit_vector {
         return bit ? this->rank1(k) : this->rank0(k);
     }
 
-    __attribute__((target("bmi2,popcnt"))) inline size_type select(const bool bit, const size_type rank) const noexcept(NO_EXCEPT) {
+    inline size_type select(const bool bit, const size_type rank) const noexcept(NO_EXCEPT) {
         if (!bit and rank > this->zeros()) { return this->_n + 1; }
         if (bit and rank > this->ones()) { return this->_n + 1; }
 
@@ -86,7 +87,7 @@ struct bit_vector {
         size_type ng = -1, ok = w;
         while(ok - ng > 1) {
             const size_type mid = (ok + ng) / 2;
-            size_type r = count + static_cast<size_type>(_mm_popcnt_u64(_bzhi_u64(block, mid)));
+            size_type r = count + static_cast<size_type>(lib::popcount(lib::clear_higher_bits(block, mid)));
             if(!bit) r = base_index + mid - r;
             (r >= rank ? ok : ng) = mid;
         }
@@ -99,7 +100,12 @@ struct bit_vector {
 
 
     struct iterator : virtual internal::container_iterator_interface<bool,bit_vector> {
-        iterator(const bit_vector *const ref, const size_type pos) noexcept(NO_EXCEPT) : internal::container_iterator_interface<bool,bit_vector>(ref, pos) {}
+        using internal::container_iterator_interface<bool,bit_vector>::difference_type;
+
+        iterator(const bit_vector *const ref, const size_type pos)
+            noexcept(NO_EXCEPT) : internal::container_iterator_interface<bool,bit_vector>(ref, static_cast<difference_type>(pos)) {
+
+            }
 
         inline bool operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
