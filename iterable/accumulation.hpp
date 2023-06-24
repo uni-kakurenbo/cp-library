@@ -46,6 +46,9 @@ struct accumulation : container {
     }
 };
 
+template<class I>
+explicit accumulation(const I, const I) -> accumulation<typename std::iterator_traits<I>::value_type>;
+
 
 template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>
 struct accumulation_2d : container {
