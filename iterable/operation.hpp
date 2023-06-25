@@ -14,14 +14,14 @@ namespace lib {
 
 
 template<class I>
-std::string join(const I first, const I last, const std::string& sep = "") noexcept(NO_EXCEPT) {
+std::string join(const I first, const I last, const char * sep = "") noexcept(NO_EXCEPT) {
     std::ostringstream res;
     std::copy(first, last, std::ostream_iterator<typename std::iterator_traits<I>::value_type>(res, sep));
     return res.str();
 }
 
 template<class V>
-std::string join(const V& v, const std::string& sep = "") noexcept(NO_EXCEPT) {
+std::string join(const V& v, const char * sep = "") noexcept(NO_EXCEPT) {
     return join(std::begin(v), std::end(v), sep);
 }
 
