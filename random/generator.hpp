@@ -39,7 +39,8 @@ template<class Engine> struct random_engine {
     };
 
     template<class T = double> inline T real() const noexcept(NO_EXCEPT) {
-        return static_cast<T>(this->engine() + 0.5) / (1.0 + this->max());
+        const T v = static_cast<T>((this->engine() + 0.5) / (1.0 + this->max()));
+        return static_cast<T>((this->random() + v) / (1.0 + this->max()));
     }
 };
 
