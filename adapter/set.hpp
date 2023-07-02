@@ -23,7 +23,7 @@ template<class set> struct set_wrapper : set {
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->set::size(); }
 
-    inline bool contains(const typename set::key_type& key) noexcept(NO_EXCEPT) { return static_cast<bool>(this->count(key)); }
+    inline bool contains(const typename set::key_type& key) const noexcept(NO_EXCEPT) { return static_cast<bool>(this->count(key)); }
 
     inline std::optional<typename set::iterator> remove(const typename set::key_type& key) noexcept(NO_EXCEPT) {
         const auto itr = this->find(key);
@@ -31,16 +31,16 @@ template<class set> struct set_wrapper : set {
         return this->erase(itr);
     }
 
-    inline auto min_element() noexcept(NO_EXCEPT) { return this->begin(); }
-    inline auto max_element() noexcept(NO_EXCEPT) { return this->begin(); }
+    inline auto min_element() const noexcept(NO_EXCEPT) { return this->begin(); }
+    inline auto max_element() const noexcept(NO_EXCEPT) { return this->begin(); }
 
-    inline auto min() noexcept(NO_EXCEPT) { return *this->begin(); }
-    inline auto max() noexcept(NO_EXCEPT) { return *this->end(); }
+    inline auto min() const noexcept(NO_EXCEPT) { return *this->begin(); }
+    inline auto max() const noexcept(NO_EXCEPT) { return *this->end(); }
 
     inline auto pop_min() noexcept(NO_EXCEPT) { this->erase(this->begin()); return *this; }
     inline auto pop_max() noexcept(NO_EXCEPT) { this->erase(this->end()); return *this; }
 
-    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) noexcept(NO_EXCEPT) {
+    inline auto next_element(const typename set::key_type& key, const size_type _count = 0) const noexcept(NO_EXCEPT) {
         size_type count = std::abs(_count);
         auto itr = this->lower_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -52,7 +52,7 @@ template<class set> struct set_wrapper : set {
         }
         return itr;
     }
-    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) noexcept(NO_EXCEPT) {
+    inline auto prev_element(const typename set::key_type& key, const size_type _count = 0) const noexcept(NO_EXCEPT) {
         size_type count = std::abs(_count);
         auto itr = this->upper_bound(key);
         const auto begin = this->begin(), end = this->end();
@@ -65,7 +65,7 @@ template<class set> struct set_wrapper : set {
         return itr;
     }
 
-    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) noexcept(NO_EXCEPT) {
+    inline std::optional<typename set::value_type> next(const typename set::key_type& key, size_type count = 0) const noexcept(NO_EXCEPT) {
         auto itr = this->lower_bound(key);
         const auto end = this->end();
         if(itr == end) return {};
@@ -73,7 +73,7 @@ template<class set> struct set_wrapper : set {
         return { *itr };
     }
 
-    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) noexcept(NO_EXCEPT) {
+    inline std::optional<typename set::value_type> prev(const typename set::key_type& key, size_type count = 0) const noexcept(NO_EXCEPT) {
         auto itr = this->upper_bound(key);
         const auto begin = this->begin();
         if(itr-- == begin) return {};
