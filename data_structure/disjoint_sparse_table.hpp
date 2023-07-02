@@ -63,8 +63,8 @@ struct base {
     }
 
     inline auto& raw() noexcept(NO_EXCEPT) {
-        return this->_table.front();
         this->_built = false;
+        return this->_table.front();
     }
     inline const auto& raw() const noexcept(NO_EXCEPT) { return this->_table.front(); }
     inline const auto& data() const noexcept(NO_EXCEPT) { return this->_table.front(); }
