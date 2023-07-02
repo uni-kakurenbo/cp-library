@@ -11,11 +11,14 @@
 #include <atcoder/math.hpp>
 
 #include "snippet/aliases.hpp"
+#include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 #include "numeric/internal/number_base.hpp"
+
+#include "iterable/operation.hpp"
 
 
 namespace lib {
@@ -63,6 +66,22 @@ using atcoder::pow_mod;
 using atcoder::inv_mod;
 using atcoder::crt;
 
+
+template<class... Args>
+const std::common_type_t<Args...> min(const Args&... args) {
+    return std::min({ static_cast<std::common_type_t<Args...>>(args)... });
+}
+
+template<class... Args>
+const std::common_type_t<Args...> max(const Args&... args) {
+    return std::max({ static_cast<std::common_type_t<Args...>>(args)... });
+}
+
+
+template<class... Args>
+const std::common_type_t<Args...> mex(const Args&... args) {
+    return mex({ static_cast<std::common_type_t<Args...>>(args)... });
+}
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
 std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) {
