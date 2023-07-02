@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -10,9 +11,16 @@
 #include <utility>
 
 #include "snippet/aliases.hpp"
+#include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
+#include "constants.hpp"
+
+#include "adapter/vector.hpp"
+#include "adapter/valarray.hpp"
+
 
 namespace lib {
 
@@ -168,6 +176,7 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
 
 template<class T, class container> struct grid_core : container, virtual grid_impl::interface<T> {
     using container::container;
+    using size_type = internal::size_t;
 
     enum class invert_direction { vertical, horizontal };
     enum class rotate_direction { counter_clockwise, clockwise };
@@ -179,6 +188,34 @@ template<class T, class container> struct grid_core : container, virtual grid_im
             (*this)(i, j) = val;
         }
     }
+
+
+    inline bool is_valid(const size_type i, const size_type j) const noexcept(NO_EXCEPT) {
+        return 0 <= i and i < this->height() and 0 <= j and j < this->width();
+    }
+
+
+    template<class I>
+    inline auto vicinities(const size_type i, const size_type j, const I dirs_first, const I dirs_last) const noexcept(NO_EXCEPT) {
+        std::vector<std::pair<size_type,size_type>> res;
+        REP(itr, dirs_first, dirs_last) {
+            const size_type ii = i + itr->first, jj = j + itr->second;
+            if(this->is_valid(ii, jj)) res.emplace_back(ii, jj);
+        }
+        return res;
+    }
+
+    template<class I, class C>
+    inline auto vicinities(const std::pair<size_type,size_type>& p, const C dirs) const noexcept(NO_EXCEPT) {
+        return this->vicinities(p.first, p.second, ALL(dirs));
+    }
+
+    inline auto vicinities4(const size_type i, const size_type j) const noexcept(NO_EXCEPT) { return this->vicinities(i, j, ALL(DIRS4)); }
+    inline auto vicinities4(const std::pair<size_type,size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS4)); }
+
+    inline auto vicinities8(const size_type i, const size_type j) const noexcept(NO_EXCEPT) { return this->vicinities(i, j, ALL(DIRS8)); }
+    inline auto vicinities8(const std::pair<size_type,size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS8)); }
+
 
     template<invert_direction DIRECTION = invert_direction::vertical>
     inline grid_core& invert() noexcept(NO_EXCEPT) {
@@ -230,10 +267,13 @@ template<class T, class container> struct grid_core : container, virtual grid_im
 
 } // namespace internal
 
-template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
+template<class T, class Row = vector<T>, class base = vector<Row>>
 using grid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>>;
 
-template<class T, class base = std::vector<T>>
+template<class T, class Row = valarray<T>, class base = valarray<Row>>
+using valgrid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>>;
+
+template<class T, class base = vector<T>>
 using unfolded_grid = internal::grid_core<T,internal::grid_impl::unfolded_container<T,base>>;
 
 } // namespace lib
