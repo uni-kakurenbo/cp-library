@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iterator>
-#include <unordered_map>
+#include <map>
 
 #include "snippet/aliases.hpp"
 #include "internal/dev_env.hpp"
@@ -11,7 +11,7 @@
 namespace lib {
 
 
-template<class T, class container = std::unordered_map<T,internal::size_t>>
+template<class T, class container = std::map<T,internal::size_t>>
 struct counter : container {
     explicit counter() noexcept(NO_EXCEPT) {}
     template<class I> counter(const I first, const I last) noexcept(NO_EXCEPT) {

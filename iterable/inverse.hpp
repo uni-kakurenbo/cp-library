@@ -2,7 +2,7 @@
 
 #include <iterator>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 #include "snippet/aliases.hpp"
 #include "internal/dev_env.hpp"
@@ -10,11 +10,11 @@
 
 namespace lib {
 
-template<class T, class V = std::vector<internal::size_t>, class container = std::unordered_map<T,V>>
+template<class T, class V = std::vector<internal::size_t>, class container = std::map<T,V>>
 struct inverse : container {
     explicit inverse() noexcept(NO_EXCEPT) {}
     template<class I> inverse(const I first, const I last) noexcept(NO_EXCEPT) {
-        for(auto itr=first; itr!=last; ++itr) (*this)[*itr].push_back(std::distance(first,itr));
+        for(auto itr=first; itr!=last; ++itr) (*this)[*itr].push_back(static_cast<typename container::mapped_type::value_type>(std::distance(first,itr)));
     }
 };
 
