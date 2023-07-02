@@ -60,6 +60,7 @@ using lib::ld;
 
 using lib::INF32;
 using lib::INF64;
+using lib::INF;
 
 using lib::LN;
 using lib::SPC;
