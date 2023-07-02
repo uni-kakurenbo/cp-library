@@ -463,7 +463,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
   protected:
     using core = wavelet_matrix<typename compressed<T>::size_type,dict_type>;
 
-    compressed<T> compressed;
+    compressed<T> _comp;
 
   public:
     using value_type = typename core::value_type;
@@ -471,11 +471,11 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
 
     template<class I> compressed_wavelet_matrix(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
     template<class I> void build(const I first, const I last) noexcept(NO_EXCEPT) {
-        this->compressed = compressed<T>(first, last);
-        this->core::build(ALL(this->compressed));
+        this->_comp = compressed<T>(first, last);
+        this->core::build(ALL(this->_comp));
     }
 
-    inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->compressed(this->core::get(k)); }
+    inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_comp(this->core::get(k)); }
     inline size_type operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->core::get(k); }
 
 
@@ -507,16 +507,16 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
         inline auto _range() const noexcept(NO_EXCEPT) { return this->_super->core::range(this->_begin, this->_end); }
 
       public:
-        inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->compressed(this->_range().get(k)); }
+        inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().get(k)); }
         inline T operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->get(k); }
 
 
-        inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->compressed(this->_range().kth_smallest(k)); }
+        inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_smallest(k)); }
         inline auto kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) {
             return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_smallest_element(k)));
         }
 
-        inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->compressed(this->_range().kth_largest(k));}
+        inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_largest(k));}
         inline auto kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) {
             return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_largest_element(k)));
         }
@@ -530,33 +530,33 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
 
 
         inline size_type count_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) {
-            return this->_range().count_in_range(this->_super->compressed.rank(x), this->_super->compressed.rank(y));
+            return this->_range().count_in_range(this->_super->_comp.rank(x), this->_super->_comp.rank(y));
         }
 
-        inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_under(this->_super->compressed.rank(v)); }
-        inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_over(this->_super->compressed.rank2(v)); }
-        inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->compressed.rank2(v)); }
-        inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->compressed.rank(v)); }
+        inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_under(this->_super->_comp.rank(v)); }
+        inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_over(this->_super->_comp.rank2(v)); }
+        inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->_comp.rank2(v)); }
+        inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->_comp.rank(v)); }
 
         template<comp com = comp::equal_to>
-        inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->compressed.rank(v)); }
+        inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->_comp.rank(v)); }
 
 
         inline auto next_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->compressed.rank(v) + k), 0, this->size()));
+            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->_comp.rank(v) + k), 0, this->size()));
         }
         inline auto prev_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->compressed.rank2(v) + k), 0, this->size()));
+            return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->_comp.rank2(v) + k), 0, this->size()));
         }
 
         inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            const std::optional<size_type> res = this->_range().next(this->_super->compressed.rank(v), k);
-            if(res.has_value()) return this->_super->compressed(res.value());
+            const std::optional<size_type> res = this->_range().next(this->_super->_comp.rank(v), k);
+            if(res.has_value()) return this->_super->_comp(res.value());
             return {};
         }
         inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            const std::optional<size_type> res = this->_range().prev(this->_super->compressed.rank2(v), k);
-            if(res.has_value()) return this->_super->compressed(res.value());
+            const std::optional<size_type> res = this->_range().prev(this->_super->_comp.rank2(v), k);
+            if(res.has_value()) return this->_super->_comp(res.value());
             return {};
         }
     };
