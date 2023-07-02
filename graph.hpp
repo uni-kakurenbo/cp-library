@@ -12,6 +12,9 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "utility/functional.hpp"
+
+#include "grid.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 
 
@@ -82,13 +85,6 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
 
     inline void clear() noexcept(NO_EXCEPT) { this->std::vector<std::vector<edge_type>>::clear(); }
 
-    // using std::vector<std::vector<edge_type>>::size;
-
-    // using std::vector<std::vector<edge_type>>::begin;
-    // using std::vector<std::vector<edge_type>>::cbegin;
-    // using std::vector<std::vector<edge_type>>::end;
-    // using std::vector<std::vector<edge_type>>::cend;
-
     inline const auto& edges() const noexcept(NO_EXCEPT) { return this->_edges; }
     inline const auto& edge(const size_type k) const noexcept(NO_EXCEPT) { return this->_edges[k]; }
 
@@ -104,6 +100,30 @@ struct graph : std::vector<std::vector<internal::graph_impl::edge<C,internal::si
     inline size_type vertices() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->size()); }
 
     inline size_type directed_edges_count() const noexcept(NO_EXCEPT) { return this->_directed_edge_count; }
+
+    template<class R = valgrid<bool>>
+    inline auto make_has_edges() const noexcept(NO_EXCEPT) {
+        R res(this->size(), this->size(), false);
+        REP(i, this->size()) ITR(j, this->operator[](i)) res[i][j] = true;
+        return res;
+    }
+
+    template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
+    inline auto make_initial_distance_matrix() const noexcept(NO_EXCEPT) {
+        R res(this->size(), this->size(), numeric_limits<T>::arithmetic_infinity());
+        if constexpr(SELF_ZERO) REP(i, this->size()) res[i][i] = 0;
+        REP(i, this->size()) ITR(j, this->operator[](i)) res[i][j] = j.cost;
+        return res;
+    }
+
+    template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
+    inline auto make_distance_matrix() const noexcept(NO_EXCEPT) {
+        R res = this->make_initial_distance_matrix<SELF_ZERO,T,R>();
+        REP(k, this->size()) REP(i, this->size()) REP(j, this->size()) {
+            chmin(res[i][j], res[i][k] + res[k][j]);
+        }
+        return res;
+    }
 
     template<const edge_kind EDGE_TYPE = edge_kind::directed>
     inline void add_edge(const size_type u, const size_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
