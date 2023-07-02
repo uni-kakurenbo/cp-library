@@ -3,16 +3,21 @@
 
 #include <cstdint>
 #include <utility>
-#include <limits>
 
 #include "snippet/aliases.hpp"
+
+#include "numeric/limits.hpp"
 
 
 namespace lib {
 
 
-i32 INF32 = (std::numeric_limits<i32>::max() >> 1) - 1;
-i64 INF64 = (std::numeric_limits<i64>::max() >> 1) - 1;
+i32 INF32 = numeric_limits<i32>::arithmetic_infinity();
+i64 INF64 = numeric_limits<i64>::arithmetic_infinity();
+
+template<class T>
+constexpr T INF = numeric_limits<T>::arithmetic_infinity();
+
 
 constexpr char LN = '\n';
 constexpr char SPC = ' ';
