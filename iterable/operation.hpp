@@ -1,6 +1,10 @@
 #pragma once
 
+
 #include <iterator>
+#include <algorithm>
+#include <initializer_list>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <utility>
@@ -8,6 +12,7 @@
 #include <numeric>
 
 #include "internal/types.hpp"
+#include "internal/dev_env.hpp"
 
 
 namespace lib {
@@ -51,7 +56,11 @@ auto sum(const V& v, T base = 0) noexcept(NO_EXCEPT) {
 }
 
 
-template<class I, class T = typename std::iterator_traits<I>::value_type>
+template<
+    class I,
+    class T = typename std::iterator_traits<I>::value_type,
+    class = typename std::iterator_traits<I>::value_type
+>
 T mex(const I first, const I last, const T& base = 0) noexcept(NO_EXCEPT) {
     std::vector<T> val(first, last);
     std::sort(val.begin(), val.end());
@@ -64,11 +73,15 @@ T mex(const I first, const I last, const T& base = 0) noexcept(NO_EXCEPT) {
     return T{i} + base;
 }
 
-template<class V, class T = typename V::value_type>
-auto mex(const V& v, const T& base = 0) noexcept(NO_EXCEPT) {
-    return mex(std::begin(v), std::end(v), base);
+template<class T>
+auto mex(const std::initializer_list<T> v) noexcept(NO_EXCEPT) {
+    return mex(std::begin(v), std::end(v));
 }
 
+template<class T>
+auto mex(std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
+    return mex(std::begin(v), std::end(v), base);
+}
 
 template<class I>
 std::vector<std::string> split(const I first, const I last, const typename std::iterator_traits<I>::value_type delim = ' ') {
