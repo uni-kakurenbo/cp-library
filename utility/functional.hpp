@@ -1,8 +1,11 @@
 #pragma once
 
-#include <functional>
 
+#include <functional>
 #include <utility>
+
+#include "numeric/arithmetic.hpp"
+
 
 namespace lib {
 
@@ -20,8 +23,11 @@ template<class T> constexpr T bitxor(const T a, const T b) { return a xor b; }
 
 template<class T1, class T2> inline auto mod(T1 x, T2 r) { return (x%r+r)%r; }
 
-template<class T1, class T2> inline bool chmax(T1 &a, T2 b) { return (a<b ? a=b, true : false); }
-template<class T1, class T2> inline bool chmin(T1 &a, T2 b) { return (a>b ? a=b, true : false); }
+template<class T1, class T2> inline bool chmin(T1 &a, const T2& b) { return (a>b ? a=b, true : false); }
+template<class T1, class T2> inline bool chmax(T1 &a, const T2& b) { return (a<b ? a=b, true : false); }
+
+template<class T1, class... Args> inline bool chmin(T1 &a, Args... b) { return chmin(a, min(b...)); }
+template<class T1, class... Args> inline bool chmax(T1 &a, Args... b) { return chmax(a, max(b...)); }
 
 
 template<class T> inline constexpr T sign(const T x) {
