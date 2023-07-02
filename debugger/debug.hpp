@@ -223,13 +223,43 @@ template<class T> void debug(T&& val, std::string endl) {
 }
 
 
-std::vector<std::string> split(std::string str) {
-    str += ',';
-    std::vector<std::string> res;
-    while(!str.empty()) {
-        res.push_back(str.substr(0, str.find(',')));
-        str = str.substr(str.find(',') + 1);
+std::vector<std::string> split(const std::string& str) {
+    constexpr char SEPARATOR = ',';
+    constexpr char ESCAPE = '\\';
+    constexpr char QUOTATIONS[] = "\"\'";
+    constexpr char PARENTHESES[] = "()[]{}";
+    static_assert(std::strlen(PARENTHESES) % 2 == 0);
+
+    std::vector<std::string> res = { "" };
+
+    bool quoted = false;
+    std::array<int,(std::strlen(PARENTHESES) / 2)> enclosed = { 0 };
+
+    for(auto itr = std::begin(str); itr != std::end(str); ++itr) {
+        if(std::find(std::begin(QUOTATIONS), std::end(QUOTATIONS), *itr) != std::end(QUOTATIONS)) {
+            if(itr == std::begin(str) or *std::prev(itr) != ESCAPE) {
+                quoted ^= true;
+            }
+        }
+
+        if(const auto found = std::find(std::begin(PARENTHESES), std::end(PARENTHESES), *itr); found != std::end(PARENTHESES)) {
+            if(not quoted) {
+                enclosed[std::distance(std::begin(PARENTHESES), found) / 2] += 1 - (std::distance(std::begin(PARENTHESES), found) % 2) * 2;
+            }
+        }
+
+        if(
+            not quoted
+            and static_cast<std::size_t>(std::count(std::begin(enclosed), std::end(enclosed), 0)) == std::size(enclosed)
+            and *itr == SEPARATOR
+        ) {
+            res.push_back("");
+        }
+        else {
+            res.back() += *itr;
+        }
     }
+
     return res;
 }
 
