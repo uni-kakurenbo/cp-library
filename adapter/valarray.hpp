@@ -54,7 +54,7 @@ template<class T> struct valarray : std::valarray<T> {
     template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
     inline void assign(const I first, const I last) noexcept(NO_EXCEPT) {
         this->resize(std::distance(first, last));
-        std::copy(first, last, begin(*this));
+        std::copy(first, last, std::begin(*this));
     }
 
     inline void assign(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {
@@ -77,16 +77,16 @@ template<class T> struct valarray : std::valarray<T> {
     }
 
     inline const T& back() const noexcept(NO_EXCEPT) { return *std::prev(this->end()); }
-    inline T& back() { return *std::prev(this->end()); }
+    inline T& back() noexcept(NO_EXCEPT) { return *std::prev(this->end()); }
 
     inline const T& front() const noexcept(NO_EXCEPT) { return *this->begin(); }
-    inline T& front() { return *this->begin(); }
+    inline T& front() noexcept(NO_EXCEPT) { return *this->begin(); }
 
     inline const T* begin() const noexcept(NO_EXCEPT) { return this->size() ? std::addressof((*this)[0]) : nullptr; }
-    inline T* begin() { return this->size() ? std::addressof((*this)[0]) : nullptr; }
+    inline T* begin() noexcept(NO_EXCEPT) { return this->size() ? std::addressof((*this)[0]) : nullptr; }
 
     inline const T* end() const noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
-    inline T* end() { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
+    inline T* end() noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
 };
 
 
