@@ -95,9 +95,9 @@ struct output_adapter {
         for(I itr=first; itr!=last;) {
             *this << *itr;
             if(++itr == last) {
-                if(terminate) *this << this->put_endline();
+                if(terminate) this->put_endline();
             }
-            else *this << this->put_separator();
+            else this->put_separator();
         }
     }
 
