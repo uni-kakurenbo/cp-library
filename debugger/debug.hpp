@@ -5,6 +5,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <bitset>
 #include <deque>
@@ -244,7 +245,7 @@ std::vector<std::string> split(const std::string& str) {
 
         if(const auto found = std::find(std::begin(PARENTHESES), std::end(PARENTHESES), *itr); found != std::end(PARENTHESES)) {
             if(not quoted) {
-                enclosed[std::distance(std::begin(PARENTHESES), found) / 2] += 1 - (std::distance(std::begin(PARENTHESES), found) % 2) * 2;
+                enclosed[std::distance(std::begin(PARENTHESES), found) / 2] += 1 - static_cast<int>((std::distance(std::begin(PARENTHESES), found) % 2) * 2);
             }
         }
 
