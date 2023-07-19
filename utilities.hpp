@@ -21,8 +21,10 @@
 #include "views.hpp"
 
 #include "adapter/set.hpp"
+#include "adapter/array.hpp"
 #include "adapter/valarray.hpp"
 #include "adapter/vector.hpp"
+#include "adapter/string.hpp"
 
 #include "utility/applier.hpp"
 #include "utility/functional.hpp"

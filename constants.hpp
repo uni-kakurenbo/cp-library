@@ -57,4 +57,11 @@ enum class interval : std::uint8_t {
     closed,
 };
 
+enum class replacing_policy : std::uint8_t {
+    insert_sync,
+    overwrite_sync,
+    overwrite_async
+};
+
+
 } // namespace lib
