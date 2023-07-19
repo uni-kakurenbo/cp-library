@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <vector>
+#include <array>
 #include <algorithm>
 #include "adapter/internal/sequence.hpp"
 
@@ -10,7 +10,7 @@ namespace lib {
 
 
 template<class... Args>
-using vector = internal::extended_sequence<std::vector<Args...>>;
+using array = internal::extended_sequence<std::array<Args...>>;
 
 
 } // namespace lib

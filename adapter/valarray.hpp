@@ -11,11 +11,17 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/internal/sequence.hpp"
+
 
 namespace lib {
 
 
-template<class T> struct valarray : std::valarray<T> {
+template<class T> struct valarray : internal::extended_sequence<std::valarray<T>> {
+  private:
+    using base = internal::extended_sequence<std::valarray<T>>;
+
+  public:
     using size_type = internal::size_t;
 
     using iterator = T*;
@@ -39,15 +45,15 @@ template<class T> struct valarray : std::valarray<T> {
   public:
     valarray() noexcept(NO_EXCEPT) {}
 
-    valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : std::valarray<T>(std::forward<const T>(val), length) {}
+    valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
 
     template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
-    valarray(const I first, const I last) noexcept(NO_EXCEPT) : std::valarray<T>(first, std::distance(first, last)) {}
+    valarray(const I first, const I last) noexcept(NO_EXCEPT) : base(first, std::distance(first, last)) {}
 
     template<class U> valarray(const std::initializer_list<U>& init) noexcept(NO_EXCEPT) : valarray(std::begin(init), std::end(init)) {}
 
 
-    inline auto size() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->std::valarray<T>::size()); }
+    inline auto size() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->base::size()); }
 
     inline void reserve(const size_type) noexcept(NO_EXCEPT) { /* do nothing */ }
 
@@ -58,22 +64,22 @@ template<class T> struct valarray : std::valarray<T> {
     }
 
     inline void assign(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {
-        this->std::valarray<T>::resize(length, val);
+        this->base::resize(length, val);
     }
 
     inline void resize(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {
-        std::valarray<T> temp = *this;
+        base temp = *this;
         this->assign(length, val);
         std::move(std::begin(temp), std::min(std::end(temp), std::next(std::begin(temp), length)), std::begin(*this));
     }
 
     inline const T& operator[](size_type pos) const noexcept(NO_EXCEPT) {
         pos = this->_positivize_index(pos), assert(this->_validate_index_in_right_open(pos));
-        return this->std::valarray<T>::operator[](pos);
+        return this->base::operator[](pos);
     }
     inline T& operator[](size_type pos) noexcept(NO_EXCEPT) {
         pos = this->_positivize_index(pos), assert(this->_validate_index_in_right_open(pos));
-        return this->std::valarray<T>::operator[](pos);
+        return this->base::operator[](pos);
     }
 
     inline const T& back() const noexcept(NO_EXCEPT) { return *std::prev(this->end()); }

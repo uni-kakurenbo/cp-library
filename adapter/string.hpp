@@ -1,16 +1,16 @@
 #pragma once
 
 
-#include <vector>
+#include <string>
 #include <algorithm>
+
 #include "adapter/internal/sequence.hpp"
 
 
 namespace lib {
 
 
-template<class... Args>
-using vector = internal::extended_sequence<std::vector<Args...>>;
+using string = internal::extended_sequence<std::string>;
 
 
 } // namespace lib

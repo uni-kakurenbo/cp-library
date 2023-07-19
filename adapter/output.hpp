@@ -19,25 +19,35 @@ template<class destination = std::ostream>
 struct output_adapter {
   private:
     template<class T>
-    auto _put(lib::internal::resolving_rank<2>, const T &val) noexcept(NO_EXCEPT)-> decltype(std::declval<destination&>() << val, 0) {
+    auto _put(lib::internal::resolving_rank<4>, const T& val) noexcept(NO_EXCEPT)-> decltype(std::declval<destination&>() << val, 0) {
         *this->out << val;
         return 0;
     }
     template<class T>
-    auto _put(lib::internal::resolving_rank<1>, const T &val) noexcept(NO_EXCEPT)-> decltype(val.val(), 0) {
+    auto _put(lib::internal::resolving_rank<3>, const T& val) noexcept(NO_EXCEPT)-> decltype(val.val(), 0) {
         this->put(val.val());
         return 0;
     }
     template<class T>
-    auto _put(lib::internal::resolving_rank<0>, const T &val) noexcept(NO_EXCEPT)-> decltype(std::begin(val), std::end(val), 0) {
+    auto _put(lib::internal::resolving_rank<2>, const T& val) noexcept(NO_EXCEPT)-> decltype(std::begin(val), std::end(val), 0) {
         (*this)(std::begin(val), std::end(val), false);
+        return 0;
+    }
+    template<class T>
+    auto _put(lib::internal::resolving_rank<1>, const T& val) noexcept(NO_EXCEPT) -> decltype(val.first, val.second, 0) {
+        (*this)(val);
+        return 0;
+    }
+    template<class T>
+    auto _put(lib::internal::resolving_rank<0>, const T& val) noexcept(NO_EXCEPT) -> decltype(std::get<0>(val), 0) {
+        std::apply([this](const auto&... args) constexpr { ((*this << args), ...); }, val);
         return 0;
     }
 
   protected:
     template<class T>
     destination *put(const T &val) noexcept(NO_EXCEPT){
-        this->_put(lib::internal::resolving_rank<2>{}, val);
+        this->_put(lib::internal::resolving_rank<10>{}, val);
         return this->out;
     }
 
@@ -75,7 +85,7 @@ struct output_adapter {
         *this << std::fixed << std::setprecision(20);
     }
 
-    inline void seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) noexcept(NO_EXCEPT){ this->out->seekp(off, dir); };
+    inline auto& seekp(const typename destination::off_type off, const std::ios_base::seekdir dir = std::ios_base::cur) noexcept(NO_EXCEPT){ this->out->seekp(off, dir); return *this; };
 
     template<class T> inline output_adapter& operator<<(const T &s) noexcept(NO_EXCEPT){
         this->put(s);
