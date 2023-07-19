@@ -22,9 +22,6 @@ using std::cout;
 using std::pair;
 using std::tuple;
 
-using std::array;
-using std::string;
-
 using std::queue;
 using std::stack;
 using std::priority_queue;
@@ -111,3 +108,5 @@ using lib::unordered_multiset;
 
 using lib::valarray;
 using lib::vector;
+using lib::string;
+using lib::array;
