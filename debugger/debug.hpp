@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <array>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -44,7 +45,7 @@ using Brackets = std::pair<std::string, std::string>;
 
 // template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 // std::string lit(T, Brackets = { "[", "]" }, std::string = ", ");
-template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>* = nullptr>
 std::string lit(const T&, Brackets = { "[", "]" }, std::string = ", ");
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
@@ -75,7 +76,9 @@ std::string lit(debug_t info) {
 std::string lit(std::nullptr_t) {
     return COLOR_INIT;
 }
-std::string lit(const std::string &val) {
+
+template<class S, std::enable_if_t<std::is_base_of_v<std::string,S> && !std::is_same_v<S,debug_t>>* = nullptr>
+std::string lit(const S &val) {
     std::stringstream res;
     res << COLOR_STRING << "`" << val << "`" << COLOR_INIT;
     return res.str();
@@ -181,7 +184,7 @@ template<size_t N, class T> void iterate_tuple(__attribute__ ((unused)) const T&
 // std::string lit(T val, Brackets brcs, std::string sep) {
 //     return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 // }
-template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>*>
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
 std::string lit(const T& val, Brackets brcs, std::string sep) {
     return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 }
@@ -203,6 +206,11 @@ std::string lit(const T &val) {
 
 template<class T> std::string lit(const T *val) {
     return lit(*val);
+}
+
+template<class I, class = typename std::iterator_traits<I>::iterator_category>
+std::string lit(const I& itr) {
+    return lit(*itr);
 }
 
 template<class I> std::string lit(I first, I last, Brackets brcs, std::string spl) {
@@ -228,7 +236,7 @@ std::vector<std::string> split(const std::string& str) {
     constexpr char SEPARATOR = ',';
     constexpr char ESCAPE = '\\';
     constexpr char QUOTATIONS[] = "\"\'";
-    constexpr char PARENTHESES[] = "()[]{}";
+    constexpr char PARENTHESES[] = "()[]{}<>";
     static_assert(std::strlen(PARENTHESES) % 2 == 0);
 
     std::vector<std::string> res = { "" };
