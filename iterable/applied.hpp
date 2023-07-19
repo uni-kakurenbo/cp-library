@@ -2,16 +2,17 @@
 
 
 #include <algorithm>
-#include <vector>
 #include <iterator>
 
 #include "internal/dev_env.hpp"
+
+#include "adapter/valarray.hpp"
 
 
 namespace lib {
 
 
-template<class I, class F, class C = std::vector<typename std::iterator_traits<I>::value_type>>
+template<class I, class F, class C = valarray<typename std::iterator_traits<I>::value_type>>
 inline auto applied(const I first, const I last, F&& func) noexcept(NO_EXCEPT) {
     C res(first, last);
     func(std::begin(res), std::end(res));

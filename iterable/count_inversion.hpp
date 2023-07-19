@@ -39,7 +39,7 @@ struct inversion {
     }
 
     template<class I>
-    static inline T count_with_compressing(const I first, const I last) noexcept(NO_EXCEPT) {
+    static inline T count_with_compression(const I first, const I last) noexcept(NO_EXCEPT) {
         compressed<typename std::iterator_traits<I>::value_type> comp(first, last);
         return inversion::count(std::begin(comp), std::end(comp));
     }

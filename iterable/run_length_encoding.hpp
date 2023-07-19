@@ -8,10 +8,12 @@
 #include "internal/types.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
-template<class T, class container = std::vector<std::pair<T,internal::size_t>>>
+template<class T, class container = vector<std::pair<T,internal::size_t>>>
 struct run_length : container {
     explicit run_length() noexcept(NO_EXCEPT) {}
 

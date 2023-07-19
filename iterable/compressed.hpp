@@ -10,10 +10,12 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/valarray.hpp"
+
 
 namespace lib {
 
-template<class T, class container = std::vector<internal::size_t>>
+template<class T, class container = valarray<internal::size_t>>
 struct compressed : container {
     using size_type = internal::size_t;
 
@@ -26,10 +28,12 @@ struct compressed : container {
         std::sort(this->values.begin(), this->values.end());
         this->values.erase(std::unique(this->values.begin(), this->values.end()), this->values.end());
         this->resize(std::distance(first, last));
-        auto itr = std::begin(*this);
-        auto e = first;
-        for(; e!=last; ++itr, ++e) {
-            *itr = this->rank(*e);
+        {
+            auto itr = std::begin(*this);
+            auto e = first;
+            for(; e!=last; ++itr, ++e) {
+                *itr = this->rank(*e);
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include <vector>
 #include <algorithm>
 #include <iterator>
 
@@ -11,11 +10,13 @@
 
 #include "grid.hpp"
 
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
 
-template<bool STRICT, class T = i64, class container = std::vector<T>>
+template<bool STRICT, class T = i64, class container = vector<T>>
 struct lis : container {
     using size_type = typename internal::size_t;
 
@@ -44,7 +45,7 @@ struct lis : container {
 
         for(size_type i = static_cast<size_type>(positions.size()); --i >= 0;){
             if(positions[i] == target){
-                (*this)[target] = *(first + i);
+                this->operator[](target) = *(first + i);
                 this->indices.emplace_back(i);
                 --target;
             }

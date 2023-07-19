@@ -2,18 +2,19 @@
 
 
 #include <iterator>
-#include <vector>
 #include <functional>
 #include <numeric>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
 
-template<class T, class container = std::vector<T>>
+template<class T, class container = vector<T>>
 struct adjacent_difference : container {
   public:
     explicit adjacent_difference() noexcept(NO_EXCEPT) {}
