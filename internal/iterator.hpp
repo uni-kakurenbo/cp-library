@@ -1,7 +1,10 @@
 #pragma once
 
-
+#include <utility>
+#include <type_traits>
 #include <iterator>
+#include <iterator>
+#include <variant>
 
 #include "internal/dev_env.hpp"
 
@@ -68,6 +71,9 @@ struct container_iterator_interface : public random_access_iterator_base<T> {
     inline container_iterator_interface& operator++() noexcept(NO_EXCEPT) { return ++this->pos(), *this; }
     inline container_iterator_interface& operator--() noexcept(NO_EXCEPT) { return --this->pos(), *this; }
 
+    inline container_iterator_interface operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; return ++this->pos(), res; }
+    inline container_iterator_interface operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; return --this->pos(), res; }
+
     inline container_iterator_interface& operator+=(const difference_type count) noexcept(NO_EXCEPT) { return this->pos() += count, *this; }
     inline container_iterator_interface& operator-=(const difference_type count) noexcept(NO_EXCEPT) { return this->pos() -= count, *this; }
 
@@ -89,6 +95,9 @@ inline I operator+(I itr, const typename I::difference_type count) noexcept(NO_E
 
 template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
 inline I operator-(I itr, const typename I::difference_type count) noexcept(NO_EXCEPT) { return itr -= count, itr; }
+
+template<class V, class I>
+inline auto to_non_const_iterator(V v, const I itr) noexcept(NO_EXCEPT) { return std::next(std::begin(v), std::distance(std::cbegin(v), itr)); }
 
 
 } // namespace internal
