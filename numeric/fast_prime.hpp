@@ -16,6 +16,9 @@
 #include "numeric/modint.hpp"
 #include "random/xorshift.hpp"
 
+#include "adapter/set.hpp"
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
@@ -116,7 +119,7 @@ template <typename mint, typename T> T find_factor(const T n) noexcept(NO_EXCEPT
 }
 
 
-std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
+vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     value_type p;
@@ -137,15 +140,15 @@ std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
 } // namespace internal
 
 
-std::vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
+vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
     auto res = internal::factorize(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-std::set<int64_t> prime_factors(const value_type n) noexcept(NO_EXCEPT) {
+set<int64_t> prime_factors(const value_type n) noexcept(NO_EXCEPT) {
     auto factors = factorize(n);
-    std::set<int64_t> res(std::begin(factors), std::end(factors));
+    set<int64_t> res(std::begin(factors), std::end(factors));
     return res;
 }
 
@@ -155,7 +158,7 @@ std::map<int64_t,int64_t> count_factors(const value_type n) noexcept(NO_EXCEPT) 
     return mp;
 }
 
-std::vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
+vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
     if(n == 0) return {};
 
     std::vector<std::pair<int64_t, int64_t>> v;
@@ -167,7 +170,7 @@ std::vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
         }
     }
 
-    std::vector<int64_t> res;
+    vector<int64_t> res;
     auto f = [&](auto rc, int i, int64_t x) noexcept(NO_EXCEPT) -> void {
         if(i == static_cast<int>(v.size())) {
             res.push_back(x);
