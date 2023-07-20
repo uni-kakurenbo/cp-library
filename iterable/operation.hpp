@@ -154,11 +154,11 @@ template<class V>
 auto find(const V& source, const V& query) noexcept(NO_EXCEPT) { return find(ALL(source), ALL(query)); }
 
 
-template<class V, replacing_policy POLICY = replacing_policy::insert_sync>
+template<class V, replacement_policy POLICY = replacement_policy::insert_sync>
 auto replace(const V& source, const V& from, const V& to) noexcept(NO_EXCEPT) {
     V res;
 
-    if constexpr(POLICY == replacing_policy::insert_sync) {
+    if constexpr(POLICY == replacement_policy::insert_sync) {
         const auto found = find(source, from);
         auto itr = std::begin(source);
         ITRR(fn, found) {
@@ -175,7 +175,7 @@ auto replace(const V& source, const V& from, const V& to) noexcept(NO_EXCEPT) {
         const auto found = find(res, from);
         auto prev = std::begin(res);
         ITRR(fn, found) {
-            if constexpr(POLICY == replacing_policy::overwrite_sync) {
+            if constexpr(POLICY == replacement_policy::overwrite_sync) {
                 if(prev <= fn) prev = std::copy(ALL(to), internal::to_non_const_iterator(res, fn));
             }
             else {
