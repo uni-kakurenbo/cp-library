@@ -51,7 +51,7 @@ std::string lit(const T&, Brackets = { "[", "]" }, std::string = ", ");
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
 std::string lit(const T&, Brackets = { "{", "}" }, std::string = ", ");
 
-template<class I> std::string lit(I, I, Brackets = { "[", "]" }, std::string = ", ");
+template<class I> std::string lit(I, const I, const Brackets = { "[", "]" }, const std::string = ", ");
 
 template<class F, class S> std::string lit(const std::pair<F, S>&);
 template<class... T> std::string lit(const std::tuple<T...>&);
@@ -213,11 +213,11 @@ std::string lit(const I& itr) {
     return lit(*itr);
 }
 
-template<class I> std::string lit(I first, I last, Brackets brcs, std::string spl) {
+template<class I> std::string lit(I first, const I last, const Brackets brcs, const std::string spl) {
     std::stringstream res;
     res << brcs.first << " ";
     while(first != last) {
-        if(std::distance(first, last)<=1) res << lit(*first) << " ";
+        if(std::next(first) == last) res << lit(*first) << " ";
         else res << lit(*first) << spl;
         ++first;
     }
