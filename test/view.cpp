@@ -1,7 +1,34 @@
 #include "template.hpp"
-#include "view.hpp"
+#include "views.hpp"
 
 signed main() {
+
+    valarray<int> a = { 1, 2, 3, 4, 5 };
+    valarray<int> b = { 2, 4, 6, 8, 10 };
+    valarray<int> c = { 3, 6, 9, 12, 15 };
+
+    {
+        debug(lib::views::zip(a));
+        debug(lib::views::zip(a, b));
+        debug(lib::views::zip(a, b, c));
+        // lib::zip(a): [ <tuple> ( 1 ), <tuple> ( 2 ), <tuple> ( 3 ), <tuple> ( 4 ), <tuple> ( 5 ) ]
+        // lib::zip(a, b): [ <tuple> ( 1, 2 ), <tuple> ( 2, 4 ), <tuple> ( 3, 6 ), <tuple> ( 4, 8 ), <tuple> ( 5, 10 ) ]
+        // lib::zip(a, b, c): [ <tuple> ( 1, 2, 3 ), <tuple> ( 2, 4, 6 ), <tuple> ( 3, 6, 9 ), <tuple> ( 4, 8, 12 ), <tuple> ( 5, 10, 15 ) ]
+    }
+    {
+        debug(lib::views::concat(a));
+        debug(lib::views::concat(a, b));
+        debug(lib::views::concat(a, b, c));
+        // lib::concat(a): [ 1, 2, 3, 4, 5 ]
+        // lib::concat(a, b): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10 ]
+        // lib::concat(a, b, c): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10, 3, 6, 9, 12, 15 ]
+    }
+    {
+        for(auto& x : lib::views::concat(a, b, c)) x = 1;
+        debug(a, b, c);
+        // a: [ 1, 1, 1, 1, 1 ], b: [ 1, 1, 1, 1, 1 ], c: [ 1, 1, 1, 1, 1 ]
+    }
+
     std::vector<int> vec1d = { 1, 42, 2, 8, 2, 23, 112, 0, 4 };
     debug(vec1d);
 

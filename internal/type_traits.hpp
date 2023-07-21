@@ -16,6 +16,20 @@ namespace lib {
 namespace internal {
 
 
+template<class T, class... Us>
+using are_same = std::conjunction<std::is_same<T,Us>...>;
+
+template<class T, class... Us>
+inline constexpr bool are_same_v = std::conjunction_v<std::is_same<T,Us>...>;
+
+
+template<class Base, class... Derived>
+using are_base_of = std::conjunction<std::is_base_of<Base,Derived>...>;
+
+template<class Base, class... Derived>
+inline constexpr bool are_base_of_v = std::conjunction_v<std::is_same<Base,Derived>...>;
+
+
 template<class T> struct remove_cvref {
   using type = typename std::remove_cv_t<std::remove_reference_t<T>>;
 };
@@ -34,8 +48,11 @@ template<> struct literal_operator<unsigned long long> { static constexpr const 
 template<class T> inline constexpr auto literal_operator_v = literal_operator<T>::value;
 
 
-template<template<class...> class Template, class Type> struct is_template : std::false_type {};
-template<template<class...> class Template, class... Args> struct is_template<Template, Template<Args...>> : std::true_type {};
+template<template <class...> class Template, class Arg> struct is_template : std::false_type {};
+template<template <class...> class Template, class... Args> struct is_template<Template, Template<Args...>> : std::true_type {};
+
+template<template <class...> class Template, class... Args>
+inline constexpr bool  is_template_v = is_template<Template,Args...>::value;
 
 
 template<class T> struct is_loggable {
@@ -121,7 +138,10 @@ template<class T> struct iterator_resolver {
   }
 };
 
+
 template<class C> using iterator_t = decltype(iterator_resolver<C>::begin(std::declval<C&>()));
+
+template<class C> using container_size_t = decltype(std::size(std::declval<C&>()));
 
 
 }  // namespace internal

@@ -1,14 +1,15 @@
 #pragma once
 
+
 #include <utility>
 #include <type_traits>
-#include <iterator>
 #include <iterator>
 #include <variant>
 
 #include "internal/dev_env.hpp"
 
 #include "internal/types.hpp"
+#include "internal/type_traits.hpp"
 
 
 namespace lib {
@@ -51,6 +52,10 @@ struct random_access_iterator_base : bidirectional_iterator_interface<T> {
   public:
     // virtual random_access_iterator_base& operator+=(const difference_type count) = 0;
     // virtual random_access_iterator_base& operator-=(const difference_type count) = 0;
+
+    friend inline random_access_iterator_base operator+(random_access_iterator_base itr, const difference_type count) noexcept(NO_EXCEPT) { return itr += count, itr; }
+    friend inline random_access_iterator_base operator-(random_access_iterator_base itr, const difference_type count) noexcept(NO_EXCEPT) { return itr -= count, itr; }
+
 };
 
 template<class T, class container>
@@ -90,14 +95,48 @@ struct container_iterator_interface : public random_access_iterator_base<T> {
 };
 
 
-template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
-inline I operator+(I itr, const typename I::difference_type count) noexcept(NO_EXCEPT) { return itr += count, itr; }
-
-template<class I, std::enable_if_t<std::is_base_of_v<random_access_iterator_base<typename I::value_type>,I>>* = nullptr>
-inline I operator-(I itr, const typename I::difference_type count) noexcept(NO_EXCEPT) { return itr -= count, itr; }
-
 template<class V, class I>
 inline auto to_non_const_iterator(V v, const I itr) noexcept(NO_EXCEPT) { return std::next(std::begin(v), std::distance(std::cbegin(v), itr)); }
+
+
+namespace iterator_impl {
+
+
+template<class... Tags>
+using is_all_random_access_iterator = are_base_of<std::random_access_iterator_tag,Tags...>;
+
+template<class... Tags>
+using is_all_bidirectional_iterator = are_base_of<std::bidirectional_iterator_tag,Tags...>;
+
+template<class... Tags>
+using is_all_forward_iterator = are_base_of<std::forward_iterator_tag,Tags...>;
+
+template<class... Tags>
+using is_all_input_iterator = are_base_of<std::input_iterator_tag,Tags...>;
+
+
+template<class... Tags>
+constexpr auto _most_primitive_iterator_tag() {
+    if constexpr(is_all_random_access_iterator<Tags...>::value) {
+        return std::random_access_iterator_tag{};
+    }
+    else if constexpr(is_all_bidirectional_iterator<Tags...>::value) {
+        return std::bidirectional_iterator_tag{};
+    }
+    else if constexpr(is_all_forward_iterator<Tags...>::value) {
+        return std::forward_iterator_tag{};
+    }
+    else {
+        return std::input_iterator_tag{};
+    }
+}
+
+
+} // namespace iterator_impl
+
+
+template<class... Tags>
+using most_primitive_iterator_tag = decltype(iterator_impl::_most_primitive_iterator_tag<Tags...>());
 
 
 } // namespace internal

@@ -23,13 +23,13 @@
 #include "adapter/vector.hpp"
 
 #include "constants.hpp"
-#include "iterator.hpp"
+#include "view/concat.hpp"
 
 
 namespace lib {
 
 
-template<class I>
+template<class I, class = typename std::iterator_traits<I>::iterator_category>
 std::string join(const I first, const I last, const char * sep = "") noexcept(NO_EXCEPT) {
     std::ostringstream res;
     std::copy(first, last, std::ostream_iterator<typename std::iterator_traits<I>::value_type>(res, sep));
@@ -131,7 +131,7 @@ template<class I>
 vector<I> find(const I source_first,  const I source_last, const I query_first, const I query_last) noexcept(NO_EXCEPT) {
     using value_type = typename std::iterator_traits<I>::value_type;
 
-    const auto joined = joined_iterator(query_first, query_last, source_first, source_last);
+    const auto joined = views::concat(views::range(query_first, query_last), views::range(source_first, source_last));
     std::vector<value_type> pre_z(std::begin(joined), std::end(joined));
     z_array z_arr(ALL(pre_z));
 

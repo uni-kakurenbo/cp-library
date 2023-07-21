@@ -12,6 +12,7 @@
 #include "internal/iterator.hpp"
 #include "internal/type_traits.hpp"
 
+#include "view/range.hpp"
 #include "view/internal/base.hpp"
 
 
@@ -19,19 +20,19 @@ namespace lib {
 
 
 // Thanks to: https://qiita.com/pshiko/items/aee2641149b0cc97e287
-template<class... Containers>
+template<class... Views>
 struct zip_view : internal::view_impl::base {
   protected:
     template<class...> struct iterator_impl;
 
   public:
-    using iterator = iterator_impl<internal::iterator_t<Containers>...>;
+    using iterator = iterator_impl<internal::iterator_t<Views>...>;
 
   protected:
     iterator _begin, _end;
 
   public:
-    constexpr explicit zip_view(Containers&... containers) noexcept(NO_EXCEPT) : _begin({ std::begin(containers)... }), _end({ std::end(containers)... }) {};
+    constexpr explicit zip_view(Views&... views) noexcept(NO_EXCEPT) : _begin({ std::begin(views)... }), _end({ std::end(views)... }) {};
 
     iterator& begin() noexcept(NO_EXCEPT) { return this->_begin; }
     const iterator& begin() const noexcept(NO_EXCEPT) { return this->_begin; }
@@ -41,8 +42,9 @@ struct zip_view : internal::view_impl::base {
 
   protected:
     template<class... Iterators>
-    struct iterator_impl : internal::forward_iterator<std::tuple<typename std::iterator_traits<Iterators>::value_type...>> {
+    struct iterator_impl : internal::iterator_interface<std::tuple<typename std::iterator_traits<Iterators>::value_type...>> {
         using difference_type = internal::size_t;
+        using iterator_category = internal::most_primitive_iterator_tag<typename std::iterator_traits<Iterators>::iterator_category...>;
 
       protected:
         using indices = std::make_index_sequence<sizeof...(Iterators)>;
@@ -106,8 +108,14 @@ struct zip_view : internal::view_impl::base {
 };
 
 
-template<class... Containers>
-constexpr inline auto zip(Containers&... containers) noexcept(NO_EXCEPT) { return zip_view(containers...); }
+namespace views {
+
+
+template<class... Views>
+constexpr inline auto zip(Views&... views) noexcept(NO_EXCEPT) { return zip_view(views...); }
+
+
+} // namespace views
 
 
 } // namespace lib

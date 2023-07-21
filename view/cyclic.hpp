@@ -28,7 +28,7 @@ struct cyclic_view : internal::view_impl::base {
     size_type _pos = 0, _taken;
 
   private:
-    template<class T> __attribute__((always_inline)) inline T _mod(const T v) const noexcept {
+    template<class T> __attribute__((always_inline)) inline T _mod(const T v) const noexcept(NO_EXCEPT) {
         return (v + this->size()) % this->size();
     }
 

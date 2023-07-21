@@ -24,7 +24,6 @@ signed main() {
 }
 
 void solve() {
-
     const lib::string ABRACADABRA = "ABRACADABRA";
     debug(lib::z_array(std::begin(ABRACADABRA), std::end(ABRACADABRA)));
     // lib::vector<lib::internal::size_t> { 11, 0, 0, 1, 0, 1, 0, 4, 0, 0, 1 }
@@ -42,5 +41,4 @@ void solve() {
 
     debug(lib::replace<lib::string,lib::replacement_policy::overwrite_async>(DIJKSTRA, "e", "E__"));
     // Program tE__ing can bE__ vE__ E__E__ivE__ay to show thE__rE_E__E__f bugs, but is hopE_E__ly inadE__atE__or showing thE__ absE__E_
-
 }

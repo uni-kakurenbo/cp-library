@@ -5,3 +5,4 @@
 #include "view/multi.hpp"
 #include "view/2d.hpp"
 #include "view/zip.hpp"
+#include "view/concat.hpp"
