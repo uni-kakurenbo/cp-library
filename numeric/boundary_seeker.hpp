@@ -48,8 +48,8 @@ struct integal {
     T bound() const noexcept(NO_EXCEPT) {
         return this->bound<REVERSE>(
             REVERSE ?
-            numeric_limits<T>:: :
-            std::numeric_limits<T>::lowest() / 2 + 1
+            numeric_limits<T>::arithmetic_infinity():
+            numeric_limits<T>::arithmetic_negative_infinity()
         );
     }
 
@@ -103,7 +103,7 @@ struct floating_point {
         return this->bound<REVERSE,ITERATIONS>(
             REVERSE ?
             numeric_limits<T>::arithmetic_infinity() :
-            numeric_limits<T>::arithmetic_negative_infinity() :
+            numeric_limits<T>::arithmetic_negative_infinity()
         );
     }
 
