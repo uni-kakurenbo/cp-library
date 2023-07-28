@@ -67,38 +67,49 @@ using atcoder::inv_mod;
 using atcoder::crt;
 
 
+template<class T> T sign(const T& x) noexcept(NO_EXCEPT) {
+    if(x == 0) return 0;
+    return (x > 0) ? 1 : -1;
+}
+
+template<class T, T FROM_MIN, T FROM_MAX, T TO_MIN, T TO_MAX> inline constexpr T mapping(const T x) {
+    return (x - FROM_MIN) * (TO_MAX - TO_MIN) / (FROM_MAX - FROM_MIN) + TO_MIN;
+}
+template<class T> inline constexpr T mapping(const T x, const T from_min, const T from_max, const T to_min, const T to_max) {
+    return (x - from_min) * (to_max - to_min) / (from_max - from_min) + to_min;
+}
+
 template<class... Args>
-const std::common_type_t<Args...> min(const Args&... args) {
+const std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
     return std::min({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 template<class... Args>
-const std::common_type_t<Args...> max(const Args&... args) {
+const std::common_type_t<Args...> max(const Args&... args) noexcept(NO_EXCEPT) {
     return std::max({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
-
 template<class... Args>
-const std::common_type_t<Args...> mex(const Args&... args) {
+const std::common_type_t<Args...> mex(const Args&... args) noexcept(NO_EXCEPT) {
     return mex({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) {
+std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_add_overflow(a, b, &res)) return {};
     else return res;
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) {
+std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_sub_overflow(a, b, &res)) return {};
     else return res;
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) {
+std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_mul_overflow(a, b, &res)) return {};
     else return res;
