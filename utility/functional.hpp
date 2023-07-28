@@ -30,16 +30,4 @@ template<class T1, class... Args> inline bool chmin(T1 &a, Args... b) { return c
 template<class T1, class... Args> inline bool chmax(T1 &a, Args... b) { return chmax(a, max(b...)); }
 
 
-template<class T> inline constexpr T sign(const T x) {
-    return (x > 0) - (x < 0);
-}
-
-template<class T, T FROM_MIN, T FROM_MAX, T TO_MIN, T TO_MAX> inline constexpr T mapping(const T x) {
-    return (x - FROM_MIN) * (TO_MAX - TO_MIN) / (FROM_MAX - FROM_MIN) + TO_MIN;
-}
-template<class T> inline constexpr T mapping(const T x, const T from_min, const T from_max, const T to_min, const T to_max) {
-    return (x - from_min) * (to_max - to_min) / (from_max - from_min) + to_min;
-}
-
-
 } // namespace lib
