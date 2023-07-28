@@ -3,9 +3,11 @@
 
 signed main() {
 
-    valarray<int> a = { 1, 2, 3, 4, 5 };
-    valarray<int> b = { 2, 4, 6, 8, 10 };
-    valarray<int> c = { 3, 6, 9, 12, 15 };
+    vector<int> a = { 1, 2, 3, 4, 5 };
+    vector<int> b = { 2, 4, 6, 8, 10 };
+    vector<int> c = { 3, 6, 9, 12, 15 };
+
+    debug(lib::views::zip(lib::views::range(a)));
 
     {
         debug(lib::views::zip(a));
@@ -27,6 +29,9 @@ signed main() {
         for(auto& x : lib::views::concat(a, b, c)) x = 1;
         debug(a, b, c);
         // a: [ 1, 1, 1, 1, 1 ], b: [ 1, 1, 1, 1, 1 ], c: [ 1, 1, 1, 1, 1 ]
+
+        for(auto [ x, y, z ] : lib::views::zip(a, b, c)) x = 1, y = 2, z = 3;
+        debug(a, b, c);
     }
 
     std::vector<int> vec1d = { 1, 42, 2, 8, 2, 23, 112, 0, 4 };

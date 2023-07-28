@@ -33,10 +33,10 @@ inline typename concat_view_iterator<View>::difference_type operator-(
     const concat_view_iterator<View>& rhs
 ) noexcept(NO_EXCEPT) {
     if(lhs._block == rhs._block) {
-        return lhs._block == 0 ? lhs._itr0 - rhs._itr0 : lhs._itr1 - rhs._itr1;
+        return lhs._block == 0 ? std::distance(rhs._itr0, lhs._itr0) : std::distance(rhs._itr1, lhs._itr1);
     }
-    if(lhs._block > rhs._block) return (lhs._itr1 - lhs._super->_f1) + (rhs._super->_l0 - rhs._itr0);
-    if(lhs._block < rhs._block) return -(rhs - lhs);
+    if(lhs._block > rhs._block) return std::distance(rhs._itr0, rhs._super->_l0) + std::distance(lhs._super->_f1, lhs._itr1);
+    if(lhs._block < rhs._block) return -std::distance(lhs, rhs);
     assert(false);
 }
 
@@ -139,8 +139,30 @@ struct concat_view_iterator : view_impl::iterator_base {
         return *this;
     }
 
-    inline concat_view_iterator& operator++() noexcept(NO_EXCEPT) { return (*this) += 1; }
-    inline concat_view_iterator& operator--() noexcept(NO_EXCEPT) { return (*this) -= 1; }
+    inline concat_view_iterator& operator++() noexcept(NO_EXCEPT) {
+        if(this->_block == 0) {
+            if(++this->_itr0 == _super->_l0) {
+                this->_block = 1;
+                this->_itr1 = _super->_f1;
+            }
+        }
+        else {
+            ++this->_itr1;
+        }
+        return *this;
+    }
+    inline concat_view_iterator& operator--() noexcept(NO_EXCEPT) {
+        if(this->_block == 1) {
+            if(this->_itr1-- == _super->_f1) {
+                this->_block = 0;
+                this->_itr0 = std::prev(_super->_l0);
+            }
+        }
+        else {
+            --this->_itr0;
+        }
+        return *this;
+    }
 
     inline concat_view_iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; return ++(*this), res; }
     inline concat_view_iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; return --(*this), res; }
@@ -185,7 +207,7 @@ struct concat_view : view_impl::base {
     friend typename iterator::difference_type operator-<concat_view>(const iterator&, const iterator&);
     friend typename const_iterator::difference_type operator-<const concat_view>(const const_iterator&, const const_iterator&);
 
-    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT)
+    explicit concat_view(const V0 v0, const V1 v1) noexcept(NO_EXCEPT)
       : _v0(std::move(v0)), _v1(std::move(v1)),
         _f0(std::begin(this->_v0)), _l0(std::end(this->_v0)), _f1(std::begin(this->_v1)), _l1(std::end(this->_v1))
     {};
@@ -201,6 +223,12 @@ struct concat_view : view_impl::base {
         if(this->_s1 < 0) this->_s1 = std::distance(this->_f1, this->_l1);
         return this->_s0 + this->_s1;
     }
+
+    template<class Container>
+    inline Container to() const noexcept(NO_EXCEPT) {
+        Container res(this->begin(), this->end());
+        return res;
+    }
 };
 
 } // namespace view_impl
@@ -210,28 +238,34 @@ struct concat_view : view_impl::base {
 
 template<class...> struct concat_view;
 
-template<class V> struct concat_view<V> : range_view<internal::iterator_t<V>> {
-    explicit concat_view(V v) noexcept(NO_EXCEPT) : range_view<internal::iterator_t<V>>(v) {}
+template<class V> struct concat_view<V> : range_view<V> {
+    explicit concat_view(const V v) noexcept(NO_EXCEPT) : range_view<V>(v) {}
 };
 
 template<class V0, class V1> struct concat_view<V0,V1> : internal::view_impl::concat_view<V0,V1> {
-    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT) : internal::view_impl::concat_view<V0,V1>(v0, v1) {}
+    explicit concat_view(const V0 v0, const V1 v1) noexcept(NO_EXCEPT) : internal::view_impl::concat_view<V0,V1>(v0, v1) {}
 };
 
-template<class V0, class V1, class... Cs> struct concat_view<V0,V1,Cs...> : concat_view<concat_view<V0,V1>,Cs...> {
+template<class V0, class V1, class... Vs> struct concat_view<V0,V1,Vs...> : concat_view<concat_view<V0,V1>,Vs...> {
   public:
-    explicit concat_view(V0 v0, V1 v1, Cs... cs) noexcept(NO_EXCEPT) : concat_view<concat_view<V0,V1>,Cs...>(concat_view<V0,V1>(v0, v1), cs...) {}
+    explicit concat_view(const V0 v0, const V1 v1, const Vs... cs) noexcept(NO_EXCEPT) : concat_view<concat_view<V0,V1>,Vs...>(concat_view<V0,V1>(v0, v1), cs...) {}
 };
 
+template<class V>
+explicit concat_view(const V) -> concat_view<V>;
 
-// template<class V0, class V1> struct concat_view<C,V1> : internal::concat_view<C,V1> {};
+template<class V0, class V1>
+explicit concat_view(const V0, const V1) -> concat_view<V0,V1>;
+
+template<class V0, class V1, class... Vs>
+explicit concat_view(const V0, const V1, const Vs...) -> concat_view<V0,V1,Vs...>;
 
 
 namespace views {
 
 
 template<class... Views>
-constexpr inline auto concat(Views&&... views) noexcept(NO_EXCEPT) { return concat_view<range_view<internal::iterator_t<Views>>...>(range_view(views)...); };
+inline auto concat(Views&&... views) noexcept(NO_EXCEPT) { return concat_view(range(views)...); };
 
 
 } // namespace views

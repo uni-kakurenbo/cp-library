@@ -8,6 +8,8 @@
 
 #include "numeric/limits.hpp"
 
+#include "numeric/modint.hpp"
+
 
 namespace lib {
 
@@ -18,6 +20,8 @@ i64 INF64 = numeric_limits<i64>::arithmetic_infinity();
 template<class T>
 constexpr T INF = numeric_limits<T>::arithmetic_infinity();
 
+template<const unsigned v, const unsigned mod = 998244353>
+const unsigned INV = lib::static_modint<mod>{v}.inv().val();
 
 constexpr char LN = '\n';
 constexpr char SPC = ' ';
