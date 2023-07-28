@@ -139,6 +139,23 @@ template<class... Tags>
 using most_primitive_iterator_tag = decltype(iterator_impl::_most_primitive_iterator_tag<Tags...>());
 
 
+template<class T, class = void>
+struct is_iterator {
+   static constexpr bool value = false;
+};
+
+template<class T>
+struct is_iterator<T, typename std::enable_if<!std::is_same<typename std::iterator_traits<T>::value_type, void>::value>::type> {
+   static constexpr bool value = true;
+};
+
+template<class T>
+constexpr bool is_iterator_v = is_iterator<T>::value;
+
+template<class T>
+using is_iterator_t = std::enable_if_t<is_iterator_v<T>>;
+
+
 } // namespace internal
 
 } // namespace lib
