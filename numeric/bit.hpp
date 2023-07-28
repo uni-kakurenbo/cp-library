@@ -173,8 +173,8 @@ template<class T> constexpr T shiftr(const T x, const int n) {
 template<class T> constexpr T rotl(const T x, const int n) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    if constexpr(has_single_bit(DIGITS)) {
-        constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    if constexpr(has_single_bit(U_DIGITS)) {
         const unsigned r = static_cast<unsigned>(n);
         return (x << (r % U_DIGITS)) | (x >> ((-r) % U_DIGITS));
     }
