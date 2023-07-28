@@ -51,7 +51,7 @@ std::string lit(const T&, Brackets = { "[", "]" }, std::string = ", ");
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
 std::string lit(const T&, Brackets = { "{", "}" }, std::string = ", ");
 
-template<class I> std::string lit(I, const I, const Brackets = { "[", "]" }, const std::string = ", ");
+template<class I> std::string lit(const I, const I, const Brackets = { "[", "]" }, const std::string = ", ");
 
 template<class F, class S> std::string lit(const std::pair<F, S>&);
 template<class... T> std::string lit(const std::tuple<T...>&);
@@ -210,16 +210,17 @@ template<class T> std::string lit(const T *val) {
 
 template<class I, class = typename std::iterator_traits<I>::iterator_category>
 std::string lit(const I& itr) {
-    return lit(*itr);
+    return COLOR_TYPE + "<iterator> " + COLOR_INIT+ lit(*itr);
 }
 
-template<class I> std::string lit(I first, const I last, const Brackets brcs, const std::string spl) {
+template<class I> std::string lit(const I first, const I last, const Brackets brcs, const std::string spl) {
     std::stringstream res;
     res << brcs.first << " ";
-    while(first != last) {
-        if(std::next(first) == last) res << lit(*first) << " ";
-        else res << lit(*first) << spl;
-        ++first;
+    auto itr = first;
+    while(itr != last) {
+        if(std::next(itr) == last) res << lit(*itr) << " ";
+        else res << lit(*itr) << spl;
+        ++itr;
     }
     res << brcs.second ;
     return res.str();
@@ -253,7 +254,9 @@ std::vector<std::string> split(const std::string& str) {
 
         if(const auto found = std::find(std::begin(PARENTHESES), std::end(PARENTHESES), *itr); found != std::end(PARENTHESES)) {
             if(not quoted) {
-                enclosed[std::distance(std::begin(PARENTHESES), found) / 2] += 1 - static_cast<int>((std::distance(std::begin(PARENTHESES), found) % 2) * 2);
+                auto& target = enclosed[std::distance(std::begin(PARENTHESES), found) / 2];
+                target = std::max(0, target - static_cast<int>((std::distance(std::begin(PARENTHESES), found) % 2) * 2) + 1);
+
             }
         }
 
