@@ -16,8 +16,8 @@ namespace lib {
 using atcoder::dynamic_modint;
 using atcoder::modint;
 
-template<u32> struct static_modint_32bit;
-template<u32 Mod> using static_modint = static_modint_32bit<Mod>;
+template<std::uint32_t> struct static_modint_32bit;
+template<std::uint32_t Mod> using static_modint = static_modint_32bit<Mod>;
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
 
@@ -32,7 +32,7 @@ namespace lib {
 
 
 // Thanks to: https://hackmd.io/@tatyam-prime/rkVCOcwQn
-template<u32 Mod> class static_modint_32bit {
+template<std::uint32_t Mod> struct static_modint_32bit {
     using u32 = uint32_t;
     using i32 = int32_t;
     using i64 = int64_t;
