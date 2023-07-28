@@ -16,6 +16,7 @@
 
 namespace lib {
 
+
 template<class source = std::istream>
 struct input_adapter {
   private:
