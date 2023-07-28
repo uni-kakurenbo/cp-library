@@ -168,7 +168,7 @@ struct base : private uncopyable {
         return ret;
     }
 
-    // [l, r)の中で左から何番目か
+    // rank of value v in [l, r)
     inline size_type find(const Tree tree, operand& v, const size_type offset, const bool dir_left = true) const noexcept(NO_EXCEPT) {
         if(tree->acc + v == v) {
             return -1;
