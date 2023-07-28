@@ -31,12 +31,8 @@ using std::bitset;
 using std::sort;
 using std::reverse;
 
-using std::map;
-using std::unordered_map;
-
 using std::min_element;
 using std::max_element;
-
 
 // using boost::dynamic_bitset
 
@@ -58,6 +54,8 @@ using lib::ld;
 using lib::INF32;
 using lib::INF64;
 using lib::INF;
+
+using lib::INV;
 
 using lib::LN;
 using lib::SPC;
@@ -105,6 +103,11 @@ using lib::set;
 using lib::unordered_set;
 using lib::multiset;
 using lib::unordered_multiset;
+
+using lib::map;
+using lib::unordered_map;
+using lib::multimap;
+using lib::unordered_multimap;
 
 using lib::valarray;
 using lib::vector;
