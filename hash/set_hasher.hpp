@@ -34,8 +34,9 @@ struct set_hasher : protected set<T> {
     hash_type _hash = 0;
 
     static inline hash_type id(const T& v) noexcept(NO_EXCEPT) {
-        if(set_hasher::_ids.count(v)) return set_hasher::_ids[v];
-        return set_hasher::_ids[v] = set_hasher::rand();
+        auto itr = set_hasher::_ids.find(v);
+        if(itr == std::end(set_hasher::_ids)) return set_hasher::_ids[v] = set_hasher::rand();
+        return itr->second;
     }
 
   public:
@@ -57,6 +58,9 @@ struct set_hasher : protected set<T> {
     using base::count;
     using base::find;
     using base::equal_range;
+
+    inline auto begin() const noexcept(NO_EXCEPT) { return this->base::begin(); }
+    inline auto end() const noexcept(NO_EXCEPT) { return this->base::end(); }
 
     template<class... Args> auto lower_bound(const Args&... args) const noexcept(NO_EXCEPT) { return this->base::lower_bound(args...); }
     template<class... Args> auto upper_bound(const Args&... args) const noexcept(NO_EXCEPT) { return this->base::upper_bound(args...); }
