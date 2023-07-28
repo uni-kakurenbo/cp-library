@@ -3,9 +3,15 @@
 #include "adapter/input.hpp"
 #include "adapter/output.hpp"
 
-#include "adapter/set.hpp"
+#include "adapter/array.hpp"
+#include "adapter/string.hpp"
 #include "adapter/valarray.hpp"
 #include "adapter/vector.hpp"
+
+#include "adapter/map.hpp"
+#include "adapter/set.hpp"
+
+#include "adapter/range_extractor.hpp"
 
 #include "algebraic/addition.hpp"
 #include "algebraic/affine.hpp"
@@ -79,6 +85,7 @@
 #include "iterable/longest_increasing_subsequence.hpp"
 #include "iterable/operation.hpp"
 #include "iterable/run_length_encoding.hpp"
+#include "iterable/z_array.hpp"
 
 #include "numeric/arithmetic.hpp"
 #include "numeric/bit.hpp"
@@ -119,3 +126,4 @@
 #include "string.hpp"
 #include "template.hpp"
 #include "utilities.hpp"
+#include "timer.hpp"
