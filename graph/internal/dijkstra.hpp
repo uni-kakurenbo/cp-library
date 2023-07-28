@@ -6,9 +6,11 @@
 #include <utility>
 #include <functional>
 
+#include "snippet/iterations.hpp"
+
 #include "internal/dev_env.hpp"
 
-#include "snippet/iterations.hpp"
+#include "numeric/limits.hpp"
 #include "graph.hpp"
 
 
@@ -18,7 +20,7 @@ void lib::graph<edge_cost>::distances(const size_type s, std::vector<cost_t> *co
     using state = std::pair<cost_t,size_type>;
     std::priority_queue<state,std::vector<state>,std::greater<state>> que;
 
-    dists->assign(this->size(), std::numeric_limits<cost_t>::max());
+    dists->assign(this->size(), lib::numeric_limits<cost_t>::arithmetic_infinity());
 
     que.emplace(0, s), (*dists)[s] = 0;
 

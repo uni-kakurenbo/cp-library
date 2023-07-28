@@ -6,9 +6,11 @@
 #include <utility>
 #include <functional>
 
+#include "snippet/iterations.hpp"
+
 #include "internal/dev_env.hpp"
 
-#include "snippet/iterations.hpp"
+#include "numeric/limits.hpp"
 #include "graph.hpp"
 
 
@@ -17,7 +19,7 @@ template<class cost_t>
 void lib::graph<edge_cost>::distances_with_01cost(const size_type s, std::vector<cost_t> *const dists) const noexcept(NO_EXCEPT) {
     std::deque<size_type> que;
 
-    dists->assign(this->size(), std::numeric_limits<cost_t>::max());
+    dists->assign(this->size(), lib::numeric_limits<cost_t>::arithmetic_infinity());
     que.push_back(s), (*dists)[s] = 0;
 
     while(not que.empty()) {
