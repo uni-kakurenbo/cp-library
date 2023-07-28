@@ -34,7 +34,6 @@ struct accumulation : container {
         this->resize(std::distance(first, last) + 1);
         std::exclusive_scan(first, last, std::begin(*this), head, op);
         const auto back = std::prev(std::end(*this));
-        debug(*back);
         *back = op(*std::prev(back), *std::prev(last));
     }
 
