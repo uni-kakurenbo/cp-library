@@ -21,10 +21,12 @@
 #include "views.hpp"
 
 #include "adapter/set.hpp"
+#include "adapter/map.hpp"
 #include "adapter/array.hpp"
 #include "adapter/valarray.hpp"
 #include "adapter/vector.hpp"
 #include "adapter/string.hpp"
+#include "adapter/range_extractor.hpp"
 
 #include "utility/applier.hpp"
 #include "utility/functional.hpp"
