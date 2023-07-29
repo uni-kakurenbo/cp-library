@@ -93,6 +93,12 @@ template<class T> struct valarray : internal::extended_sequence<std::valarray<T>
 
     inline const T* end() const noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
     inline T* end() noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
+
+    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::end(*this)); }
+    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::begin(*this)); }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::end(*this)); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::begin(*this)); }
 };
 
 
