@@ -3,10 +3,13 @@
 
 #include <cassert>
 #include <functional>
+#include <limits>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
+
+#include "numeric/limits.hpp"
 
 #include "view/internal/base.hpp"
 
@@ -22,20 +25,23 @@ struct cyclic_view : internal::view_impl::base {
     using transposer = std::function<size_type(const size_type)>;
 
   protected:
-    transposer _transposer = [&](const size_type pos) { return pos; };
-
     Ref* _ref;
-    size_type _pos = 0, _taken;
+    size_type _internal_size;
+    size_type _pos = 0, _taken = lib::numeric_limits<size_type>::arithmetic_infinity();
 
   private:
     template<class T> __attribute__((always_inline)) inline T _mod(const T v) const noexcept(NO_EXCEPT) {
-        return (v + this->size()) % this->size();
+        return (v + this->size()) % this->_internal_size;
     }
 
   public:
-    cyclic_view(Ref *const ref) noexcept(NO_EXCEPT) : _ref(ref), _taken(std::size(*ref)) {}
+    cyclic_view(Ref& ref) noexcept(NO_EXCEPT) : _ref(&ref), _internal_size(std::distance(std::begin(ref), std::end(ref))) {}
 
-    inline cyclic_view& reset(Ref *const ref) noexcept(NO_EXCEPT) { this->_ref = ref, this->_taken = std::size(*ref); return *this; }
+    inline cyclic_view& reset(Ref& ref) noexcept(NO_EXCEPT) {
+        this->_ref = &ref;
+        this->_internal_size = std::distance(std::begin(ref), std::end(ref));
+        return *this;
+    }
 
     inline Ref* operator->() const noexcept { return this->_ref; }
     inline Ref& operator*() const noexcept { return *this->_ref; }
@@ -46,16 +52,12 @@ struct cyclic_view : internal::view_impl::base {
     inline cyclic_view& shift(const size_type count = 1) noexcept(NO_EXCEPT) { this->_pos += count; return *this; };
 
     inline cyclic_view& take(const size_type count) noexcept(NO_EXCEPT) { this->_taken = count; return *this; }
-    inline cyclic_view& take() noexcept(NO_EXCEPT) { this->_taken = std::size(*this->_ref); return *this; }
-
-    inline cyclic_view& transpose(const transposer& f) noexcept { this->_transposer = f; return *this; }
-
 
     inline value_type& operator[](const size_type count) noexcept {
-        return this->_ref->operator[](this->_mod(this->_pos + this->_transposer(count)));
+        return this->_ref->operator[](this->_mod(this->_pos + count));
     }
     inline const value_type& operator[](const size_type count) const noexcept {
-        return this->_ref->operator[](this->_mod(this->_pos + this->_transposer(count)));
+        return this->_ref->operator[](this->_mod(this->_pos + count));
     }
 
 

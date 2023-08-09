@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <limits>
+#include <iterator>
 #include <sstream>
 #include <array>
 #include <string>
@@ -19,7 +20,16 @@
 
 #include <atcoder/modint>
 
+#include "numeric/int128.hpp"
 #include "internal/type_traits.hpp"
+
+
+#if CPP20
+
+#include <ranges>
+#include <concepts>
+
+#endif
 
 
 namespace debugger {
@@ -46,27 +56,32 @@ using Brackets = std::pair<std::string, std::string>;
 // template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 // std::string lit(T, Brackets = { "[", "]" }, std::string = ", ");
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>* = nullptr>
-std::string lit(const T&, Brackets = { "[", "]" }, std::string = ", ");
+std::string lit(T&&, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
-std::string lit(const T&, Brackets = { "{", "}" }, std::string = ", ");
+std::string lit(T&&, const Brackets& = { "{", "}" }, const std::string& = ", ");
 
-template<class I> std::string lit(const I, const I, const Brackets = { "[", "]" }, const std::string = ", ");
+#if CPP20
+    template<std::forward_iterator I, std::sentinel_for<I> S>
+#else
+    template<class I, class S>
+#endif
+std::string lit(I&&, S&&, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
-template<class F, class S> std::string lit(const std::pair<F, S>&);
-template<class... T> std::string lit(const std::tuple<T...>&);
+template<class... Ts> std::string lit(std::pair<Ts...>&&);
+template<class... Ts> std::string lit(std::tuple<Ts...>&&);
 
-template<size_t N = 0, class T> void iterate_tuple(const T&, std::stringstream&);
+template<size_t N = 0, class T> void iterate_tuple(T&&, std::stringstream&);
 
-template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> std::string lit(const T&);
+template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> std::string lit(T&&);
 
 template<class T> std::string lit(const T*);
 
 
 struct debug_t : std::string {
     using std::string::string;
-    debug_t(const std::string &str) {
-        this->assign(str);
+    debug_t(std::string&& str) {
+        this->assign(std::forward<std::string>(str));
     }
 };
 std::string lit(debug_t info) {
@@ -78,12 +93,12 @@ std::string lit(std::nullptr_t) {
 }
 
 template<class S, std::enable_if_t<std::is_base_of_v<std::string,S> && !std::is_same_v<S,debug_t>>* = nullptr>
-std::string lit(const S &val) {
+std::string lit(const S val) {
     std::stringstream res;
     res << COLOR_STRING << "`" << val << "`" << COLOR_INIT;
     return res.str();
 }
-std::string lit(const char &val) {
+std::string lit(const char val) {
     std::stringstream res;
     res << COLOR_STRING << "\'" << val << "\'" << COLOR_INIT;
     return res.str();
@@ -94,89 +109,95 @@ std::string lit(const char val[]) {
     return res.str();
 }
 
-std::string lit(const unsigned char &val) {
+std::string lit(const unsigned char val) {
     std::stringstream res;
     res << COLOR_NUMERIC << static_cast<int>(val) << COLOR_INIT;
     return res.str();
 }
-std::string lit(const bool &val) {
+std::string lit(const bool val) {
     std::stringstream res;
     res << COLOR_NUMERIC << (val ? "true" : "false" ) << COLOR_INIT;
     return res.str();
 }
 
 template<std::size_t N>
-std::string lit(const std::bitset<N>& val) {
+std::string lit(std::bitset<N>&& val) {
     std::stringstream res;
     res << COLOR_NUMERIC << val.to_string() << COLOR_INIT;
     return res.str();
 }
 
-template<class T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr> std::string lit(T val) {
+// #if CPP20
+// template<class T>
+//     requires std::is_arithmetic_v<T>
+// #else
+template<class T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
+// #endif
+std::string lit(const T val) {
     std::stringstream res;
-    res << COLOR_NUMERIC << std::fixed << std::setprecision(std::numeric_limits<T>::digits10);// << scientific;
+    res << COLOR_NUMERIC << std::setprecision(std::numeric_limits<T>::digits10);// << scientific;
     res << val << COLOR_LITERAL_OPERATOR << lib::internal::literal_operator_v<T>;
     res << COLOR_INIT;
     return res.str();
 };
 
-template<class T> auto lit(const T& val) -> decltype(val.val(), std::string());
+template<class T> auto lit(T&& val) -> decltype(val.val(), std::string());
 
 template<class T, atcoder::internal::is_modint_t<T>*>
-std::string _lit(int, const T& val) {
+std::string _lit(int, T&& val) {
     return COLOR_TYPE + "<modint> " + lit(val.val());
 }
 
-template<class T> std::string _lit(bool, const T& val) {
+template<class T> std::string _lit(bool, T&& val) {
     return COLOR_TYPE + "<...> " + lit(val.val());
 }
 
 
-template<class T> auto lit(const T& val) -> decltype(val.val(), std::string()) {
-    return _lit(0, val);
+template<class T> auto lit(T&& val) -> decltype(val.val(), std::string()) {
+    return _lit(0, std::forward<T>(val));
 }
 
-template<class K, class V> std::string lit(const std::map<K, V>& mp) {
-    return lit(mp, Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
+template<class... Ts> std::string lit(std::map<Ts...>&& val) {
+    return lit(std::forward<std::map<Ts...>>(val), Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
 }
-template<class K, class V> std::string lit(const std::unordered_map<K, V>& mp) {
-    return lit(mp, Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
+template<class... Ts> std::string lit(std::unordered_map<Ts...>&& val) {
+    return lit(std::forward<std::unordered_map<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
 }
-template<class T> std::string lit(const std::set<T>& st) {
-    return lit(st, Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
+template<class... Ts> std::string lit(std::set<Ts...>&& val) {
+    return lit(std::forward<std::set<Ts...>>(val), Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
 }
-template<class T> std::string lit(const std::unordered_set<T>& st) {
-    return lit(st, Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
+template<class... Ts> std::string lit(std::unordered_set<Ts...>&& val) {
+    return lit(std::forward<std::unordered_set<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
 }
-template<class T> std::string lit(const std::vector<T>& vec) {
-    return lit(vec, Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
+template<class... Ts> std::string lit(std::vector<Ts...>&& val) {
+    return lit(std::forward<std::vector<Ts...>>(val), Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
 }
-template<class T> std::string lit(const std::deque<T>& deq) {
-    return lit(deq, Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
+template<class... Ts> std::string lit(std::deque<Ts...>&& val) {
+    return lit(std::forward<std::deque<Ts...>>(val), Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
 }
 
-template<class F, class S> std::string lit(const std::pair<F,S>& pr) {
+template<class... Ts> std::string lit(std::pair<Ts...>&& val) {
     std::stringstream res;
     res << COLOR_TYPE << "<pair>" << COLOR_INIT << " ( ";
-    res << lit(pr.first);
+    res << lit(val.first);
     res << ", ";
-    res << lit(pr.second);
+    res << lit(val.second);
     res << " )";
     return res.str();
 }
-template<class... T> std::string lit(const std::tuple<T...>& tpl) {
+template<class... Ts> std::string lit(std::tuple<Ts...>&& val) {
     std::stringstream res;
     res << COLOR_TYPE << "<tuple>" << COLOR_INIT << " ( ";
-    iterate_tuple(tpl, res);
+    iterate_tuple(std::forward<std::tuple<Ts...>>(val), res);
     res << " )";
     return res.str();
 }
 
-template<size_t N, class T> void iterate_tuple(__attribute__ ((unused)) const T& val, std::stringstream &res) {
+template<size_t N, class T> void iterate_tuple([[maybe_unused]] T&& val, std::stringstream &res) {
     if constexpr(N < std::tuple_size_v<T>) {
         res << lit(std::get<N>(val));
         if constexpr(N < std::tuple_size_v<T> - 1) res << ", ";
-        iterate_tuple<N + 1>(val, res);
+        iterate_tuple<N + 1>(std::forward<T>(val), res);
     }
 }
 
@@ -185,18 +206,19 @@ template<size_t N, class T> void iterate_tuple(__attribute__ ((unused)) const T&
 //     return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 // }
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
-std::string lit(const T& val, Brackets brcs, std::string sep) {
-    return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+    return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
+    // return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
-std::string lit(const T& val, Brackets brcs, std::string sep) {
-    return lit(val.begin(), val.end(), brcs, sep);
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+    return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
-std::string lit(const T &val) {
-    const auto& res = _debug(val);
+std::string lit(T &&val) {
+    const auto& res = _debug(std::forward<T>(val));
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
     } else {
@@ -204,19 +226,28 @@ std::string lit(const T &val) {
     }
 }
 
-template<class T> std::string lit(const T *val) {
+template<class T> std::string lit(const T *const val) {
     return lit(*val);
 }
 
+#if CPP20
+template<std::input_or_output_iterator I>
+#else
 template<class I, class = typename std::iterator_traits<I>::iterator_category>
-std::string lit(const I& itr) {
+#endif
+std::string lit(I&& itr) {
     return COLOR_TYPE + "<iterator> " + COLOR_INIT+ lit(*itr);
 }
 
-template<class I> std::string lit(const I first, const I last, const Brackets brcs, const std::string spl) {
+#if CPP20
+    template<std::forward_iterator I, std::sentinel_for<I> S>
+#else
+    template<class I, class S>
+#endif
+std::string lit(I&& first, S&& last, const Brackets& brcs, const std::string& spl) {
     std::stringstream res;
     res << brcs.first << " ";
-    auto itr = first;
+    auto&& itr = first;
     while(itr != last) {
         if(std::next(itr) == last) res << lit(*itr) << " ";
         else res << lit(*itr) << spl;
@@ -226,9 +257,9 @@ template<class I> std::string lit(const I first, const I last, const Brackets br
     return res.str();
 }
 
-template<class T = std::nullptr_t> void debug(T&& = nullptr, std::string = "\n");
+template<class T = std::nullptr_t> void debug(T&& = nullptr, const std::string& = "\n");
 
-template<class T> void debug(T&& val, std::string endl) {
+template<class T> void debug(T&& val, const std::string& endl) {
     *cdebug << lit(std::forward<T>(val)) << endl << std::flush;
 }
 
@@ -238,12 +269,13 @@ std::vector<std::string> split(const std::string& str) {
     constexpr char ESCAPE = '\\';
     constexpr char QUOTATIONS[] = "\"\'";
     constexpr char PARENTHESES[] = "()[]{}<>";
-    static_assert(std::strlen(PARENTHESES) % 2 == 0);
+    constexpr auto PARENTHESES_KINDS = std::char_traits<char>::length(PARENTHESES);
+    static_assert(PARENTHESES_KINDS % 2 == 0);
 
     std::vector<std::string> res = { "" };
 
     bool quoted = false;
-    std::array<int,(std::strlen(PARENTHESES) / 2)> enclosed = { 0 };
+    std::array<int,(PARENTHESES_KINDS / 2)> enclosed = { 0 };
 
     for(auto itr = std::begin(str); itr != std::end(str); ++itr) {
         if(std::find(std::begin(QUOTATIONS), std::end(QUOTATIONS), *itr) != std::end(QUOTATIONS)) {

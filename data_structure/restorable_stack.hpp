@@ -11,18 +11,20 @@ namespace lib {
 
 template<class T, class ID = int, template<class,class> class storage = std::unordered_map>
 struct restorable_stack {
+    using value_type = T;
+    using key_type = ID;
+
   protected:
     struct node;
     using node_ptr = std::shared_ptr<node>;
 
     struct node {
-        std::map<int,int> a;
-        std::optional<T> val = std::nullopt;
+        std::optional<value_type> val = std::nullopt;
         node_ptr parent;
     };
 
     node_ptr _current;
-    storage<ID,node_ptr> _storage;
+    storage<key_type,node_ptr> _storage;
 
   public:
     restorable_stack() noexcept(NO_EXCEPT) { this->clear(); };
@@ -30,11 +32,11 @@ struct restorable_stack {
     inline bool empty() const noexcept(NO_EXCEPT) {
         return !this->_current->val.has_value();
     }
-    inline bool stored(ID x) const noexcept(NO_EXCEPT) {
+    inline bool stored(key_type x) const noexcept(NO_EXCEPT) {
         return this->_storage.count(x);
     }
 
-    inline T top() const noexcept(NO_EXCEPT) {
+    inline const value_type& top() const noexcept(NO_EXCEPT) {
         return this->_current->val.value();
     }
 
@@ -43,20 +45,25 @@ struct restorable_stack {
         return this->_current->val.value_or(v);
     }
 
-    inline void push(const T x) noexcept(NO_EXCEPT) {
+    inline auto& push(const value_type& x) noexcept(NO_EXCEPT) {
         this->_current.reset(new node{ x, this->_current });
+        return *this;
     }
-    inline void pop() noexcept(NO_EXCEPT) {
+    inline auto& pop() noexcept(NO_EXCEPT) {
         this->_current = this->_current->parent;
+        return *this;
     }
-    inline void save(const ID x) noexcept(NO_EXCEPT) {
+    inline auto& save(const key_type x) noexcept(NO_EXCEPT) {
         this->_storage[x] = this->_current;
+        return *this;
     }
-    inline void load(const ID x) noexcept(NO_EXCEPT) {
+    inline auto& load(const key_type x) noexcept(NO_EXCEPT) {
         this->_current = this->_storage[x];
+        return *this;
     }
-    inline void clear() noexcept(NO_EXCEPT) {
+    inline auto& clear() noexcept(NO_EXCEPT) {
         this->_current.reset(new node{});
+        return *this;
     }
 };
 

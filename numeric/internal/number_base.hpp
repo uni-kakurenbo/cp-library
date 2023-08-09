@@ -17,7 +17,7 @@ namespace lib {
 template<std::size_t B = 2, class T>
 std::string base_n_string(T v) noexcept(NO_EXCEPT) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static_assert(0 < B and B <= std::strlen(CHARS));
+    static_assert(0 < B and B <= std::char_traits<char>::length(CHARS));
     assert(0 <= v);
 
     std::string res;
@@ -34,7 +34,7 @@ std::string base_n_string(T v) noexcept(NO_EXCEPT) {
 template<class T>
 std::string base_n_string(T v, std::size_t b) noexcept(NO_EXCEPT) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    assert(1 < b && b <= std::strlen(CHARS));
+    assert(1 < b && b <= std::char_traits<char>::length(CHARS));
     assert(0 <= v);
 
     std::string res;

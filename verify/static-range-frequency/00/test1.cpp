@@ -165,7 +165,7 @@ std::basic_ostream<C, S> &operator<<(std::basic_ostream<C, S> &out,
 namespace lib {
 template <class T> struct point : protected std::pair<T, T> {
   public:
-    constexpr point() {}
+    constexpr point() = default;
     constexpr point(const T &x, const T &y) noexcept(NO_EXCEPT)
         : std::pair<T, T>(x, y) {}
     template <class U>
@@ -292,7 +292,7 @@ namespace lib {
 template <std::size_t B = 2, class T>
 std::string base_n_string(T v) noexcept(NO_EXCEPT) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static_assert(0 < B and B <= std::strlen(CHARS));
+    static_assert(0 < B and B <= std::char_traits<char>::length(CHARS));
     assert(0 <= v);
     std::string res;
     while(v > 0) {
@@ -305,7 +305,7 @@ std::string base_n_string(T v) noexcept(NO_EXCEPT) {
 template <class T>
 std::string base_n_string(T v, std::size_t b) noexcept(NO_EXCEPT) {
     constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    assert(1 < b && b <= std::strlen(CHARS));
+    assert(1 < b && b <= std::char_traits<char>::length(CHARS));
     assert(0 <= v);
     std::string res;
     while(v > 0) {
@@ -440,7 +440,7 @@ template <class T> struct container_base : virtual interface<T> {
     }
 
   public:
-    container_base() noexcept(NO_EXCEPT) = default;
+    container_base() = default;
     container_base(const size_t _h, const size_t _w) noexcept(NO_EXCEPT)
         : _h(_h), _w(_w) {}
     virtual void resize(const size_t h,
@@ -2153,7 +2153,7 @@ struct random_access_iterator_base : bidirectional_iterator_interface<T> {
   public:
 };
 template <class T, class container>
-struct container_iterator_interface : public random_access_iterator_base<T> {
+struct container_iterator_interface random_access_iterator_base<T> {
     using difference_type =
         typename bidirectional_iterator_interface<T>::difference_type;
 
@@ -2543,7 +2543,7 @@ template <class T, class dict_type> struct base {
     T _max = 0;
 
   public:
-    base() {}
+    base() = default;
     template <class I> base(const I first, const I last) noexcept(NO_EXCEPT) {
         this->build(first, last);
     }

@@ -22,8 +22,11 @@
 #include "constants.hpp"
 
 #include "iterable/compressed.hpp"
-#include "numeric/bit.hpp"
+
 #include "data_structure/bit_vector.hpp"
+
+#include "numeric/bit.hpp"
+#include "numeric/limits.hpp"
 
 
 namespace lib {
@@ -46,7 +49,7 @@ template<class T, class dict_type> struct base {
     T _max = 0;
 
   public:
-    base() {}
+    base() = default;
     template<class I> base(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
     template<class U> base(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : base(ALL(init_list)) {}
 
@@ -195,13 +198,13 @@ template<class T, class dict_type> struct base {
         return this->sum_in_range(l, r, 0, v);
     }
     inline T sum_over(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, v+1, std::numeric_limits<T>::max());
+        return this->sum_in_range(l, r, v+1, numeric_limits<T>::arithmetic_infinity());
     }
     inline T sum_or_under(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
         return this->sum_in_range(l, r, 0, v+1);
     }
     inline T sum_or_over(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, v, std::numeric_limits<T>::max());
+        return this->sum_in_range(l, r, v, numeric_limits<T>::arithmetic_infinity());
     }
     inline T sum(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         return this->_sum[this->_bits][r] - this->_sum[this->_bits][l];
@@ -358,12 +361,12 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
         inline T sum(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
         inline T sum() const noexcept(NO_EXCEPT) { return this->_super->base::sum(this->_begin, this->_end); }
 
-        template<comp com>
+        template<comparison com>
         inline size_type sum(const T& v) const noexcept(NO_EXCEPT) {
-            if constexpr(com == comp::under) return this->sum_under(v);
-            if constexpr(com == comp::over) return this->sum_over(v);
-            if constexpr(com == comp::or_under) return this->sum_or_under(v);
-            if constexpr(com == comp::or_over) return this->sum_or_over(v);
+            if constexpr(com == comparison::under) return this->sum_under(v);
+            if constexpr(com == comparison::over) return this->sum_over(v);
+            if constexpr(com == comparison::or_under) return this->sum_or_under(v);
+            if constexpr(com == comparison::or_over) return this->sum_or_over(v);
             assert(false);
         }
 
@@ -375,13 +378,13 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
         inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_under(this->_begin, this->_end, v); }
         inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_over(this->_begin, this->_end, v); }
 
-        template<comp com = comp::equal_to>
+        template<comparison com = comparison::equal_to>
         inline size_type count(const T& v) const noexcept(NO_EXCEPT) {
-            if constexpr(com == comp::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
-            if constexpr(com == comp::under) return this->count_under(v);
-            if constexpr(com == comp::over) return this->count_over(v);
-            if constexpr(com == comp::or_under) return this->count_or_under(v);
-            if constexpr(com == comp::or_over) return this->count_or_over(v);
+            if constexpr(com == comparison::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
+            if constexpr(com == comparison::under) return this->count_under(v);
+            if constexpr(com == comparison::over) return this->count_over(v);
+            if constexpr(com == comparison::or_under) return this->count_or_under(v);
+            if constexpr(com == comparison::or_over) return this->count_or_over(v);
             assert(false);
         }
 
@@ -418,7 +421,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
     inline T sum(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().sum_in_range(x, y); }
     inline T sum() const noexcept(NO_EXCEPT) { return this->range().sum(); }
 
-    template<comp com>
+    template<comparison com>
     inline size_type sum(const T& v) const noexcept(NO_EXCEPT) { return this->range().template sum<com>(v); }
 
 
@@ -431,7 +434,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
     inline size_type count(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().count(x, y); }
 
-    template<comp com = comp::equal_to>
+    template<comparison com = comparison::equal_to>
     inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
 
 
@@ -538,7 +541,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
         inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->_comp.rank2(v)); }
         inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->_comp.rank(v)); }
 
-        template<comp com = comp::equal_to>
+        template<comparison com = comparison::equal_to>
         inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->_comp.rank(v)); }
 
 
@@ -579,7 +582,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
     inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
     inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
 
-    template<comp com = comp::equal_to> inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
+    template<comparison com = comparison::equal_to> inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
 
     inline auto next_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
     inline auto prev_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }

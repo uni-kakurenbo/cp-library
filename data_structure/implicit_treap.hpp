@@ -275,7 +275,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     template<class... Args>
     explicit core(Args... args) noexcept(NO_EXCEPT) : core() { this->assign(std::forward<Args>(args)...); }
     template<class T> core(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) : core(std::begin(values), std::end(values)) {}
-    core() {}
+    core() noexcept(NO_EXCEPT) {}
 
     template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
     inline void insert(size_type p, const I first, const I last) noexcept(NO_EXCEPT) {

@@ -15,6 +15,7 @@ void solve();
 
 signed main() {
     int $ = 1;
+    debug(__cplusplus);
     // std::cin >> $;
     for(int _ = 0; _ < $; ++_) {
         DEBUG("Case: #" + std::to_string(_));
@@ -30,11 +31,8 @@ void solve() {
     int n, a, b; cin >> n >> a >> b;
     assert(a > 0);
     auto sieve = lib::prime_enumerator(n);
-    // debug(sieve.size());
-    // debug(sieve);
-    // debug(sieve | boost::adaptors::reversed);
     print(sieve.size(), (sieve.size() + a - b - 1) / a);
-    for(auto itr = std::next(sieve.begin(), b); itr != sieve.end(); std::advance(itr, a)) {
-        print << *itr << " ";
-    }
+    print(sieve | std::views::drop(b) | lib::views::stride(a));
+
+    debug(lib::views::zip(std::views::iota(1), sieve));
 }

@@ -97,13 +97,13 @@ struct set_adapter {
     inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(0, v+1); }
     inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(v, this->_data.size()); }
 
-    template<comp com = comp::equal_to>
+    template<comparison com = comparison::equal_to>
     inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) {
-        if constexpr(com == comp::eq) return this->count(v);
-        if constexpr(com == comp::under) return this->count_under(v);
-        if constexpr(com == comp::over) return this->count_over(v);
-        if constexpr(com == comp::or_under) return this->count_or_under(v);
-        if constexpr(com == comp::or_over) return this->count_or_over(v);
+        if constexpr(com == comparison::eq) return this->count(v);
+        if constexpr(com == comparison::under) return this->count_under(v);
+        if constexpr(com == comparison::over) return this->count_over(v);
+        if constexpr(com == comparison::or_under) return this->count_or_under(v);
+        if constexpr(com == comparison::or_over) return this->count_or_over(v);
         assert(false);
     }
 

@@ -20,7 +20,7 @@ struct xorshift {
 
     inline void seed(unsigned int seed) noexcept(NO_EXCEPT) { this->w = seed; }
 
-    constexpr xorshift() {};
+    constexpr xorshift() = default;
     constexpr xorshift(const std::uint32_t seed) noexcept(NO_EXCEPT) : w(seed) {};
 
     inline result_type gen() noexcept(NO_EXCEPT) {

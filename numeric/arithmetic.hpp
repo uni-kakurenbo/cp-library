@@ -24,8 +24,19 @@
 namespace lib {
 
 
+template<class T>
+inline constexpr T div_ceil(const T& x, const T& d) noexcept(NO_EXCEPT) {
+    return x / d + static_cast<T>(x % d);;
+}
+
+template<class T>
+inline constexpr std::make_unsigned_t<T> to_unsigned(const T& x) noexcept(NO_EXCEPT) {
+    return static_cast<std::make_unsigned_t<T>>(x);
+}
+
+
 template<class T, class R = T>
-R nPr(const T n, const T r) noexcept(NO_EXCEPT) {
+inline constexpr R nPr(const T& n, const T& r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n < r) return 0;
@@ -37,7 +48,7 @@ R nPr(const T n, const T r) noexcept(NO_EXCEPT) {
 }
 
 template<class T, class R = T>
-R nCr(const T n, T r) noexcept(NO_EXCEPT) {
+inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n == r) return 1;
@@ -51,8 +62,20 @@ R nCr(const T n, T r) noexcept(NO_EXCEPT) {
 }
 
 
+template<class T, class R = T>
+inline constexpr R factorial(const T& n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
+    R ans = 1;
+    FOR(k, 1, n) ans += k;
+    return ans;
+}
+
+
 template<class T, class U>
-T pow(T x, U n) noexcept(NO_EXCEPT) {
+inline constexpr auto pow(const T& x, U n) noexcept(NO_EXCEPT) -> decltype(x.pow(n), T()) { return x.pow(n); }
+
+template<class T, class U>
+inline constexpr auto pow(T x, U n) noexcept(NO_EXCEPT) -> T {
     T res = 1;
     while(n > 0) {
         if(n & 1) res *= x;
@@ -67,7 +90,7 @@ using atcoder::inv_mod;
 using atcoder::crt;
 
 
-template<class T> T sign(const T& x) noexcept(NO_EXCEPT) {
+template<class T> inline constexpr T sign(const T& x) noexcept(NO_EXCEPT) {
     if(x == 0) return 0;
     return (x > 0) ? 1 : -1;
 }
@@ -85,31 +108,31 @@ const std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
 }
 
 template<class... Args>
-const std::common_type_t<Args...> max(const Args&... args) noexcept(NO_EXCEPT) {
+inline constexpr const std::common_type_t<Args...> max(const Args&... args) noexcept(NO_EXCEPT) {
     return std::max({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 template<class... Args>
-const std::common_type_t<Args...> mex(const Args&... args) noexcept(NO_EXCEPT) {
+inline constexpr const std::common_type_t<Args...> mex(const Args&... args) noexcept(NO_EXCEPT) {
     return mex({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
+inline constexpr std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_add_overflow(a, b, &res)) return {};
     else return res;
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
+inline constexpr std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_sub_overflow(a, b, &res)) return {};
     else return res;
 }
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
-std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
+inline constexpr std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_mul_overflow(a, b, &res)) return {};
     else return res;
@@ -149,7 +172,7 @@ inline bool mul_or_under(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
-T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
+inline constexpr T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
     T ok = 0, ng = x / 2 + 2;
     while(ng - ok > 1) {
         T mid = (ok + ng) / 2;
@@ -159,7 +182,7 @@ T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
-T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
+inline constexpr T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
     T ok = 0, ng = x / 2 + 2;
     while(ng - ok > 1) {
         T mid = (ok + ng) / 2;

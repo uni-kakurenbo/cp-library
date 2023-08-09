@@ -37,8 +37,17 @@ template<class Set> struct set_wrapper : Set {
     inline auto min() const noexcept(NO_EXCEPT) { return *this->begin(); }
     inline auto max() const noexcept(NO_EXCEPT) { return *std::prev(this->end()); }
 
-    inline auto pop_min() noexcept(NO_EXCEPT) { this->erase(this->begin()); return *this; }
-    inline auto pop_max() noexcept(NO_EXCEPT) { this->erase(std::prev(this->end())); return *this; }
+    inline auto& pop_min() noexcept(NO_EXCEPT) { this->erase(this->begin()); return *this; }
+    inline auto& pop_max() noexcept(NO_EXCEPT) { this->erase(std::prev(this->end())); return *this; }
+
+    inline auto kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) { return std::next(this->begin(), k); }
+    inline auto kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) { return std::prev(this->begin(), k + 1); }
+
+    inline auto kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return *std::next(this->begin(), k); }
+    inline auto kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return *std::prev(this->begin(), k + 1); }
+
+    inline auto& pop_kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->erase(std::next(this->begin(), k)); return *this; }
+    inline auto& pop_kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->erase(std::prev(this->begin(), k + 1)); return *this; }
 
     inline auto next_element(const typename Set::key_type& key, const size_type _count = 0) const noexcept(NO_EXCEPT) {
         size_type count = std::abs(_count);

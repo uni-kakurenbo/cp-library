@@ -56,6 +56,7 @@ using lib::INF64;
 using lib::INF;
 
 using lib::INV;
+using lib::SINV;
 
 using lib::LN;
 using lib::SPC;
@@ -98,16 +99,6 @@ using lib::graph;
 
 using lib::matrix;
 using lib::unordered_multiset;
-
-using lib::set;
-using lib::unordered_set;
-using lib::multiset;
-using lib::unordered_multiset;
-
-using lib::map;
-using lib::unordered_map;
-using lib::multimap;
-using lib::unordered_multimap;
 
 using lib::valarray;
 using lib::vector;

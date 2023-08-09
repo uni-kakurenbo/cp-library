@@ -41,6 +41,8 @@ struct interface {
 
     // virtual T& operator()(const size_t, const size_t) noexcept(NO_EXCEPT) = 0;
     // virtual const T& operator()(const size_t, const size_t) const noexcept(NO_EXCEPT) = 0;
+    // virtual T& operator()(const std::pair<size_t,size_t>&) noexcept(NO_EXCEPT) = 0;
+    // virtual const T& operator()(const std::pair<size_t,size_t>&) const noexcept(NO_EXCEPT) = 0;
 };
 
 template<class T> struct container_base : virtual interface<T> {
@@ -61,7 +63,7 @@ template<class T> struct container_base : virtual interface<T> {
     }
 
   public:
-    container_base() noexcept(NO_EXCEPT) = default;
+    container_base() = default;
     container_base(const size_t h, const size_t w) noexcept(NO_EXCEPT) : _h(h), _w(w) {}
 
     virtual void resize(const size_t h, const size_t w) noexcept(NO_EXCEPT) /*override*/ {
@@ -77,9 +79,17 @@ template<class T> struct container_base : virtual interface<T> {
         this->_validate_index(_i, _j);
         return _i * this->width() + _j;
     }
+
+    inline size_t id(const std::pair<size_t,size_t>& p) const noexcept(NO_EXCEPT) /*override*/ {
+        return this->id(p.first, p.second);
+    }
+
+    inline std::pair<size_t,size_t> pos(const size_t id) const noexcept(NO_EXCEPT) /*override*/ {
+        return { id / this->width(), id % this->width() };
+    }
 };
 
-template<class T, class Row = std::vector<T>, class base = std::vector<Row>>
+template<class T, class Row, class base>
 struct container : base, container_base<T>, virtual interface<T> {
 
     container(const size_t n = 0) noexcept(NO_EXCEPT) : container(n, n) {}
@@ -124,6 +134,14 @@ struct container : base, container_base<T>, virtual interface<T> {
         this->_validate_index(_i, _j);
         return (*this)[_i][_j];
     }
+
+    inline T& operator()(const std::pair<size_t,size_t>& p) noexcept(NO_EXCEPT) /*override*/ {
+        return this->operator()(p.first, p.second);
+    }
+
+    inline const T& operator()(const std::pair<size_t,size_t>& p) const noexcept(NO_EXCEPT) /*override*/ {
+        return this->operator()(p.first, p.second);
+    }
 };
 
 template<class T, class base = std::vector<T>>
@@ -162,13 +180,15 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
     inline T& operator()(const size_t i, const size_t j) noexcept(NO_EXCEPT) /*override*/ {
         const size_t _i = this->_positivize_row_index(i);
         const size_t _j = this->_positivize_col_index(j);
-        return (*this)[this->id(_i, _j)];
+        return this->operator[](this->id(_i, _j));
     }
 
-    inline const T& operator()(const size_t i, const size_t j) const noexcept(NO_EXCEPT) /*override*/ {
-        const size_t _i = this->_positivize_row_index(i);
-        const size_t _j = this->_positivize_col_index(j);
-        return (*this)[this->id(_i, _j)];
+    inline T& operator()(const std::pair<size_t,size_t>& p) noexcept(NO_EXCEPT) /*override*/ {
+        return this->operator()(this->id(p.first, p.second));
+    }
+
+    inline const T& operator()(const std::pair<size_t,size_t>& p) const noexcept(NO_EXCEPT) /*override*/ {
+        return this->operator()(this->id(p.first, p.second));
     }
 };
 
@@ -275,5 +295,8 @@ using valgrid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>
 
 template<class T, class base = vector<T>>
 using unfolded_grid = internal::grid_core<T,internal::grid_impl::unfolded_container<T,base>>;
+
+template<class T, class base = valarray<T>>
+using unfolded_valgrid = internal::grid_core<T,internal::grid_impl::unfolded_container<T,base>>;
 
 } // namespace lib

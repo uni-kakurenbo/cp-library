@@ -4,7 +4,7 @@
 
 template<class T>
 struct static_patial_folding {
-    static_patial_folding() {}
+    static_patial_folding() noexcept(NO_EXCEPT) {}
 
     inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {
     }

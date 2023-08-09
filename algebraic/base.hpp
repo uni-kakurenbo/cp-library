@@ -7,8 +7,6 @@ namespace lib {
 
 namespace algebraic {
 
-namespace internal {
-
 
 template<class T>
 struct base {
@@ -44,8 +42,6 @@ struct monoid : semigroup {};
 
 struct group : monoid, invertible {};
 
-
-} // namespace internal
 
 } // namespace algebraic
 

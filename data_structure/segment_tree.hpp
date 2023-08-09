@@ -157,7 +157,7 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     }
 
   public:
-    core() : base() {}
+    core() noexcept(NO_EXCEPT) : base() ;
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
     template<class T>

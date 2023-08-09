@@ -6,3 +6,4 @@
 #include "view/2d.hpp"
 #include "view/zip.hpp"
 #include "view/concat.hpp"
+#include "view/stride.hpp"

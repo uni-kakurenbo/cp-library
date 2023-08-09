@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "algebraic/internal/base.hpp"
+#include "algebraic/base.hpp"
 
 
 

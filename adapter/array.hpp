@@ -9,8 +9,8 @@
 namespace lib {
 
 
-template<class... Args>
-using array = internal::extended_sequence<std::array<Args...>>;
+template<class T, int N>
+using array = internal::extended_sequence<std::array<T,N>>;
 
 
 } // namespace lib

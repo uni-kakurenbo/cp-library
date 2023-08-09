@@ -70,7 +70,7 @@ struct concat_view_iterator : view_impl::iterator_base {
     iterator1_t _itr1;
 
   public:
-    concat_view_iterator() {}
+    concat_view_iterator() = default;
 
     template<class Itr>
     explicit concat_view_iterator(
@@ -206,6 +206,9 @@ struct concat_view : view_impl::base {
 
     friend typename iterator::difference_type operator-<concat_view>(const iterator&, const iterator&);
     friend typename const_iterator::difference_type operator-<const concat_view>(const const_iterator&, const const_iterator&);
+
+
+    using value_type = typename std::iterator_traits<iterator>::value_type;
 
     explicit concat_view(const V0 v0, const V1 v1) noexcept(NO_EXCEPT)
       : _v0(std::move(v0)), _v1(std::move(v1)),

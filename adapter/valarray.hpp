@@ -2,6 +2,7 @@
 
 
 #include <cassert>
+#include <iostream>
 #include <valarray>
 #include <algorithm>
 #include <type_traits>
@@ -47,11 +48,20 @@ template<class T> struct valarray : internal::extended_sequence<std::valarray<T>
 
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
 
-    template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
-    valarray(const I first, const I last) noexcept(NO_EXCEPT) : base(first, std::distance(first, last)) {}
+    template<class I, class = typename std::iterator_traits<I>::value_type>
+    valarray(const I first, const I last) noexcept(NO_EXCEPT) : base(std::distance(first, last)) { std::copy(first, last, std::begin(*this)); }
 
-    template<class U> valarray(const std::initializer_list<U>& init) noexcept(NO_EXCEPT) : valarray(std::begin(init), std::end(init)) {}
+    template<class U> valarray(const U* pointer, const size_t n) noexcept(NO_EXCEPT) : base(pointer, n) {};
 
+    valarray(const std::slice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    valarray(const std::gslice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    valarray(const std::mask_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    valarray(const std::indirect_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    valarray(const std::initializer_list<T>& init) noexcept(NO_EXCEPT) : base(init) {}
+
+  #ifdef __GNUC__
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+  #endif
 
     inline auto size() const noexcept(NO_EXCEPT) { return static_cast<size_type>(this->base::size()); }
 

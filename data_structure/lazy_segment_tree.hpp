@@ -237,7 +237,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     }
 
   public:
-    core() : base() {}
+    core() noexcept(NO_EXCEPT) : base() {}
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
     template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}

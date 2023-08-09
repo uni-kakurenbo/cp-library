@@ -2,6 +2,7 @@
 
 
 #include <algorithm>
+#include <utility>
 
 #include "internal/dev_env.hpp"
 
@@ -14,6 +15,14 @@ namespace internal {
 template<class Base>
 struct extended_sequence : Base {
     using Base::Base;
+
+    using size_type = decltype(Base().size());
+    using value_type = typename Base::value_type;
+
+    inline auto& swap(const size_type i, const size_type j) noexcept(NO_EXCEPT) {
+        std::swap(this->operator[](i), this->operator[](j));
+        return *this;
+    }
 
     inline auto& sort() noexcept(NO_EXCEPT) {
         std::sort(std::begin(*this), std::end(*this));
@@ -28,6 +37,36 @@ struct extended_sequence : Base {
 
     inline auto& reverse() noexcept(NO_EXCEPT) {
         std::reverse(std::begin(*this), std::end(*this));
+        return *this;
+    }
+
+    inline auto count(const value_type& v) const noexcept(NO_EXCEPT) {
+        return std::count(std::begin(*this), std::end(*this), v);
+    }
+
+    template<class F>
+    inline auto count_if(F&& f) const noexcept(NO_EXCEPT) {
+        return std::count_if(std::begin(*this), std::end(*this), f);
+    }
+
+    inline auto& resize(const size_type k) noexcept(NO_EXCEPT) {
+        this->Base::resize(k);
+        return *this;
+    }
+    inline auto& resize(const size_type k, const value_type v) noexcept(NO_EXCEPT) {
+        this->Base::resize(k, v);
+        return *this;
+    }
+
+    template<class F>
+    inline auto& shuffle(const F& f) noexcept(NO_EXCEPT) {
+        std::shuffle(std::begin(*this), std::end(*this), f);
+        return *this;
+    }
+
+    inline auto& unique() noexcept(NO_EXCEPT) {
+        std::sort(std::begin(*this), std::end(*this));
+        this->erase(std::unique(std::begin(*this), std::end(*this)), std::end(*this));
         return *this;
     }
 

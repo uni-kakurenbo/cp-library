@@ -327,7 +327,7 @@ struct random_access_iterator_base : bidirectiona_iterator_interface<T> {
     operator-=(const difference_type count) = 0;
 };
 template <class T, class container>
-struct container_iterator_interface : public random_access_iterator_base<T> {
+struct container_iterator_interface random_access_iterator_base<T> {
     using difference_type =
         typename bidirectiona_iterator_interface<T>::difference_type;
 
@@ -488,7 +488,7 @@ struct succinct_bit_vector {
     size_type _n, _zeros;
 
   public:
-    succinct_bit_vector() {}
+    succinct_bit_vector() = default;
     succinct_bit_vector(const size_type _n) { this->init(_n); }
     inline size_type size() const { return this->_n; }
     inline size_type zeros() const { return this->_zeros; }
@@ -532,7 +532,7 @@ struct compression : container {
     std::vector<T> values;
 
   public:
-    explicit compression() {}
+    explicit compression() = default;
     template <class I> compression(const I first, const I last) {
         this->values.assign(first, last);
         std::sort(this->values.begin(), this->values.end());
@@ -573,7 +573,7 @@ template <class T> struct base {
     T _max = 0;
 
   public:
-    base() {}
+    base() = default;
     template <class I> base(const I first, const I last) {
         this->build(first, last);
     }

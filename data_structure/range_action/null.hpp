@@ -30,13 +30,4 @@ template<class T> struct null : base<algebraic::null<T>> {
 
 } // namespace actions
 
-
-template<class T> struct implicit_treap<actions::null<T>> : internal::implicit_treap_impl::core<actions::null<T>> {
-    using internal::implicit_treap_impl::core<actions::null<T>>::core;
-
-    template<class... Args> void apply(const Args&... args) = delete;
-    template<class... Args> void fold(const Args&... args) = delete;
-};
-
-
 } // namespace lib

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 
 #include <atcoder/modint>
 
@@ -32,15 +33,18 @@ namespace lib {
 
 
 // Thanks to: https://hackmd.io/@tatyam-prime/rkVCOcwQn
-template<std::uint32_t Mod> struct static_modint_32bit {
+template<std::uint32_t Mod> struct static_modint_32bit : atcoder::internal::static_modint_base {
+  private:
     using u32 = uint32_t;
     using i32 = int32_t;
     using i64 = int64_t;
 
+  protected:
     using mint = static_modint_32bit;
     u32 _v = 0;
 
-    static constexpr bool prime = []() -> bool {
+  public:
+    static constexpr bool prime = []() noexcept(NO_EXCEPT) -> bool {
         if(Mod == 1) return 0;
         if(Mod == 2 || Mod == 7 || Mod == 61) return 1;
         if(Mod % 2 == 0) return 0;
@@ -57,7 +61,7 @@ template<std::uint32_t Mod> struct static_modint_32bit {
         return 1;
     }();
 
-    static constexpr std::pair<i32,i32> inv_gcd(const i32 a, const i32 b) {
+    static constexpr std::pair<i32,i32> inv_gcd(const i32 a, const i32 b) noexcept(NO_EXCEPT) {
         if(a == 0) return { b, 0 };
         i32 s = b, t = a, m0 = 0, m1 = 1;
         while(t) {
@@ -68,46 +72,48 @@ template<std::uint32_t Mod> struct static_modint_32bit {
         if(m0 < 0) m0 += b / s;
         return { s, m0 };
     }
-public:
-    static constexpr mint raw(const u32 v) { mint a; a._v = v; return a; }
-    constexpr static_modint_32bit() {}
+
+  public:
+    static constexpr mint raw(const u32 v) noexcept(NO_EXCEPT) { mint a; a._v = v; return a; }
+    constexpr static_modint_32bit() noexcept(NO_EXCEPT) {}
 
     template <class T>
-    constexpr static_modint_32bit(const T v) {
+    constexpr static_modint_32bit(const T& v) noexcept(NO_EXCEPT) {
         static_assert(std::is_integral_v<T>, "T is not integral type.");
         if constexpr(std::is_signed_v<T>) {
             i64 x = i64(v % i64(Mod));
-            if(x < 0) x += Mod; _v = u32(x);
+            if(x < 0) x += Mod; this->_v = u32(x);
         }
-        else _v = u32(v % Mod);
+        else this->_v = u32(v % Mod);
     }
 
-    static constexpr u32 mod() { return Mod; }
+    static constexpr u32 mod() noexcept(NO_EXCEPT) { return Mod; }
 
-    constexpr u32 val() const { return _v; }
+    constexpr u32 val() const noexcept(NO_EXCEPT) { return this->_v; }
+    explicit operator u32() const noexcept(NO_EXCEPT) { return this->_v; }
 
-    constexpr mint& operator++() { return *this += 1; }
-    constexpr mint& operator--() { return *this -= 1; }
+    constexpr mint& operator++() noexcept(NO_EXCEPT) { return *this += 1; }
+    constexpr mint& operator--() noexcept(NO_EXCEPT) { return *this -= 1; }
 
-    constexpr mint operator++(int) { mint res = *this; ++*this; return res; }
-    constexpr mint operator--(int) { mint res = *this; --*this; return res; }
+    constexpr mint operator++(int) noexcept(NO_EXCEPT) { mint res = *this; ++*this; return res; }
+    constexpr mint operator--(int) noexcept(NO_EXCEPT) { mint res = *this; --*this; return res; }
 
-    constexpr mint& operator+=(mint rhs) {
-        if(_v >= Mod - rhs._v) _v -= Mod;
-        _v += rhs._v; return *this;
+    constexpr mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
+        if(this->_v >= Mod - rhs._v) this->_v -= Mod;
+        this->_v += rhs._v; return *this;
     }
 
-    constexpr mint& operator-=(mint rhs) {
-        if(_v < rhs._v) _v += Mod;
-        _v -= rhs._v; return *this;
+    constexpr mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
+        if(this->_v < rhs._v) this->_v += Mod;
+        this->_v -= rhs._v; return *this;
     }
 
-    constexpr mint& operator*=(mint rhs) { return *this = *this * rhs; }
-    constexpr mint& operator/=(mint rhs) { return *this *= rhs.inv(); }
-    constexpr mint operator+() const { return *this; }
-    constexpr mint operator-() const { return mint{} - *this; }
+    constexpr mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) { return *this = *this * rhs; }
+    constexpr mint& operator/=(const mint& rhs) noexcept(NO_EXCEPT) { return *this *= rhs.inv(); }
+    constexpr mint operator+() const noexcept(NO_EXCEPT) { return *this; }
+    constexpr mint operator-() const noexcept(NO_EXCEPT) { return mint{} - *this; }
 
-    constexpr mint pow(long long n) const {
+    constexpr mint pow(i64 n) const noexcept(NO_EXCEPT) {
         assert(0 <= n);
         if(n == 0) return 1;
         mint x = *this, r = 1;
@@ -118,24 +124,25 @@ public:
         }
     }
 
-    constexpr mint inv() const {
+    constexpr mint inv() const noexcept(NO_EXCEPT) {
         if constexpr(prime) {
-            assert(_v);
+            assert(this->_v);
             return pow(Mod - 2);
         } else {
-            auto eg = inv_gcd(_v, Mod);
+            auto eg = inv_gcd(this->_v, Mod);
             assert(eg.first == 1);
             return eg.second;
         }
     }
 
-    friend constexpr mint operator+(mint lhs, mint rhs) { return lhs += rhs; }
-    friend constexpr mint operator-(mint lhs, mint rhs) { return lhs -= rhs; }
-    friend constexpr mint operator*(mint lhs, mint rhs) { return u64(lhs._v) * rhs._v; }
-    friend constexpr mint operator/(mint lhs, mint rhs) { return lhs /= rhs; }
-    friend constexpr bool operator==(mint lhs, mint rhs) { return lhs._v == rhs._v; }
-    friend constexpr bool operator!=(mint lhs, mint rhs) { return lhs._v != rhs._v; }
+    friend constexpr mint operator+(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
+    friend constexpr mint operator-(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
+    friend constexpr mint operator*(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return u64(lhs._v) * rhs._v; }
+    friend constexpr mint operator/(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs /= rhs; }
+    friend constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs._v == rhs._v; }
+    friend constexpr bool operator!=(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs._v != rhs._v; }
 };
+
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/modint/modint-montgomery64.hpp
 template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
@@ -241,3 +248,6 @@ template<int id> typename dynamic_modint_64bit<id>::u64 dynamic_modint_64bit<id>
 
 
 } // namespace lib
+
+constexpr lib::modint998244353 operator""_mod998244353(unsigned long long x) { return x; }
+constexpr lib::modint1000000007 operator""_mod1000000007(unsigned long long x) { return x; }

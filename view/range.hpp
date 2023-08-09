@@ -5,6 +5,7 @@
 
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
+#include "internal/iterator.hpp"
 
 #include "view/internal/base.hpp"
 
@@ -24,26 +25,29 @@ struct range_view : internal::view_impl::base {
 
   protected:
     I _first, _last;
-    size_type _size = -1;
+    mutable size_type _size = -1;
 
-    range_view() {}
+    range_view() = default;
 
   public:
-    explicit range_view(I first, I last) : _first(first), _last(last) { }
+    explicit range_view(I first, I last) noexcept(NO_EXCEPT) : _first(first), _last(last) { }
 
-    inline size_type size() const {
+    inline size_type size() const noexcept(NO_EXCEPT) {
         if(this->_size < 0) this->_size = std::distance(this->_first, this->_last);
         return this->_size;
     }
 
-    inline auto begin() { return this->_first; }
-    inline auto end() { return this->_last; }
+    inline auto begin() noexcept(NO_EXCEPT) { return this->_first; }
+    inline auto end() noexcept(NO_EXCEPT) { return this->_last; }
 
-    inline auto begin() const { return this->_first; }
-    inline auto end() const { return this->_last; }
+    inline auto begin() const noexcept(NO_EXCEPT) { return this->_first; }
+    inline auto end() const noexcept(NO_EXCEPT) { return this->_last; }
 
-    inline auto cbegin() const { return this->_first; }
-    inline auto cend() const { return this->_last; }
+    inline auto cbegin() const noexcept(NO_EXCEPT) { return this->_first; }
+    inline auto cend() const noexcept(NO_EXCEPT) { return this->_last; }
+
+    inline auto operator[](const size_type i) noexcept(NO_EXCEPT) { return this->begin()[i]; }
+    inline const auto& operator[](const size_type i) const noexcept(NO_EXCEPT) { return this->begin()[i]; }
 };
 
 

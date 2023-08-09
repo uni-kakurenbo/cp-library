@@ -40,3 +40,10 @@
 #include "iterable/inverse.hpp"
 #include "iterable/run_length_encoding.hpp"
 #include "iterable/operation.hpp"
+
+#include "graph/shortest_path.hpp"
+#include "graph/from_grid.hpp"
+#include "graph/spanning_tree.hpp"
+#include "graph/topological_sort.hpp"
+#include "graph/connected_components.hpp"
+#include "graph/lowest_common_ancestor.hpp"

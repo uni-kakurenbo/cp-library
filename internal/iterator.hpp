@@ -11,6 +11,10 @@
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 
+#if CPP20
+#include <ranges>
+#endif
+
 
 namespace lib {
 
@@ -59,7 +63,7 @@ struct random_access_iterator_base : bidirectional_iterator_interface<T> {
 };
 
 template<class T, class container>
-struct container_iterator_interface : public random_access_iterator_base<T> {
+struct container_iterator_interface : random_access_iterator_base<T> {
     using difference_type = typename bidirectional_iterator_interface<T>::difference_type;
 
   protected:

@@ -57,12 +57,12 @@ V concat(const V& v, const Us&... tails) noexcept(NO_EXCEPT) {
 
 
 template<class I, class T = typename std::iterator_traits<I>::value_type>
-T sum(const I first, const I second, const T& base = 0) noexcept(NO_EXCEPT) {
+T sum(const I first, const I second, const T& base = {}) noexcept(NO_EXCEPT) {
     return std::accumulate(first, second, base);
 }
 
 template<class V, class T = typename V::value_type>
-auto sum(const V& v, T base = 0) noexcept(NO_EXCEPT) {
+auto sum(const V& v, T base = {}) noexcept(NO_EXCEPT) {
     return sum(ALL(v), base);
 }
 
@@ -72,7 +72,7 @@ template<
     class T = typename std::iterator_traits<I>::value_type,
     class = typename std::iterator_traits<I>::value_type
 >
-T mex(const I first, const I last, const T& base = 0) noexcept(NO_EXCEPT) {
+T mex(const I first, const I last, const T& base = {}) noexcept(NO_EXCEPT) {
     std::vector<T> val(first, last);
     std::sort(ALL(val));
     val.erase(std::unique(ALL(val)), val.end());

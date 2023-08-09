@@ -11,6 +11,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "numeric/arithmetic.hpp"
+
 
 namespace lib {
 
@@ -23,6 +25,8 @@ template<
     template<class...> class map = std::unordered_map
 >
 struct multiset_hasher {
+    static_assert(MOD < std::numeric_limits<std::make_signed_t<hash_type>>::max());
+
   private:
     using uint128_t = internal::uint128_t;
 
@@ -71,16 +75,14 @@ struct multiset_hasher {
         if(this->_hash >= multiset_hasher::mod) this->_hash -= multiset_hasher::mod;
     }
     inline void _remove_hash(const hash_type h, const hash_type count) noexcept(NO_EXCEPT) {
-        auto hash = static_cast<std::make_signed_t<hash_type>>(this->_hash);
+        auto hash = to_unsigned(this->_hash);
         hash -= multiset_hasher::mul(h, count);
         if(hash < 0) hash += multiset_hasher::mod;
         this->_hash = hash;
     }
 
   public:
-    multiset_hasher() noexcept(NO_EXCEPT) {
-        static_assert(mod < std::numeric_limits<std::make_signed_t<hash_type>>::max());
-    }
+    multiset_hasher() noexcept(NO_EXCEPT) {}
 
     template<class I> multiset_hasher(const I first, const I last) noexcept(NO_EXCEPT) : multiset_hasher() {
         for(auto itr=first; itr != last; ++itr) this->insert(*itr);

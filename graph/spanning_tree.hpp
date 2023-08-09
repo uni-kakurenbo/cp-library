@@ -44,16 +44,16 @@ cost_type kruskal(const G& graph, const Compare compare, G *const mst = nullptr)
 } // namespace internal
 
 
-template<class edge_cost>
+template<class Graph>
 template<class cost_type>
-cost_type graph<edge_cost>::minimum_spanning_tree(graph<edge_cost> *const mst) const noexcept(NO_EXCEPT) {
-    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::less<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
+cost_type internal::graph_impl::mixin<Graph>::minimum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
+    return internal::graph_impl::kruskal<internal::graph_impl::mixin<Graph>,cost_type,std::less<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
 }
 
-template<class edge_cost>
+template<class Graph>
 template<class cost_type>
-inline cost_type graph<edge_cost>::maximum_spanning_tree(graph<edge_cost> *const mst) const noexcept(NO_EXCEPT) {
-    return internal::graph_impl::kruskal<graph<edge_cost>,cost_type,std::greater<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
+inline cost_type internal::graph_impl::mixin<Graph>::maximum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
+    return internal::graph_impl::kruskal<internal::graph_impl::mixin<Graph>,cost_type,std::greater<std::tuple<cost_type,size_t,size_t>>>(*this, {}, mst);
 }
 
 

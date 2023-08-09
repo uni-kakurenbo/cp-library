@@ -1,19 +1,29 @@
 #pragma once
 
+
 #include <utility>
 #include <algorithm>
+
+#include "numeric/limits.hpp"
+
 
 namespace lib {
 
 namespace internal {
-    template<class T> T max(T a, T b) { return std::max(a, b); }
-    template<class T> T max(T x) { return x; }
-    template<class T> T max() { return  -std::numeric_limits<T>::min(); }
 
-    template<class T> T min(T a, T b) { return std::min(a, b); }
-    template<class T> T min(T x) { return x; }
-    template<class T> T min() { return  std::numeric_limits<T>::max(); }
-}
+
+template<class T> T min(T a, T b) { return std::min(a, b); }
+template<class T> T min(T x) { return x; }
+template<class T> T min() { return  numeric_limits<T>::arithmetic_infinity(); }
+
+
+template<class T> T max(T a, T b) { return std::max(a, b); }
+template<class T> T max(T x) { return x; }
+template<class T> T max() { return  -numeric_limits<T>::arithmetic_negative_infinity(); }
+
+
+} // namespace internal
+
 
 template<class T, T (*op)(T,T)> struct applier {
     using value_type = T;
@@ -34,4 +44,5 @@ template<class T, T (*op)(T,T)> struct applier {
 template<class T> using maximum = applier<T,internal::max<T>>;
 template<class T> using minimum = applier<T,internal::min<T>>;
 
-}
+
+}  // namespace lib

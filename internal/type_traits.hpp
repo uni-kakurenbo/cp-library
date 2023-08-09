@@ -9,11 +9,24 @@
 #include <vector>
 #include <type_traits>
 #include <algorithm>
+#include <utility>
+
+#include "internal/dev_env.hpp"
 
 
 namespace lib {
 
 namespace internal {
+
+
+template<class... Ts> struct tuple_or_pair { using type = std::tuple<Ts...>; };
+template<class T, class U> struct tuple_or_pair<T,U> { using type = std::pair<T, U>; };
+template <class... Ts> using tuple_or_pair_t = typename tuple_or_pair<Ts...>::type;
+
+template<class T>
+constexpr std::underlying_type_t<T> to_underlying(const T& v) noexcept(NO_EXCEPT) {
+    return static_cast<std::underlying_type_t<T>>(v);
+}
 
 
 template<class T, class... Us>
@@ -45,7 +58,7 @@ template<> struct literal_operator<unsigned long> { static constexpr const char*
 template<> struct literal_operator<long long> { static constexpr const char* value = "LL"; };
 template<> struct literal_operator<unsigned long long> { static constexpr const char* value = "ULL"; };
 
-template<class T> inline constexpr auto literal_operator_v = literal_operator<T>::value;
+template<class T> inline constexpr const char* literal_operator_v = literal_operator<T>::value;
 
 
 template<template <class...> class Template, class Arg> struct is_template : std::false_type {};
@@ -107,8 +120,8 @@ template<class T> inline constexpr auto is_iterable_v = is_iterable<T>::value;
 
 
 template<class T> struct iterator_resolver {
-  template<typename U>
-  static auto begin(U&& v){
+  template<class U>
+  static auto begin(U&& v) noexcept(NO_EXCEPT) {
     using U_t = remove_cvref_t<U>;
 
     static_assert(std::is_same_v<U_t, remove_cvref_t<T>>);
@@ -122,8 +135,8 @@ template<class T> struct iterator_resolver {
     }
   }
 
-  template<typename U>
-  static auto end(U&& v){
+  template<class U>
+  static auto end(U&& v) noexcept(NO_EXCEPT) {
     using U_t = remove_cvref_t<U>;
 
     static_assert(std::is_same_v<U_t, remove_cvref_t<T>>);
@@ -144,8 +157,19 @@ template<class C> using iterator_t = decltype(iterator_resolver<C>::begin(std::d
 template<class C> using container_size_t = decltype(std::size(std::declval<C&>()));
 
 
-}  // namespace internal
+template<bool Const, class T>
+using maybe_const_t = std::conditional_t<Const, const T, T>;
 
-}  // namespace atcoder
+
+#if CPP20
+
+template<class T> using with_ref = T&;
+template<class T> concept can_reference = requires { typename with_ref<T>; };
+
+#endif
+
+} // namespace internal
+
+}  // namespace lib
 
 #endif //ifndef $TYPE_TRAITS

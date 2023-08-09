@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef $INT128 // for debugger
+#define $INT128
 
 #include <cctype>
 #include <cassert>
@@ -26,6 +28,19 @@ std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) n
     return in;
 }
 
+
+template<class C, class S>
+std::basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::u128& v) noexcept(NO_EXCEPT) {
+    std::string str; in >> str;
+    v = 0U;
+    assert(str[0] != '-');
+    REP(d, str.begin(), str.end()) {
+        assert(std::isdigit(*d));
+        v = v * 10U + *d - '0';
+    }
+    return in;
+}
+
 template<class C, class S>
 std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexcept(NO_EXCEPT) {
     if(v == 0) return out << 0;
@@ -35,3 +50,15 @@ std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) n
     std::reverse(str.begin(), str.end());
     return out << str;
 }
+
+template<class C, class S>
+std::basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::u128 v) noexcept(NO_EXCEPT) {
+    if(v == 0) return out << 0U;
+    std::string str;
+    while(v > 0) str += static_cast<char>(v%10U) + '0', v /= 10U;
+    std::reverse(str.begin(), str.end());
+    return out << str;
+}
+
+
+#endif //ifndef $INT128

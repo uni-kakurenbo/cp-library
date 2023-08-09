@@ -40,7 +40,7 @@ struct set_hasher : protected set<T> {
     }
 
   public:
-    set_hasher() {}
+    set_hasher() noexcept(NO_EXCEPT) {}
 
     template<class I> set_hasher(const I first, const I last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr != last; ++itr) this->_insert(*itr);

@@ -9,7 +9,6 @@ namespace lib {
 
 template<class Container>
 struct range_extractor : Container {
-    using Container::Container;
     using size_type = typename Container::size_type;
     using value_type = typename Container::value_type;
 
