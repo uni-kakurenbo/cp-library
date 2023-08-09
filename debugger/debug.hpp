@@ -205,6 +205,9 @@ template<size_t N, class T> void iterate_tuple([[maybe_unused]] T&& val, std::st
 // std::string lit(T val, Brackets brcs, std::string sep) {
 //     return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 // }
+
+#if CPP20
+
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
 std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
@@ -215,6 +218,21 @@ template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value
 std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
 }
+
+#else
+
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+    return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
+}
+
+template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+    return lit(std::begin(val), std::end(val), brcs, sep);
+}
+
+#endif
+
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
 std::string lit(T &&val) {

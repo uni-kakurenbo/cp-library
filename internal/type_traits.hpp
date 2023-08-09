@@ -102,57 +102,55 @@ template<class T> struct _has_iterator {
 };
 
 template<class T> struct has_iterator {
-  struct ADL : decltype(_has_iterator<T>::ADL(std::declval<T>())) {};
-  struct STL : decltype(_has_iterator<T>::STL(std::declval<T>())) {};
-  struct Member : decltype(_has_iterator<T>::Member(std::declval<T>())) {};
+    struct ADL : decltype(_has_iterator<T>::ADL(std::declval<T>())) {};
+    struct STL : decltype(_has_iterator<T>::STL(std::declval<T>())) {};
+    struct Member : decltype(_has_iterator<T>::Member(std::declval<T>())) {};
 
-  static constexpr auto ADL_v = ADL::value;
-  static constexpr auto STL_v = STL::value;
-  static constexpr auto Member_v = Member::value;
+    static constexpr auto adl_v = ADL::value;
+    static constexpr auto stl_v = STL::value;
+    static constexpr auto member_v = Member::value;
 };
 
 
 template<class T> struct is_iterable {
-    static constexpr bool value =  has_iterator<T>::ADL_v || has_iterator<T>::STL_v || has_iterator<T>::Member_v;
+    static constexpr bool value =  has_iterator<T>::adl_v || has_iterator<T>::stl_v || has_iterator<T>::member_v;
 };
 
 template<class T> inline constexpr auto is_iterable_v = is_iterable<T>::value;
 
 
-template<class T> struct iterator_resolver {
-  template<class U>
-  static auto begin(U&& v) noexcept(NO_EXCEPT) {
-    using U_t = remove_cvref_t<U>;
+namespace iterator_resolver {
 
-    static_assert(std::is_same_v<U_t, remove_cvref_t<T>>);
+
+template<class T>
+inline constexpr auto begin(T&& v) noexcept(NO_EXCEPT) {
     static_assert(is_iterable_v<T>);
-
-    if constexpr (has_iterator<T>::Member_v){
-      return v.begin();
-    } else {
-      using std::begin;
-      return begin(std::forward<U>(v));
+    if constexpr(has_iterator<T>::member_v) {
+        return v.begin();
     }
-  }
+    else {  // ADL
+        using std::begin;
+        return begin(std::forward<T>(v));
+    }
+}
 
-  template<class U>
-  static auto end(U&& v) noexcept(NO_EXCEPT) {
-    using U_t = remove_cvref_t<U>;
-
-    static_assert(std::is_same_v<U_t, remove_cvref_t<T>>);
+template<class T>
+inline constexpr auto end(T&& v) noexcept(NO_EXCEPT) {
     static_assert(is_iterable_v<T>);
-
-    if constexpr (has_iterator<T>::Member_v){
-      return v.end();
-    } else {
-      using std::end;
-      return end(std::forward<U>(v));
+    if constexpr(has_iterator<T>::member_v) {
+        return v.end();
     }
-  }
+    else {  // ADL
+        using std::end;
+        return end(std::forward<T>(v));
+    }
+}
+
+
 };
 
 
-template<class C> using iterator_t = decltype(iterator_resolver<C>::begin(std::declval<C&>()));
+template<class C> using iterator_t = decltype(iterator_resolver::begin(std::declval<C&>()));
 
 template<class C> using container_size_t = decltype(std::size(std::declval<C&>()));
 

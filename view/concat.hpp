@@ -187,8 +187,13 @@ struct concat_view : view_impl::base {
     using size_type = std::common_type_t<container_size_t<V0>,container_size_t<V1>>;
 
   protected:
+#if CPP20
+    using iterator0_t = std::ranges::iterator_t<V0>;
+    using iterator1_t = std::ranges::iterator_t<V1>;
+#else
     using iterator0_t = iterator_t<V0>;
     using iterator1_t = iterator_t<V1>;
+#endif
 
     V0 _v0;
     V1 _v1;

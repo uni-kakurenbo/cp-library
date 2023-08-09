@@ -97,11 +97,23 @@ struct accumulation_2d : container {
     }
 };
 
+#if CPP20
+
+template<class I>
+explicit accumulation_2d(const I, const I) ->
+    accumulation_2d<
+        typename std::iterator_traits<typename std::ranges::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
+    >;
+
+#else
+
 template<class I>
 explicit accumulation_2d(const I, const I) ->
     accumulation_2d<
         typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;
+
+#endif
 
 
 } // namespace lib
