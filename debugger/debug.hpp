@@ -236,11 +236,11 @@ std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
 std::string lit(T &&val) {
-    const auto& res = _debug(std::forward<T>(val));
+    auto res = _debug(std::forward<T>(val));
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
     } else {
-        return lit(res);
+        return lit(std::forward<decltype(res)>(res));
     }
 }
 
@@ -267,8 +267,8 @@ std::string lit(I&& first, S&& last, const Brackets& brcs, const std::string& sp
     res << brcs.first << " ";
     auto&& itr = first;
     while(itr != last) {
-        if(std::next(itr) == last) res << lit(*itr) << " ";
-        else res << lit(*itr) << spl;
+        if(std::next(itr) == last) res << lit(std::forward<typename std::iterator_traits<I>::value_type>(*itr)) << " ";
+        else res << lit(std::forward<typename std::iterator_traits<I>::value_type>(*itr)) << spl;
         ++itr;
     }
     res << brcs.second ;

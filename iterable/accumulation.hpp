@@ -7,6 +7,15 @@
 #include <functional>
 #include <numeric>
 
+
+#if CPP20
+
+#include <ranges>
+#include <concepts>
+
+#endif
+
+
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
@@ -29,16 +38,32 @@ struct accumulation : container {
   public:
     accumulation() noexcept(NO_EXCEPT) {}
 
+#if CPP20
+    template<std::ranges::input_range R, class Operator = std::plus<T>>
+        requires std::regular_invocable<Operator, T, T>
+    accumulation(const R& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
+        this->resize(std::ranges::size(range) + 1);
+        std::exclusive_scan(ALL(range), std::begin(*this), head, op);
+        const auto back = std::prev(std::end(*this));
+        *back = op(*std::prev(back), *std::prev(std::ranges::end(range)));
+    }
+#endif
+
     template<class I, class Operator = std::plus<T>>
-    accumulation(const I first, const I last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) {
+    accumulation(I first, I last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::distance(first, last) + 1);
         std::exclusive_scan(first, last, std::begin(*this), head, op);
         const auto back = std::prev(std::end(*this));
         *back = op(*std::prev(back), *std::prev(last));
     }
 
-    template<class Operaotr = std::minus<T>>
-    inline T operator()(size_type left, size_type right, Operaotr op = std::minus<T>{}) const noexcept(NO_EXCEPT) {
+#if CPP20
+    template<class Operator = std::minus<T>>
+        requires std::regular_invocable<Operator, T, T>
+#else
+    template<class Operator = std::minus<T>>
+#endif
+    inline T operator()(size_type left, size_type right, Operator&& op = std::minus<T>{}) const noexcept(NO_EXCEPT) {
         left = _positivize_index(left), right = _positivize_index(right);
         assert(0 <= left and left <= right and right < (size_type)std::size(*this));
         return op((*this)[right], (*this)[left]);
@@ -47,6 +72,13 @@ struct accumulation : container {
 
 template<class I>
 explicit accumulation(const I, const I) -> accumulation<typename std::iterator_traits<I>::value_type>;
+
+#if CPP20
+
+template<std::ranges::input_range R>
+explicit accumulation(const R&) -> accumulation<typename std::ranges::range_value_t<R>>;
+
+#endif
 
 
 template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>

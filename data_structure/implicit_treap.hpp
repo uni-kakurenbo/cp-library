@@ -296,15 +296,6 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
         value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, v);
-            return *this;
-        }
-        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, v);
-            return *this;
-        }
-
         inline point_reference& apply(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;

@@ -50,7 +50,7 @@ struct input_adapter {
 
     template<class T>
     auto _set(lib::internal::resolving_rank<2>, T *const val) noexcept(NO_EXCEPT) -> decltype(std::get<0>(*val), 0) {
-        tuple_for_each(*val, [this](auto&& v) { *this >> v; });
+        tuple_for_each([this](auto&& v) { *this >> v; }, *val);
         return 0;
     }
 

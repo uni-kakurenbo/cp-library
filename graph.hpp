@@ -38,11 +38,13 @@ template<class Node,class Cost> struct edge {
   public:
     using cost_type = Cost;
     using node_type = Node;
+    using size_type = internal::size_t;
 
-    const internal::size_t id = unique();
+    const size_type id = unique();
     const node_type from, to; const Cost cost;
+    const size_type index = 0;
 
-    edge(const node_type u, const node_type v, const Cost w = 1) noexcept(NO_EXCEPT) : from(u), to(v), cost(w) {}
+    edge(const node_type u, const node_type v, const Cost w = 1, const size_type index = 0) noexcept(NO_EXCEPT) : from(u), to(v), cost(w), index(index) {}
 
     operator node_type() const noexcept(NO_EXCEPT) { return this->to; }
 
@@ -52,7 +54,7 @@ template<class Node,class Cost> struct edge {
         assert(false);
     }
 
-    std::tuple<node_type,node_type,Cost> _debug() const noexcept(NO_EXCEPT) { return { from, to, cost }; };
+    auto _debug() const { return std::make_tuple(index, from, to, cost); };
 
     friend bool operator==(const edge& lhs, const edge& rhs) noexcept(NO_EXCEPT) { return lhs.id == rhs.id; }
     friend bool operator!=(const edge& lhs, const edge& rhs) noexcept(NO_EXCEPT) { return lhs.id != rhs.id; }
@@ -106,8 +108,8 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     Container<size_type> _out_degs, _in_degs;
 
   protected:
-    inline void _add_edge(const size_type u, const size_type v, const cost_type w) noexcept(NO_EXCEPT) {
-        this->operator[](u).emplace_back(u, v, w);
+    inline void _add_edge(const size_type u, const size_type v, const cost_type w, const size_type k) noexcept(NO_EXCEPT) {
+        this->operator[](u).emplace_back(u, v, w, k);
         ++_out_degs[u], ++_in_degs[v];
         ++this->_directed_edge_count;
     }
@@ -169,9 +171,10 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     template<const edge_kind EDGE_TYPE = edge_kind::directed>
     inline void add_edge(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
         assert(0 <= u and u < this->size()), assert(0 <= v and v < this->size());
-        this->_edges.emplace_back(u, v, w);
-        this->_add_edge(u, v, w);
-        if constexpr(EDGE_TYPE == edge_kind::undirected) this->_add_edge(v, u, w);
+        const size_type k = this->edges().size();
+        this->_edges.emplace_back(u, v, w, k);
+        this->_add_edge(u, v, w, k);
+        if constexpr(EDGE_TYPE == edge_kind::undirected) this->_add_edge(v, u, w, k);
     }
 
     inline void add_edge_bidirectionally(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {

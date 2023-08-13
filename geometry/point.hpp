@@ -102,7 +102,6 @@ inline typename point<T>::value_type& get(point<T>& p) noexcept(NO_EXCEPT) {
     else static_assert(internal::EXCEPTION<I>);
 }
 
-
 } // namespace lib
 
 
