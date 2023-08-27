@@ -8,6 +8,9 @@
 #include <numeric>
 
 
+#include "internal/dev_env.hpp"
+
+
 #if CPP20
 
 #include <ranges>
@@ -16,7 +19,6 @@
 #endif
 
 
-#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 
