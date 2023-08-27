@@ -56,22 +56,22 @@ using Brackets = std::pair<std::string, std::string>;
 // template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 // std::string lit(T, Brackets = { "[", "]" }, std::string = ", ");
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>* = nullptr>
-std::string lit(T&&, const Brackets& = { "[", "]" }, const std::string& = ", ");
+std::string lit(T&, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
-std::string lit(T&&, const Brackets& = { "{", "}" }, const std::string& = ", ");
+std::string lit(T&, const Brackets& = { "{", "}" }, const std::string& = ", ");
 
 #if CPP20
     template<std::forward_iterator I, std::sentinel_for<I> S>
 #else
     template<class I, class S>
 #endif
-std::string lit(I&&, S&&, const Brackets& = { "[", "]" }, const std::string& = ", ");
+std::string lit(I, S, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
-template<class... Ts> std::string lit(std::pair<Ts...>&&);
-template<class... Ts> std::string lit(std::tuple<Ts...>&&);
+template<class... Ts> std::string lit(const std::pair<Ts...>&);
+template<class... Ts> std::string lit(const std::tuple<Ts...>&);
 
-template<size_t N = 0, class T> void iterate_tuple(T&&, std::stringstream&);
+template<size_t N = 0, class T> void iterate_tuple(const T&, std::stringstream&);
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> std::string lit(T&&);
 
@@ -121,7 +121,7 @@ std::string lit(const bool val) {
 }
 
 template<std::size_t N>
-std::string lit(std::bitset<N>&& val) {
+std::string lit(std::bitset<N>& val) {
     std::stringstream res;
     res << COLOR_NUMERIC << val.to_string() << COLOR_INIT;
     return res.str();
@@ -141,42 +141,42 @@ std::string lit(const T val) {
     return res.str();
 };
 
-template<class T> auto lit(T&& val) -> decltype(val.val(), std::string());
+template<class T> auto lit(T& val) -> decltype(val.val(), std::string());
 
 template<class T, atcoder::internal::is_modint_t<T>*>
-std::string _lit(int, T&& val) {
+std::string _lit(int, T& val) {
     return COLOR_TYPE + "<modint> " + lit(val.val());
 }
 
-template<class T> std::string _lit(bool, T&& val) {
+template<class T> std::string _lit(bool, T& val) {
     return COLOR_TYPE + "<...> " + lit(val.val());
 }
 
 
-template<class T> auto lit(T&& val) -> decltype(val.val(), std::string()) {
-    return _lit(0, std::forward<T>(val));
+template<class T> auto lit(T& val) -> decltype(val.val(), std::string()) {
+    return _lit(0, val);
 }
 
-template<class... Ts> std::string lit(std::map<Ts...>&& val) {
+template<class... Ts> std::string lit(std::map<Ts...>& val) {
     return lit(std::forward<std::map<Ts...>>(val), Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::unordered_map<Ts...>&& val) {
+template<class... Ts> std::string lit(std::unordered_map<Ts...>& val) {
     return lit(std::forward<std::unordered_map<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::set<Ts...>&& val) {
+template<class... Ts> std::string lit(std::set<Ts...>& val) {
     return lit(std::forward<std::set<Ts...>>(val), Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::unordered_set<Ts...>&& val) {
+template<class... Ts> std::string lit(std::unordered_set<Ts...>& val) {
     return lit(std::forward<std::unordered_set<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::vector<Ts...>&& val) {
+template<class... Ts> std::string lit(std::vector<Ts...>& val) {
     return lit(std::forward<std::vector<Ts...>>(val), Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
 }
-template<class... Ts> std::string lit(std::deque<Ts...>&& val) {
+template<class... Ts> std::string lit(std::deque<Ts...>& val) {
     return lit(std::forward<std::deque<Ts...>>(val), Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
 }
 
-template<class... Ts> std::string lit(std::pair<Ts...>&& val) {
+template<class... Ts> std::string lit(const std::pair<Ts...>& val) {
     std::stringstream res;
     res << COLOR_TYPE << "<pair>" << COLOR_INIT << " ( ";
     res << lit(val.first);
@@ -185,19 +185,19 @@ template<class... Ts> std::string lit(std::pair<Ts...>&& val) {
     res << " )";
     return res.str();
 }
-template<class... Ts> std::string lit(std::tuple<Ts...>&& val) {
+template<class... Ts> std::string lit(const std::tuple<Ts...>& val) {
     std::stringstream res;
     res << COLOR_TYPE << "<tuple>" << COLOR_INIT << " ( ";
-    iterate_tuple(std::forward<std::tuple<Ts...>>(val), res);
+    iterate_tuple(val, res);
     res << " )";
     return res.str();
 }
 
-template<size_t N, class T> void iterate_tuple([[maybe_unused]] T&& val, std::stringstream &res) {
+template<size_t N, class T> void iterate_tuple([[maybe_unused]] const T& val, std::stringstream &res) {
     if constexpr(N < std::tuple_size_v<T>) {
         res << lit(std::get<N>(val));
         if constexpr(N < std::tuple_size_v<T> - 1) res << ", ";
-        iterate_tuple<N + 1>(std::forward<T>(val), res);
+        iterate_tuple<N + 1>(val, res);
     }
 }
 
@@ -209,25 +209,25 @@ template<size_t N, class T> void iterate_tuple([[maybe_unused]] T&& val, std::st
 #if CPP20
 
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
-std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
-    return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
+std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+    return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
     // return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
-std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
-    return lit(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), brcs, sep);
+std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+    return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
 }
 
 #else
 
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
-std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
     return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
-std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
+std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::begin(val), std::end(val), brcs, sep);
 }
 
@@ -235,7 +235,7 @@ std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
 
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
-std::string lit(T &&val) {
+std::string lit(T &val) {
     auto res = _debug(std::forward<T>(val));
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
@@ -244,31 +244,31 @@ std::string lit(T &&val) {
     }
 }
 
-template<class T> std::string lit(const T *const val) {
-    return lit(*val);
-}
+// template<class T> std::string lit(const T *const val) {
+//     return lit(*val);
+// }
 
-#if CPP20
-template<std::input_or_output_iterator I>
-#else
-template<class I, class = typename std::iterator_traits<I>::iterator_category>
-#endif
-std::string lit(I&& itr) {
-    return COLOR_TYPE + "<iterator> " + COLOR_INIT+ lit(*itr);
-}
+// #if CPP20
+// template<std::input_or_output_iterator I>
+// #else
+// template<class I, class = typename std::iterator_traits<I>::iterator_category>
+// #endif
+// std::string lit(I itr) {
+//     return COLOR_TYPE + "<iterator> " + COLOR_INIT+ lit(*itr);
+// }
 
 #if CPP20
     template<std::forward_iterator I, std::sentinel_for<I> S>
 #else
     template<class I, class S>
 #endif
-std::string lit(I&& first, S&& last, const Brackets& brcs, const std::string& spl) {
+std::string lit(I first, S last, const Brackets& brcs, const std::string& spl) {
     std::stringstream res;
     res << brcs.first << " ";
     auto&& itr = first;
     while(itr != last) {
-        if(std::next(itr) == last) res << lit(std::forward<typename std::iterator_traits<I>::value_type>(*itr)) << " ";
-        else res << lit(std::forward<typename std::iterator_traits<I>::value_type>(*itr)) << spl;
+        if(std::next(itr) == last) res << lit(*itr) << " ";
+        else res << lit(*itr) << spl;
         ++itr;
     }
     res << brcs.second ;
@@ -325,8 +325,8 @@ std::vector<std::string> split(const std::string& str) {
     return res;
 }
 
-template<class Arg> void DEBUG(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
-template<class... Args> void DEBUG(Args&&... args) { *cdebug << lit(std::forward<Args>(args)...) << std::flush; }
+template<class Arg> void DEBUG(std::nullptr_t, Arg arg) { *cdebug << arg << std::flush; }
+template<class... Args> void DEBUG(Args... args) { *cdebug << lit(args...) << std::flush; }
 
 void debug(
     std::vector<std::string> __attribute__ ((unused)) args,
@@ -334,10 +334,10 @@ void debug(
     __attribute__ ((unused)) int LINE_NUM
 ) { debug(nullptr, COLOR_INIT + "\n"); }
 
-template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int LINE_NUM, Head&& H, Tail&&... T) {
+template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int LINE_NUM, Head H, Tail&&... T) {
     if(idx > 0) debug(nullptr, ","); else debug(nullptr, "\033[3;35m#" + std::to_string(LINE_NUM) + "  " + COLOR_INIT);
     debug(nullptr, "\033[32m" + args[idx]  + COLOR_INIT + ": ");
-    debug(std::forward<Head>(H), std::string());
+    debug(H, std::string());
     debug(args, idx + 1, 0, std::forward<Tail>(T)...);
 }
 

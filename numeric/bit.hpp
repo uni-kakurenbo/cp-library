@@ -23,10 +23,25 @@ __attribute__((target("bmi,bmi2,popcnt"))) inline constexpr int popcount(const T
     using ul = unsigned long;
     using ull = unsigned long long;
 
-    if constexpr(std::is_same_v<T,u>) return __builtin_popcount(v);
-    else if constexpr(std::is_same_v<T,ul>) return __builtin_popcountl(v);
-    else if constexpr(std::is_same_v<T,ull>) return __builtin_popcountll(v);
-    else return __builtin_popcountll(static_cast<ull>(v));
+    constexpr int DIGITS = std::numeric_limits<T>::digits;
+
+    constexpr int DIGITS_U = std::numeric_limits<u>::digits;
+    constexpr int DIGITS_UL = std::numeric_limits<ul>::digits;
+    constexpr int DIGITS_ULL = std::numeric_limits<ull>::digits;
+
+    if constexpr(DIGITS <= DIGITS_U) return __builtin_popcount(v);
+    else if constexpr(DIGITS <= DIGITS_UL) return __builtin_popcountl(v);
+    else if constexpr(DIGITS <= DIGITS_ULL) return __builtin_popcountll(v);
+    else {
+        static_assert(DIGITS <= DIGITS_ULL << 1);
+
+        constexpr ull MAX_ULL = std::numeric_limits<ull>::max();
+
+        const ull high = v >> DIGITS_ULL;
+        const ull low = v & MAX_ULL;
+
+        return __builtin_popcountll(high) + __builtin_popcountll(low);
+    }
 }
 
 template<class T>

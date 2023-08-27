@@ -23,7 +23,10 @@ template<class Set> struct set_wrapper : Set {
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->Set::size(); }
 
+#if CPP
+#else
     inline bool contains(const typename Set::key_type& key) const noexcept(NO_EXCEPT) { return static_cast<bool>(this->count(key)); }
+#endif
 
     inline std::optional<typename Set::iterator> remove(const typename Set::key_type& key) noexcept(NO_EXCEPT) {
         const auto itr = this->Set::find(key);

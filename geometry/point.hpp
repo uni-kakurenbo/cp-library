@@ -62,6 +62,9 @@ struct point {
     inline constexpr point& operator*=(const value_type& v) noexcept(NO_EXCEPT) { this->x() *= v, this->y() *= v; return *this; }
     inline constexpr point& operator/=(const value_type& v) noexcept(NO_EXCEPT) { this->x() /= v, this->y() /= v; return *this; }
 
+    friend inline constexpr point operator+(const point& p) noexcept(NO_EXCEPT) { return { +p.x(), +p.y() }; }
+    friend inline constexpr point operator-(const point& p) noexcept(NO_EXCEPT) { return { -p.x(), -p.y() }; }
+
     friend inline constexpr point operator+(point a, const point& b) noexcept(NO_EXCEPT) { return a += b; }
     friend inline constexpr point operator-(point a, const point& b) noexcept(NO_EXCEPT) { return a -= b; }
     friend inline constexpr value_type operator*(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() * b.x() + a.y() * b.y(); }

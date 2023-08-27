@@ -58,6 +58,13 @@ template<> struct literal_operator<unsigned long> { static constexpr const char*
 template<> struct literal_operator<long long> { static constexpr const char* value = "LL"; };
 template<> struct literal_operator<unsigned long long> { static constexpr const char* value = "ULL"; };
 
+#ifdef __SIZEOF_INT128__
+
+template<> struct literal_operator<__int128_t> { static constexpr const char* value = "LLL"; };
+template<> struct literal_operator<__uint128_t> { static constexpr const char* value = "ULLL"; };
+
+#endif
+
 template<class T> inline constexpr const char* literal_operator_v = literal_operator<T>::value;
 
 

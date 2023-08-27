@@ -5,6 +5,12 @@
 #include <vector>
 #include <array>
 
+#if CPP20
+
+#include <concepts>
+
+#endif
+
 #include "internal/dev_env.hpp"
 #include "internal/exception.hpp"
 #include "internal/types.hpp"
@@ -41,11 +47,18 @@ template<class T, const unsigned int RANK, template<class...> class container = 
 struct multi_container : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>> {
     using internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>::base;
 
+#if CPP20
+    template<std::integral Head, class... Tail>
+    multi_container(const Head head, const Tail... tail) noexcept(NO_EXCEPT)
+    : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) { assert(head >= 0); }
+
+#else
     template<class Head, class... Tail>
     multi_container(const Head head, const Tail... tail) noexcept(NO_EXCEPT)
     : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) {
-        static_assert(std::is_integral_v<Head>, "size must be integral");
+        static_assert(std::is_integral_v<Head>, "size type must be integral");
     }
+#endif
 
     template<class Head, class... Tail> T& operator()(const Head _head, const Tail... tail) noexcept(NO_EXCEPT) {
         static_assert(std::is_integral_v<Head>, "index must be integral");

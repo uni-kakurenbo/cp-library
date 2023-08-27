@@ -16,13 +16,16 @@ struct range_extractor : Container {
     size_type _begin = 0;
     size_type _end;
 
-    bool _default_type = 0;
+    int _default_type = 0;
     value_type _default_val = {};
-    value_type (*_default_func)(void);
-    inline static value_type _tmp;
+    value_type (*_default_func_noarg)(void);
+    value_type (*_default_func)(size_type);
 
-    inline value_type _get_default() const noexcept(NO_EXCEPT) {
-        return this->_default_type ? this->_default_func() : this->_default_val;
+    inline value_type _get_default(const size_type key) const noexcept(NO_EXCEPT) {
+        if(this->_default_type == 0) return this->_default_val;
+        if(this->_default_type == 1) return this->_default_func_noarg();
+        if(this->_default_type == 2) return this->_default_func(key);
+        else assert(false);
     }
 
   public:
@@ -46,8 +49,14 @@ struct range_extractor : Container {
     }
 
     inline auto& set_default(value_type (*const func)(void)) noexcept(NO_EXCEPT) {
-        this->_default_func = func;
+        this->_default_func_noarg = func;
         this->_default_type = 1;
+        return *this;
+    }
+
+    inline auto& set_default(value_type (*const func)(size_type)) noexcept(NO_EXCEPT) {
+        this->_default_func = func;
+        this->_default_type = 2;
         return *this;
     }
 
