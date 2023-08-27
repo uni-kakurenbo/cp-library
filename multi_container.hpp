@@ -28,7 +28,7 @@ namespace multi_container_impl {
 template<class container> struct base : container {
     using container::container;
 
-    protected:
+  protected:
     inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const noexcept(NO_EXCEPT) {
         assert(0 <= index and index < (internal::size_t)this->size());
     }
