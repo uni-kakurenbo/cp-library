@@ -52,12 +52,13 @@ struct output_adapter {
 
     template<class T>
     auto _put(lib::internal::resolving_rank<2>, T&& val) noexcept(NO_EXCEPT) -> decltype(val.first, val.second, 0) {
-        (*this)(std::forward<T>(val));
+        *this << val.first, this->put_separator();
+        *this << val.second;
         return 0;
     }
     template<class T>
     auto _put(lib::internal::resolving_rank<1>, T&& val) noexcept(NO_EXCEPT) -> decltype(std::get<0>(val), 0) {
-        std::apply([this](const auto&... args) constexpr { ((*this << args), ...); }, std::forward<T>(val));
+        std::apply([this](const auto&... args) constexpr { ((*this << args, this->put_separator()), ...); }, std::forward<T>(val));
         return 0;
     }
 
@@ -146,14 +147,9 @@ struct output_adapter {
     }
 #endif
 
-
-    template<class T> inline void operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT){
+    template<class T> inline void operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT) {
         std::vector wrapped(vals.begin(), vals.end());
         (*this)(wrapped.begin(), wrapped.end());
-    }
-
-    template<class F, class S> inline void operator()(const std::pair<F,S>& p) noexcept(NO_EXCEPT){
-        (*this)(p.first, p.second);
     }
 };
 

@@ -20,7 +20,6 @@
 
 #include <atcoder/modint>
 
-#include "internal/dev_env.hpp"
 #include "numeric/int128.hpp"
 #include "internal/type_traits.hpp"
 
@@ -56,11 +55,11 @@ using Brackets = std::pair<std::string, std::string>;
 
 // template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value>* = nullptr>
 // std::string lit(T, Brackets = { "[", "]" }, std::string = ", ");
-template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>* = nullptr>
-std::string lit(T&, const Brackets& = { "[", "]" }, const std::string& = ", ");
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<std::remove_reference_t<T>> && !lib::internal::is_template<std::map,std::remove_reference_t<T>>::value && !std::is_base_of_v<std::string,std::remove_reference_t<T>>>* = nullptr>
+std::string lit(T&&, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
-template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>* = nullptr>
-std::string lit(T&, const Brackets& = { "{", "}" }, const std::string& = ", ");
+template<class T, std::enable_if_t<lib::internal::is_template<std::map,std::remove_reference_t<T>>::value>* = nullptr>
+std::string lit(T&&, const Brackets& = { "{", "}" }, const std::string& = ", ");
 
 #if CPP20
     template<std::forward_iterator I, std::sentinel_for<I> S>
@@ -142,38 +141,38 @@ std::string lit(const T val) {
     return res.str();
 };
 
-template<class T> auto lit(T& val) -> decltype(val.val(), std::string());
+template<class T> auto lit(T&& val) -> decltype(val.val(), std::string());
 
 template<class T, atcoder::internal::is_modint_t<T>*>
-std::string _lit(int, T& val) {
+std::string _lit(int, T&& val) {
     return COLOR_TYPE + "<modint> " + lit(val.val());
 }
 
-template<class T> std::string _lit(bool, T& val) {
+template<class T> std::string _lit(bool, T&& val) {
     return COLOR_TYPE + "<...> " + lit(val.val());
 }
 
 
-template<class T> auto lit(T& val) -> decltype(val.val(), std::string()) {
-    return _lit(0, val);
+template<class T> auto lit(T&& val) -> decltype(val.val(), std::string()) {
+    return _lit(0, std::forward<T>(val));
 }
 
-template<class... Ts> std::string lit(std::map<Ts...>& val) {
+template<class... Ts> std::string lit(const std::map<Ts...>& val) {
     return lit(std::forward<std::map<Ts...>>(val), Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::unordered_map<Ts...>& val) {
+template<class... Ts> std::string lit(const std::unordered_map<Ts...>& val) {
     return lit(std::forward<std::unordered_map<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::set<Ts...>& val) {
+template<class... Ts> std::string lit(const std::set<Ts...>& val) {
     return lit(std::forward<std::set<Ts...>>(val), Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::unordered_set<Ts...>& val) {
+template<class... Ts> std::string lit(const std::unordered_set<Ts...>& val) {
     return lit(std::forward<std::unordered_set<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
 }
-template<class... Ts> std::string lit(std::vector<Ts...>& val) {
+template<class... Ts> std::string lit(const std::vector<Ts...>& val) {
     return lit(std::forward<std::vector<Ts...>>(val), Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
 }
-template<class... Ts> std::string lit(std::deque<Ts...>& val) {
+template<class... Ts> std::string lit(const std::deque<Ts...>& val) {
     return lit(std::forward<std::deque<Ts...>>(val), Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
 }
 
@@ -209,26 +208,26 @@ template<size_t N, class T> void iterate_tuple([[maybe_unused]] const T& val, st
 
 #if CPP20
 
-template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
-std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+template<class T, std::enable_if_t<lib::internal::is_iterable_v<std::remove_reference_t<T>> && !lib::internal::is_template<std::map,std::remove_reference_t<T>>::value && !std::is_base_of_v<std::string,std::remove_reference_t<T>>>*>
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
     // return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
 }
 
-template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
-std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+template<class T, std::enable_if_t<lib::internal::is_template<std::map,std::remove_reference_t<T>>::value>*>
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
 }
 
 #else
 
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<T> && !lib::internal::is_template<std::map,T>::value && !std::is_base_of_v<std::string,T>>*>
-std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,T>::value>*>
-std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
+std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
     return lit(std::begin(val), std::end(val), brcs, sep);
 }
 
@@ -236,7 +235,7 @@ std::string lit(T& val, const Brackets& brcs, const std::string& sep) {
 
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
-std::string lit(T &val) {
+std::string lit(T &&val) {
     auto res = _debug(std::forward<T>(val));
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
@@ -326,8 +325,8 @@ std::vector<std::string> split(const std::string& str) {
     return res;
 }
 
-template<class Arg> void DEBUG(std::nullptr_t, Arg arg) { *cdebug << arg << std::flush; }
-template<class... Args> void DEBUG(Args... args) { *cdebug << lit(args...) << std::flush; }
+template<class Arg> void DEBUG(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
+template<class... Args> void DEBUG(Args&&... args) { *cdebug << lit(std::forward<Args>(args)...) << std::flush; }
 
 void debug(
     std::vector<std::string> __attribute__ ((unused)) args,
@@ -335,10 +334,10 @@ void debug(
     __attribute__ ((unused)) int LINE_NUM
 ) { debug(nullptr, COLOR_INIT + "\n"); }
 
-template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int LINE_NUM, Head H, Tail&&... T) {
+template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int LINE_NUM, Head&& H, Tail&&... T) {
     if(idx > 0) debug(nullptr, ","); else debug(nullptr, "\033[3;35m#" + std::to_string(LINE_NUM) + "  " + COLOR_INIT);
     debug(nullptr, "\033[32m" + args[idx]  + COLOR_INIT + ": ");
-    debug(H, std::string());
+    debug(std::forward<Head>(H), std::string());
     debug(args, idx + 1, 0, std::forward<Tail>(T)...);
 }
 
