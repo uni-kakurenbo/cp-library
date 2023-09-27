@@ -43,6 +43,10 @@
 #define ITRP4(e0,e1,e2,e3,v) for(auto [e0, e1, e2, e3] : (v))
 #define ITRR4(e0,e1,e2,e3,v) for(auto &[e0, e1, e2, e3] : (v))
 
-#define ITR(...) $OVERLOAD5(__VA_ARGS__, ITR4, ITR3, ITR2, ITR1)(__VA_ARGS__)
-#define ITRP(...) $OVERLOAD5(__VA_ARGS__, ITRP4, ITRP3, ITRP2, ITRP1)(__VA_ARGS__)
-#define ITRR(...) $OVERLOAD5(__VA_ARGS__, ITRR4, ITRR3, ITRR2, ITRR1)(__VA_ARGS__)
+#define ITR5(e0,e1,e2,e3,e4,v) for(const auto [e0, e1, e2, e3, e4] : (v))
+#define ITRP5(e0,e1,e2,e3,e4,v) for(auto [e0, e1, e2, e3, e4] : (v))
+#define ITRR5(e0,e1,e2,e3,e4,v) for(auto &[e0, e1, e2, e3, e4] : (v))
+
+#define ITR(...) $OVERLOAD6(__VA_ARGS__, ITR5, ITR4, ITR3, ITR2, ITR1)(__VA_ARGS__)
+#define ITRP(...) $OVERLOAD6(__VA_ARGS__, ITRP5, ITRP4, ITRP3, ITRP2, ITRP1)(__VA_ARGS__)
+#define ITRR(...) $OVERLOAD6(__VA_ARGS__, ITRR5, ITRR4, ITRR3, ITRR2, ITRR1)(__VA_ARGS__)

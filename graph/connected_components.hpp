@@ -13,7 +13,7 @@
 template<class Graph>
 lib::dsu lib::internal::graph_impl::mixin<Graph>::components() const noexcept(NO_EXCEPT) {
     lib::dsu dsu(this->vertices());
-    ITR(edges, *this) ITR(_id, u, v, _w, edges) {
+    ITR(edges, *this) ITR(_id, u, v, _w, _idx, edges) {
         dsu.merge(u, v);
     }
     return dsu;

@@ -66,7 +66,7 @@ template<class T, class R = T>
 inline constexpr R factorial(const T& n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     R ans = 1;
-    FOR(k, 1, n) ans += k;
+    FOR(k, 1, n) ans *= k;
     return ans;
 }
 

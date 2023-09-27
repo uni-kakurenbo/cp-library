@@ -472,6 +472,8 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
     using value_type = typename core::value_type;
     using size_type = typename core::size_type;
 
+    compressed_wavelet_matrix() = default;
+
     template<class I> compressed_wavelet_matrix(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
     template<class I> void build(const I first, const I last) noexcept(NO_EXCEPT) {
         this->_comp = compressed<T>(first, last);

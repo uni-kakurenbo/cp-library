@@ -7,13 +7,15 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/vector.hpp"
+
 #include "auto_holder.hpp"
 
 
 namespace lib {
 
 
-template<class T, class V = std::vector<internal::size_t>, class container = dynamic_auto_holder<T,V>>
+template<class T, class V = vector<internal::size_t>, class container = dynamic_auto_holder<T,V>>
 struct inverse : container {
     explicit inverse() noexcept(NO_EXCEPT) {}
     template<class R> inverse(const R& range) noexcept(NO_EXCEPT) : inverse(std::begin(range), std::end(range)) {}
