@@ -3,6 +3,7 @@
 
 #include <map>
 #include <unordered_map>
+#include <functional>
 
 #include "internal/types.hpp"
 #include "internal/exception.hpp"
@@ -29,12 +30,15 @@ template<class Map> struct map_wrapper : map_wrapper_base<Map> {
     using key_type = typename base::key_type;
 
   protected:
+    using default_func_noarg_type = std::function<mapped_type(void)>;
+    using default_func_type = std::function<mapped_type(key_type)>;
+
     int _default_type = 0;
     mapped_type _default_val = {};
-    mapped_type (*_default_func_noarg)(void);
-    mapped_type (*_default_func)(key_type);
+    default_func_noarg_type _default_func_noarg;
+    default_func_type _default_func;
 
-    inline mapped_type _get_default(const key_type key) const noexcept(NO_EXCEPT) {
+    inline mapped_type _get_default(const key_type& key) const noexcept(NO_EXCEPT) {
         if(this->_default_type == 0) return this->_default_val;
         if(this->_default_type == 1) return this->_default_func_noarg();
         if(this->_default_type == 2) return this->_default_func(key);
@@ -48,36 +52,32 @@ template<class Map> struct map_wrapper : map_wrapper_base<Map> {
         return *this;
     }
 
-    inline auto& set_default(mapped_type (*const func)(void)) noexcept(NO_EXCEPT) {
-        this->_default_func = func;
+    inline auto& set_default(const default_func_noarg_type func) noexcept(NO_EXCEPT) {
+        this->_default_func_noarg = func;
         this->_default_type = 1;
         return *this;
     }
 
-    inline auto& set_default(mapped_type (*const func)(key_type)) noexcept(NO_EXCEPT) {
+    inline auto& set_default(const default_func_type func) noexcept(NO_EXCEPT) {
         this->_default_func = func;
         this->_default_type = 2;
         return *this;
     }
 
-    inline auto& operator[](const key_type key) noexcept(NO_EXCEPT) {
+    inline auto& operator[](const key_type& key) noexcept(NO_EXCEPT) {
         auto found = this->base::find(key);
         if(found == this->base::end()) return this->base::emplace(key, this->_get_default(key)).first->second;
         return found->second;
     }
 
-    inline const auto& operator[](const key_type key) const noexcept(NO_EXCEPT) {
+    inline auto& operator()(const key_type& key) noexcept(NO_EXCEPT) {
+        return this->base::operator[](key);
+    }
+
+    inline std::optional<mapped_type> get(const key_type& key) const noexcept(NO_EXCEPT) {
         const auto found = this->base::find(key);
-        if(found == this->base::end()) return this->base::emplace(key, this->_get_default(key)).first->second;
+        if(found == this->base::end()) return {};
         return found->second;
-    }
-
-    inline auto& operator()(const key_type key) noexcept(NO_EXCEPT) {
-        return this->base::operator[](key);
-    }
-
-    inline const auto& operator()(const key_type key) const noexcept(NO_EXCEPT) {
-        return this->base::operator[](key);
     }
 };
 

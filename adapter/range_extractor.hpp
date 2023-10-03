@@ -13,13 +13,17 @@ struct range_extractor : Container {
     using value_type = typename Container::value_type;
 
   protected:
+    using default_func_noarg_type = std::function<value_type(void)>;
+    using default_func_type = std::function<value_type(size_type)>;
+
     size_type _begin = 0;
     size_type _end;
 
     int _default_type = 0;
     value_type _default_val = {};
-    value_type (*_default_func_noarg)(void);
-    value_type (*_default_func)(size_type);
+    default_func_noarg_type _default_func_noarg;
+    default_func_type _default_func;
+    inline static value_type _tmp;
 
     inline value_type _get_default(const size_type key) const noexcept(NO_EXCEPT) {
         if(this->_default_type == 0) return this->_default_val;
@@ -48,13 +52,13 @@ struct range_extractor : Container {
         return *this;
     }
 
-    inline auto& set_default(value_type (*const func)(void)) noexcept(NO_EXCEPT) {
+    inline auto& set_default(const default_func_noarg_type func) noexcept(NO_EXCEPT) {
         this->_default_func_noarg = func;
         this->_default_type = 1;
         return *this;
     }
 
-    inline auto& set_default(value_type (*const func)(size_type)) noexcept(NO_EXCEPT) {
+    inline auto& set_default(const default_func_type func) noexcept(NO_EXCEPT) {
         this->_default_func = func;
         this->_default_type = 2;
         return *this;
@@ -62,12 +66,12 @@ struct range_extractor : Container {
 
 
     inline auto& operator[](const size_type pos) noexcept(NO_EXCEPT) {
-        if(pos < this->_begin or this->_end <= pos) return range_extractor::_tmp = this->_get_default();
+        if(pos < this->_begin or this->_end <= pos) return range_extractor::_tmp = this->_get_default(pos);
         return this->Container::operator[](pos);
     }
 
     inline const auto& operator[](const size_type pos) const noexcept(NO_EXCEPT) {
-        if(pos < this->_begin or this->_end <= pos) return this->_get_default();
+        if(pos < this->_begin or this->_end <= pos) return range_extractor::_tmp = this->_get_default(pos);
         return this->Container::operator[](pos);
     }
 
@@ -76,6 +80,11 @@ struct range_extractor : Container {
     }
 
     inline const auto& operator()(const size_type pos) const noexcept(NO_EXCEPT) {
+        return this->Container::operator[](pos);
+    }
+
+    inline std::optional<value_type> get(const size_type pos) const noexcept(NO_EXCEPT) {
+        if(pos < this->_begin or this->_end <= pos) return {};
         return this->Container::operator[](pos);
     }
 };
