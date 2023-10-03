@@ -53,11 +53,11 @@ struct restorable_stack {
         this->_current = this->_current->parent;
         return *this;
     }
-    inline auto& save(const key_type x) noexcept(NO_EXCEPT) {
+    inline auto& save(const key_type& x) noexcept(NO_EXCEPT) {
         this->_storage[x] = this->_current;
         return *this;
     }
-    inline auto& load(const key_type x) noexcept(NO_EXCEPT) {
+    inline auto& load(const key_type& x) noexcept(NO_EXCEPT) {
         this->_current = this->_storage[x];
         return *this;
     }
