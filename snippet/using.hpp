@@ -55,6 +55,7 @@ using lib::INF32;
 using lib::INF64;
 using lib::INF;
 
+using lib::MINT;
 using lib::INV;
 using lib::SINV;
 
