@@ -30,6 +30,11 @@ inline constexpr T div_ceil(const T& x, const T& d) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
+inline constexpr std::make_signed_t<T> to_signed(const T& x) noexcept(NO_EXCEPT) {
+    return static_cast<std::make_signed_t<T>>(x);
+}
+
+template<class T>
 inline constexpr std::make_unsigned_t<T> to_unsigned(const T& x) noexcept(NO_EXCEPT) {
     return static_cast<std::make_unsigned_t<T>>(x);
 }

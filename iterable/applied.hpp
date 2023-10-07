@@ -46,12 +46,5 @@ inline auto reversed(V v) noexcept(NO_EXCEPT) {
     return applied(v, std::reverse<typename V::iterator>);
 }
 
-template<class V>
-inline auto unique(V v) noexcept(NO_EXCEPT) {
-    std::sort(std::begin(v), std::end(v));
-    v.erase(std::unique(std::begin(v), std::end(v)), std::end(v));
-    return v;
-}
-
 
 } // namespace lib

@@ -21,7 +21,7 @@ template<class Ref> struct view_2d : internal::view_impl::base {
     using transposer = std::function<std::pair<size_type,size_type>(const size_type, const size_type)>;
 
   protected:
-    transposer _transposer = [&](const size_type i, const size_type j) { return { i, j }; };
+    transposer _transposer = [&](const size_type i, const size_type j) { return std::make_pair(i, j); };
 
     Ref* _ref;
     size_type _pos0, _pos1;

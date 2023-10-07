@@ -16,6 +16,13 @@
 #include "view/range.hpp"
 
 
+#if CPP20
+
+#include <ranges>
+
+#endif
+
+
 namespace lib {
 
 namespace internal {
@@ -97,7 +104,6 @@ struct concat_view_iterator : view_impl::iterator_base {
     }
 
     inline reference operator*() noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
-    inline const reference operator*() const noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
 
     inline concat_view_iterator& operator+=(const difference_type count) noexcept(NO_EXCEPT) {
         if(count < 0) return *this -= (-count);
@@ -280,3 +286,17 @@ inline auto concat(Views&&... views) noexcept(NO_EXCEPT) { return concat_view(ra
 
 
 } // namespace lib
+
+
+#if CPP20
+
+
+namespace std::ranges {
+
+template<class... Vs>
+inline constexpr bool enable_borrowed_range<lib::concat_view<Vs...>> = true;
+
+} // namespace std::ranges
+
+
+#endif

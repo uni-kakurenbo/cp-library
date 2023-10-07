@@ -2,7 +2,9 @@
 
 #include "internal/dev_env.hpp"
 
+
 #if CPP20
+
 
 #include <ranges>
 #include <concepts>
@@ -13,6 +15,11 @@ namespace lib {
 
 namespace internal {
 
+
+template<class Range>
+concept resizable_range
+  = std::ranges::range<Range> &&
+    requires (Range& r) { r.resize(0); };
 
 template<class range>
 concept simple_view
@@ -35,7 +42,6 @@ concept all_bidirectional = (std::ranges::bidirectional_range<maybe_const_t<Cons
 
 template<bool Const, class... Views>
 concept all_forward = (std::ranges::forward_range<maybe_const_t<Const, Views>> && ...);
-
 
 
 template<bool Const, class... Views> struct zip_view_iterator_category {};

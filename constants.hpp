@@ -106,4 +106,10 @@ enum class positional_relation : std::int8_t{
 };
 
 
+enum class alignment : std::int8_t {
+    left,
+    center,
+    right
+};
+
 } // namespace lib

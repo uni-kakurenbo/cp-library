@@ -13,9 +13,9 @@ namespace lib {
 
 template<class Node, class Prev, class Res>
 void restore_shortest_path(Node v, const Prev& prev, Res *const res) {
-    res.clear();
+    res->clear();
     while(v >= 0) {
-        res.emplace_back(v);
+        res->emplace_back(v);
         v = prev[v];
     }
 }

@@ -11,8 +11,13 @@
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 
+#include "numeric/arithmetic.hpp"
+
+
 #if CPP20
+
 #include <ranges>
+
 #endif
 
 
@@ -162,6 +167,9 @@ constexpr bool is_iterator_v = is_iterator<T>::value;
 
 template<class T>
 using is_iterator_t = std::enable_if_t<is_iterator_v<T>>;
+
+template<class T>
+using iota_diff_t = std::make_signed_t<T>;
 
 
 } // namespace internal

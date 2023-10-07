@@ -25,59 +25,59 @@ template<class source = std::istream>
 struct input_adapter {
   private:
     template<class T, class = std::enable_if_t<std::is_base_of_v<std::valarray<typename T::value_type>>,T>>
-    auto _set(lib::internal::resolving_rank<6>, T *const val) noexcept(NO_EXCEPT) -> int {
-        this->operator()(std::begin(*val), std::end(*val));
+    auto _set(lib::internal::resolving_rank<6>, T& val) noexcept(NO_EXCEPT) -> int {
+        this->operator()(std::begin(val), std::end(val));
         return 0;
     }
 
     template<class T>
-    auto _set(lib::internal::resolving_rank<5>, T *const val) noexcept(NO_EXCEPT) -> decltype(std::declval<source&>() >> *val, 0) {
-        *this->in >> *val;
+    auto _set(lib::internal::resolving_rank<5>, T& val) noexcept(NO_EXCEPT) -> decltype(std::declval<source&>() >> val, 0) {
+        *this->in >> val;
         return 0;
     }
 
     template<class T>
-    auto _set(lib::internal::resolving_rank<4>, T *const val) noexcept(NO_EXCEPT) -> decltype(std::begin(*val), std::end(*val), 0) {
-        this->operator()(std::begin(*val), std::end(*val));
+    auto _set(lib::internal::resolving_rank<4>, T& val) noexcept(NO_EXCEPT) -> decltype(std::begin(val), std::end(val), 0) {
+        this->operator()(std::begin(val), std::end(val));
         return 0;
     }
 
     template<class T>
-    auto _set(lib::internal::resolving_rank<3>, T *const val) noexcept(NO_EXCEPT) -> decltype(val->first, val->second, 0) {
-        *this >> val->first >> val->second;
+    auto _set(lib::internal::resolving_rank<3>, T& val) noexcept(NO_EXCEPT) -> decltype(val.first, val.second, 0) {
+        *this >> val.first >> val.second;
         return 0;
     }
 
     template<class T>
-    auto _set(lib::internal::resolving_rank<2>, T *const val) noexcept(NO_EXCEPT) -> decltype(std::get<0>(*val), 0) {
-        tuple_for_each([this](auto&& v) { *this >> v; }, *val);
+    auto _set(lib::internal::resolving_rank<2>, T& val) noexcept(NO_EXCEPT) -> decltype(std::get<0>(val), 0) {
+        tuple_for_each([this](auto&& v) { *this >> v; }, val);
         return 0;
     }
 
     template<class T>
-    auto _set(lib::internal::resolving_rank<1>, T *const val) noexcept(NO_EXCEPT) -> std::enable_if_t<atcoder::internal::is_modint<T>::value,int> {
+    auto _set(lib::internal::resolving_rank<1>, T& val) noexcept(NO_EXCEPT) -> std::enable_if_t<atcoder::internal::is_modint<T>::value,int> {
         std::int64_t v; std::cin >> v;
-        *val = { v };
+        val = { v };
         return 0;
     }
 
     template<class T, class = typename T::value_type>
-    auto _set(lib::internal::resolving_rank<0>, T *const val) noexcept(NO_EXCEPT) -> int {
+    auto _set(lib::internal::resolving_rank<0>, T& val) noexcept(NO_EXCEPT) -> int {
         typename T::value_type v; *this >> v;
-        *val = { v };
+        val = { v };
         return 0;
     }
 
   protected:
     template<class T>
     source *set(T& val) noexcept(NO_EXCEPT) {
-        this->_set(lib::internal::resolving_rank<10>{}, &val);
+        this->_set(lib::internal::resolving_rank<10>{}, val);
         return this->in;
     }
     template<class T>
     source *set(T&& _val) noexcept(NO_EXCEPT) {
         T val = _val;
-        this->_set(lib::internal::resolving_rank<10>{}, &val);
+        this->_set(lib::internal::resolving_rank<10>{}, val);
         return this->in;
     }
 
@@ -98,13 +98,13 @@ struct input_adapter {
         return val;
     }
 
-    template<class T> inline auto& operator()(T *const val) noexcept(NO_EXCEPT) {
+    template<class T> inline auto& operator()(T& val) noexcept(NO_EXCEPT) {
         *this >> *val;
         return *this;
     }
 
-    template<class T, class... Args> inline auto& operator()(T *const head, Args *const... tail) noexcept(NO_EXCEPT) {
-        *this >> *head;
+    template<class T, class... Args> inline auto& operator()(T& head, Args&... tail) noexcept(NO_EXCEPT) {
+        *this >> head;
         this->operator()(tail...);
         return *this;
     }

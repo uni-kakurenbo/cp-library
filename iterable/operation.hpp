@@ -26,6 +26,16 @@
 #include "view/concat.hpp"
 
 
+#if CPP20
+
+#include <ranges>
+#include <concepts>
+
+#include "internal/ranges.hpp"
+
+#endif
+
+
 namespace lib {
 
 
@@ -66,6 +76,13 @@ auto sum(const V& v, T base = {}) noexcept(NO_EXCEPT) {
     return sum(ALL(v), base);
 }
 
+template<class V>
+inline auto unique(V v) noexcept(NO_EXCEPT) {
+    std::sort(std::begin(v), std::end(v));
+    v.erase(std::unique(std::begin(v), std::end(v)), std::end(v));
+    return v;
+}
+
 
 template<
     class I,
@@ -90,9 +107,18 @@ auto mex(const std::initializer_list<T> v) noexcept(NO_EXCEPT) {
 }
 
 template<class T>
-auto mex(std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
+auto mex(const std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(v), base);
 }
+
+#if CPP20
+
+template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
+auto mex(const R& range, const T& base) noexcept(NO_EXCEPT) {
+    return mex(ALL(range), base);
+}
+
+#endif
 
 
 template<class R, class I, class D>
@@ -189,5 +215,55 @@ auto replace(const V& source, const V& from, const V& to) noexcept(NO_EXCEPT) {
     return res;
 }
 
+
+#if CPP20
+
+
+template<alignment ALIGNMENT, internal::resizable_range R, class T = std::ranges::range_value_t<R>>
+auto align(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+    if(std::ssize(source) >= size) return source;
+
+    if(ALIGNMENT == alignment::left) {
+        R left, right;
+        left = source;
+        right.resize(size - std::size(left), v);
+        return R(ALL(lib::views::concat(left, right)));
+    }
+
+    if(ALIGNMENT == alignment::center) {
+        R left, center, right;
+        center = source;
+        left.resize((size - std::size(center)) / 2, v);
+        right.resize(size - std::size(center) - std::size(left), v);
+        return R(ALL(lib::views::concat(left, center, right)));
+    }
+
+    if(ALIGNMENT == alignment::right) {
+        R left, right;
+        right = source;
+        left.resize(size - std::size(right), v);
+        return R(ALL(lib::views::concat(left, right)));
+    }
+    assert(false);
+}
+
+
+template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
+auto ljust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+    return align<alignment::left>(source, size, v);
+}
+
+template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
+auto cjust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+    return align<alignment::center>(source, size, v);
+}
+
+template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
+auto rjust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+    return align<alignment::right>(source, size, v);
+}
+
+
+#endif
 
 } // namespace lib

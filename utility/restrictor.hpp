@@ -87,5 +87,5 @@ template<class T, T INF, T SUP> struct static_restrictor {
 
 namespace std {
     template<class T, T INF, T SUP>
-    T std::abs(const lib::static_restrictor<T,INF,SUP>& v) { return std::abs(v.val()); }
+    T abs(const lib::static_restrictor<T,INF,SUP>& v) { return std::abs(v.val()); }
 }

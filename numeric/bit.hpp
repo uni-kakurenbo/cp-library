@@ -137,7 +137,7 @@ inline constexpr T bit_ceil(const T v) noexcept(NO_EXCEPT) {
     if constexpr(std::is_same_v<T,decltype(+v)>) return T{1} << bit_width<T>(v - 1);
     else {
         constexpr int d = std::numeric_limits<unsigned>::digits - std::numeric_limits<T>::digits;
-        return T(1U << bit_width<T>(v - 1) + d) >> d;
+        return T(1U << (bit_width<T>(v - 1) + d)) >> d;
     }
 }
 
@@ -202,8 +202,8 @@ template<class T> constexpr T rotl(const T x, const int n) {
 template<class T> constexpr T rotr(const T x, const int n) {
     LIB_STATUC_ASSERT_UNSIGNED(T);
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    if constexpr(has_single_bit(DIGITS)) {
-        constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    if constexpr(has_single_bit(U_DIGITS)) {
         const unsigned r = static_cast<unsigned>(n);
         return (x >> (r % U_DIGITS)) | (x << ((-r) % U_DIGITS)); // rotl
     }
