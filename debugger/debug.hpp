@@ -77,6 +77,7 @@ template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> 
 
 template<class T> std::string lit(const T*);
 
+template<class T> std::string lit(const std::optional<T>&);
 
 struct debug_t : std::string {
     using std::string::string;
@@ -121,7 +122,7 @@ std::string lit(const bool val) {
 }
 
 template<std::size_t N>
-std::string lit(std::bitset<N>& val) {
+std::string lit(const std::bitset<N>& val) {
     std::stringstream res;
     res << COLOR_NUMERIC << val.to_string() << COLOR_INIT;
     return res.str();
@@ -242,6 +243,12 @@ std::string lit(T &&val) {
     } else {
         return lit(std::forward<decltype(res)>(res));
     }
+}
+
+template<class T>
+std::string lit(const std::optional<T>& val) {
+    if(val.has_value()) return lit(*val);
+    return COLOR_TYPE + "<optional> invalid" + COLOR_INIT;
 }
 
 // template<class T> std::string lit(const T *const val) {
