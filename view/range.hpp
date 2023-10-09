@@ -149,4 +149,4 @@ inline auto range(View&& views) noexcept(NO_EXCEPT) { return range_view(std::for
 } // namespace views
 
 
-}
+} // namespace lib

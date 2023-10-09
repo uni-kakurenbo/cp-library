@@ -108,19 +108,37 @@ template<class T> inline constexpr T mapping(const T x, const T from_min, const 
 }
 
 template<class... Args>
-const std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
+std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
     return std::min({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 template<class... Args>
-inline constexpr const std::common_type_t<Args...> max(const Args&... args) noexcept(NO_EXCEPT) {
+inline constexpr std::common_type_t<Args...> max(const Args&... args) noexcept(NO_EXCEPT) {
     return std::max({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
-template<class... Args>
-inline constexpr const std::common_type_t<Args...> mex(const Args&... args) noexcept(NO_EXCEPT) {
-    return mex({ static_cast<std::common_type_t<Args...>>(args)... });
+
+template<class T>
+inline constexpr T gcd(const std::initializer_list<T> args) noexcept(NO_EXCEPT) {
+    return gcd(ALL(args));
 }
+
+template<class... Args>
+inline constexpr std::common_type_t<Args...> gcd(const Args&... args) noexcept(NO_EXCEPT) {
+    return gcd({ static_cast<std::common_type_t<Args...>>(args)... });
+}
+
+
+template<class T>
+inline constexpr T lcm(const std::initializer_list<T> args) noexcept(NO_EXCEPT) {
+    return lcm(ALL(args));
+}
+
+template<class... Args>
+inline constexpr std::common_type_t<Args...> lcm(const Args&... args) noexcept(NO_EXCEPT) {
+    return lcm({ static_cast<std::common_type_t<Args...>>(args)... });
+}
+
 
 template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
 inline constexpr std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {

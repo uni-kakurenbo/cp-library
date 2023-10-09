@@ -118,18 +118,20 @@ struct output_adapter {
         return *this;
     }
 
-    template<class T = std::string> inline void operator()(T&& val = "") noexcept(NO_EXCEPT){
+    template<class T = std::string> inline auto& operator()(T&& val = "") noexcept(NO_EXCEPT){
         *this << std::forward<T>(val), this->put_endline();
+        return *this;
     }
 
-    template<class T, class ...Args> inline void operator()(T&& head, Args&& ...tail) noexcept(NO_EXCEPT){
+    template<class T, class ...Args> inline auto& operator()(T&& head, Args&& ...tail) noexcept(NO_EXCEPT){
         *this << std::forward<T>(head), this->put_separator();
         (*this)(std::forward<Args>(tail)...);
+        return *this;
     }
 
 #if CPP20
     template<std::forward_iterator I, std::sentinel_for<I> S>
-    inline void operator()(I first, S last, const bool terminate = true) noexcept(NO_EXCEPT) {
+    inline auto& operator()(I first, S last, const bool terminate = true) noexcept(NO_EXCEPT) {
 #else
     template<class I, class = typename std::iterator_traits<I>::iterator_category>
     inline void operator()(I first, I last, const bool terminate = true) noexcept(NO_EXCEPT) {
@@ -141,15 +143,30 @@ struct output_adapter {
             }
             else this->put_separator();
         }
+
+        return *this;
 #if CPP20
     }
 #else
     }
 #endif
 
-    template<class T> inline void operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT) {
+    template<class T> inline auto& operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT) {
         std::vector wrapped(vals.begin(), vals.end());
         (*this)(wrapped.begin(), wrapped.end());
+        return *this;
+    }
+
+    template<class T0, class T1>
+    inline auto& conditional(const bool cond, const T0& a, const T1& b) noexcept(NO_EXCEPT) {
+        if(cond) (*this)(a);
+        else (*this)(b);
+        return *this;
+    }
+
+    inline auto& YesNo(const bool cond) noexcept(NO_EXCEPT) {
+        this->conditional(cond, "Yes", "No");
+        return *this;
     }
 };
 

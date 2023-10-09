@@ -100,8 +100,6 @@ struct zip_view : std::ranges::view_interface<zip_view<Views...>> {
 
 template<class... Ranges> zip_view(Ranges &&...) -> zip_view<std::views::all_t<Ranges>...>;
 
-
-
 namespace internal {
 
 

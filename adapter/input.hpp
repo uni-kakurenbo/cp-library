@@ -99,7 +99,7 @@ struct input_adapter {
     }
 
     template<class T> inline auto& operator()(T& val) noexcept(NO_EXCEPT) {
-        *this >> *val;
+        *this >> val;
         return *this;
     }
 

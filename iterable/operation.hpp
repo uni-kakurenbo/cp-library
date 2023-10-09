@@ -6,10 +6,12 @@
 #include <initializer_list>
 #include <sstream>
 #include <vector>
+#include <valarray>
 #include <string>
 #include <utility>
 #include <iterator>
 #include <numeric>
+#include <limits>
 
 #include "snippet/iterations.hpp"
 #include "snippet/aliases.hpp"
@@ -18,11 +20,13 @@
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 #include "internal/exception.hpp"
+#include "internal/iterator.hpp"
 
 #include "iterable/z_array.hpp"
 #include "adapter/vector.hpp"
 
 #include "constants.hpp"
+#include "view/range.hpp"
 #include "view/concat.hpp"
 
 
@@ -111,12 +115,63 @@ auto mex(const std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(v), base);
 }
 
+template<class I, class T = typename std::iterator_traits<I>::value_type>
+inline constexpr auto gcd(I first, I last) noexcept(NO_EXCEPT) {
+    T res = T{0};
+    for(auto itr=first; itr!=last; ++itr) res = std::gcd(res, *itr);
+    return res;
+}
+
+template<class I, class T = typename std::iterator_traits<I>::value_type>
+inline constexpr auto lcm(I first, I last) noexcept(NO_EXCEPT) {
+    T res = T{1};
+    for(auto itr=first; itr!=last; ++itr) res = std::lcm(res, *itr);
+    return res;
+}
+
+template<class I, class T = typename std::iterator_traits<I>::value_type>
+inline constexpr auto min(I first, I last) noexcept(NO_EXCEPT) {
+    T res = std::numeric_limits<T>::max();
+    for(auto itr=first; itr!=last; ++itr) res = std::min(res, *itr);
+    return res;
+}
+
+template<class I, class T = typename std::iterator_traits<I>::value_type>
+inline constexpr auto max(I first, I last) noexcept(NO_EXCEPT) {
+    T res = std::numeric_limits<T>::lowest();
+    for(auto itr=first; itr!=last; ++itr) res = std::max(res, *itr);
+    return res;
+}
+
+
 #if CPP20
+
+
+template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
+auto min(const R& range) noexcept(NO_EXCEPT) {
+    return std::valarray(ALL(range)).min();
+}
+
+template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
+auto max(const R& range) noexcept(NO_EXCEPT) {
+    return std::valarray(ALL(range)).max();
+}
 
 template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
 auto mex(const R& range, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(range), base);
 }
+
+template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
+auto gcd(const R& range) noexcept(NO_EXCEPT) {
+    return gcd(ALL(range));
+}
+
+template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
+auto lcm(const R& range) noexcept(NO_EXCEPT) {
+    return lcm(ALL(range));
+}
+
 
 #endif
 

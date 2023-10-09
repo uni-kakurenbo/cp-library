@@ -5,15 +5,14 @@
 #include <utility>
 #include <vector>
 
+#include "internal/dev_env.hpp"
+#include "snippet/internal/types.hpp"
+
 #if CPP20
 
 #include <ranges>
 
 #endif
-
-
-#include "internal/dev_env.hpp"
-#include "snippet/internal/types.hpp"
 
 
 #define until(...) while(!(__VA_ARGS__))

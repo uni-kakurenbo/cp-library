@@ -19,6 +19,11 @@ struct extended_sequence : Base {
     using size_type = decltype(Base().size());
     using value_type = typename Base::value_type;
 
+    inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
+        std::fill(std::begin(*this), std::end(*this), v);
+        return *this;
+    }
+
     inline auto& swap(const size_type i, const size_type j) noexcept(NO_EXCEPT) {
         std::swap(this->operator[](i), this->operator[](j));
         return *this;
@@ -32,6 +37,17 @@ struct extended_sequence : Base {
     template<class F>
     inline auto& sort(const F&& f) noexcept(NO_EXCEPT) {
         std::sort(std::begin(*this), std::end(*this), f);
+        return *this;
+    }
+
+    inline auto& stable_sort() noexcept(NO_EXCEPT) {
+        std::stable_sort(std::begin(*this), std::end(*this));
+        return *this;
+    }
+
+    template<class F>
+    inline auto& stable_sort(const F&& f) noexcept(NO_EXCEPT) {
+        std::stable_sort(std::begin(*this), std::end(*this), f);
         return *this;
     }
 
