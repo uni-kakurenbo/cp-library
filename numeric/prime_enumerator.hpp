@@ -205,6 +205,36 @@ struct prime_enumerator {
         return this->_size;
     }
 
+    inline size_type count(const T x) const noexcept(NO_EXCEPT) {
+        assert(0 <= x and x <= this->n);
+
+        size_type res = (x >= 2) + (x >= 3) + (x >= 5);
+        T count = 0;
+
+        constexpr int large_bit_width = std::numeric_limits<large_bit_type>::digits;
+        constexpr int large_bit_size = (30 * large_bit_width) >> 3;
+
+        for(const large_bit_type f : this->_large) {
+            if(count + large_bit_size > x) {
+                REP(i, large_bit_width) {
+                    if(count + internal::prime_enumerator_impl::MOD30[i & 7] > x) break;
+                    if((f >> i) & 1) res++;
+                    if(((i + 1) & 7) == 0) count += 30;
+                }
+                break;
+            }
+            res += popcount(f);
+            count += large_bit_size;
+        }
+
+        return res;
+    }
+
+    inline size_type count(const T l, const T r) const noexcept(NO_EXCEPT) {
+        assert(l <= r);
+        return this->count(r) - this->count(l - 1);
+    }
+
     inline bool is_prime(const T v) const noexcept(NO_EXCEPT) {
         assert(0 <= v and v <= this->n);
 
@@ -317,11 +347,10 @@ struct prime_enumerator {
         inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --(*this); return res; }
     };
 
-#if CPP20
-};
 
-template<class Range>
-prime_enumerator(Range&&) -> prime_enumerator<std::views::all_t<Range>>;
+#if CPP20
+
+};
 
 #else
 
