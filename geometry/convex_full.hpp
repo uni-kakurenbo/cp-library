@@ -50,14 +50,14 @@ vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) {
 }
 
 template<class I, class P = typename std::iterator_traits<I>::value_type>
-vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) { return convex_hull<false,true>(first, last); }
+inline vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) { return convex_hull<false,true>(first, last); }
 
 
 template<bool LEAVE_MARGIN, bool ALLOW_LINE, class V>
-auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN,ALLOW_LINE>(std::begin(v), std::end(v)); }
+inline auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN,ALLOW_LINE>(std::begin(v), std::end(v)); }
 
 template<class V>
-auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
+inline auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
 
 
 } // namespace lib

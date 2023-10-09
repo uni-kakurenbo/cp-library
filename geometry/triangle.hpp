@@ -153,7 +153,7 @@ struct tuple_element<I,lib::triangle<T>> {
 
 
 template<class T, class C, class S>
-basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::triangle<T>& v) noexcept(NO_EXCEPT) {
+inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::triangle<T>& v) noexcept(NO_EXCEPT) {
     typename lib::triangle<T>::point_type p, q, r; in >> p >> q >> r;
     v = { p, q, r };
     return in;

@@ -79,11 +79,11 @@ struct point {
     friend inline constexpr point operator*(const value_type& a, point b) noexcept(NO_EXCEPT) { return b *= a; }
     friend inline constexpr point operator/(const value_type& a, point b) noexcept(NO_EXCEPT) { return b /= a; }
 
-    friend inline constexpr bool operator==(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() == b.x() && a.y() == b.y(); }
-    friend inline constexpr bool operator!=(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() != b.x() or a.y() != b.y(); }
+    friend inline constexpr bool operator==(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) == 0 and compare(a.y(), b.y()) == 0; }
+    friend inline constexpr bool operator!=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a == b); }
 
-    friend inline constexpr bool operator<(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() != b.x() ? a.x() < b.x() : a.y() < b.y(); }
-    friend inline constexpr bool operator>(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() != b.x() ? a.x() > b.x() : a.y() > b.y(); }
+    friend inline constexpr bool operator<(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) != 0 ? compare(a.x(), b.x()) < 0 : compare(a.y(), b.y()) < 0; }
+    friend inline constexpr bool operator>(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) != 0 ? compare(a.x(), b.x()) > 0 : compare(a.y(), b.y()) > 0; }
     friend inline constexpr bool operator<=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a > b); }
     friend inline constexpr bool operator>=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a < b); }
 
@@ -134,10 +134,16 @@ inline constexpr T abs(const lib::point<T>& v) noexcept(NO_EXCEPT) {
 }
 
 template<class T, class C, class S>
-basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::point<T>& v) noexcept(NO_EXCEPT) {
+inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::point<T>& v) noexcept(NO_EXCEPT) {
     T x, y; in >> x >> y;
     v = { x, y };
     return in;
+}
+
+template<class T, class C, class S>
+inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const lib::point<T>& v) noexcept(NO_EXCEPT) {
+    out << v.x() << " " << v.y();
+    return out;
 }
 
 

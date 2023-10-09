@@ -1,4 +1,4 @@
 #pragma once
 
-#include "geometry/point.hpp"
+#include "geometry/basic.hpp"
 #include "geometry/convex_full.hpp"
