@@ -90,7 +90,7 @@ enum class rotation : std::int8_t {
     anti_clockwise = counter_clockwise,
 };
 
-enum class positional_relation : std::int8_t{
+enum class positional_relation : std::int8_t {
     clockwise,
 
     counter_clockwise,

@@ -20,4 +20,12 @@ void solve() {
     lib::segment s0(p0, p1), s1(p2, p3);
 
     print.conditional(lib::is_intersecting(s0, s1), "Yes", "No");
+
+    // auto p = lib::intersection(lib::line(s0), lib::line(s1));
+    // if(p.has_value()) {
+    //     debug(static_cast<i64>(lib::relation(*p, lib::line(s0))));
+    //     debug(static_cast<i64>(lib::relation(*p, lib::line(s1))));
+    //     debug(static_cast<i64>(lib::relation(*p, s0)));
+    //     debug(static_cast<i64>(lib::relation(*p, s1)));
+    // }
 }

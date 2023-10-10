@@ -169,11 +169,26 @@ inline constexpr T cross(point<T> a, point<T> b, const point<T>& o = {}) noexcep
     return a.x() * b.y() - a.y() * b.x();
 }
 
+template<class T, class Angle = T>
+inline constexpr point<T> rotate(const point<T>& p, const Angle angle) noexcept(NO_EXCEPT) {
+    return {
+        std::cos(angle) * p.x() - std::sin(angle) * p.y(),
+        std::sin(angle) * p.x() + std::cos(angle) * p.y()
+    };
+}
+
+template<class T, class Angle = T>
+inline constexpr point<T> rotate(const point<T>& p, const point<T>& q, const Angle angle) noexcept(NO_EXCEPT) {
+    return rotate(p - q, angle) + q;
+}
+
+
 template<class T>
 inline constexpr positional_relation relation(const point<T>& p, point<T> q, point<T> r) noexcept(NO_EXCEPT) {
     q -= p, r -= p;
-    if(compare(cross(q, r)) > 0) return positional_relation::counter_clockwise;
-    if(compare(cross(q, r)) < 0) return positional_relation::clockwise;
+    const auto comp_qr = compare(cross(q, r));
+    if(comp_qr > 0) return positional_relation::counter_clockwise;
+    if(comp_qr < 0) return positional_relation::clockwise;
     if(compare(q * r) < 0) return positional_relation::straight_backward;
     if(compare(std::norm(q), std::norm(r)) < 0) return positional_relation::straight_forward;
     return positional_relation::straight_middle;
@@ -191,6 +206,7 @@ inline bool is_convex(const I first, const I last) noexcept(NO_EXCEPT) {
 
     REP(i, n) {
         const positional_relation r = relation(v[i], v[i+1], v[i+2]);
+
         if constexpr(ALLOW_LINE) {
             if(r == positional_relation::clockwise) return false;
         }

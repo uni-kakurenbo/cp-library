@@ -15,37 +15,76 @@
 namespace lib {
 
 
-template<class Point, class Segment>
-inline constexpr bool is_on(const Point p, const Segment seg) noexcept(NO_EXCEPT) {
-    using value_type = std::common_type_t<typename Point::value_type, typename Segment::value_type>;
-    const point<value_type> a = seg.p1() - seg.p0();
-    const point<value_type> b = p - seg.p0();
-    const value_type al = std::abs(a), bl = std::abs(b);
-    const value_type t = al * bl;
-    const value_type dot = a * b;
-    if(compare(t, dot) != 0) return false;
-    return compare(al, bl) > 0;
+template<class T>
+inline constexpr point<T> projected(const point<T>& p, const line<point<T>>& ln) noexcept(NO_EXCEPT) {
+    const point<T> q = ln.p0() - ln.p1();
+    const T t = (p - ln.p0()) * q / std::norm(q);
+    return ln.p0() + q * t;
 }
 
 
-template<class Point>
-inline std::optional<Point> intersection(segment<Point> p, segment<Point> q) {
-    using value_type = typename Point::value_type;
+template<class T>
+inline constexpr point<T> reflected(const point<T>& p, const line<point<T>>& ln) {
+    return p + (projection(ln, p) - p) * 2;
+}
 
-    const value_type det = (p.p0().x() - p.p1().x()) * (q.p1().y() - q.p0().y()) - (q.p1().x() - q.p0().x()) * (p.p0().y() - p.p1().y());
-    if(compare(det) == 0) return {};
 
-    const value_type t = ((q.p1().y() - q.p0().y()) * (q.p1().x() - p.p1().x()) + (q.p0().x() - q.p1().x()) * (q.p1().y() - p.p1().y())) / det;
+template<class T>
+inline constexpr positional_relation relation(const point<T>& p, const circle<T>& o) noexcept(NO_EXCEPT) {
+    const T dist = lib::squared_distance(o.center(), p);
+    const auto comp = compare(dist, o.squared_radius());
+    if(comp > 0) return positional_relation::out;
+    if(comp < 0) return positional_relation::in;
+    return positional_relation::on;
+}
 
-    const Point res(
-        t * p.p0().x() + (value_type{1} - t) * p.p1().x(),
-        t * p.p0().y() + (value_type{1} - t) * p.p1().y()
-    );
+namespace internal {
 
-    if(not is_on(res, p)) return {};
-    if(not is_on(res, q)) return {};
 
-    return res;
+template<class T>
+inline constexpr positional_relation relation(
+    const point<T>& p, const line<point<T>>& ln,
+    T *const _al = nullptr, T *const _bl  = nullptr
+) noexcept(NO_EXCEPT) {
+    const point<T> a = ln.to_vector();
+    const point<T> b = p - ln.p0();
+
+    T al = std::norm(a), bl = std::norm(b);
+
+    if(_al) *_al = al;
+    if(_bl) *_bl = bl;
+
+    const T t = al * bl;
+    const T dot = a * b;
+
+    if(compare(t, dot * dot) != 0) return positional_relation::out;
+    return positional_relation::in;
+}
+
+
+} // namespace internal
+
+
+
+template<class T>
+inline constexpr positional_relation relation(const point<T>& p, const line<point<T>>& seg) noexcept(NO_EXCEPT) {
+    return internal::relation(p, seg);
+}
+
+
+template<class T>
+inline constexpr positional_relation relation(const point<T>& p, const segment<point<T>>& seg) noexcept(NO_EXCEPT) {
+    if(p == seg.p0() or p == seg.p1()) return positional_relation::on;
+
+    T al, bl;
+    internal::relation(p, seg, &al, &bl);
+
+    const auto comp = compare(al, bl);
+
+    if(comp < 0) return positional_relation::out;
+    if(comp > 0) return positional_relation::in;
+
+    assert(false);
 }
 
 

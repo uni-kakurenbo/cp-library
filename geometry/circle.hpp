@@ -60,14 +60,6 @@ struct circle {
     inline const radius_type radius() const noexcept(NO_EXCEPT) { return static_cast<value_type>(std::sqrt(this->_r2)); }
     inline constexpr const radius_type& squared_radius() const noexcept(NO_EXCEPT) { return this->_r2; }
 
-    template<class U>
-    inline constexpr positional_relation relation(const point<U>& p) const noexcept(NO_EXCEPT) {
-        using common_type = std::common_type_t<value_type,U>;
-        if(compare<common_type>(lib::squared_distance(this->center(), p), this->squared_radius()) > 0) return positional_relation::out;
-        if(compare<common_type>(lib::squared_distance(this->center(), p), this->squared_radius()) < 0) return positional_relation::in;
-        return positional_relation::on;
-    }
-
     std::pair<point_type,radius_type> _debug() const noexcept(NO_EXCEPT) { return std::make_pair(this->center(), this->radius()); }
 };
 
