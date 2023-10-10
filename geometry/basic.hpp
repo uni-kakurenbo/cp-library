@@ -77,7 +77,9 @@ inline constexpr positional_relation relation(const point<T>& p, const segment<p
     if(p == seg.p0() or p == seg.p1()) return positional_relation::on;
 
     T al, bl;
-    internal::relation(p, seg, &al, &bl);
+    if(internal::relation(p, seg, &al, &bl) == positional_relation::out) {
+        return positional_relation::out;
+    };
 
     const auto comp = compare(al, bl);
 
