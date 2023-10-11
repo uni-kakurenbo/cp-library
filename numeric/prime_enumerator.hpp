@@ -83,7 +83,7 @@ struct prime_enumerator {
     using small_bit_type = internal::prime_enumerator_impl::small_bit_type;
     using large_bit_type = internal::prime_enumerator_impl::large_bit_type;
 
-    mutable size_type _size = -1;
+    size_type _size;
 
     impl_type _sqrt_n = 0, _sqrt_ni = 0, _quart_n = 0;
 
@@ -195,15 +195,12 @@ struct prime_enumerator {
             this->_gen_core(seg, internal::prime_enumerator_impl::SEGMENT_SIZE);
             size -= internal::prime_enumerator_impl::SEGMENT_SIZE;
         }
+
+        this->_size = (this->n >= 2) + (this->n >= 3) + (this->n >= 5);
+        for(const large_bit_type f : this->_large) this->_size += popcount(f);
     }
 
-    inline size_type size() const noexcept(NO_EXCEPT) {
-        if(this->_size < 0) {
-            this->_size = (this->n >= 2) + (this->n >= 3) + (this->n >= 5);
-            for(const large_bit_type f : this->_large) this->_size += popcount(f);
-        }
-        return this->_size;
-    }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_size; }
 
     inline size_type count(const T x) const noexcept(NO_EXCEPT) {
         assert(0 <= x and x <= this->n);
@@ -251,8 +248,8 @@ struct prime_enumerator {
         assert(false);
     }
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this->n, &this->_large, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this->n, &this->_large, -1); }
+    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, -1); }
 
     inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
@@ -260,6 +257,7 @@ struct prime_enumerator {
     struct iterator : virtual iterator_interface {
       protected:
         value_type n = 0;
+        size_type _index = 0;
         const std::valarray<large_bit_type>* _flags = nullptr;
         size_type _block = -1, _flag_size;
         int _bit = 0;
@@ -279,15 +277,15 @@ struct prime_enumerator {
 
       public:
         iterator() noexcept = default;
-        iterator(const value_type n, const std::valarray<large_bit_type> *const flags, const int bit) noexcept(NO_EXCEPT)
-          : n(n), _flags(flags), _flag_size(static_cast<size_type>(flags->size())), _bit(bit) {
+        iterator(const prime_enumerator *const super, const int bit) noexcept(NO_EXCEPT)
+          : n(super->n), _flags(&super->_large), _flag_size(static_cast<size_type>(super->_large.size())), _bit(bit) {
             if(bit < 0) {
-                this->_block = static_cast<size_type>(flags->size()) - 1;
+                this->_index = super->size();
+                this->_block = static_cast<size_type>(super->_large.size()) - 1;
             }
         }
 
-        friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return *lhs == *rhs; };
-        friend inline bool operator!=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return *lhs != *rhs; };
+        inline size_type index() const noexcept(NO_EXCEPT) { return this->_index; }
 
         inline value_type operator*() const noexcept(NO_EXCEPT) {
             const value_type res = this->_value();
@@ -296,9 +294,10 @@ struct prime_enumerator {
 
         inline iterator& operator++() noexcept(NO_EXCEPT) {
             if(this->_value() > this->n) return *this;
+            ++this->_index;
 
             if(this->_block < 0) {
-                this->_bit++;
+                ++this->_bit;
                 if(this->_bit > 2) this->_block = 0, this->_bit = 1;
                 return *this;
             }
@@ -319,9 +318,10 @@ struct prime_enumerator {
 
         inline iterator& operator--() noexcept(NO_EXCEPT) {
             if(this->_block < 0) {
-                if(this->_bit > 0) this->_bit--;
+                if(this->_bit > 0) --this->_bit, --this->_index;
                 return *this;
             }
+            --this->_index;
 
             int prev = -1;
             while(true) {
@@ -330,7 +330,7 @@ struct prime_enumerator {
                     prev = highest_bit_pos(this->_flags->operator[](this->_block) & mask);
                 }
                 if(prev >= 0) break;
-                this->_block--;
+                --this->_block;
                 this->_bit = 64;
                 if(this->_block < 0) {
                     this->_bit = (this->n >= 3) + (this->n >= 5);
@@ -345,6 +345,12 @@ struct prime_enumerator {
 
         inline iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; ++(*this); return res; }
         inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --(*this); return res; }
+
+        friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index == rhs._index; }
+        friend inline bool operator!=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index != rhs._index; }
+        friend inline bool operator<(const iterator& lhs, const iterator& rhs) { return lhs._index < rhs._index; }
+        friend inline bool operator>(const iterator& lhs, const iterator& rhs) { return lhs._index > rhs._index; }
+        friend inline size_type operator-(const iterator& lhs, const iterator& rhs) { return rhs._index - lhs._index; }
     };
 
 
