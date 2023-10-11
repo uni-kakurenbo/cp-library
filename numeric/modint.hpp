@@ -10,6 +10,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "snippet/aliases.hpp"
+
 
 namespace lib {
 
@@ -17,8 +19,8 @@ namespace lib {
 using atcoder::dynamic_modint;
 using atcoder::modint;
 
-template<std::uint32_t> struct static_modint_32bit;
-template<std::uint32_t Mod> using static_modint = static_modint_32bit<Mod>;
+template<u32> struct static_modint_32bit;
+template<u32 Mod> using static_modint = static_modint_32bit<Mod>;
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
 
@@ -33,12 +35,7 @@ namespace lib {
 
 
 // Thanks to: https://hackmd.io/@tatyam-prime/rkVCOcwQn
-template<std::uint32_t Mod> struct static_modint_32bit : atcoder::internal::static_modint_base {
-  private:
-    using u32 = uint32_t;
-    using i32 = int32_t;
-    using i64 = int64_t;
-
+template<u32 Mod> struct static_modint_32bit : atcoder::internal::static_modint_base {
   protected:
     using mint = static_modint_32bit;
     u32 _v = 0;
@@ -149,10 +146,6 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
   private:
     using mint = dynamic_modint_64bit;
 
-    using i64 = std::int64_t;
-    using u64 = std::uint64_t;
-    using u128 = internal::uint128_t;
-
   protected:
     static u64 _mod;
     static u64 r;
@@ -242,9 +235,9 @@ template <int id> struct dynamic_modint_64bit : atcoder::internal::modint_base {
     }
 };
 
-template<int id> typename dynamic_modint_64bit<id>::u64 dynamic_modint_64bit<id>::_mod;
-template<int id> typename dynamic_modint_64bit<id>::u64 dynamic_modint_64bit<id>::r;
-template<int id> typename dynamic_modint_64bit<id>::u64 dynamic_modint_64bit<id>::n2;
+template<int id> u64 dynamic_modint_64bit<id>::_mod;
+template<int id> u64 dynamic_modint_64bit<id>::r;
+template<int id> u64 dynamic_modint_64bit<id>::n2;
 
 
 } // namespace lib

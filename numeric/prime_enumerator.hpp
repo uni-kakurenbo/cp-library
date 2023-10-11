@@ -64,6 +64,7 @@ inline static constexpr impl_type C0[8][8] = {
 
 } // namespace internal
 
+
 // Thanks to: https://qiita.com/peria/items/e0ab38f95d16a5f7cc58
 
 template<class T>
