@@ -27,8 +27,13 @@ signed main() {
 #include "numeric/binomial_coefficient.hpp"
 
 void solve() {
-    lib::binomial_coefficient<i32> binom(1'000'000'007);
+    int t; cin >> t;
+    i32 m; cin >> m;
 
-    i32 n, k; cin >> n >> k;
-    print(binom.comb(n + k - 1, k));
+    lib::binomial_coefficient<i32> binom(m, 10'000'000);
+
+    REP(t) {
+        i32 n, k; cin >> n >> k;
+        print(binom.comb(n, k));
+    }
 }

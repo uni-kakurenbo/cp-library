@@ -26,22 +26,8 @@ signed main() {
 
 #include "numeric/binomial_coefficient.hpp"
 
-using mint = lib::modint998244353;
-
 void solve() {
-    lib::binomial_coefficient_prime_power_mod<i64> binom(998244353);
-
-    i64 n, a, b; cin >> n >> a >> b;
-    i64 k; cin >> k;
-
-    mint ans = 0;
-
-    FOR(x, n) {
-        i64 by = k - a * x;
-        if(by % b != 0) continue;
-        i64 y = by / b;
-        if(0 <= y and y <= n) ans += MINT<1> * binom.comb(n, x) * binom.comb(n, y);
-    }
-
-    print(ans);
+    i32 n, k; cin >> n >> k;
+    lib::binomial_coefficient_prime_power_mod<i32,lib::modint1000000007> binom(n + k - 1);
+    print(binom.comb(n + k - 1, k));
 }

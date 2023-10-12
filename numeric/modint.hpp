@@ -16,6 +16,17 @@
 namespace lib {
 
 
+namespace internal {
+
+
+using atcoder::internal::is_modint;
+template<class T> constexpr bool is_modint_v = is_modint<T>::value;
+using atcoder::internal::is_modint_t;
+
+
+} // namespace internal
+
+
 using atcoder::dynamic_modint;
 using atcoder::modint;
 

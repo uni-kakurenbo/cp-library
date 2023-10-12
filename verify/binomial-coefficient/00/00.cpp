@@ -31,6 +31,7 @@ void solve() {
     i32 m; cin >> m;
 
     lib::binomial_coefficient<i64> binom(m);
+
     REP(t) {
         i64 n, k; cin >> n >> k;
         print(binom.comb(n, k));

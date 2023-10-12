@@ -12,6 +12,7 @@
 #include <random>
 
 #include "internal/dev_env.hpp"
+#include "internal/constants.hpp"
 
 #include "numeric/modint.hpp"
 #include "random/xorshift.hpp"
@@ -65,8 +66,8 @@ bool is_prime(const value_type n) noexcept(NO_EXCEPT) {
     if(~n & 1) return n == 2;
     if(n <= 1) return false;
 
-    if(n < (1UL << 31)) return internal::primality_test<modint>(n, { 2, 7, 61 });
-    else return internal::primality_test<modint64>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
+    if(n < (1UL << 31)) return internal::primality_test<dynamic_modint<lib::internal::INTERNAL_MODINT_ID_FOR_FAST_PRIME>>(n, { 2, 7, 61 });
+    else return internal::primality_test<dynamic_modint_64bit<lib::internal::INTERNAL_MODINT_ID_FOR_FAST_PRIME>>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
 }
 
 using int64_t = std::int64_t;
