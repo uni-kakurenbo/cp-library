@@ -23,6 +23,9 @@ using atcoder::internal::is_modint;
 template<class T> constexpr bool is_modint_v = is_modint<T>::value;
 using atcoder::internal::is_modint_t;
 
+template<class T> using is_static_modint = std::is_base_of<atcoder::internal::static_modint_base,T>;
+template<class T> constexpr bool is_static_modint_v = is_modint<T>::value;
+template<class T> using is_static_modint_t = std::enable_if_t<is_static_modint_v<T>>;
 
 } // namespace internal
 
