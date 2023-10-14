@@ -13,10 +13,6 @@
 #include "numeric/arithmetic.hpp"
 #include "view/internal/box.hpp"
 
-
-#if CPP20
-
-
 #include <concepts>
 #include <ranges>
 
@@ -262,6 +258,3 @@ constexpr auto drop_of_repeat_view(Range&& range, std::ranges::range_difference_
 } // namespace views
 
 } // namespace lib
-
-
-#endif

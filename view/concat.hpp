@@ -6,6 +6,7 @@
 #include <tuple>
 #include <type_traits>
 #include <functional>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -16,11 +17,6 @@
 #include "view/range.hpp"
 
 
-#if CPP20
-
-#include <ranges>
-
-#endif
 
 
 namespace lib {
@@ -59,15 +55,13 @@ struct concat_view_iterator : view_impl::iterator_base {
     using ref_val0_t = typename std::iterator_traits<iterator0_t>::reference;
     using ref_val1_t = typename std::iterator_traits<iterator1_t>::reference;
 
-    using ref_val_t = std::common_type_t<ref_val0_t,ref_val1_t>;
-
-    static constexpr bool IS_CONST = std::is_const_v<ref_val0_t> || std::is_const_v<ref_val1_t> || std::is_const_v<View>;
+    using ref_val_t = std::common_reference_t<ref_val0_t,ref_val1_t>;
 
   public:
     using difference_type = std::common_type_t<typename std::iterator_traits<iterator0_t>::difference_type, typename std::iterator_traits<iterator1_t>::difference_type>;
     using value_type = std::common_type_t<typename std::iterator_traits<iterator0_t>::value_type, typename std::iterator_traits<iterator1_t>::value_type>;
-    using pointer = std::conditional_t<IS_CONST, const ptr_val, ptr_val>;
-    using reference = std::conditional_t<IS_CONST, const ref_val_t, ref_val_t>&;
+    using pointer = ptr_val;
+    using reference = ref_val_t;
     using iterator_category = most_primitive_iterator_tag<typename std::iterator_traits<iterator0_t>::iterator_category, typename std::iterator_traits<iterator1_t>::iterator_category>;
 
   protected:
@@ -104,6 +98,7 @@ struct concat_view_iterator : view_impl::iterator_base {
     }
 
     inline reference operator*() noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
+    inline const reference operator*() const noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
 
     inline concat_view_iterator& operator+=(const difference_type count) noexcept(NO_EXCEPT) {
         if(count < 0) return *this -= (-count);
@@ -188,18 +183,11 @@ struct concat_view_iterator : view_impl::iterator_base {
 
 template<class V0, class V1>
 struct concat_view : view_impl::base {
-    static_assert(is_view_v<V0> and is_view_v<V1>);
-
     using size_type = std::common_type_t<container_size_t<V0>,container_size_t<V1>>;
 
   protected:
-#if CPP20
     using iterator0_t = std::ranges::iterator_t<V0>;
     using iterator1_t = std::ranges::iterator_t<V1>;
-#else
-    using iterator0_t = iterator_t<V0>;
-    using iterator1_t = iterator_t<V1>;
-#endif
 
     V0 _v0;
     V1 _v1;
@@ -210,27 +198,21 @@ struct concat_view : view_impl::base {
 
   public:
     using iterator = concat_view_iterator<concat_view>;
-    using const_iterator = concat_view_iterator<const concat_view>;
+    // using const_iterator = concat_view_iterator<const concat_view>;
 
     friend iterator;
-    friend const_iterator;
 
     friend typename iterator::difference_type operator-<concat_view>(const iterator&, const iterator&);
-    friend typename const_iterator::difference_type operator-<const concat_view>(const const_iterator&, const const_iterator&);
-
 
     using value_type = typename std::iterator_traits<iterator>::value_type;
 
-    explicit concat_view(const V0 v0, const V1 v1) noexcept(NO_EXCEPT)
+    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT)
       : _v0(std::move(v0)), _v1(std::move(v1)),
         _f0(std::begin(this->_v0)), _l0(std::end(this->_v0)), _f1(std::begin(this->_v1)), _l1(std::end(this->_v1))
     {};
 
     inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0, this->_f0); }
     inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, 1, this->_l1); }
-
-    inline const const_iterator begin() const noexcept(NO_EXCEPT) { return const_iterator(this, 0, this->_f0); }
-    inline const const_iterator end() const noexcept(NO_EXCEPT) { return const_iterator(this, 1, this->_l1); }
 
     inline size_type size() const noexcept(NO_EXCEPT) {
         if(this->_s0 < 0) this->_s0 = std::distance(this->_f0, this->_l0);
@@ -253,33 +235,33 @@ struct concat_view : view_impl::base {
 template<class...> struct concat_view;
 
 template<class V> struct concat_view<V> : range_view<V> {
-    explicit concat_view(const V v) noexcept(NO_EXCEPT) : range_view<V>(v) {}
+    explicit concat_view(V v) noexcept(NO_EXCEPT) : range_view<V>(v) {}
 };
 
 template<class V0, class V1> struct concat_view<V0,V1> : internal::view_impl::concat_view<V0,V1> {
-    explicit concat_view(const V0 v0, const V1 v1) noexcept(NO_EXCEPT) : internal::view_impl::concat_view<V0,V1>(v0, v1) {}
+    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT) : internal::view_impl::concat_view<V0,V1>(v0, v1) {}
 };
 
 template<class V0, class V1, class... Vs> struct concat_view<V0,V1,Vs...> : concat_view<concat_view<V0,V1>,Vs...> {
   public:
-    explicit concat_view(const V0 v0, const V1 v1, const Vs... cs) noexcept(NO_EXCEPT) : concat_view<concat_view<V0,V1>,Vs...>(concat_view<V0,V1>(v0, v1), cs...) {}
+    explicit concat_view(V0 v0, V1 v1, Vs... cs) noexcept(NO_EXCEPT) : concat_view<concat_view<V0,V1>,Vs...>(concat_view<V0,V1>(v0, v1), cs...) {}
 };
 
 template<class V>
-explicit concat_view(const V) -> concat_view<V>;
+explicit concat_view(V) -> concat_view<V>;
 
 template<class V0, class V1>
-explicit concat_view(const V0, const V1) -> concat_view<V0,V1>;
+explicit concat_view(V0, V1) -> concat_view<V0,V1>;
 
 template<class V0, class V1, class... Vs>
-explicit concat_view(const V0, const V1, const Vs...) -> concat_view<V0,V1,Vs...>;
+explicit concat_view(V0, V1, Vs...) -> concat_view<V0,V1,Vs...>;
 
 
 namespace views {
 
 
-template<class... Views>
-inline auto concat(Views&&... views) noexcept(NO_EXCEPT) { return concat_view(range(views)...); };
+template<class... Range>
+inline auto concat(Range&&... range) noexcept(NO_EXCEPT) { return concat_view(std::views::all(range)...); };
 
 
 } // namespace views
@@ -293,8 +275,10 @@ inline auto concat(Views&&... views) noexcept(NO_EXCEPT) { return concat_view(ra
 
 namespace std::ranges {
 
+
 template<class... Vs>
 inline constexpr bool enable_borrowed_range<lib::concat_view<Vs...>> = true;
+
 
 } // namespace std::ranges
 

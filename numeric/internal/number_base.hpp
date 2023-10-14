@@ -8,20 +8,14 @@
 #include <string>
 #include <cstring>
 #include <algorithm>
+#include <ranges>
+#include <concepts>
 
 #include "internal/types.hpp"
 #include "internal/dev_env.hpp"
 
 #include "adapter/string.hpp"
 #include "adapter/vector.hpp"
-
-
-#if CPP20
-
-#include <ranges>
-#include <concepts>
-
-#endif
 
 
 namespace lib {
@@ -91,15 +85,11 @@ T from_base_n_sequence(I begin, I end, const lib::internal::size_t b) noexcept(N
 }
 
 
-#if CPP20
-
 template<std::ranges::bidirectional_range R, class T = std::ranges::range_value_t<R>>
     requires std::ranges::common_range<R>
 T from_base_n_sequence(R range, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
     return from_base_n_sequence(std::ranges::begin(range), std::ranges::end(range), b);
 }
-
-#endif
 
 
 } // namespace lib

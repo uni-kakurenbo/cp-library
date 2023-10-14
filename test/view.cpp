@@ -9,6 +9,12 @@ signed main() {
 
     debug(lib::views::zip(lib::views::range(a)));
 
+    using itr = decltype(lib::views::concat(a, b, c))::iterator;
+    static_assert(std::is_same_v<
+        std::iter_rvalue_reference_t<itr>,
+        std::iter_rvalue_reference_t<const itr>
+    >);
+
     {
         debug(lib::views::zip(a));
         debug(lib::views::zip(a, b));
@@ -34,48 +40,18 @@ signed main() {
         debug(a, b, c);
     }
 
-    std::vector<int> vec1d = { 1, 42, 2, 8, 2, 23, 112, 0, 4 };
-    debug(vec1d);
+    // {
+    //     lib::cyclic_view cyc_view_vec1d(vec1d);
+    //     debug(cyc_view_vec1d);
 
-    {
-        lib::view view_vec1d(&vec1d);
-        debug(view_vec1d);
+    //     cyc_view_vec1d.drop(50).take(vec1d.size());
+    //     cyc_view_vec1d[1] = 5;
+    //     debug(cyc_view_vec1d);
 
-        view_vec1d.drop(0).take(3);
-        debug(view_vec1d);
-
-        view_vec1d[1] = 12;
-        debug(view_vec1d);
-        debug(vec1d);
-
-        view_vec1d.drop(2);
-        debug(view_vec1d);
-
-        view_vec1d.take(5);
-        debug(view_vec1d);
-
-        view_vec1d.drop(3).take(5);
-        debug(view_vec1d);
-
-        view_vec1d.transpose([&](const int i) { return view_vec1d.size() - i - 1; });
-        debug(view_vec1d);
-    }
-
-    {
-        lib::cyclic_view cyc_view_vec1d(&vec1d);
-        debug(cyc_view_vec1d.take());
-
-        cyc_view_vec1d.drop(50).take();
-        cyc_view_vec1d[1] = 5;
-        debug(cyc_view_vec1d);
-
-        cyc_view_vec1d.drop(2).take(4);
-        cyc_view_vec1d[120] = 9;
-        debug(cyc_view_vec1d);
-
-        cyc_view_vec1d.transpose([&](const int i) { return cyc_view_vec1d.size() - i - 1; });
-        debug(cyc_view_vec1d);
-    }
+    //     cyc_view_vec1d.drop(2).take(4);
+    //     cyc_view_vec1d[120] = 9;
+    //     debug(cyc_view_vec1d);
+    // }
 
 
     std::vector<std::vector<int>> vec2d = {
@@ -86,27 +62,27 @@ signed main() {
     };
     debug(vec2d);
 
-    {
-        lib::multi_view<decltype(vec2d),2> view_vec2d(&vec2d);
+    // {
+    //     lib::multi_view<decltype(vec2d),2> view_vec2d(&vec2d);
 
-        debug(view_vec2d[{0, 0}]);
-        view_vec2d[{0, 0}]++;
+    //     debug(view_vec2d[{0, 0}]);
+    //     view_vec2d[{0, 0}]++;
 
-        view_vec2d.drop({ 2, 2 });
-        view_vec2d(0, 0) *= 5;
-        debug(vec2d);
+    //     view_vec2d.drop({ 2, 2 });
+    //     view_vec2d(0, 0) *= 5;
+    //     debug(vec2d);
 
-        view_vec2d.drop();
+    //     view_vec2d.drop();
 
-        view_vec2d.transpose(
-            [&](std::initializer_list<int> pos) -> std::vector<int> {
-                return {  4 - pos.begin()[0] - 1, 9 - pos.begin()[1] - 1 };
-            }
-        );
+    //     view_vec2d.transpose(
+    //         [&](std::initializer_list<int> pos) -> std::vector<int> {
+    //             return {  4 - pos.begin()[0] - 1, 9 - pos.begin()[1] - 1 };
+    //         }
+    //     );
 
-        REP(i, vec2d.size()) REP(j, vec2d[0].size()) {
-            debug(view_vec2d(i, j));
-        }
+    //     REP(i, vec2d.size()) REP(j, vec2d[0].size()) {
+    //         debug(view_vec2d(i, j));
+    //     }
 
-    }
+    // }
 }

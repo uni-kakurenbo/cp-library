@@ -166,15 +166,16 @@ template<bool Const, class T>
 using maybe_const_t = std::conditional_t<Const, const T, T>;
 
 
-#if CPP20
-
 template<class T> using with_ref = T&;
 template<class T> concept can_reference = requires { typename with_ref<T>; };
 
-#endif
+template<class T> concept arithmetic = std::is_arithmetic_v<T>;
+template<class T> concept pointer = std::is_pointer_v<T>;
+
 
 } // namespace internal
 
 }  // namespace lib
+
 
 #endif //ifndef $TYPE_TRAITS

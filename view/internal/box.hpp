@@ -1,16 +1,8 @@
 #pragma once
 
-
-#include "internal/dev_env.hpp"
-
-
 #include <optional>
 #include <memory>
 #include <type_traits>
-
-
-#if CPP20
-
 
 #include <ranges>
 #include <concepts>
@@ -153,5 +145,3 @@ struct box<T> {
 }  // namespace internal
 
 } // namespace lib
-
-#endif

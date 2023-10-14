@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <iterator>
 #include <variant>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 
@@ -12,13 +13,6 @@
 #include "internal/type_traits.hpp"
 
 #include "numeric/arithmetic.hpp"
-
-
-#if CPP20
-
-#include <ranges>
-
-#endif
 
 
 namespace lib {

@@ -15,8 +15,6 @@
 #include "numeric/arithmetic.hpp"
 
 
-#if CPP20
-
 namespace lib {
 
 
@@ -350,6 +348,3 @@ inline constexpr bool enable_borrowed_range<lib::stride_view<View>> = enable_bor
 
 
 } // namespace std::ranges
-
-
-#endif

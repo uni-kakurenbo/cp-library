@@ -5,15 +5,10 @@
 #include <cstdint>
 #include <vector>
 #include <valarray>
-
-#include "internal/dev_env.hpp"
-
-#if CPP20
-
 #include <ranges>
 
-#endif
 
+#include "internal/dev_env.hpp"
 
 #include "snippet/iterations.hpp"
 
@@ -31,6 +26,7 @@ namespace lib {
 namespace internal {
 
 namespace prime_enumerator_impl {
+
 
 using impl_type = std::uint32_t;
 using small_bit_type = std::uint8_t;
@@ -68,12 +64,7 @@ inline static constexpr impl_type C0[8][8] = {
 // Thanks to: https://qiita.com/peria/items/e0ab38f95d16a5f7cc58
 
 template<class T>
-#if CPP20
 struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
-#else
-struct prime_enumerator {
-#endif
-
     using value_type = T;
     using size_type = internal::size_t;
     using impl_type = internal::prime_enumerator_impl::impl_type;
@@ -353,23 +344,11 @@ struct prime_enumerator {
         friend inline bool operator>(const iterator& lhs, const iterator& rhs) { return lhs._index > rhs._index; }
         friend inline size_type operator-(const iterator& lhs, const iterator& rhs) { return rhs._index - lhs._index; }
     };
-
-
-#if CPP20
-
 };
-
-#else
-
-};
-
-#endif
 
 
 } // namespace lib
 
-
-#if CPP20
 
 namespace std::ranges {
 
@@ -377,5 +356,3 @@ template<class T>
 inline constexpr bool enable_borrowed_range<lib::prime_enumerator<T>> = true;
 
 } // namespace std::ranges
-
-#endif

@@ -12,13 +12,8 @@
 
 #include "adapter/valarray.hpp"
 
-
-#if CPP20
-
 #include <concepts>
 #include <ranges>
-
-#endif
 
 
 namespace lib {
@@ -49,17 +44,11 @@ struct leveler {
     }
 
 
-#if CPP20
     template<std::ranges::forward_range R>
     leveler(R range) noexcept(NO_EXCEPT) : leveler(std::ranges::begin(range), std::ranges::end(range)) {}
-#endif
 
 
-#if CPP20
     template<std::integral... Values>
-#else
-    template<class... Values>
-#endif
     leveler(const Values... bases) noexcept(NO_EXCEPT) : leveler(std::initializer_list<value_type>{ bases... }) {}
 
     inline size_type dimension() const noexcept(NO_EXCEPT) { return this->_dim; }
@@ -87,12 +76,10 @@ struct leveler {
         return this->convert(std::begin(inds), std::end(inds));
     }
 
-#if CPP20
     template<std::ranges::forward_range R>
     inline value_type convert(R range) const noexcept(NO_EXCEPT) {
         return this->convert(std::ranges::begin(range), std::ranges::end(range));
     }
-#endif
 
     template<std::integral... Values>
     inline value_type convert(const Values... inds) const noexcept(NO_EXCEPT) {

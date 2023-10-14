@@ -12,6 +12,9 @@
 #include <iterator>
 #include <numeric>
 #include <limits>
+#include <ranges>
+#include <concepts>
+
 
 #include "snippet/iterations.hpp"
 #include "snippet/aliases.hpp"
@@ -29,15 +32,7 @@
 #include "view/range.hpp"
 #include "view/concat.hpp"
 
-
-#if CPP20
-
-#include <ranges>
-#include <concepts>
-
 #include "internal/ranges.hpp"
-
-#endif
 
 
 namespace lib {
@@ -144,9 +139,6 @@ inline constexpr auto max(I first, I last) noexcept(NO_EXCEPT) {
 }
 
 
-#if CPP20
-
-
 template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
 auto min(const R& range) noexcept(NO_EXCEPT) {
     return std::valarray(ALL(range)).min();
@@ -171,10 +163,6 @@ template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
 auto lcm(const R& range) noexcept(NO_EXCEPT) {
     return lcm(ALL(range));
 }
-
-
-#endif
-
 
 template<class R, class I, class D>
 auto split(const I first, const I last, const D& delim = ' ') noexcept(NO_EXCEPT) {
@@ -270,10 +258,6 @@ auto replace(const V& source, const V& from, const V& to) noexcept(NO_EXCEPT) {
     return res;
 }
 
-
-#if CPP20
-
-
 template<alignment ALIGNMENT, internal::resizable_range R, class T = std::ranges::range_value_t<R>>
 auto align(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     if(std::ssize(source) >= size) return source;
@@ -318,7 +302,5 @@ auto rjust(const R& source, const internal::size_t size, const T& v = {}) noexce
     return align<alignment::right>(source, size, v);
 }
 
-
-#endif
 
 } // namespace lib

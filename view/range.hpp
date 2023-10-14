@@ -65,21 +65,18 @@ template<class Itr> struct _range_view<Itr,false,false> : internal::view_impl::r
     static_assert(internal::is_iterator_v<Itr>);
 };
 
-#if CPP20
 
-template<class Range> struct _range_view<Range,true,false> : _range_view<std::ranges::iterator_t<Range>,false,false> {
+template<std::ranges::range Range> struct _range_view<Range,true,false> : _range_view<std::ranges::iterator_t<Range>,false,false> {
   protected:
     using base = _range_view<std::ranges::iterator_t<Range>,false,false>;
-    static_assert(internal::is_iterable_v<Range>);
 
   public:
     explicit _range_view(Range& view) : base(std::begin(view), std::end(view)) {}
 };
 
-template<class Range> struct _range_view<Range,true,true> : _range_view<std::ranges::iterator_t<Range>,false,false> {
+template<std::ranges::range Range> struct _range_view<Range,true,true> : _range_view<std::ranges::iterator_t<Range>,false,false> {
   protected:
     using base = _range_view<std::ranges::iterator_t<Range>,false,false>;
-    static_assert(internal::is_iterable_v<Range>);
 
   public:
     Range _base;
@@ -90,32 +87,6 @@ template<class Range> struct _range_view<Range,true,true> : _range_view<std::ran
     }
 };
 
-#else
-
-template<class Range> struct _range_view<Range,true,false> : _range_view<iterator_t<Range>,false,false> {
-  protected:
-    using base = _range_view<iterator_t<Range>,false,false>;
-    static_assert(internal::is_iterable_v<Range>);
-
-  public:
-    explicit _range_view(Range& view) : base(std::begin(view), std::end(view)) {}
-};
-
-template<class Range> struct _range_view<Range,true,true> : _range_view<iterator_t<Range>,false,false> {
-  protected:
-    using base = _range_view<iterator_t<Range>,false,false>;
-    static_assert(internal::is_iterable_v<Range>);
-
-  public:
-    Range _base;
-    explicit _range_view(const Range view) : _base(view) {
-        // debug(_base);
-        this->base::_first = std::begin(this->_base);
-        this->base::_last = std::end(this->_base);
-    }
-};
-
-#endif
 
 } // namespace internal
 

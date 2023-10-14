@@ -11,6 +11,9 @@
 #include <algorithm>
 #include <random>
 
+
+#include "snippet/internal/types.hpp"
+
 #include "internal/dev_env.hpp"
 #include "internal/constants.hpp"
 
@@ -18,6 +21,7 @@
 #include "random/xorshift.hpp"
 
 #include "adapter/set.hpp"
+#include "adapter/map.hpp"
 #include "adapter/vector.hpp"
 
 
@@ -28,28 +32,24 @@ namespace internal {
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
 namespace fast_factorize_impl {
 
-
-using value_type = uint64_t;
-
-
 namespace internal {
 
 
 // Miller-Rabin primality test
-template<typename mint> bool primality_test(const value_type n, const std::initializer_list<value_type> as) noexcept(NO_EXCEPT) {
+template<typename mint> bool primality_test(const u64 n, const std::initializer_list<u64> as) noexcept(NO_EXCEPT) {
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
-    if(static_cast<value_type>(mint::mod()) != n) mint::set_mod(n);
+    if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
   #pragma GCC diagnostic pop
 
-    value_type d = n-1;
+    u64 d = n-1;
 
     while(~d & 1) d >>= 1;
 
     mint e(1), rev(n - 1);
-    for(value_type a : as) {
+    for(u64 a : as) {
         if(n <= a) break;
-        value_type t = d;
+        u64 t = d;
         mint y = mint(a).pow(t);
         while(t != n - 1 && y != e && y != rev) y *= y, t *= 2;
         if(y != rev && t % 2 == 0) return false;
@@ -58,11 +58,7 @@ template<typename mint> bool primality_test(const value_type n, const std::initi
     return true;
 }
 
-
-} // namespace internal
-
-
-bool is_prime(const value_type n) noexcept(NO_EXCEPT) {
+bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
     if(~n & 1) return n == 2;
     if(n <= 1) return false;
 
@@ -70,17 +66,13 @@ bool is_prime(const value_type n) noexcept(NO_EXCEPT) {
     else return internal::primality_test<dynamic_modint_64bit<lib::internal::INTERNAL_MODINT_ID_FOR_FAST_PRIME>>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
 }
 
-using int64_t = std::int64_t;
-
-namespace internal {
-
 
 // Pollard's rho algorithm
-template <typename mint, typename T> T find_factor(const T n) noexcept(NO_EXCEPT) {
+template<class mint, class T> T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
     if(is_prime(n)) return n;
 
-    if(static_cast<value_type>(mint::mod()) != n) mint::set_mod(n);
+    if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
 
     mint R, one = 1;
 
@@ -120,14 +112,14 @@ template <typename mint, typename T> T find_factor(const T n) noexcept(NO_EXCEPT
 }
 
 
-vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
+vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
-    value_type p;
-    if(n <= (1UL << 31)) p = find_factor<modint>(static_cast<std::uint32_t>(n));
-    else p = find_factor<modint64,std::uint64_t>(n);
+    u64 p;
+    if(n <= (1UL << 31)) p = find_factor<modint>(static_cast<u32>(n));
+    else p = find_factor<modint64,u64>(n);
 
-    if(p == n) return { int64_t(p) };
+    if(p == n) return { static_cast<i64>(p) };
 
     auto l = internal::factorize(p);
     auto r = internal::factorize(n / p);
@@ -141,28 +133,32 @@ vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
 } // namespace internal
 
 
-vector<int64_t> factorize(const value_type n) noexcept(NO_EXCEPT) {
+inline i64 is_prime(const i64 n) noexcept(NO_EXCEPT) {
+    return internal::is_prime(static_cast<u64>(n));
+}
+
+inline vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
     auto res = internal::factorize(n);
     std::sort(std::begin(res), std::end(res));
     return res;
 }
 
-set<int64_t> prime_factors(const value_type n) noexcept(NO_EXCEPT) {
+inline set<i64> prime_factors(const u64 n) noexcept(NO_EXCEPT) {
     auto factors = factorize(n);
-    set<int64_t> res(std::begin(factors), std::end(factors));
+    set<i64> res(std::begin(factors), std::end(factors));
     return res;
 }
 
-std::map<int64_t,int64_t> count_factors(const value_type n) noexcept(NO_EXCEPT) {
-    std::map<int64_t,int64_t> mp;
+inline map<i64,i64> count_factors(const u64 n) noexcept(NO_EXCEPT) {
+    map<i64,i64> mp;
     for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }
 
-vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
+inline vector<i64> divisors(const u64 n) noexcept(NO_EXCEPT) {
     if(n == 0) return {};
 
-    std::vector<std::pair<int64_t, int64_t>> v;
+    std::vector<std::pair<i64, i64>> v;
     for(auto &p : factorize(n)) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
@@ -171,8 +167,8 @@ vector<int64_t> divisors(const value_type n) noexcept(NO_EXCEPT) {
         }
     }
 
-    vector<int64_t> res;
-    auto f = [&](auto rc, int i, int64_t x) noexcept(NO_EXCEPT) -> void {
+    vector<i64> res;
+    auto f = [&](auto rc, int i, i64 x) noexcept(NO_EXCEPT) -> void {
         if(i == static_cast<int>(v.size())) {
             res.push_back(x);
             return;

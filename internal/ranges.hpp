@@ -3,9 +3,6 @@
 #include "internal/dev_env.hpp"
 
 
-#if CPP20
-
-
 #include <ranges>
 #include <concepts>
 #include <tuple>
@@ -119,8 +116,8 @@ struct range_adapter_closure {
 
     template<class Lhs, typename Rhs>
         requires std::derived_from<Lhs, range_adapter_closure> && std::derived_from<Rhs, range_adapter_closure>
-    friend inline constexpr auto operator|(Lhs __lhs, Rhs __rhs) noexcept(NO_EXCEPT) {
-        return pipe<Lhs, Rhs>{ std::move(__lhs), std::move(__rhs) };
+    friend inline constexpr auto operator|(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) {
+        return pipe<Lhs, Rhs>{ std::move(lhs), std::move(rhs) };
     }
 };
 
@@ -236,7 +233,7 @@ template<class Lhs, typename Rhs> struct pipe : range_adapter_closure {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
-    constexpr pipe(Lhs __lhs, Rhs __rhs) noexcept(NO_EXCEPT) : lhs(std::move(__lhs)), rhs(std::move(__rhs)) {}
+    constexpr pipe(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
@@ -260,7 +257,7 @@ struct pipe<Lhs, Rhs> : range_adapter_closure {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
-    constexpr pipe(Lhs __lhs, Rhs __rhs) noexcept(NO_EXCEPT) : lhs(std::move(__lhs)), rhs(std::move(__rhs)) {}
+    constexpr pipe(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
@@ -276,6 +273,3 @@ struct pipe<Lhs, Rhs> : range_adapter_closure {
 
 
 } // namespace lib
-
-
-#endif

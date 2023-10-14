@@ -7,16 +7,11 @@
 #include <vector>
 #include <iterator>
 #include <variant>
+#include <ranges>
+
 
 #include "internal/dev_env.hpp"
 #include "internal/resolving_rank.hpp"
-
-
-#if CPP20
-
-#include <ranges>
-
-#endif
 
 
 namespace lib {
@@ -36,19 +31,11 @@ struct output_adapter {
         return 0;
     }
 
-#if CPP20
     template<std::ranges::range T>
     int _put(lib::internal::resolving_rank<3>, T&& val) noexcept(NO_EXCEPT) {
         (*this)(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), false);
         return 0;
     }
-#else
-    template<class T>
-    auto _put(lib::internal::resolving_rank<3>, T&& val) noexcept(NO_EXCEPT)-> decltype(std::begin(val), std::end(val), 0) {
-        (*this)(std::begin(val), std::end(std::forward<T>(val)), false);
-        return 0;
-    }
-#endif
 
     template<class T>
     auto _put(lib::internal::resolving_rank<2>, T&& val) noexcept(NO_EXCEPT) -> decltype(val.first, val.second, 0) {
@@ -62,13 +49,11 @@ struct output_adapter {
         return 0;
     }
 
-#if CPP20
     template<std::input_or_output_iterator T>
     int _put(lib::internal::resolving_rank<0>, T&& val) noexcept(NO_EXCEPT) {
         (*this)(*std::forward<T>(val));
         return 0;
     }
-#endif
 
   protected:
     template<class T>
@@ -129,13 +114,8 @@ struct output_adapter {
         return *this;
     }
 
-#if CPP20
     template<std::forward_iterator I, std::sentinel_for<I> S>
     inline auto& operator()(I first, S last, const bool terminate = true) noexcept(NO_EXCEPT) {
-#else
-    template<class I, class = typename std::iterator_traits<I>::iterator_category>
-    inline void operator()(I first, I last, const bool terminate = true) noexcept(NO_EXCEPT) {
-#endif
         for(I itr=first; itr!=last;) {
             *this << *itr;
             if(++itr == last) {
@@ -145,11 +125,7 @@ struct output_adapter {
         }
 
         return *this;
-#if CPP20
     }
-#else
-    }
-#endif
 
     template<class T> inline auto& operator()(const std::initializer_list<T> vals) noexcept(NO_EXCEPT) {
         std::vector wrapped(vals.begin(), vals.end());

@@ -6,17 +6,8 @@
 #include <vector>
 #include <functional>
 #include <numeric>
-
-
-#include "internal/dev_env.hpp"
-
-
-#if CPP20
-
 #include <ranges>
 #include <concepts>
-
-#endif
 
 
 #include "internal/types.hpp"
@@ -40,7 +31,6 @@ struct accumulation : container {
   public:
     accumulation() noexcept(NO_EXCEPT) {}
 
-#if CPP20
     template<std::ranges::input_range R, class Operator = std::plus<T>>
         requires std::regular_invocable<Operator, T, T>
     accumulation(const R& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
@@ -49,7 +39,6 @@ struct accumulation : container {
         const auto back = std::prev(std::end(*this));
         *back = op(*std::prev(back), *std::prev(std::ranges::end(range)));
     }
-#endif
 
     template<class I, class Operator = std::plus<T>>
     accumulation(I first, I last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
@@ -59,12 +48,8 @@ struct accumulation : container {
         *back = op(*std::prev(back), *std::prev(last));
     }
 
-#if CPP20
     template<class Operator = std::minus<T>>
         requires std::regular_invocable<Operator, T, T>
-#else
-    template<class Operator = std::minus<T>>
-#endif
     inline T operator()(size_type left, size_type right, Operator&& op = std::minus<T>{}) const noexcept(NO_EXCEPT) {
         left = _positivize_index(left), right = _positivize_index(right);
         assert(0 <= left and left <= right and right < (size_type)std::size(*this));
@@ -75,12 +60,8 @@ struct accumulation : container {
 template<class I>
 explicit accumulation(const I, const I) -> accumulation<typename std::iterator_traits<I>::value_type>;
 
-#if CPP20
-
 template<std::ranges::input_range R>
 explicit accumulation(const R&) -> accumulation<typename std::ranges::range_value_t<R>>;
-
-#endif
 
 
 template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>
@@ -131,23 +112,17 @@ struct accumulation_2d : container {
     }
 };
 
-#if CPP20
-
 template<class I>
 explicit accumulation_2d(const I, const I) ->
     accumulation_2d<
         typename std::iterator_traits<typename std::ranges::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;
 
-#else
-
 template<class I>
 explicit accumulation_2d(const I, const I) ->
     accumulation_2d<
         typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;
-
-#endif
 
 
 } // namespace lib

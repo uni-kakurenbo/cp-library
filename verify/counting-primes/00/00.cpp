@@ -23,9 +23,9 @@ signed main() {
     return 0;
 }
 
-#include "numeric/prime_enumerator.hpp"
+#include "numeric/prime_counter.hpp"
 
 void solve() {
-    long n; cin >> n;
-    print(lib::prime_enumerator(n).size());
+    i64 n; cin >> n;
+    print(lib::count_primes(n));
 }

@@ -4,6 +4,9 @@
 #include <cassert>
 #include <functional>
 #include <limits>
+#include <ranges>
+#include <type_traits>
+
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -72,9 +75,22 @@ struct cyclic_view : internal::view_impl::base {
         inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
+    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+
+    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
 
 } // namespace lib
+
+
+namespace std::ranges {
+
+
+template<class Ref>
+inline constexpr bool enable_borrowed_range<lib::cyclic_view<Ref>> = true;
+
+
+} // namespace std::ranges

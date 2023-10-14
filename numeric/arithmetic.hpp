@@ -9,6 +9,8 @@
 #include <optional>
 #include <algorithm>
 #include <atcoder/math.hpp>
+#include <concepts>
+
 
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
@@ -140,21 +142,21 @@ inline constexpr std::common_type_t<Args...> lcm(const Args&... args) noexcept(N
 }
 
 
-template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
+template<std::integral T, std::integral U>
 inline constexpr std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_add_overflow(a, b, &res)) return {};
     else return res;
 }
 
-template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
+template<std::integral T, std::integral U>
 inline constexpr std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_sub_overflow(a, b, &res)) return {};
     else return res;
 }
 
-template<class T, class U, std::enable_if_t<(std::is_integral_v<T> and std::is_integral_v<U>)>* = nullptr>
+template<std::integral T, std::integral U>
 inline constexpr std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
     std::common_type_t<T,U> res;
     if(__builtin_mul_overflow(a, b, &res)) return {};
@@ -196,22 +198,30 @@ inline bool mul_or_under(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
 
 template<class T>
 inline constexpr T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
-    T ok = 0, ng = x / 2 + 2;
-    while(ng - ok > 1) {
-        T mid = (ok + ng) / 2;
-        (x / mid < mid ? ng : ok) = mid;
+    T res = static_cast<T>(std::sqrt(x));
+
+    if constexpr(std::is_floating_point_v<T>) {
+        while((res + 1) * (res + 1) <= x) res += 1;
     }
-    return ok;
+    else {
+        while(mul_overflow(res + 1, res + 1).value_or(std::numeric_limits<T>::max()) <= x) ++res;
+    }
+
+    return res;
 }
 
 template<class T>
 inline constexpr T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
-    T ok = 0, ng = x / 2 + 2;
-    while(ng - ok > 1) {
-        T mid = (ok + ng) / 2;
-        (mul_over(mid-1, mid-1, x-1) ? ng : ok) = mid;
+    T res = static_cast<T>(std::sqrt(x));
+
+    if constexpr(std::is_floating_point_v<T>) {
+        while(res * res < x) res += 1;
     }
-    return ok;
+    else {
+        while(mul_overflow(res, res).value_or(std::numeric_limits<T>::max()) < x) ++res;
+    }
+
+    return res;
 }
 
 

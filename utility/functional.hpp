@@ -84,10 +84,6 @@ inline constexpr bool in_range(const T0& x, const T1& l, const T2& r) noexcept(N
     return l <= x and x <= r;
 }
 
-
-#if CPP20
-
-
 template<class F, class Tuple>
 constexpr void tuple_for_each(F&& f, Tuple&& tuple) {
     std::apply(
@@ -111,34 +107,5 @@ constexpr auto tuple_transform(F&& f, Tuple&& tuple) {
     );
 }
 
-
-#else
-
-
-template<class F, class Tuple>
-constexpr void tuple_for_each(F&& f, Tuple&& tuple) {
-    std::apply(
-        [&](auto&&... elems) {
-            (std::invoke(f, std::forward<std::remove_reference_t<decltype(elems)>>(elems)), ...);
-        },
-        std::forward<Tuple>(tuple)
-    );
-}
-
-
-template<class F, class Tuple>
-constexpr auto tuple_transform(F&& f, Tuple&& tuple) {
-    return std::apply(
-        [&](auto&&... elems) {
-            return internal::tuple_or_pair_t<std::invoke_result_t<F&,decltype(elems)>...>(
-                std::invoke(f, std::forward<std::remove_reference_t<decltype(elems)>>(elems))...
-            );
-        },
-        std::forward<Tuple>(tuple)
-    );
-}
-
-
-#endif
 
 } // namespace lib
