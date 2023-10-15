@@ -40,7 +40,7 @@ struct extended_sequence : Base {
     }
 
     template<class F>
-    inline auto& sort(const F&& f) noexcept(NO_EXCEPT) {
+    inline auto& sort(const F& f) noexcept(NO_EXCEPT) {
         std::sort(std::begin(*this), std::end(*this), f);
         return *this;
     }
@@ -51,7 +51,7 @@ struct extended_sequence : Base {
     }
 
     template<class F>
-    inline auto& stable_sort(const F&& f) noexcept(NO_EXCEPT) {
+    inline auto& stable_sort(const F& f) noexcept(NO_EXCEPT) {
         std::stable_sort(std::begin(*this), std::end(*this), f);
         return *this;
     }
@@ -66,7 +66,7 @@ struct extended_sequence : Base {
     }
 
     template<class F>
-    inline auto count_if(F&& f) const noexcept(NO_EXCEPT) {
+    inline auto count_if(F& f) const noexcept(NO_EXCEPT) {
         return std::count_if(std::begin(*this), std::end(*this), f);
     }
 

@@ -64,7 +64,6 @@ lib::vector<T> to_base_n_vector(T v, const lib::internal::size_t b) noexcept(NO_
         res.push_back(v%b);
         v /= b;
     }
-    std::reverse(ALL(res));
 
     return res;
 }
@@ -76,7 +75,7 @@ T from_base_n_sequence(I begin, I end, const lib::internal::size_t b) noexcept(N
     if(begin == end) return 0;
 
     T res = 0;
-    for(auto itr=begin; itr!=end; ++itr) {
+    for(auto itr=end; itr-- != begin; ) {
         res *= b;
         res += *itr;
     }

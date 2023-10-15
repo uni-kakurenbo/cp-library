@@ -110,7 +110,7 @@ template<class T> inline constexpr T mapping(const T x, const T from_min, const 
 }
 
 template<class... Args>
-std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
+inline constexpr std::common_type_t<Args...> min(const Args&... args) noexcept(NO_EXCEPT) {
     return std::min({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
