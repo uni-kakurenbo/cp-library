@@ -14,9 +14,6 @@
 #include "internal/exception.hpp"
 #include "internal/dev_env.hpp"
 
-#include "view/range.hpp"
-#include "view/cyclic.hpp"
-
 #include "utility/functional.hpp"
 
 #include "numeric/float.hpp"
@@ -198,14 +195,12 @@ template<class T>
 inline constexpr positional_relation relation(const point<T>& p, const point<T>& q) noexcept(NO_EXCEPT) { return relation<T>({ 0, 0 }, p, q); }
 
 
-template<bool ALLOW_LINE, class I>
-inline bool is_convex(const I first, const I last) noexcept(NO_EXCEPT) {
-    const range_view u(first, last);
-    const cyclic_view v(u);
-    internal::size_t n = u.size();
+template<bool ALLOW_LINE, std::ranges::range R>
+inline bool is_convex(const R range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::size(range);
 
     REP(i, n) {
-        const positional_relation r = relation(v[i], v[i+1], v[i+2]);
+        const positional_relation r = relation(range[i], range[lib::mod(i+1,n)], range[lib::mod(i+2,n)]);
 
         if constexpr(ALLOW_LINE) {
             if(r == positional_relation::clockwise) return false;

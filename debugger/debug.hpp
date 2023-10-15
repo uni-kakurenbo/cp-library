@@ -57,6 +57,8 @@ std::string lit(T&&, const Brackets& = { "{", "}" }, const std::string& = ", ");
 
 
 template<std::forward_iterator I, std::sentinel_for<I> S>
+// template<class I, class S>
+    requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
 std::string lit(I, S, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
 template<class... Ts> std::string lit(const std::pair<Ts...>&);
@@ -191,8 +193,8 @@ template<size_t N, class T> void iterate_tuple([[maybe_unused]] const T& val, st
 
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<std::remove_reference_t<T>> && !lib::internal::is_template<std::map,std::remove_reference_t<T>>::value && !std::is_base_of_v<std::string,std::remove_reference_t<T>>>*>
 std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
-    return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
-    // return lit(lib::internal::iterator_resolver<T>::begin(val), lib::internal::iterator_resolver<T>::end(val), brcs, sep);
+    // return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
+    return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,std::remove_reference_t<T>>::value>*>
@@ -228,6 +230,8 @@ std::string lit(I itr) {
 }
 
 template<std::forward_iterator I, std::sentinel_for<I> S>
+// template<class I, class S>
+    requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
 std::string lit(I first, S last, const Brackets& brcs, const std::string& spl) {
     std::stringstream res;
     res << brcs.first << " ";

@@ -18,7 +18,7 @@ struct base {
   public:
     base(const value_type& value = {}) noexcept(NO_EXCEPT) : _value(value) {};
 
-    inline operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
+    inline explicit operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
     inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; };
 
     inline const value_type* operator->() const noexcept(NO_EXCEPT) { return &this->_value; };

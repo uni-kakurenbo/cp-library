@@ -444,16 +444,17 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
     inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
     inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
 
+    struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<T,wavelet_matrix>;
+    using iterator_interface = internal::container_iterator_interface<T,wavelet_matrix,iterator>;
 
   public:
-    struct iterator : virtual iterator_interface {
+    struct iterator : iterator_interface {
+        iterator() noexcept = default;
         iterator(const wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
         inline T operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
-        inline T operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
@@ -592,12 +593,14 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
     inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
     inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
 
+    struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<T,compressed_wavelet_matrix>;
+    using iterator_interface = internal::container_iterator_interface<T,compressed_wavelet_matrix,iterator>;
 
   public:
-    struct iterator : virtual iterator_interface {
+    struct iterator : iterator_interface {
+        iterator() noexcept = default;
         iterator(const compressed_wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
         inline T operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }

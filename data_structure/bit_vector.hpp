@@ -98,14 +98,15 @@ struct bit_vector {
     inline size_type select0(const size_type k) const noexcept(NO_EXCEPT) { return this->select(0, k); }
     inline size_type select1(const size_type k) const noexcept(NO_EXCEPT) { return this->select(1, k); }
 
+    struct iterator;
 
-    struct iterator : virtual internal::container_iterator_interface<bool,bit_vector> {
-        using internal::container_iterator_interface<bool,bit_vector>::difference_type;
+  private:
+    using iterator_interface = internal::container_iterator_interface<bool,bit_vector,iterator>;
 
-        iterator(const bit_vector *const ref, const size_type pos)
-            noexcept(NO_EXCEPT) : internal::container_iterator_interface<bool,bit_vector>(ref, static_cast<difference_type>(pos)) {
-
-            }
+  public:
+    struct iterator : iterator_interface {
+        iterator() noexcept = default;
+        iterator(const bit_vector *const ref, const size_type pos) noexcept(NO_EXCEPT) : bit_vector::iterator_interface(ref, static_cast<difference_type>(pos)) {}
 
         inline bool operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };

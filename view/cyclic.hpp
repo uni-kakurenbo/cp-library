@@ -63,12 +63,13 @@ struct cyclic_view : internal::view_impl::base {
         return this->_ref->operator[](this->_mod(this->_pos + count));
     }
 
+    struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,cyclic_view>;
+    using iterator_interface = internal::container_iterator_interface<value_type,cyclic_view,iterator>;
 
   public:
-    struct iterator : virtual iterator_interface {
+    struct iterator : iterator_interface {
         iterator(const cyclic_view *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->operator[](this->pos()); }

@@ -265,8 +265,9 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     }
 
 
-    struct iterator : virtual internal::container_iterator_interface<value_type,core> {
-        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : internal::container_iterator_interface<value_type,core>(ref, p) {}
+    struct iterator : internal::container_iterator_interface<value_type,core,iterator> {
+        iterator() noexcept = default;
+        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : internal::container_iterator_interface<value_type,core,iterator>(ref, p) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };

@@ -14,8 +14,6 @@
 #include "internal/type_traits.hpp"
 
 #include "view/internal/base.hpp"
-#include "view/range.hpp"
-
 
 
 
@@ -234,8 +232,8 @@ struct concat_view : view_impl::base {
 
 template<class...> struct concat_view;
 
-template<class V> struct concat_view<V> : range_view<V> {
-    explicit concat_view(V v) noexcept(NO_EXCEPT) : range_view<V>(v) {}
+template<class V> struct concat_view<V> : std::ranges::ref_view<V> {
+    explicit concat_view(V v) noexcept(NO_EXCEPT) : std::ranges::ref_view<V>(v) {}
 };
 
 template<class V0, class V1> struct concat_view<V0,V1> : internal::view_impl::concat_view<V0,V1> {

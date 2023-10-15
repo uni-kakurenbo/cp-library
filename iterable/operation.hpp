@@ -24,15 +24,12 @@
 #include "internal/type_traits.hpp"
 #include "internal/exception.hpp"
 #include "internal/iterator.hpp"
+#include "internal/ranges.hpp"
 
 #include "iterable/z_array.hpp"
 #include "adapter/vector.hpp"
-
-#include "constants.hpp"
-#include "view/range.hpp"
 #include "view/concat.hpp"
-
-#include "internal/ranges.hpp"
+#include "constants.hpp"
 
 
 namespace lib {
@@ -196,20 +193,20 @@ template<class R, class V, class T> auto split(const V& v, const std::initialize
 }
 
 
-template<class I>
-vector<I> find(const I source_first,  const I source_last, const I query_first, const I query_last) noexcept(NO_EXCEPT) {
-    using value_type = typename std::iterator_traits<I>::value_type;
+template<std::ranges::sized_range R>
+auto find(const R source,  const R query) noexcept(NO_EXCEPT) {
+    using value_type = std::ranges::range_value_t<R>;
 
-    const auto joined = views::concat(views::range(query_first, query_last), views::range(source_first, source_last));
+    const auto joined = views::concat(source, query);
     std::vector<value_type> pre_z(std::begin(joined), std::end(joined));
     z_array z_arr(ALL(pre_z));
 
-    const internal::size_t query_size = std::distance(query_first, query_last);
+    const internal::size_t query_size = std::ranges::size(query);
 
-    vector<I> res;
+    vector<std::ranges::iterator_t<R>> res;
 
     {
-        auto itr = source_first;
+        auto itr = std::ranges::begin(source);
         REP(i, query_size, z_arr.size()) {
             if(z_arr[i] >= query_size) res.emplace_back(itr);
             ++itr;
@@ -218,10 +215,6 @@ vector<I> find(const I source_first,  const I source_last, const I query_first, 
 
     return res;
 }
-
-template<class V>
-auto find(const V& source, const V& query) noexcept(NO_EXCEPT) { return find(ALL(source), ALL(query)); }
-
 
 template<class V, replacement_policy POLICY = replacement_policy::insert_sync>
 auto replace(const V& source, const V& from, const V& to) noexcept(NO_EXCEPT) {

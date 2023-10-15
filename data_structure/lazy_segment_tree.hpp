@@ -356,7 +356,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     }
     inline value_type fold() const noexcept(NO_EXCEPT) { return this->fold_all(); }
 
-    using iterator = internal::container_iterator_interface<value_type,core>;
+    using iterator = internal::container_iterator_interface<value_type,core,iterator>;
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }

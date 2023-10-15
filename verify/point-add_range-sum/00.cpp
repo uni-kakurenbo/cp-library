@@ -24,11 +24,11 @@ signed main() {
         int t; cin >> t;
         if(t == 0) {
             int p, x; cin >> p >> x;
-            data[p] += x;
+            data[p] <<= x;
         }
         if(t == 1) {
             int l, r; cin >> l >> r;
-            print(data(l, r).sum());
+            print(data(l, r).fold());
         }
         debug(data);
     }

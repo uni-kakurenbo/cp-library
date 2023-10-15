@@ -72,7 +72,7 @@ struct quotient_enumerator {
         }
 
       public:
-        iterator() noexcept(NO_EXCEPT) {}
+        iterator() noexcept = default;
         iterator(const T n, const T l) noexcept(NO_EXCEPT) : _n(n) { this->_set_l(l); }
 
 

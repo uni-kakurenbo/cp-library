@@ -23,8 +23,8 @@ signed main() {
     REP(q) {
         int t; cin >> t;
         if(t == 0) {
-            int p, x; cin >> p >> x;
-            data.set(p, data[p] + x);
+            ll p, x; cin >> p >> x;
+            data.set(p, data[p].val() + x);
         }
         if(t == 1) {
             int l, r; cin >> l >> r;

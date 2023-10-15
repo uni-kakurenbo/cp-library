@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "internal/dev_env.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -16,8 +17,12 @@ template<class Base>
 struct extended_sequence : Base {
     using Base::Base;
 
+    extended_sequence(const Base& base) : Base(base) {}
+
     using size_type = decltype(Base().size());
     using value_type = typename Base::value_type;
+
+    // inline auto ssize() const noexcept(NO_EXCEPT) { return to_signed(this->size()); }
 
     inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
         std::fill(std::begin(*this), std::end(*this), v);

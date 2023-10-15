@@ -245,16 +245,17 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
         return this->base::fold(this->size());
     }
 
+    struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,core>;
+    using iterator_interface = internal::container_iterator_interface<value_type,core,iterator>;
 
   public:
-    struct iterator : virtual iterator_interface {
+    struct iterator : iterator_interface {
+        iterator() noexcept = default;
         iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : iterator_interface(ref, p) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
-        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
