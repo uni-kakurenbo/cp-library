@@ -16,6 +16,7 @@
 #include "internal/range_reference.hpp"
 
 #include "numeric/bit.hpp"
+#include "numeric/arithmetic.hpp"
 
 #include "data_structure/range_action/flags.hpp"
 
@@ -33,9 +34,9 @@ struct base {
 
   public:
     size_type _n = 0, _size = 0, _depth = 0;
-    mutable size_type* _lengths = nullptr;
-    mutable S* _values = nullptr;
-    mutable F* _lazy = nullptr;
+    mutable std::valarray<size_type> _lengths;
+    mutable std::valarray<S> _values;
+    mutable std::valarray<F> _lazy;
 
     inline void update(const size_type p) noexcept(NO_EXCEPT) {
         this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
@@ -47,22 +48,18 @@ struct base {
     inline void push(const size_type p) const noexcept(NO_EXCEPT) {
         this->all_apply(p << 1, this->_lazy[p]);
         this->all_apply(p << 1 | 1, this->_lazy[p]);
-        this->_lazy[p] = {};
+        this->_lazy[p] = F{};
     }
 
   protected:
     base() noexcept(NO_EXCEPT) {}
 
-    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
-        this->_size = 1 << this->_depth;
-        this->_lengths = new size_type[2*this->_size]();
-        this->_values = new S[2*this->_size]();
-        this->_lazy = new F[this->_size]();
-    }
-    ~base() {
-        delete[] this->_lengths;
-        delete[] this->_values;
-        delete[] this->_lazy;
+    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n) {
+        this->_size = lib::bit_ceil(lib::to_unsigned(n));
+        this->_depth = lib::countr_zero(lib::to_unsigned(this->_size));
+        this->_lengths.resize(2 * this->_size);
+        this->_values.resize(2 * this->_size);
+        this->_lazy.resize(this->_size);
     }
 
     inline void initialize() noexcept(NO_EXCEPT) {
@@ -356,7 +353,12 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     }
     inline value_type fold() const noexcept(NO_EXCEPT) { return this->fold_all(); }
 
-    using iterator = internal::container_iterator_interface<value_type,core,iterator>;
+    struct iterator : internal::container_iterator_interface<value_type,core,iterator> {
+        iterator() noexcept = default;
+        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : internal::container_iterator_interface<value_type,core,iterator>(ref, p) {}
+
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+    };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }

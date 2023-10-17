@@ -35,7 +35,7 @@ template<class S> struct base : private lib::internal::uncopyable {
 
   protected:
     size_type _n = 0, _size = 0, _depth = 0;
-    S* _data = nullptr;
+    std::valarray<S> _data;
 
     inline void update(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
@@ -43,9 +43,8 @@ template<class S> struct base : private lib::internal::uncopyable {
     base() noexcept(NO_EXCEPT) {}
     explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
         this->_size = 1 << this->_depth;
-        this->_data = new S[this->_size << 1]();
+        this->_data.resize(this->_size << 1);
     }
-    ~base() { delete[] this->_data; }
 
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
@@ -263,7 +262,6 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     inline value_type fold() const noexcept(NO_EXCEPT) {
         return this->base::fold_all();
     }
-
 
     struct iterator : internal::container_iterator_interface<value_type,core,iterator> {
         iterator() noexcept = default;

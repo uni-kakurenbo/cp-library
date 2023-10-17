@@ -19,6 +19,7 @@
 #include "internal/types.hpp"
 
 #include "numeric/internal/number_base.hpp"
+#include "numeric/modint.hpp"
 
 #include "iterable/operation.hpp"
 
@@ -79,10 +80,12 @@ inline constexpr R factorial(const T& n) noexcept(NO_EXCEPT) {
 
 
 template<class T, class U>
-inline constexpr auto pow(const T& x, U n) noexcept(NO_EXCEPT) -> decltype(x.pow(n), T()) { return x.pow(n); }
+    requires lib::internal::is_modint_v<T>
+inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }
 
 template<class T, class U>
-inline constexpr auto pow(T x, U n) noexcept(NO_EXCEPT) -> T {
+    requires (not lib::internal::is_modint_v<T>)
+inline constexpr T pow(T x, U n) noexcept(NO_EXCEPT) {
     T res = 1;
     while(n > 0) {
         if(n & 1) res *= x;

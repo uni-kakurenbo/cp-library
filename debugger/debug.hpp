@@ -147,22 +147,22 @@ template<class T> auto lit(T&& val) -> decltype(val.val(), std::string()) {
 }
 
 template<class... Ts> std::string lit(const std::map<Ts...>& val) {
-    return lit(std::forward<std::map<Ts...>>(val), Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
+    return lit(val, Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
 }
 template<class... Ts> std::string lit(const std::unordered_map<Ts...>& val) {
-    return lit(std::forward<std::unordered_map<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
+    return lit(val, Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
 }
 template<class... Ts> std::string lit(const std::set<Ts...>& val) {
-    return lit(std::forward<std::set<Ts...>>(val), Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
+    return lit(val, Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
 }
 template<class... Ts> std::string lit(const std::unordered_set<Ts...>& val) {
-    return lit(std::forward<std::unordered_set<Ts...>>(val), Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
+    return lit(val, Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
 }
 template<class... Ts> std::string lit(const std::vector<Ts...>& val) {
-    return lit(std::forward<std::vector<Ts...>>(val), Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
+    return lit(val, Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
 }
 template<class... Ts> std::string lit(const std::deque<Ts...>& val) {
-    return lit(std::forward<std::deque<Ts...>>(val), Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
+    return lit(val, Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
 }
 
 template<class... Ts> std::string lit(const std::pair<Ts...>& val) {
