@@ -32,6 +32,9 @@ concept zip_is_common = (sizeof...(Ranges) == 1 && (std::ranges::common_range<Ra
 
 
 template<bool Const, class... Views>
+concept all_contiguous = (std::ranges::contiguous_range<maybe_const_t<Const, Views>> && ...);
+
+template<bool Const, class... Views>
 concept all_random_access = (std::ranges::random_access_range<maybe_const_t<Const, Views>> && ...);
 
 template<bool Const, class... Views>
@@ -52,7 +55,9 @@ struct zip_view_iterator_category<Const, Views...> {
 
 template<bool Const, class... Views>
 static auto _most_primitive_iterator_concept() noexcept(NO_EXCEPT) {
-    if constexpr(all_random_access<Const, Views...>)
+    if constexpr(all_contiguous<Const, Views...>)
+        return std::contiguous_iterator_tag{};
+    else if constexpr(all_random_access<Const, Views...>)
         return std::random_access_iterator_tag{};
     else if constexpr(all_bidirectional<Const, Views...>)
         return std::bidirectional_iterator_tag{};
@@ -108,13 +113,13 @@ template<class Adapter, class... Args> struct partial;
 template<class, class> struct pipe;
 
 struct range_adapter_closure {
-    template<class Self, typename Range>
+    template<class Self, class Range>
         requires std::derived_from<std::remove_cvref_t<Self>, range_adapter_closure> && adapter_invocable<Self, Range>
     friend inline constexpr auto operator|(Range &&range, Self &&self) noexcept(NO_EXCEPT) {
         return std::forward<Self>(self)(std::forward<Range>(range));
     }
 
-    template<class Lhs, typename Rhs>
+    template<class Lhs, class Rhs>
         requires std::derived_from<Lhs, range_adapter_closure> && std::derived_from<Rhs, range_adapter_closure>
     friend inline constexpr auto operator|(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) {
         return pipe<Lhs, Rhs>{ std::move(lhs), std::move(rhs) };
@@ -126,7 +131,8 @@ template<class Derived> struct range_adapter {
         requires adapter_partial_app_viable<Derived, Args...>
     inline constexpr auto operator()(Args &&..._args) const noexcept(NO_EXCEPT) {
         return partial<Derived, std::decay_t<Args>...>{
-            std::forward<Args>(_args)...};
+            std::forward<Args>(_args)...
+        };
     }
 };
 

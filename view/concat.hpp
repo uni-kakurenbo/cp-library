@@ -24,206 +24,394 @@ namespace internal {
 namespace view_impl {
 
 
-template<class,class> struct concat_view;
-template<class> struct concat_view_iterator;
+template<std::ranges::input_range V0, std::ranges::input_range V1>
+    requires std::ranges::view<V0> && std::ranges::view<V1>
+struct concat_view : std::ranges::view_interface<concat_view<V0, V1>> {
+  private:
+    V0 _b0;
+    V1 _b1;
 
+    template<bool Const> using B0 = internal::maybe_const_t<Const, V0>;
+    template<bool Const> using B1 = internal::maybe_const_t<Const, V1>;
 
-template<class View>
-inline typename concat_view_iterator<View>::difference_type operator-(
-    const concat_view_iterator<View>& lhs,
-    const concat_view_iterator<View>& rhs
-) noexcept(NO_EXCEPT) {
-    if(lhs._block == rhs._block) {
-        return lhs._block == 0 ? std::distance(rhs._itr0, lhs._itr0) : std::distance(rhs._itr1, lhs._itr1);
-    }
-    if(lhs._block > rhs._block) return std::distance(rhs._itr0, rhs._super->_l0) + std::distance(lhs._super->_f1, lhs._itr1);
-    if(lhs._block < rhs._block) return -std::distance(lhs, rhs);
-    assert(false);
-}
+    template<bool Const> struct iterator_tag {};
 
-
-template<class View>
-struct concat_view_iterator : view_impl::iterator_base {
-  protected:
-    using iterator0_t = typename View::iterator0_t;
-    using iterator1_t = typename View::iterator1_t;
-
-    using ptr_val = std::common_type_t<typename std::iterator_traits<iterator0_t>::pointer, typename std::iterator_traits<iterator1_t>::pointer>;
-
-    using ref_val0_t = typename std::iterator_traits<iterator0_t>::reference;
-    using ref_val1_t = typename std::iterator_traits<iterator1_t>::reference;
-
-    using ref_val_t = std::common_reference_t<ref_val0_t,ref_val1_t>;
+    template<bool Const>
+        requires std::ranges::forward_range<B0<Const>> && std::ranges::forward_range<B1<Const>>
+    struct iterator_tag<Const> {
+      public:
+        using iterator_category = most_primitive_iterator_tag<
+            typename std::iterator_traits<std::ranges::iterator_t<B0<Const>>>::iterator_category,
+            typename std::iterator_traits<std::ranges::iterator_t<B1<Const>>>::iterator_category
+        >;
+    };
 
   public:
-    using difference_type = std::common_type_t<typename std::iterator_traits<iterator0_t>::difference_type, typename std::iterator_traits<iterator1_t>::difference_type>;
-    using value_type = std::common_type_t<typename std::iterator_traits<iterator0_t>::value_type, typename std::iterator_traits<iterator1_t>::value_type>;
-    using pointer = ptr_val;
-    using reference = ref_val_t;
-    using iterator_category = most_primitive_iterator_tag<typename std::iterator_traits<iterator0_t>::iterator_category, typename std::iterator_traits<iterator1_t>::iterator_category>;
+    template<bool> class iterator;
 
-  protected:
-    const View* _super;
-    bool _block = 0;
-    iterator0_t _itr0;
-    iterator1_t _itr1;
+    constexpr explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT)
+      : _b0(std::move(v0)), _b1(std::move(v1))
+    {}
 
-  public:
-    concat_view_iterator() = default;
-
-    template<class Itr>
-    explicit concat_view_iterator(
-        const View *const super,
-        const size_t block,
-        Itr itr
-    ) noexcept(NO_EXCEPT)
-        : _super(super), _block(block)
+    inline constexpr std::pair<V0, V1> base() const & noexcept(NO_EXCEPT)
+        requires std::copy_constructible<V0> && std::copy_constructible<V0>
     {
-        if constexpr(std::is_same_v<iterator0_t,iterator1_t>) {
-            if(block == 0) this->_itr0 = itr;
-            else this->_itr1 = itr;
+        return { this->_b0, this->_b1 };
+    }
+
+    inline constexpr std::pair<V0,V1> base() && noexcept(NO_EXCEPT) {
+        return { std::move(this->_b0), std::move(this->_b1) };
+    }
+
+    inline constexpr auto begin() noexcept(NO_EXCEPT)
+        requires (!internal::simple_view<V0> && !internal::simple_view<V1>)
+    {
+        return iterator<false>(this, std::ranges::begin(this->_b0), std::ranges::begin(this->_b1), 0);
+    }
+
+    inline constexpr auto begin() const noexcept(NO_EXCEPT)
+        requires std::ranges::range<const V0> && std::ranges::range<const V1>
+    {
+        return iterator<true>(this, std::ranges::begin(this->_b0), std::ranges::begin(this->_b1), 0);
+    }
+
+    inline constexpr auto end() noexcept(NO_EXCEPT)
+        requires (!internal::simple_view<V0> && !internal::simple_view<V1>)
+    {
+        if constexpr(std::ranges::common_range<V0> && std::ranges::common_range<V1>) {
+            return iterator<false>(this, std::ranges::end(this->_b0), std::ranges::end(this->_b1), 1);
         }
         else {
-            if constexpr(std::is_same_v<iterator0_t,Itr>) {
-                assert(block == 0);
-                this->_itr0 = itr;
-            }
-            else {
-                assert(block == 1);
-                this->_itr1 = itr;
-            }
+            return std::default_sentinel;
         }
     }
 
-    inline reference operator*() noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
-    inline const reference operator*() const noexcept(NO_EXCEPT) { return this->_block == 0 ? *this->_itr0 : *this->_itr1; }
-
-    inline concat_view_iterator& operator+=(const difference_type count) noexcept(NO_EXCEPT) {
-        if(count < 0) return *this -= (-count);
-
-        if(this->_block == 0) {
-            const auto dist = static_cast<difference_type>(std::distance(this->_itr0, _super->_l0));
-            if(count < dist) {
-                this->_itr0 += count;
-            }
-            else {
-                this->_block = 1;
-                this->_itr1 = std::next(_super->_f1, dist - count);
-            }
+    inline constexpr auto end() const noexcept(NO_EXCEPT)
+        requires std::ranges::range<const V0> && std::ranges::range<const V1>
+    {
+        if constexpr(std::ranges::common_range<const V0> && std::ranges::common_range<const V1>) {
+            return iterator<true>(this, std::ranges::end(this->_b0), std::ranges::end(this->_b1), 1);
         }
         else {
-            this->_itr1 += count;
+            return std::default_sentinel;
         }
-
-        return *this;
     }
 
-    inline concat_view_iterator& operator-=(const difference_type count) noexcept(NO_EXCEPT) {
-        if(count < 0) return *this += (-count);
-
-        if(this->_block == 1) {
-            const auto dist = static_cast<difference_type>(std::distance(_super->_f1, this->_itr1));
-            if(count < dist) {
-                this->_itr1 -= count;
-            }
-            else {
-                this->_block = 0;
-                this->_itr0 = std::prev(_super->_l0, dist - count);
-            }
-        }
-        else {
-            this->_itr0 -= count;
-        }
-
-        return *this;
+    inline constexpr auto size() noexcept(NO_EXCEPT)
+        requires std::ranges::sized_range<V0> && std::ranges::sized_range<V1>
+    {
+        return static_cast<std::size_t>(std::ranges::distance(this->_b0) + std::ranges::distance(this->_b1));
     }
 
-    inline concat_view_iterator& operator++() noexcept(NO_EXCEPT) {
-        if(this->_block == 0) {
-            if(++this->_itr0 == _super->_l0) {
-                this->_block = 1;
-                this->_itr1 = _super->_f1;
-            }
-        }
-        else {
-            ++this->_itr1;
-        }
-        return *this;
+    inline constexpr auto size() const noexcept(NO_EXCEPT)
+        requires std::ranges::sized_range<const V0> && std::ranges::sized_range<const V1>
+    {
+        return static_cast<std::size_t>(std::ranges::distance(this->_b0) + std::ranges::distance(this->_b1));
     }
-    inline concat_view_iterator& operator--() noexcept(NO_EXCEPT) {
-        if(this->_block == 1) {
-            if(this->_itr1-- == _super->_f1) {
-                this->_block = 0;
-                this->_itr0 = std::prev(_super->_l0);
-            }
-        }
-        else {
-            --this->_itr0;
-        }
-        return *this;
-    }
-
-    inline concat_view_iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; return ++(*this), res; }
-    inline concat_view_iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; return --(*this), res; }
-
-    friend inline concat_view_iterator operator+(concat_view_iterator lhs, const difference_type rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
-    friend inline concat_view_iterator operator-(concat_view_iterator lhs, const difference_type rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
-
-    friend inline bool operator==(const concat_view_iterator& lhs, const concat_view_iterator& rhs) noexcept(NO_EXCEPT) {
-        if(lhs._block != rhs._block) return false;
-        return lhs._block == 0 ? lhs._itr0 == rhs._itr0 : lhs._itr1 == rhs._itr1;
-    }
-    friend inline bool operator!=(const concat_view_iterator& lhs, const concat_view_iterator& rhs) noexcept(NO_EXCEPT) { return !(lhs == rhs); }
-
-    friend difference_type operator-<View>(const concat_view_iterator&, const concat_view_iterator&);
 };
 
+template<std::ranges::input_range V0, std::ranges::input_range V1>
+    requires std::ranges::view<V0> && std::ranges::view<V1>
+template<bool Const>
+struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
+  private:
+    using Parent = internal::maybe_const_t<Const, concat_view>;
 
-template<class V0, class V1>
-struct concat_view : view_impl::base {
-    using size_type = std::common_type_t<container_size_t<V0>,container_size_t<V1>>;
+    using B0 = concat_view::B0<Const>;
+    using B1 = concat_view::B1<Const>;
 
-  protected:
-    using iterator0_t = std::ranges::iterator_t<V0>;
-    using iterator1_t = std::ranges::iterator_t<V1>;
+    std::ranges::iterator_t<B0> _c0 = std::ranges::iterator_t<B0>();
+    std::ranges::iterator_t<B0> _b0 = std::ranges::iterator_t<B0>();
+    std::ranges::sentinel_t<B0> _e0 = std::ranges::sentinel_t<B0>();
 
-    V0 _v0;
-    V1 _v1;
+    std::ranges::iterator_t<B1> _c1 = std::ranges::iterator_t<B1>();
+    std::ranges::iterator_t<B1> _b1 = std::ranges::iterator_t<B1>();
+    std::ranges::sentinel_t<B1> _e1 = std::ranges::sentinel_t<B1>();
 
-    size_type _s0 = -1, _s1 = -1;
-    iterator0_t _f0, _l0;
-    iterator1_t _f1, _l1;
+    int _block = 0;
+
+    constexpr iterator(Parent *const parent, const std::ranges::iterator_t<B0> c0, const std::ranges::iterator_t<B1> c1, const int block) noexcept(NO_EXCEPT)
+      : _c0(std::move(c0)), _b0(std::ranges::begin(parent->_b0)), _e0(std::ranges::end(parent->_b0)),
+        _c1(std::move(c1)), _b1(std::ranges::begin(parent->_b1)), _e1(std::ranges::end(parent->_b1)),
+        _block(block)
+    {}
+
+    friend concat_view;
 
   public:
-    using iterator = concat_view_iterator<concat_view>;
-    // using const_iterator = concat_view_iterator<const concat_view>;
+    using difference_type = std::common_type_t<std::ranges::range_difference_t<B0>, std::ranges::range_difference_t<B1>>;
 
-    friend iterator;
+    using value_type = std::common_type_t<std::ranges::range_value_t<B0>, std::ranges::range_value_t<B1>>;
+    using reference_type = std::common_reference_t<std::ranges::range_reference_t<B0>, std::ranges::range_reference_t<B1>>;
 
-    friend typename iterator::difference_type operator-<concat_view>(const iterator&, const iterator&);
+    using iterator_concept = internal::most_primitive_iterator_tag<
+        internal::most_primitive_iterator_concept<Const, V0, V1>
+    >;
 
-    using value_type = typename std::iterator_traits<iterator>::value_type;
+    iterator() noexcept(NO_EXCEPT)
+        requires std::default_initializable<std::ranges::iterator_t<B0>> &&
+                 std::default_initializable<std::ranges::iterator_t<B0>>
+    = default;
 
-    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT)
-      : _v0(std::move(v0)), _v1(std::move(v1)),
-        _f0(std::begin(this->_v0)), _l0(std::end(this->_v0)), _f1(std::begin(this->_v1)), _l1(std::end(this->_v1))
-    {};
+    constexpr iterator(iterator<!Const> itr) noexcept(NO_EXCEPT)
+        requires
+            Const &&
+            std::convertible_to<std::ranges::iterator_t<V0>, std::ranges::iterator_t<B0>> &&
+            std::convertible_to<std::ranges::sentinel_t<V0>, std::ranges::sentinel_t<B0>> &&
+            std::convertible_to<std::ranges::iterator_t<V1>, std::ranges::iterator_t<B1>> &&
+            std::convertible_to<std::ranges::sentinel_t<V1>, std::ranges::sentinel_t<B1>>
+      : _c0(std::move(itr._c0)), _b0(std::move(itr._b0)), _e0(std::move(itr._e0)),
+        _c1(std::move(itr._c0)), _b1(std::move(itr._b0)), _e1(std::move(itr._e1)),
+        _block(itr._block)
+    {}
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0, this->_f0); }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, 1, this->_l1); }
-
-    inline size_type size() const noexcept(NO_EXCEPT) {
-        if(this->_s0 < 0) this->_s0 = std::distance(this->_f0, this->_l0);
-        if(this->_s1 < 0) this->_s1 = std::distance(this->_f1, this->_l1);
-        return this->_s0 + this->_s1;
+    inline constexpr std::variant<std::ranges::iterator_t<B0>, std::ranges::iterator_t<B1>>
+    base() && noexcept(NO_EXCEPT) {
+        if(this->_block == 0) return std::move(this->_c0);
+        else return std::move(this->_C1);
     }
 
-    template<class Container>
-    inline Container to() const noexcept(NO_EXCEPT) {
-        Container res(this->begin(), this->end());
-        return res;
+    inline constexpr
+        std::variant<
+            std::reference_wrapper<const std::ranges::iterator_t<B0>>,
+            std::reference_wrapper<const std::ranges::iterator_t<B1>>
+        >
+    base() const & noexcept {
+        if(this->_block == 0) return std::move(this->_c0);
+        else return std::move(this->_c1);
+    }
+
+    inline constexpr reference_type operator*() const noexcept(NO_EXCEPT)
+    {
+
+        if(this->_block == 0) return *this->_c0;
+        else return *this->_c1;
+    }
+
+    inline constexpr iterator& operator++() noexcept(NO_EXCEPT)
+    {
+        assert(this->_c0 != this->_e0 or this->_c1 != this->_e1);
+
+        if(this->_block == 0) {
+            if(++this->_c0 == this->_e0) {
+                this->_block = 1;
+                assert(this->_c1 == this->_b1);
+            }
+        }
+        else {
+            ++this->_c1;
+        }
+
+        return *this;
+    }
+
+    inline constexpr void operator++(int) noexcept(NO_EXCEPT) { ++*this; }
+
+    inline constexpr iterator operator++(int) noexcept(NO_EXCEPT)
+        requires std::ranges::forward_range<B0> && std::ranges::forward_range<B1>
+    {
+        const auto res = *this; ++*this; return res;
+    }
+
+    inline constexpr iterator& operator--() noexcept(NO_EXCEPT)
+        requires
+            std::ranges::bidirectional_range<B0> && std::ranges::bidirectional_range<B1> &&
+            std::bidirectional_iterator<std::ranges::sentinel_t<B0>>
+    {
+        if(this->_block == 1) {
+            if(this->_c1 == this->_b1) {
+                this->_block = 0;
+                this->_c0 = std::ranges::prev(this->_e0);
+            }
+            else {
+                --this->_c1;
+            }
+        }
+        else {
+            --this->_c0;
+        }
+
+        return *this;
+    }
+
+    inline constexpr iterator operator--(int) noexcept(NO_EXCEPT)
+        requires std::ranges::bidirectional_range<B0> && std::ranges::bidirectional_range<B1>
+    {
+        const auto res = *this; --*this; return res;
+    }
+
+    inline constexpr iterator& operator+=(const difference_type diff) noexcept(NO_EXCEPT)
+        requires
+            std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        if(diff > 0) {
+            if(this->_block == 0) {
+                const auto missing = std::ranges::advance(this->_c0, diff, this->_e0);
+                if(this->_c0 == this->_e0) {
+                    this->_block = 1;
+                    assert(this->_c1 == this->_b1);
+                    std::ranges::advance(this->_c1, missing, this->_e1);
+                }
+            }
+            else {
+                std::ranges::advance(this->_c1, diff, this->_e1);
+            }
+        }
+        if(diff < 0) {
+            if(this->_block == 1) {
+                const auto missing = std::ranges::advance(this->_c1, diff, this->_b1);
+                if(missing > 0) {
+                    this->_block = 0;
+                    assert(this->_c0 == this->_e0);
+                    std::ranges::advance(this->_c0, -missing, this->_b0);
+                }
+            }
+            else {
+                std::ranges::advance(this->_c0, diff, this->_b0);
+            }
+        }
+
+        return *this;
+    }
+
+    inline constexpr iterator& operator-=(const difference_type diff) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        return *this += -diff;
+    }
+
+    inline constexpr decltype(auto) operator[](const difference_type diff) const noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        return *(*this + diff);
+    }
+
+    friend inline constexpr bool operator==(const iterator& lhs, std::default_sentinel_t) noexcept(NO_EXCEPT)
+    {
+        if(lhs._block == 0) return false;
+        if(lhs._block == 1) return lhs._c1 == lhs._e1;
+        assert(false);
+    }
+
+    friend inline constexpr bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires
+            std::equality_comparable<std::ranges::iterator_t<B0>> &&
+            std::equality_comparable<std::ranges::iterator_t<B1>>
+    {
+        // debug(lhs._block, rhs._block);
+        // debug(lhs._c0 == rhs._c0, lhs._c1 == rhs._c1);
+        if(lhs._block != rhs._block) return false;
+        return lhs._block == 0 ? lhs._c0 == rhs._c0 : lhs._c1 == rhs._c1;
+    }
+
+    friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        if(lhs._block != rhs._block) return lhs._block < rhs._block;
+        return lhs._block == 0 ? lhs._c0 < rhs._c0 : lhs._c1 < rhs._c1;
+    }
+
+    friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        if(lhs._block != rhs._block) return lhs._block > rhs._block;
+        return lhs._block == 0 ? lhs._c0 > rhs._c0 : lhs._c1 > rhs._c1;
+    }
+
+    friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        return !(rhs < lhs);
+    }
+
+    friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        return !(lhs < rhs);
+    }
+
+    friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        if(lhs._block != rhs._block) return lhs._block <=> rhs._block;
+        return lhs._block == 0 ? lhs._c0 <=> rhs._c0 : lhs._c1 <=> rhs._c1;
+    }
+
+    friend inline constexpr iterator operator+(const iterator& itr, const difference_type diff) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        auto res = itr; res += diff; return res;
+    }
+
+    friend inline constexpr iterator operator+(const difference_type diff, const iterator& itr) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        return itr + diff;
+    }
+
+    friend inline constexpr iterator operator-(const iterator& itr, const difference_type diff) noexcept(NO_EXCEPT)
+        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
+    {
+        auto res = itr; res -= diff; return res;
+    }
+
+    friend inline constexpr const difference_type operator-(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires
+            std::sized_sentinel_for<std::ranges::iterator_t<B0>, std::ranges::iterator_t<B0>> &&
+            std::sized_sentinel_for<std::ranges::iterator_t<B1>, std::ranges::iterator_t<B1>>
+    {
+        if(lhs._block == rhs._block) {
+            return lhs._block == 0 ? std::ranges::distance(rhs._c0, lhs._c0) : std::ranges::distance(rhs._c1, lhs._c1);
+        }
+        if(lhs._block > rhs._block) return std::ranges::distance(rhs._c0, rhs._e0) + std::ranges::distance(lhs._b1, lhs._c1);
+        if(lhs._block < rhs._block) return -(rhs - lhs);
+        assert(false);
+    }
+
+    friend inline constexpr const difference_type operator-(std::default_sentinel_t, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires
+            std::sized_sentinel_for<std::ranges::sentinel_t<B0>, std::ranges::iterator_t<B0>> &&
+            std::sized_sentinel_for<std::ranges::sentinel_t<B1>, std::ranges::iterator_t<B1>>
+    {
+        if(rhs._block == 0) return std::ranges::distance(rhs._c0, rhs._e0) + std::ranges::distance(rhs._b1, rhs._e1);
+        if(rhs._block == 1) return std::ranges::distance(rhs._c1, rhs._e1);
+        assert(false);
+    }
+
+    friend inline constexpr const difference_type operator-(const iterator& lhs, std::default_sentinel_t rhs) noexcept(NO_EXCEPT)
+        requires
+            std::sized_sentinel_for<std::ranges::sentinel_t<B0>, std::ranges::iterator_t<B0>> &&
+            std::sized_sentinel_for<std::ranges::sentinel_t<B1>, std::ranges::iterator_t<B1>>
+    {
+        return -(rhs - lhs);
+    }
+
+    friend inline constexpr
+    std::common_reference_t<
+        std::ranges::range_rvalue_reference_t<B0>,
+        std::ranges::range_rvalue_reference_t<B1>
+    >
+    iter_move(const iterator& itr) noexcept(NO_EXCEPT)
+    {
+        if(itr._block == 0) return std::ranges::iter_move(itr._c0);
+        if(itr._block == 1) return std::ranges::iter_move(itr._c1);
+        assert(false);
+    }
+
+    friend inline constexpr void iter_swap(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
+        requires
+            std::indirectly_swappable<std::ranges::iterator_t<B0>> &&
+            std::indirectly_swappable<std::ranges::iterator_t<B1>> &&
+            std::indirectly_swappable<std::ranges::iterator_t<B0>, std::ranges::iterator_t<B1>>
+    {
+        if(lhs._block == 0 && rhs._block == 0) std::ranges::iter_swap(lhs._c0, rhs._c0);
+        if(lhs._block == 0 && rhs._block == 1) std::ranges::iter_swap(lhs._c0, rhs._c1);
+        if(lhs._block == 1 && rhs._block == 0) std::ranges::iter_swap(lhs._c1, rhs._c0);
+        if(lhs._block == 1 && rhs._block == 1) std::ranges::iter_swap(lhs._c1, rhs._c1);
+        assert(false);
     }
 };
+
 
 } // namespace view_impl
 
@@ -232,53 +420,62 @@ struct concat_view : view_impl::base {
 
 template<class...> struct concat_view;
 
-template<class V> struct concat_view<V> : std::ranges::ref_view<V> {
-    explicit concat_view(V v) noexcept(NO_EXCEPT) : std::ranges::ref_view<V>(v) {}
+template<class T>
+struct concat_view<T> : std::views::all_t<T> {
+    explicit concat_view(T&& v) noexcept(NO_EXCEPT) : std::views::all_t<T>(std::forward<T>(v)) {}
 };
 
-template<class V0, class V1> struct concat_view<V0,V1> : internal::view_impl::concat_view<V0,V1> {
-    explicit concat_view(V0 v0, V1 v1) noexcept(NO_EXCEPT) : internal::view_impl::concat_view<V0,V1>(v0, v1) {}
+template<class T0, class T1>
+struct concat_view<T0, T1> : internal::view_impl::concat_view<std::views::all_t<T0>, std::views::all_t<T1>> {
+    explicit concat_view(T0&& v0, T1&& v1) noexcept(NO_EXCEPT)
+      : internal::view_impl::concat_view<std::views::all_t<T0>, std::views::all_t<T1>>(std::forward<T0>(v0), std::forward<T1>(v1))
+    {}
 };
 
-template<class V0, class V1, class... Vs> struct concat_view<V0,V1,Vs...> : concat_view<concat_view<V0,V1>,Vs...> {
-  public:
-    explicit concat_view(V0 v0, V1 v1, Vs... cs) noexcept(NO_EXCEPT) : concat_view<concat_view<V0,V1>,Vs...>(concat_view<V0,V1>(v0, v1), cs...) {}
+template<class T0, class T1, class... Ts>
+struct concat_view<T0, T1, Ts...> : concat_view<concat_view<T0, T1>, Ts...> {
+    explicit concat_view(T0&& v0, T1&& v1, Ts&&... vs) noexcept(NO_EXCEPT)
+      : concat_view<concat_view<T0, T1>, Ts...>(
+            concat_view<T0, T1>(std::forward<T0>(v0), std::forward<T1>(v1)), std::forward<Ts>(vs)...
+        )
+    {}
 };
-
-template<class V>
-explicit concat_view(V) -> concat_view<V>;
-
-template<class V0, class V1>
-explicit concat_view(V0, V1) -> concat_view<V0,V1>;
-
-template<class V0, class V1, class... Vs>
-explicit concat_view(V0, V1, Vs...) -> concat_view<V0,V1,Vs...>;
-
 
 namespace views {
 
+namespace internal {
 
-template<class... Range>
-inline auto concat(Range&&... range) noexcept(NO_EXCEPT) { return concat_view(std::views::all(range)...); };
+
+template<class... Ts>
+concept can_concat_view = requires { concat_view<Ts...>(std::declval<Ts>()...); };
+
+
+} // namespace internal
+
+
+struct Concat {
+    template<class... Ts>
+        requires (sizeof...(Ts) == 0 || internal::can_concat_view<Ts...>)
+    inline constexpr auto operator() [[nodiscard]] (Ts&&... vs) const {
+        if constexpr(sizeof...(Ts) == 0) return std::views::empty<std::nullptr_t>;
+        else return concat_view<Ts...>(std::forward<Ts>(vs)...);
+    }
+};
+
+
+inline constexpr Concat concat;
 
 
 } // namespace views
 
-
-} // namespace lib
-
-
-#if CPP20
+} // namespace lib.
 
 
 namespace std::ranges {
 
 
-template<class... Vs>
-inline constexpr bool enable_borrowed_range<lib::concat_view<Vs...>> = true;
+template<class... Views>
+inline constexpr bool enable_borrowed_range<lib::concat_view<Views...>> = (enable_borrowed_range<Views> && ...);
 
 
-} // namespace std::ranges
-
-
-#endif
+}

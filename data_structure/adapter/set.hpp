@@ -124,7 +124,7 @@ struct multiset_adapter : protected set_adapter<Tree,Size> {
     multiset_adapter(const size_type sup) noexcept(NO_EXCEPT) : base(sup) {};
 
     template<class I>
-    multiset_adapter(const I first, const I last) noexcept(NO_EXCEPT) : base(*max_element(first, last)+1) {
+    multiset_adapter(const I first, const I last) noexcept(NO_EXCEPT) : base(*max_element(first, last) + 1) {
         vector<size_type> bits(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());

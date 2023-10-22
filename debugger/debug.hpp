@@ -58,7 +58,7 @@ std::string lit(T&&, const Brackets& = { "{", "}" }, const std::string& = ", ");
 
 template<std::forward_iterator I, std::sentinel_for<I> S>
 // template<class I, class S>
-    requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
+    // requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
 std::string lit(I, S, const Brackets& = { "[", "]" }, const std::string& = ", ");
 
 template<class... Ts> std::string lit(const std::pair<Ts...>&);
@@ -193,8 +193,8 @@ template<size_t N, class T> void iterate_tuple([[maybe_unused]] const T& val, st
 
 template<class T, std::enable_if_t<lib::internal::is_iterable_v<std::remove_reference_t<T>> && !lib::internal::is_template<std::map,std::remove_reference_t<T>>::value && !std::is_base_of_v<std::string,std::remove_reference_t<T>>>*>
 std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
-    // return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
-    return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
+    return lit(std::ranges::begin(val), std::ranges::end(val), brcs, sep);
+    // return lit(lib::internal::iterator_resolver::begin(val), lib::internal::iterator_resolver::end(val), brcs, sep);
 }
 
 template<class T, std::enable_if_t<lib::internal::is_template<std::map,std::remove_reference_t<T>>::value>*>
@@ -231,13 +231,13 @@ std::string lit(I itr) {
 
 template<std::forward_iterator I, std::sentinel_for<I> S>
 // template<class I, class S>
-    requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
+    // requires std::same_as<std::iter_value_t<I>,std::iter_value_t<S>>
 std::string lit(I first, S last, const Brackets& brcs, const std::string& spl) {
     std::stringstream res;
     res << brcs.first << " ";
     auto&& itr = first;
     while(itr != last) {
-        if(std::next(itr) == last) res << lit(*itr) << " ";
+        if(std::ranges::next(itr) == last) res << lit(*itr) << " ";
         else res << lit(*itr) << spl;
         ++itr;
     }
@@ -265,24 +265,24 @@ std::vector<std::string> split(const std::string& str) {
     bool quoted = false;
     std::array<int,(PARENTHESES_KINDS / 2)> enclosed = { 0 };
 
-    for(auto itr = std::begin(str); itr != std::end(str); ++itr) {
-        if(std::find(std::begin(QUOTATIONS), std::end(QUOTATIONS), *itr) != std::end(QUOTATIONS)) {
-            if(itr == std::begin(str) or *std::prev(itr) != ESCAPE) {
+    for(auto itr = std::ranges::begin(str); itr != std::ranges::end(str); ++itr) {
+        if(std::ranges::find(QUOTATIONS, *itr) != std::ranges::end(QUOTATIONS)) {
+            if(itr == std::ranges::begin(str) or *std::ranges::prev(itr) != ESCAPE) {
                 quoted ^= true;
             }
         }
 
-        if(const auto found = std::find(std::begin(PARENTHESES), std::end(PARENTHESES), *itr); found != std::end(PARENTHESES)) {
+        if(const auto found = std::ranges::find(PARENTHESES, *itr); found != std::ranges::end(PARENTHESES)) {
             if(not quoted) {
-                auto& target = enclosed[std::distance(std::begin(PARENTHESES), found) / 2];
-                target = std::max(0, target - static_cast<int>((std::distance(std::begin(PARENTHESES), found) % 2) * 2) + 1);
+                auto& target = enclosed[std::ranges::distance(std::begin(PARENTHESES), found) / 2];
+                target = std::max(0, target - static_cast<int>((std::ranges::distance(std::begin(PARENTHESES), found) % 2) * 2) + 1);
 
             }
         }
 
         if(
             not quoted
-            and static_cast<std::size_t>(std::count(std::begin(enclosed), std::end(enclosed), 0)) == std::size(enclosed)
+            and static_cast<std::size_t>(std::ranges::count(enclosed, 0)) == std::ranges::size(enclosed)
             and *itr == SEPARATOR
         ) {
             res.push_back("");

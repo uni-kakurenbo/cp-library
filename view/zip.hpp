@@ -27,7 +27,7 @@ struct zip_view : std::ranges::view_interface<zip_view<Views...>> {
 
     zip_view() = default;
 
-    constexpr explicit zip_view(Views... __views) noexcept(NO_EXCEPT) : _views(std::move(__views)...) {}
+    constexpr explicit zip_view(Views... views) noexcept(NO_EXCEPT) : _views(std::move(views)...) {}
 
     constexpr auto begin() noexcept(NO_EXCEPT) requires(!(internal::simple_view<Views> && ...))
     {
@@ -196,9 +196,9 @@ struct zip_view<Views...>::iterator
         requires internal::all_random_access<Const, Views...>
     {
         const auto f = [&]<class Itr>(Itr& itr) constexpr noexcept(NO_EXCEPT) -> decltype(auto) {
-            return itr[iter_difference_t<Itr>(diff)];
+            return itr[std::iter_difference_t<Itr>(diff)];
         };
-        returntuple_transform(f, _current);
+        return tuple_transform(f, _current);
     }
 
     friend constexpr bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
@@ -369,7 +369,6 @@ struct zip_view<Views...>::sentinel {
 
 namespace views {
 
-
 namespace internal {
 
 
@@ -393,7 +392,6 @@ inline constexpr Zip zip;
 
 
 } // namespace views
-
 
 } // namespace lib.
 

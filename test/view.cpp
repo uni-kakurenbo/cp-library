@@ -7,15 +7,8 @@ signed main() {
     vector<int> b = { 2, 4, 6, 8, 10 };
     vector<int> c = { 3, 6, 9, 12, 15 };
 
-    debug(lib::views::zip(lib::views::range(a)));
-
-    using itr = decltype(lib::views::concat(a, b, c))::iterator;
-    static_assert(std::is_same_v<
-        std::iter_rvalue_reference_t<itr>,
-        std::iter_rvalue_reference_t<const itr>
-    >);
-
     {
+        debug(lib::views::zip());
         debug(lib::views::zip(a));
         debug(lib::views::zip(a, b));
         debug(lib::views::zip(a, b, c));
@@ -24,6 +17,7 @@ signed main() {
         // lib::zip(a, b, c): [ <tuple> ( 1, 2, 3 ), <tuple> ( 2, 4, 6 ), <tuple> ( 3, 6, 9 ), <tuple> ( 4, 8, 12 ), <tuple> ( 5, 10, 15 ) ]
     }
     {
+        debug(lib::views::concat());
         debug(lib::views::concat(a));
         debug(lib::views::concat(a, b));
         debug(lib::views::concat(a, b, c));
@@ -32,12 +26,33 @@ signed main() {
         // lib::concat(a, b, c): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10, 3, 6, 9, 12, 15 ]
     }
     {
+        // debug(lib::views::zip(lib::views::concat(a, b), lib::views::concat(b, c), lib::views::concat(c, a)));
+        // debug(lib::views::concat(lib::views::zip(a, b), lib::views::zip(b, c), lib::views::zip(c, a)));
+    }
+    {
+        debug(lib::views::cyclic(a) | std::views::take(22));
+        debug(lib::views::cyclic(b) | std::views::take(22) | std::views::reverse);
+    }
+    {
         for(auto& x : lib::views::concat(a, b, c)) x = 1;
         debug(a, b, c);
         // a: [ 1, 1, 1, 1, 1 ], b: [ 1, 1, 1, 1, 1 ], c: [ 1, 1, 1, 1, 1 ]
 
         for(auto [ x, y, z ] : lib::views::zip(a, b, c)) x = 1, y = 2, z = 3;
         debug(a, b, c);
+    }
+    {
+        static_assert(std::ranges::random_access_range<decltype(lib::views::cyclic(b))>);
+        static_assert(std::ranges::random_access_range<decltype(lib::views::concat(a, b))>);
+        static_assert(std::ranges::random_access_range<decltype(lib::views::concat(a, lib::views::cyclic(b)))>);
+        assert(lib::views::cyclic(a).begin() != lib::views::cyclic(a).end());
+        // std::views::iota(0);
+        // for(int v : lib::views::concat(lib::views::cyclic(a), lib::views::cyclic(b)) | std::views::take(13)) {
+        //     debug(v);
+        // }
+        debug(lib::views::concat(lib::views::cyclic(a), lib::views::cyclic(b)) | std::views::take(13));
+        debug(lib::views::concat(a, lib::views::cyclic(b)) | std::views::take(13));
+        debug(lib::views::concat(a | std::views::take(3), lib::views::cyclic(b)) | std::views::take(13));
     }
 
     // {

@@ -117,6 +117,7 @@ struct stride_view : std::ranges::view_interface<stride_view<View>> {
 template<class Range>
 stride_view(Range &&, std::ranges::range_difference_t<Range>) -> stride_view<std::views::all_t<Range>>;
 
+
 template<std::ranges::input_range View>
     requires std::ranges::view<View>
 template<bool Const>
@@ -147,12 +148,12 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         requires
             Const && std::convertible_to<std::ranges::iterator_t<View>, std::ranges::iterator_t<Base>> &&
             std::convertible_to<std::ranges::sentinel_t<View>, std::ranges::sentinel_t<Base>>
-      : _current(std::move(itr._current)),_end(std::move(itr._end)), _stride(itr._stride), _missing(itr._missing)
+      : _current(std::move(itr._current)), _end(std::move(itr._end)), _stride(itr._stride), _missing(itr._missing)
     {}
 
     inline constexpr std::ranges::iterator_t<Base> base() && noexcept(NO_EXCEPT) { return std::move(this->_current); }
 
-    inline constexpr const std::ranges::iterator_t<Base> &base() const & noexcept {
+    inline constexpr const std::ranges::iterator_t<Base>& base() const & noexcept {
         return this->_current;
     }
 
@@ -161,7 +162,7 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         return *this->_current;
     }
 
-    inline constexpr iterator &operator++() noexcept(NO_EXCEPT)
+    inline constexpr iterator& operator++() noexcept(NO_EXCEPT)
     {
         assert(this->_current != _end);
         this->_missing = std::ranges::advance(this->_current, this->_stride, this->_end);
@@ -176,7 +177,7 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         const auto res = *this; ++*this; return res;
     }
 
-    inline constexpr iterator &operator--() noexcept(NO_EXCEPT)
+    inline constexpr iterator& operator--() noexcept(NO_EXCEPT)
         requires std::ranges::bidirectional_range<Base>
     {
         std::ranges::advance(this->_current, this->_missing - this->_stride);
@@ -190,20 +191,21 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         const auto res = *this; --*this; return res;
     }
 
-    inline constexpr iterator &operator+=(const difference_type diff) noexcept(NO_EXCEPT)
+    inline constexpr iterator& operator+=(const difference_type diff) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         if(diff > 0) {
             assert(std::ranges::distance(this->_current, this->_end) > this->_stride * (diff - 1));
             this->_missing = std::ranges::advance(this->_current, this->_stride * diff, this->_end);
-        } else if(diff < 0) {
+        }
+        if(diff < 0) {
             std::ranges::advance(this->_current, this->_stride * diff + this->_missing);
             this->_missing = 0;
         }
         return *this;
     }
 
-    inline constexpr iterator &operator-=(const difference_type diff) noexcept(NO_EXCEPT)
+    inline constexpr iterator& operator-=(const difference_type diff) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return *this += -diff;
@@ -215,66 +217,66 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         return *(*this + diff);
     }
 
-    friend inline constexpr bool operator==(const iterator &lhs, std::default_sentinel_t) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator==(const iterator& lhs, std::default_sentinel_t) noexcept(NO_EXCEPT)
     {
         return lhs._current == lhs._end;
     }
 
-    friend inline constexpr bool operator==(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::equality_comparable<std::ranges::iterator_t<Base>>
     {
         return lhs._current == rhs._current;
     }
 
-    friend inline constexpr bool operator<(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return lhs._current < rhs._current;
     }
 
-    friend inline constexpr bool operator>(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return rhs._current < lhs._current;
     }
 
-    friend inline constexpr bool operator<=(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return !(rhs._current < lhs._current);
     }
 
-    friend inline constexpr bool operator>=(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return !(lhs._current < rhs._current);
     }
 
-    friend inline constexpr auto operator<=>(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base> && std::three_way_comparable<std::ranges::iterator_t<Base>>
     {
         return lhs._current <=> rhs._current;
     }
 
-    friend inline constexpr iterator operator+(const iterator &itr, const difference_type diff) noexcept(NO_EXCEPT)
+    friend inline constexpr iterator operator+(const iterator& itr, const difference_type diff) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         auto res = itr; res += diff; return res;
     }
 
-    friend inline constexpr iterator operator+(const difference_type diff, const iterator &itr) noexcept(NO_EXCEPT)
+    friend inline constexpr iterator operator+(const difference_type diff, const iterator& itr) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         return itr + diff;
     }
 
-    friend inline constexpr iterator operator-(const iterator &itr, const difference_type diff) noexcept(NO_EXCEPT)
+    friend inline constexpr iterator operator-(const iterator& itr, const difference_type diff) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
         auto res = itr; res -= diff; return res;
     }
 
-    friend inline constexpr const difference_type operator-(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr const difference_type operator-(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::sized_sentinel_for<std::ranges::iterator_t<Base>, std::ranges::iterator_t<Base>>
     {
         const auto diff = lhs._current - rhs._current;
@@ -286,35 +288,36 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
             return div_ceil(diff, lhs._stride);
     }
 
-    friend inline constexpr const difference_type operator-(std::default_sentinel_t rhs, const iterator &lhs) noexcept(NO_EXCEPT)
+    friend inline constexpr const difference_type operator-(std::default_sentinel_t, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::sized_sentinel_for<std::ranges::sentinel_t<Base>, std::ranges::iterator_t<Base>>
     {
-        return div_ceil(lhs._end - lhs._current, lhs._stride);
+        return div_ceil(rhs._end - rhs._current, rhs._stride);
     }
 
-    friend inline constexpr const difference_type operator-(const iterator &lhs, std::default_sentinel_t rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr const difference_type operator-(const iterator& lhs, std::default_sentinel_t rhs) noexcept(NO_EXCEPT)
         requires std::sized_sentinel_for<std::ranges::sentinel_t<Base>, std::ranges::iterator_t<Base>>
     {
         return -(rhs - lhs);
     }
 
-    friend inline constexpr std::ranges::range_rvalue_reference_t<Base> iter_move(const iterator &itr) noexcept(NO_EXCEPT)
+    friend inline constexpr std::ranges::range_rvalue_reference_t<Base> iter_move(const iterator& itr) noexcept(NO_EXCEPT)
     {
         return std::ranges::iter_move(itr._current);
     }
 
-    friend inline constexpr void iter_swap(const iterator &lhs, const iterator &rhs) noexcept(NO_EXCEPT)
+    friend inline constexpr void iter_swap(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::indirectly_swappable<std::ranges::iterator_t<Base>>
     {
         std::ranges::iter_swap(lhs._current, rhs._current);
     }
 };
 
+
 namespace views {
 
 namespace internal {
 
-template<class Range, typename T>
+template<class Range, class T>
 concept can_stride_view = requires { stride_view(std::declval<Range>(), std::declval<T>()); };
 
 }
