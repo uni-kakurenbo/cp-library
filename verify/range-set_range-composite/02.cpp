@@ -25,11 +25,37 @@ signed main() {
 }
 
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/range_set_range_sum.hpp"
+#include "data_structure/range_action/helper.hpp"
 
 using mint = lib::modint998244353;
-
 valarray<mint> ten, one;
+
+struct S {
+    mint sum = 0;
+    int len = 0;
+    S() {}
+    S(mint sum, int len = 1) : sum(sum), len(len) {}
+};
+
+S op(S a, S b) {
+    return { a.sum * ten[b.len] + b.sum, a.len + b.len };
+}
+S e() { return S{}; }
+
+using F = int;
+
+S mapping(F f, S s) {
+  if(f == 0) return s;
+  return { f * one[s.len], s.len };
+}
+
+F composition(F f, F g) {
+  if(f == 0) return g;
+  return f;
+}
+
+F id(){ return 0; }
+
 
 void solve() {
     int n, q; cin >> n >> q;
@@ -41,12 +67,13 @@ void solve() {
         one[i+1] = one[i] + ten[i];
     }
 
-    lib::lazy_segment_tree<action<mint>> data(n, mint{1});
+    using action = lib::actions::helper<S,op,e,F,mapping,composition,id>;
+    lib::lazy_segment_tree<action> data(n, S{1});
 
-    valarray<monoid<mint>> a(n, mint{1});
     REP(q) {
         int l, r, d; cin >> l >> r >> d; --l;
-        data(l, r) <<= d;
-        print(data.fold_all()->first);
+        data(l, r) += d;
+        print(data.fold(0, n)->sum);
+        // debug(data(0, 2).fold());
     }
 }

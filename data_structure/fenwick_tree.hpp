@@ -1,10 +1,14 @@
 #pragma once
 
+
 #include <cassert>
 #include <vector>
 #include <iterator>
 #include <utility>
 #include <type_traits>
+#include <concepts>
+#include <ranges>
+
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -16,8 +20,8 @@
 #include "numeric/bit.hpp"
 
 #include "data_structure/range_action/flags.hpp"
-#include "data_structure/internal/is_action.hpp"
-#include "algebraic/internal/traits.hpp"
+#include "data_structure/range_action/base.hpp"
+#include "algebraic/internal/concepts.hpp"
 
 
 namespace lib {
@@ -28,13 +32,13 @@ namespace fenwick_tree_impl {
 
 
 // Thanks to: atcoder::fenwick_tree
-template<class S>
+template<algebraic::internal::monoid S>
 struct base {
     using size_type = internal::size_t;
 
   private:
     size_type _n = 0, _bit_ceil = 0;
-    S *const _data = nullptr;
+    std::valarray<S> _data;
 
   protected:
     base() noexcept(NO_EXCEPT) {}
@@ -47,15 +51,12 @@ struct base {
     }
 
     explicit base(const size_type n) noexcept(NO_EXCEPT)
-      : _n(n), _bit_ceil(lib::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(new S[n]())
+      : _n(n), _bit_ceil(lib::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
     {}
-
-    ~base() { delete[] this->_data; }
-
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
-    inline S* data() noexcept(NO_EXCEPT) { return this->_data; }
-    inline const S* data() const noexcept(NO_EXCEPT) { return this->_data; }
+    inline S* data() noexcept(NO_EXCEPT) { return std::ranges::begin(this->_data); }
+    inline const S* data() const noexcept(NO_EXCEPT) { return std::ranges::begin(this->_data); }
 
     inline void apply(size_type p, const S& x) noexcept(NO_EXCEPT) {
         for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
@@ -112,17 +113,16 @@ struct base {
 };
 
 
-template<class, class = std::void_t<>> struct core {};
+template<class> struct core {};
 
-template<class monoid>
-struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>>> : base<monoid> {
-    static_assert(algebraic::internal::is_commutative_v<monoid>, "commutative property is required");
-
+template<algebraic::internal::monoid Monoid>
+    requires algebraic::internal::commutative<Monoid>
+struct core<Monoid> : base<Monoid> {
   private:
-    using base = typename fenwick_tree_impl::base<monoid>;
+    using base = typename fenwick_tree_impl::base<Monoid>;
 
   public:
-    using value_type = monoid;
+    using value_type = Monoid;
     using size_type = typename base::size_type;
 
   protected:
@@ -132,23 +132,33 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
 
   public:
     core() noexcept(NO_EXCEPT) : base() {}
+
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
-    template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
+    template<std::assignable_from<value_type> T>
+    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    explicit core(const I first, const S last) noexcept(NO_EXCEPT)
+      : core(static_cast<size_type>(std::ranges::distance(first, last)))
+    { this->assign(first, last); }
 
 
-    template<class T>
+    template<std::assignable_from<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT){ return this->assign(ALL(init_list)); }
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline auto& assign(const I first, const I last) noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == this->size());
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->size());
+        }
         std::copy(first, last, this->data());
         this->initialize();
         return *this;
     }
+
+    template<std::ranges::input_range R>
+    inline auto& assign(const R& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         std::fill(this->data(), this->data() + this->size(), v);
@@ -182,7 +192,7 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const value_type& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -214,15 +224,17 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
          return *this;
     }
 
-    inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        static_assert(algebraic::internal::is_invertible_v<value_type>, "point setting requires inverse element");
+    inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT)
+        requires algebraic::internal::invertible<value_type>
+    {
         assert(0 <= p && p < this->size());
         this->base::set(p, x);
          return *this;
     }
 
-    inline value_type get(const size_type p) const noexcept(NO_EXCEPT) {
-        static_assert(algebraic::internal::is_invertible_v<value_type>, "point getting requires inverse element");
+    inline value_type get(const size_type p) const noexcept(NO_EXCEPT)
+        requires algebraic::internal::invertible<value_type>
+    {
         assert(0 <= p && p < this->size());
         return this->base::get(p);
     }
@@ -232,8 +244,9 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
     inline const range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
     inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
-    inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        static_assert(algebraic::internal::is_invertible_v<value_type>, "range folding requires an inverse element");
+    inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT)
+        requires algebraic::internal::invertible<value_type>
+    {
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
@@ -262,8 +275,8 @@ struct core<monoid,std::void_t<typename algebraic::internal::is_monoid_t<monoid>
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<class Action>
-struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand> {
+template<actions::internal::action Action>
+struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
 
@@ -276,8 +289,9 @@ struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<
 } // namespace internal
 
 
-template<class action> struct fenwick_tree : internal::fenwick_tree_impl::core<action> {
-    using internal::fenwick_tree_impl::core<action>::core;
+template<class ActionOrMonoid>
+struct fenwick_tree : internal::fenwick_tree_impl::core<ActionOrMonoid> {
+    using internal::fenwick_tree_impl::core<ActionOrMonoid>::core;
 };
 
 

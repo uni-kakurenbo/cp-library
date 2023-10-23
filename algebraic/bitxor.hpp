@@ -8,7 +8,7 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct bitxor : base<T>, group, commutative {
+template<class T> struct bitxor : base<T>, associative, invertible, commutative {
     using base<T>::base;
     bitxor() noexcept(NO_EXCEPT) : base<T>() {};
     friend inline bitxor operator+(const bitxor& lhs, const bitxor& rhs) noexcept(NO_EXCEPT) { return lhs.val() xor rhs.val(); }

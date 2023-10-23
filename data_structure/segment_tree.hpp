@@ -5,6 +5,11 @@
 #include <algorithm>
 #include <vector>
 #include <type_traits>
+#include <concepts>
+#include <ranges>
+
+
+#include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -13,13 +18,10 @@
 #include "internal/range_reference.hpp"
 #include "internal/uncopyable.hpp"
 
-#include "snippet/iterations.hpp"
-
 #include "numeric/bit.hpp"
-
+#include "algebraic/internal/concepts.hpp"
+#include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
-#include "data_structure/internal/is_action.hpp"
-#include "algebraic/internal/traits.hpp"
 
 
 namespace lib {
@@ -30,7 +32,8 @@ namespace segment_tree_impl {
 
 
 // Thanks to: atcoder::segtree
-template<class S> struct base : private lib::internal::uncopyable {
+template<algebraic::internal::monoid S>
+struct base : private lib::internal::uncopyable {
     using size_type = internal::size_t;
 
   protected:
@@ -139,15 +142,15 @@ template<class S> struct base : private lib::internal::uncopyable {
 };
 
 
-template<class, class = std::void_t<>> struct core {};
+template<class> struct core {};
 
-template<class monoid>
-struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid>>> : base<monoid> {
+template<algebraic::internal::monoid Monoid>
+struct core<Monoid> : base<Monoid> {
   private:
-    using base = typename segment_tree_impl::base<monoid>;
+    using base = typename segment_tree_impl::base<Monoid>;
 
   public:
-    using value_type = monoid;
+    using value_type = Monoid;
     using size_type = typename base::size_type;
 
   protected:
@@ -159,23 +162,30 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     core() noexcept(NO_EXCEPT) : base() {};
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
-    template<class T>
+    template<std::assignable_from<value_type> T>
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : core(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    explicit core(const I first, const S last) noexcept(NO_EXCEPT)
+      : core(static_cast<size_type>(std::ranges::distance(first, last)))
+    { this->assign(first, last); }
 
-    template<class T>
+    template<std::assignable_from<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline auto& assign(const I first, const I last) noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == this->size());
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->size());
+        }
         size_type p = 0;
-        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = value_type(*itr);
+        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<value_type>(*itr);
         REPD(p, 1, this->_size) this->update(p);
         return *this;
     }
+
+    template<std::ranges::input_range R>
+    inline auto& assign(const R& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         REP(p, this->_n) this->_data[this->_size + p] = v;
@@ -208,7 +218,7 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const value_type& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -274,8 +284,8 @@ struct core<monoid, std::void_t<typename algebraic::internal::is_monoid_t<monoid
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<class Action>
-struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<typename Action::operand> {
+template<actions::internal::action Action>
+struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
 
@@ -288,8 +298,8 @@ struct core<Action, std::void_t<typename internal::is_action_t<Action>>> : core<
 } // namespace internal
 
 
-template<class monoid> struct segment_tree : internal::segment_tree_impl::core<monoid> {
-    using internal::segment_tree_impl::core<monoid>::core;
+template<class ActionOrMonoid> struct segment_tree : internal::segment_tree_impl::core<ActionOrMonoid> {
+    using internal::segment_tree_impl::core<ActionOrMonoid>::core;
 };
 
 

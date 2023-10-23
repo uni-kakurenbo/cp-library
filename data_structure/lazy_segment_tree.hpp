@@ -6,8 +6,10 @@
 #include <iostream>
 #include <vector>
 #include <type_traits>
+#include <concepts>
+#include <ranges>
 
-#include "snippet/iterations.hpp"
+#include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -18,6 +20,8 @@
 #include "numeric/bit.hpp"
 #include "numeric/arithmetic.hpp"
 
+#include "algebraic/internal/concepts.hpp"
+#include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
 
@@ -28,7 +32,10 @@ namespace internal {
 namespace lazy_segment_tree_impl {
 
 // Thanks to: atcoder::lazy_segtree
-template<class S, class F, S (*_map)(const S&, const F&), F (*_fold)(const F&, const internal::size_t)>
+template<
+    algebraic::internal::monoid S, algebraic::internal::monoid F,
+    S (*_map)(const S&, const F&), F (*_fold)(const F&, const internal::size_t)
+>
 struct base {
     using size_type = internal::size_t;
 
@@ -206,7 +213,7 @@ struct base {
 };
 
 
-template<class Action>
+template<actions::internal::action Action>
 struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
     static_assert(
         Action::tags.none() or
@@ -235,26 +242,38 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
   public:
     core() noexcept(NO_EXCEPT) : base() {}
+
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
-    template<class T> core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+    template<std::assignable_from<value_type> T>
+    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    explicit core(const I first, const I last) noexcept(NO_EXCEPT) : base(static_cast<size_type>(std::distance(first, last))) { this->assign(first, last); }
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    explicit core(const I first, const S last) noexcept(NO_EXCEPT)
+      : base(static_cast<size_type>(std::ranges::distance(first, last)))
+    { this->assign(first, last); }
 
-    template<class T>
-    inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
+    template<std::assignable_from<value_type> T>
+    inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT)
+    {
+        return this->assign(ALL(init_list));
+    }
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline auto& assign(const I first, const I last) noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == this->_n);
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->_n);
+        }
         size_type p = 0;
         for(auto itr=first; itr!=last; ++itr, ++p) {
-            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = value_type(*itr);
+            this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = static_cast<value_type>(*itr);
         }
         this->initialize();
         return *this;
     }
+
+    template<std::ranges::input_range R>
+    inline auto& assign(const R& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill( const value_type& v = {}) noexcept(NO_EXCEPT) {
         REP(p, 0, this->_n) {
@@ -289,7 +308,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -306,7 +325,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline range_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
@@ -370,8 +389,9 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 } // namespace internal
 
 
-template<class action> struct lazy_segment_tree : internal::lazy_segment_tree_impl::core<action> {
-    using internal::lazy_segment_tree_impl::core<action>::core;
+template<actions::internal::action Action>
+struct lazy_segment_tree : internal::lazy_segment_tree_impl::core<Action> {
+    using internal::lazy_segment_tree_impl::core<Action>::core;
 };
 
 

@@ -31,7 +31,7 @@ using mint = lib::modint998244353;
 valarray<mint> ten, one;
 
 template<class T>
-struct monoid : lib::algebraic::base<pair<T,int>> /*, internal::group, internal::commutative*/ {
+struct monoid : lib::algebraic::base<pair<T,int>>, lib::algebraic::associative/*, internal::group, internal::commutative*/ {
     using base = lib::algebraic::base<pair<T,int>>;
     using base::base;
     monoid() : base({ 0, 0 }) {}
@@ -74,7 +74,7 @@ void solve() {
     valarray<monoid<mint>> a(n, mint{1});
     REP(q) {
         int l, r, d; cin >> l >> r >> d; --l;
-        data(l, r) <<= d;
+        data(l, r) += d;
         print(data.fold(0, n)->first);
         // debug(data(0, 2).fold());
     }

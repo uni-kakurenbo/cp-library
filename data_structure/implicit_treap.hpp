@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <initializer_list>
 #include <random>
+#include <concepts>
+#include <ranges>
 
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
@@ -19,7 +21,8 @@
 #include "internal/range_reference.hpp"
 
 #include "random/xorshift.hpp"
-
+#include "algebraic/internal/concepts.hpp"
+#include "data_structure/range_action/base.hpp"
 #include "data_structure/range_action/flags.hpp"
 
 
@@ -31,7 +34,12 @@ namespace implicit_treap_impl {
 
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
-template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)>
+template<
+    algebraic::internal::monoid OperandMonoid, algebraic::internal::monoid OperatorMonoid,
+    OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&),
+    OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)
+>
+
 struct base : private uncopyable {
     using operand = OperandMonoid;
     using operation = OperatorMonoid;
@@ -240,11 +248,16 @@ struct base : private uncopyable {
     }
 };
 
-template<class OperandMonoid, class OperatorMonoid, OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&), OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)>
+template<
+    algebraic::internal::monoid OperandMonoid,
+    algebraic::internal::monoid OperatorMonoid,
+    OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&),
+    OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)
+>
 xorshift base<OperandMonoid,OperatorMonoid,_map,_fold>::rand(std::random_device{}());
 
 
-template<class Action>
+template<actions::internal::action Action>
 struct core : base<typename Action::operand,typename Action::operation,Action::map,Action::fold> {
     static_assert(
         Action::tags.none() or
@@ -273,15 +286,25 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
   public:
     template<class... Args>
-    explicit core(Args... args) noexcept(NO_EXCEPT) : core() { this->assign(std::forward<Args>(args)...); }
-    template<class T> core(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) : core(std::begin(values), std::end(values)) {}
+    explicit core(Args&&... args) noexcept(NO_EXCEPT) : core() { this->assign(std::forward<Args>(args)...); }
+
+    template<std::assignable_from<value_type> T>
+    core(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
+      : core(std::ranges::begin(values), std::ranges::end(values))
+    {}
+
     core() noexcept(NO_EXCEPT) {}
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline void insert(size_type p, const I first, const I last) noexcept(NO_EXCEPT) {
+    template<std::forward_iterator I, std::sentinel_for<I> S>
+    inline void insert(size_type p, const I first, const S last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr != last; ++itr, ++p) {
             this->insert(p, *itr);
         }
+    }
+
+    template<std::ranges::input_range R>
+    inline void insert(const size_type p, const R& range) noexcept(NO_EXCEPT) {
+        return this->insert(p, std::ranges::begin(range), std::ranges::end(range));
     }
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
@@ -300,7 +323,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -327,7 +350,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator<<=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline range_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
@@ -338,58 +361,108 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     };
 
 
-    inline void insert(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
+    inline auto& insert(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p <= this->size());
         this->base::insert(p, v);
+        return *this;
     }
 
-    inline void insert(const size_type p, const value_type& v, const size_type count) noexcept(NO_EXCEPT) {
+    inline auto& insert(const size_type p, const value_type& v, const size_type count) noexcept(NO_EXCEPT) {
         REP(k, count) this->insert(p + k, v);
+        return *this;
     }
 
-    inline void push_front(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(0, v, count); }
-    inline void push_back(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT) { this->insert(this->size(), v, count); }
+    inline auto& push_front(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT)
+    {
+        this->insert(0, v, count);
+        return *this;
+    }
 
-    inline void resize(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
+    inline auto& push_back(const value_type& v, const size_type count = 1) noexcept(NO_EXCEPT)
+    {
+        this->insert(this->size(), v, count);
+        return *this;
+    }
+
+    inline auto& resize(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
         REP(this->size() - size) this->erase(-1);
         REP(i, this->size(), size) this->push_back(v);
+        return *this;
     }
 
-    inline void assign(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
-        this->clear(), this->insert(0, v, size);
+    inline auto& assign(const size_type size, const value_type& v = value_type{}) noexcept(NO_EXCEPT) {
+        this->clear();
+        this->insert(0, v, size);
+        return *this;
     }
 
-    template<class T> inline void assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) { this->assign(std::begin(values), std::end(values)); }
+    template<std::assignable_from<value_type> T>
+    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
+    {
+        this->assign(std::ranges::begin(values), std::ranges::end(values));
+        return *this;
+    }
 
-    template<class I, std::void_t<typename std::iterator_traits<I>::value_type>* = nullptr>
-    inline void assign(const I first, const I last) noexcept(NO_EXCEPT) { this->clear(), this->insert(0, first, last); }
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+        this->clear();
+        this->insert(0, first, last);
+        return *this;
+    }
 
-    inline void fill(const value_type& v) noexcept(NO_EXCEPT) {
+    inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
         const size_type count = this->size();
         this->clear(), this->insert(0, v, count);
+        return *this;
     }
-    inline void fill(const size_type l, const size_type r, const value_type& v) noexcept(NO_EXCEPT) {
+    inline auto& fill(const size_type l, const size_type r, const value_type& v) noexcept(NO_EXCEPT) {
         REP(p, l, r) this->erase(p), this->insert(p, v);
+        return *this;
     }
 
-    inline void erase(size_type p) noexcept(NO_EXCEPT) {
+    inline auto& erase(size_type p) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::erase(p);
+        return *this;
     }
-    inline void erase(const size_type p, const size_type count) noexcept(NO_EXCEPT) { REP(count) this->erase(p); }
-    inline void clear() noexcept(NO_EXCEPT) { this->erase(0, this->size()); }
 
-    inline void pop_front(const size_type count = 1) noexcept(NO_EXCEPT) { this->erase(0, count); }
-    inline void pop_back(const size_type count = 1) noexcept(NO_EXCEPT) { this->erase(this->size() - count, count); }
+    inline auto& erase(const size_type p, const size_type count) noexcept(NO_EXCEPT) {
+        REP(count) this->erase(p);
+        return *this;
+    }
+
+    inline auto& clear() noexcept(NO_EXCEPT) {
+        this->erase(0, this->size());
+        return *this;
+    }
+
+    inline auto& pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->erase(0, count);
+        return *this;
+    }
+
+    inline auto& pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->erase(this->size() - count, count);
+        return *this;
+    }
 
 
-    inline void apply(size_type l, size_type r, const action_type& v) noexcept(NO_EXCEPT) {
+    inline auto& apply(size_type l, size_type r, const action_type& v) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         this->base::apply(l, r, v);
+        return *this;
     }
-    inline void apply(const size_type p, const action_type& v) noexcept(NO_EXCEPT) { this->apply(p, p+1, v); }
-    inline void apply(const action_type& v) noexcept(NO_EXCEPT) { this->apply(0, this->size(), v); }
+
+    inline auto& apply(const size_type p, const action_type& v) noexcept(NO_EXCEPT) {
+        this->apply(p, p+1, v);
+        return *this;
+    }
+
+    inline auto& apply(const action_type& v) noexcept(NO_EXCEPT) {
+        this->apply(0, this->size(), v);
+        return *this;
+    }
 
 
     inline value_type get(size_type p) const noexcept(NO_EXCEPT) {
@@ -408,21 +481,32 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r).val();
     }
+
     inline value_type fold() const noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
 
-    inline void reverse(size_type l, size_type r) const noexcept(NO_EXCEPT) {
+    inline auto& reverse(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         this->base::reverse(l, r);
+        return *this;
     }
-    inline void reverse() const noexcept(NO_EXCEPT) { this->reverse(0, this->size()); }
 
-    inline void rotate(size_type l, size_type m, size_type r) const noexcept(NO_EXCEPT) {
+    inline auto& reverse() const noexcept(NO_EXCEPT) {
+        this->reverse(0, this->size());
+        return *this;
+    }
+
+    inline auto& rotate(size_type l, size_type m, size_type r) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), m = this->_positivize_index(m), r = this->_positivize_index(r);
         assert(0 <= l && l <= m && m < r && r <= this->size());
         this->base::rotate(l, m, r);
+        return *this;
     }
-    inline void rotate(const size_type m) const noexcept(NO_EXCEPT) { this->rotate(0, m, this->size()); }
+
+    inline auto& rotate(const size_type m) const noexcept(NO_EXCEPT) {
+        this->rotate(0, m, this->size());
+        return *this;
+    }
 
     inline size_type find(size_type l, size_type r, const value_type& v, const bool dir_left = true) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
@@ -456,8 +540,9 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 } // namespace internal
 
 
-template<class action> struct implicit_treap : internal::implicit_treap_impl::core<action> {
-    using internal::implicit_treap_impl::core<action>::core;
+template<actions::internal::action Action>
+struct implicit_treap : internal::implicit_treap_impl::core<Action> {
+    using internal::implicit_treap_impl::core<Action>::core;
 };
 
 

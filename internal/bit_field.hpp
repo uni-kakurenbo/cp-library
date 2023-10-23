@@ -40,6 +40,10 @@ template<class Flag> struct base {
         return (this->bits() & static_cast<bit_type>(head)) and has(tail...);
     }
     constexpr bool has() const noexcept(NO_EXCEPT) { return true; }
+
+    constexpr bool has(const base& other) const noexcept(NO_EXCEPT) {
+        return this->_bits & other._bits == other._bits;
+    }
 };
 
 

@@ -21,7 +21,7 @@ struct helper : lib::algebraic::base<T>, Tags... {
 
 
 template<class T, T (*op)(T, T), T (*e)()>
-using monoid_helper = helper<T,op,e,monoid>;
+using monoid_helper = helper<T,op,e,associative>;
 
 
 } // namespace algebraic

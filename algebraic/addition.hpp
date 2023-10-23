@@ -8,7 +8,7 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct addition : base<T>, group, commutative {
+template<class T> struct addition : base<T>, associative, invertible, commutative {
     using base<T>::base;
     addition() noexcept(NO_EXCEPT) : base<T>() {};
     friend inline addition operator+(const addition& lhs, const addition& rhs) noexcept(NO_EXCEPT) { return lhs.val() + rhs.val(); }

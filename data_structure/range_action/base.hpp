@@ -1,27 +1,44 @@
 #pragma once
 
 #include <cstddef>
+#include <concepts>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
+#include "algebraic/internal/concepts.hpp"
 
 
 namespace lib {
 
 namespace actions {
 
-namespace internal {
 
-struct base {};
-
-} // namespace internal
-
-
-
-template<class operation = std::nullptr_t> struct base : internal::base {
+template<class operation = std::nullptr_t>
+    requires algebraic::internal::monoid<operation> || std::same_as<operation, std::nullptr_t>
+struct base {
     static operation fold(const operation& x, const lib::internal::size_t) noexcept(NO_EXCEPT) { return x; }
 };
 
+
+namespace internal {
+
+
+template<class T>
+concept action =
+    (
+        algebraic::internal::monoid<typename T::operand>
+    ) ||
+    (
+        algebraic::internal::monoid<typename T::operand> &&
+        algebraic::internal::monoid<typename T::operation>
+    ) &&
+    requires (const typename T::operand& v, const typename T::operation& f, const lib::internal::size_t length) {
+        { T::map(v, f) } -> std::same_as<typename T::operand>;
+        { T::fold(f, length) } -> std::same_as<typename T::operation>;
+    };
+
+} // namespace internal
 
 } // namespace actions
 

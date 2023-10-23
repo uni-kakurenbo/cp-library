@@ -29,18 +29,11 @@ struct base {
 };
 
 
+struct associative {};
+
 struct commutative {};
 
 struct invertible {};
-
-
-struct magma {};
-
-struct semigroup : magma {};
-
-struct monoid : semigroup {};
-
-struct group : monoid, invertible {};
 
 
 } // namespace algebraic
