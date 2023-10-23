@@ -75,7 +75,7 @@ struct multiset_hasher {
         if(this->_hash >= multiset_hasher::mod) this->_hash -= multiset_hasher::mod;
     }
     inline void _remove_hash(const hash_type h, const hash_type count) noexcept(NO_EXCEPT) {
-        auto hash = to_unsigned(this->_hash);
+        auto hash = to_signed(this->_hash);
         hash -= multiset_hasher::mul(h, count);
         if(hash < 0) hash += multiset_hasher::mod;
         this->_hash = hash;
