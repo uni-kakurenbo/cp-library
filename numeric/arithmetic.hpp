@@ -145,77 +145,72 @@ inline constexpr std::common_type_t<Args...> lcm(const Args&... args) noexcept(N
 }
 
 
-template<std::integral T, std::integral U>
-inline constexpr std::optional<std::common_type_t<T,U>> add_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
-    std::common_type_t<T,U> res;
+template<std::integral T0, std::integral T1>
+inline constexpr std::optional<std::common_type_t<T0, T1>> add_overflow(const T0& a, const T1& b) noexcept(NO_EXCEPT) {
+    std::common_type_t<T0, T1> res;
     if(__builtin_add_overflow(a, b, &res)) return {};
-    else return res;
+    return res;
 }
 
-template<std::integral T, std::integral U>
-inline constexpr std::optional<std::common_type_t<T,U>> sub_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
-    std::common_type_t<T,U> res;
+template<std::integral T0, std::integral T1>
+inline constexpr std::optional<std::common_type_t<T0, T1>> sub_overflow(const T0& a, const T1& b) noexcept(NO_EXCEPT) {
+    std::common_type_t<T0, T1> res;
     if(__builtin_sub_overflow(a, b, &res)) return {};
-    else return res;
+    return res;
 }
 
-template<std::integral T, std::integral U>
-inline constexpr std::optional<std::common_type_t<T,U>> mul_overflow(const T& a, const U& b) noexcept(NO_EXCEPT) {
-    std::common_type_t<T,U> res;
+template<std::integral T0, std::integral T1>
+inline constexpr std::optional<std::common_type_t<T0, T1>> mul_overflow(const T0& a, const T1& b) noexcept(NO_EXCEPT) {
+    std::common_type_t<T0, T1> res;
     if(__builtin_mul_overflow(a, b, &res)) return {};
-    else return res;
+    return res;
 }
 
-
-template<class T, class U, class V>
-inline bool mul_over(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
-    using Com = std::common_type_t<T,U,V>;
-    const auto res = mul_overflow<Com,Com>(x, y);
-    if(!res) return !((x < 0) xor (y < 0));
-    return *res > s;
+template<std::integral T0, std::integral T1, std::integral Limit>
+inline auto add_clamp(const T0 x, const T1 y, const Limit inf, const Limit sup) noexcept(NO_EXCEPT) {
+    using Common = std::common_type_t<T0, T1, Limit>;
+    const auto res = add_overflow<Common>(x, y);
+    if(!res) {
+        if(x < 0 && y < 0) return inf;
+        if(x > 0 && y > 0) return sup;
+        assert(false);
+    }
+    return std::clamp<Common>(*res, inf, sup);
 }
 
-template<class T, class U, class V>
-inline bool mul_or_over(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
-    using Com = std::common_type_t<T,U,V>;
-    const auto res = mul_overflow<Com,Com>(x, y);
-    if(!res) return !((x < 0) xor (y < 0));
-    return *res >= s;
+template<std::integral T0, std::integral T1, std::integral Limit>
+inline auto sub_clamp(const T0 x, const T1 y, const Limit inf, const Limit sup) noexcept(NO_EXCEPT) {
+    using Common = std::common_type_t<T0, T1, Limit>;
+    const auto res = sub_overflow<Common>(x, y);
+    if(!res) {
+        if(x < 0 && y > 0) return inf;
+        if(x > 0 && y < 0) return sup;
+        assert(false);
+    }
+    return std::clamp<Common>(*res, inf, sup);
 }
 
-template<class T, class U, class V>
-inline bool mul_under(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
-    using Com = std::common_type_t<T,U,V>;
-    const auto res = mul_overflow<Com,Com>(x, y);
-    if(!res) return ((x < 0) xor (y < 0));
-    return *res < s;
+template<std::integral T0, std::integral T1, std::integral Limit>
+inline auto mul_clamp(const T0 x, const T1 y, const Limit inf, const Limit sup) noexcept(NO_EXCEPT) {
+    using Common = std::common_type_t<T0, T1, Limit>;
+    const auto res = mul_overflow<Common>(x, y);
+    if(!res) {
+        if((x > 0) xor (y > 0)) return inf;
+        else return sup;
+        assert(false);
+    }
+    return std::clamp<Common>(*res, inf, sup);
 }
 
-template<class T, class U, class V>
-inline bool mul_or_under(const T x, const U y, const V s) noexcept(NO_EXCEPT) {
-    using Com = std::common_type_t<T,U,V>;
-    const auto res = mul_overflow<Com,Com>(x, y);
-    if(!res) return ((x < 0) xor (y < 0));
-    return *res <= s;
-}
 
 template<class T>
 inline constexpr T sqrt_floor(const T x) noexcept(NO_EXCEPT) {
-    T res = static_cast<T>(std::sqrt(x));
-
-    if constexpr(std::is_floating_point_v<T>) {
-        while((res + 1) * (res + 1) <= x) res += 1;
-    }
-    else {
-        while(mul_overflow(res + 1, res + 1).value_or(std::numeric_limits<T>::max()) <= x) ++res;
-    }
-
-    return res;
+    return static_cast<T>(std::sqrt(static_cast<long double>(x)));
 }
 
 template<class T>
 inline constexpr T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
-    T res = static_cast<T>(std::sqrt(x));
+    T res = sqrt_floor(x);
 
     if constexpr(std::is_floating_point_v<T>) {
         while(res * res < x) res += 1;
@@ -223,6 +218,41 @@ inline constexpr T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
     else {
         while(mul_overflow(res, res).value_or(std::numeric_limits<T>::max()) < x) ++res;
     }
+
+    return res;
+}
+
+template<class T>
+inline constexpr T kth_root_floor(T x, const i64 k) noexcept(NO_EXCEPT) {
+    assert(x >= 0), assert(k > 0);
+    if(x <= 1 or k == 1) return x;
+
+    constexpr int DIGITS = std::numeric_limits<T>::digits;
+    if(k >= DIGITS) return T{1};
+    if(k == 2) return sqrt_floor(x);
+
+    constexpr T MAX = std::numeric_limits<T>::max();
+    if(x == MAX) --x;
+
+    auto pow = [&](T t, i64 p) {
+        if(p == 0) return T{1};
+        T res = 1;
+        while(p) {
+            if(p & 1) {
+                T _res;
+                if(__builtin_mul_overflow(res, t, &_res)) res = MAX;
+                else res = _res;
+            }
+            T _x;
+            if(__builtin_mul_overflow(t, t, &_x)) t = MAX;
+            else t = _x;
+            p >>= 1;
+        }
+        return res;
+    };
+
+    T res = std::pow(x, std::nextafter(1 / static_cast<double>(k), 0));
+    while(pow(res + 1, k) <= x) ++res;
 
     return res;
 }

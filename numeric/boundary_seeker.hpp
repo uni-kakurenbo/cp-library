@@ -37,11 +37,11 @@ struct integal {
         return ok;
     }
 
-    template<const bool REVERSE = false>
+    template<const bool INVERT = false>
     T bound(const T ok) const noexcept(NO_EXCEPT) {
-        T ng = ok + REVERSE ? -1 : 1;
-        while(this->validate(ng)) ng += REVERSE ? -ng : ng;
-        return this->bound(ok, ng);
+        T ng = INVERT ? -1 : 1;
+        while(this->validate(ok + ng)) ng += ng;
+        return this->bound(ok, ok + ng);
     }
 
     template<const bool REVERSE = false>
@@ -59,9 +59,9 @@ struct integal {
         return this->validate(res) ? res : proxy;
     }
 
-    template<const bool REVERSE = false>
+    template<const bool INVERT = false>
     T bound_or(const T ok, const T proxy) const noexcept(NO_EXCEPT) {
-        const T res = this->bound<REVERSE>(ok);
+        const T res = this->bound<INVERT>(ok);
         return this->validate(res) ? res : proxy;
     }
 

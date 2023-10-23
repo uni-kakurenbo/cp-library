@@ -68,10 +68,6 @@ using lib::DIRS8;
 using lib::input_adapter;
 using lib::output_adapter;
 
-using lib::nPr;
-using lib::nCr;
-
-using lib::pow;
 using lib::pow_mod;
 using lib::inv_mod;
 
@@ -90,13 +86,8 @@ using lib::modint64;
 using lib::sorted;
 using lib::reversed;
 
-using lib::join;
-
 using lib::chmin;
 using lib::chmax;
-
-using lib::grid;
-using lib::graph;
 
 using lib::matrix;
 using lib::unordered_multiset;
