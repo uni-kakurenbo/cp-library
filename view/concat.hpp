@@ -40,7 +40,7 @@ struct concat_view : std::ranges::view_interface<concat_view<V0, V1>> {
         requires std::ranges::forward_range<B0<Const>> && std::ranges::forward_range<B1<Const>>
     struct iterator_tag<Const> {
       public:
-        using iterator_category = most_primitive_iterator_tag<
+        using iterator_category = lib::internal::most_primitive_iterator_tag<
             typename std::iterator_traits<std::ranges::iterator_t<B0<Const>>>::iterator_category,
             typename std::iterator_traits<std::ranges::iterator_t<B1<Const>>>::iterator_category
         >;
@@ -144,7 +144,7 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
     using value_type = std::common_type_t<std::ranges::range_value_t<B0>, std::ranges::range_value_t<B1>>;
     using reference_type = std::common_reference_t<std::ranges::range_reference_t<B0>, std::ranges::range_reference_t<B1>>;
 
-    using iterator_concept = internal::most_primitive_iterator_tag<
+    using iterator_concept = lib::internal::most_primitive_iterator_tag<
         internal::most_primitive_iterator_concept<Const, V0, V1>
     >;
 

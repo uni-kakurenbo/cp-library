@@ -12,8 +12,6 @@
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 
-#include "numeric/arithmetic.hpp"
-
 
 namespace lib {
 
@@ -110,7 +108,9 @@ struct container_iterator_interface : random_access_iterator_base<T> {
 };
 
 template<class V, class I>
-inline auto to_non_const_iterator(V v, const I itr) noexcept(NO_EXCEPT) { return std::next(std::begin(v), std::distance(std::cbegin(v), itr)); }
+inline auto to_non_const_iterator(V v, const I itr) noexcept(NO_EXCEPT) {
+    return std::ranges::next(std::ranges::begin(v), std::ranges::distance(std::ranges::cbegin(v), itr));
+}
 
 
 namespace iterator_impl {

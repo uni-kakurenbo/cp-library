@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <iterator>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -28,28 +29,36 @@ struct bit_vector {
   public:
     bit_vector(const size_type _n = 0) noexcept(NO_EXCEPT) { this->init(_n); }
 
-    template<class I> explicit bit_vector(const I first, const I last) noexcept(NO_EXCEPT) : bit_vector(std::distance(first, last)) {
+    template<class I> explicit bit_vector(const I first, const I last) noexcept(NO_EXCEPT)
+      : bit_vector(std::ranges::distance(first, last))
+    {
         size_type pos = 0;
         for(auto itr=first; itr != last; ++pos, ++itr) if(*itr) this->set(pos);
     }
-    template<class T> bit_vector(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : bit_vector(std::begin(init_list), std::end(init_list)) {}
+
+    template<class T> bit_vector(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT)
+      : bit_vector(std::ranges::begin(init_list), std::ranges::end(init_list))
+    {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
     inline size_type zeros() const noexcept(NO_EXCEPT) { return this->_zeros; }
     inline size_type ones() const noexcept(NO_EXCEPT) { return this->_n - this->_zeros; }
 
-    inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / w] |= 1LL << (k % w); }
-    inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return std::uint32_t(this->_block[k / w] >> (k % w)) & 1U; }
+    inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / w] |= (1LL << (k % w)); }
+    inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return static_cast<std::uint32_t>(this->_block[k / w] >> (k % w)) & 1U; }
 
-    __attribute__((optimize("O3", "unroll-loops"))) void init(const size_type _n) noexcept(NO_EXCEPT) {
+    __attribute__((optimize("O3", "unroll-loops")))
+    inline void init(const size_type _n) noexcept(NO_EXCEPT) {
         this->_n = this->_zeros = _n;
         this->_block.resize(_n / w + 1, 0);
         this->_count.resize(this->_block.size(), 0);
     }
 
-    void build() noexcept(NO_EXCEPT) {
-        for(auto k = 1UL; k < this->_block.size(); ++k) this->_count[k] = this->_count[k-1] + static_cast<size_type>(lib::popcount(this->_block[k-1]));
+    inline void build() noexcept(NO_EXCEPT) {
+        for(auto k = 1UL; k < this->_block.size(); ++k) {
+            this->_count[k] = this->_count[k-1] + static_cast<size_type>(lib::popcount(this->_block[k-1]));
+        }
         this->_zeros = this->rank0(this->_n);
     }
 

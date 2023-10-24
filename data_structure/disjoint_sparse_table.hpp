@@ -149,12 +149,10 @@ struct core<Semigroup> : base<Semigroup> {
 };
 
 
-template<actions::internal::action Action>
+template<actions::internal::operand_only_action Action>
 struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
-
-    static_assert(action::tags.none() or action::tags.has(actions::flags::range_folding));
 };
 
 

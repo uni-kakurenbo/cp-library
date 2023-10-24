@@ -4,9 +4,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); input >> a;
+    std::vector<u32> a(n); input >> a;
 
-    lib::wavelet_matrix<int>::compressed data(ALL(a));
+    lib::wavelet_matrix<u32>::compressed data(a);
     debug(data);
 
     REP(q) {

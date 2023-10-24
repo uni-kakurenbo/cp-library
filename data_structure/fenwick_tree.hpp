@@ -135,7 +135,7 @@ struct core<Monoid> : base<Monoid> {
 
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
@@ -144,7 +144,7 @@ struct core<Monoid> : base<Monoid> {
     { this->assign(first, last); }
 
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT){ return this->assign(ALL(init_list)); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
@@ -275,12 +275,10 @@ struct core<Monoid> : base<Monoid> {
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<actions::internal::action Action>
+template<actions::internal::operand_only_action Action>
 struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
-
-    static_assert(action::tags.none() or action::tags.has(actions::flags::range_folding));
 };
 
 

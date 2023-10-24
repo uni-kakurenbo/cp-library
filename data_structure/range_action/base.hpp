@@ -25,18 +25,22 @@ namespace internal {
 
 
 template<class T>
-concept action =
-    (
-        algebraic::internal::monoid<typename T::operand>
-    ) ||
-    (
-        algebraic::internal::monoid<typename T::operand> &&
-        algebraic::internal::monoid<typename T::operation>
-    ) &&
+concept operatable_action = algebraic::internal::monoid<typename T::operand>;
+
+template<class T>
+concept effective_action =
+    algebraic::internal::monoid<typename T::operation> &&
     requires (const typename T::operand& v, const typename T::operation& f, const lib::internal::size_t length) {
         { T::map(v, f) } -> std::same_as<typename T::operand>;
         { T::fold(f, length) } -> std::same_as<typename T::operation>;
     };
+
+template<class T>
+concept full_action = operatable_action<T> && effective_action<T>;
+
+template<class T>
+concept operand_only_action = operatable_action<T> && (!effective_action<T>);
+
 
 } // namespace internal
 

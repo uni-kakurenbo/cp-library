@@ -18,11 +18,11 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             int l, r, x; std::cin >> l >> r >> x; --l;
-            data.add(l, r, x);
+            data(l, r) += x;
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r; --l;
-            std::cout << data.sum(l, r) << "\n";
+            print(data(l, r).fold());
         }
         debug(data);
     }

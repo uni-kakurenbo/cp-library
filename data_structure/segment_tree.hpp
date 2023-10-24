@@ -162,7 +162,7 @@ struct core<Monoid> : base<Monoid> {
     core() noexcept(NO_EXCEPT) : base() {};
     explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
@@ -170,7 +170,7 @@ struct core<Monoid> : base<Monoid> {
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
@@ -284,7 +284,7 @@ struct core<Monoid> : base<Monoid> {
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<actions::internal::action Action>
+template<actions::internal::full_action Action>
 struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
@@ -298,7 +298,8 @@ struct core<Action> : core<typename Action::operand> {
 } // namespace internal
 
 
-template<class ActionOrMonoid> struct segment_tree : internal::segment_tree_impl::core<ActionOrMonoid> {
+template<class ActionOrMonoid>
+struct segment_tree : internal::segment_tree_impl::core<ActionOrMonoid> {
     using internal::segment_tree_impl::core<ActionOrMonoid>::core;
 };
 

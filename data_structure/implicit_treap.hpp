@@ -257,13 +257,8 @@ template<
 xorshift base<OperandMonoid,OperatorMonoid,_map,_fold>::rand(std::random_device{}());
 
 
-template<actions::internal::action Action>
+template<actions::internal::full_action Action>
 struct core : base<typename Action::operand,typename Action::operation,Action::map,Action::fold> {
-    static_assert(
-        Action::tags.none() or
-        Action::tags.has(actions::flags::range_folding, actions::flags::range_operation)
-    );
-
   public:
     using action = Action;
 
@@ -288,7 +283,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     template<class... Args>
     explicit core(Args&&... args) noexcept(NO_EXCEPT) : core() { this->assign(std::forward<Args>(args)...); }
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     core(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
       : core(std::ranges::begin(values), std::ranges::end(values))
     {}
@@ -396,7 +391,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         return *this;
     }
 
-    template<std::assignable_from<value_type> T>
+    template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
     {
         this->assign(std::ranges::begin(values), std::ranges::end(values));
@@ -540,7 +535,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 } // namespace internal
 
 
-template<actions::internal::action Action>
+template<actions::internal::full_action Action>
 struct implicit_treap : internal::implicit_treap_impl::core<Action> {
     using internal::implicit_treap_impl::core<Action>::core;
 };

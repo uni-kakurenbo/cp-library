@@ -8,7 +8,8 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
-// #include <atcoder/dsu>
+
+#include "adapter/vector.hpp"
 
 
 namespace lib {
@@ -59,13 +60,13 @@ struct dsu {
         return -_parent_or_size[this->leader(a)];
     }
 
-    inline std::vector<std::vector<size_type>> groups() const noexcept(NO_EXCEPT) {
-        std::vector<size_type> leader_buf(_n), group_size(_n);
+    inline vector<vector<size_type>> groups() const noexcept(NO_EXCEPT) {
+        vector<size_type> leader_buf(_n), group_size(_n);
         for (size_type i = 0; i < _n; i++) {
             leader_buf[i] = this->leader(i);
             group_size[leader_buf[i]]++;
         }
-        std::vector<std::vector<size_type>> result(_n);
+        vector<vector<size_type>> result(_n);
         for (size_type i = 0; i < _n; i++) {
             result[i].reserve(group_size[i]);
         }
@@ -73,9 +74,9 @@ struct dsu {
             result[leader_buf[i]].push_back(i);
         }
         result.erase(
-            std::remove_if(result.begin(), result.end(),
-                           [&](const std::vector<size_type>& v) { return v.empty(); }),
-            result.end());
+            remove_if(result.begin(), result.end(), [&](const auto& v) { return v.empty(); }),
+            result.end()
+        );
         return result;
     }
 };

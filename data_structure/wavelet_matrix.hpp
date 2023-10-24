@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cassert>
 #include <cstdint>
 #include <utility>
@@ -11,6 +12,9 @@
 #include <optional>
 #include <limits>
 #include <type_traits>
+#include <ranges>
+#include <concepts>
+
 
 #include "snippet/iterations.hpp"
 
@@ -27,6 +31,7 @@
 
 #include "numeric/bit.hpp"
 #include "numeric/limits.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -37,7 +42,8 @@ namespace wavelet_matrix_impl {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
-template<class T, class dict_type> struct base {
+template<std::unsigned_integral T, class dict_type>
+struct base {
     using size_type = internal::size_t;
 
   private:
@@ -50,16 +56,28 @@ template<class T, class dict_type> struct base {
 
   public:
     base() = default;
-    template<class I> base(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
-    template<class U> base(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : base(ALL(init_list)) {}
+
+    template<std::ranges::input_range R>
+    explicit base(const R& range) noexcept(NO_EXCEPT) : base(ALL(range)) {}
+
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    base(const I first, const S last) noexcept(NO_EXCEPT) { this->build(first, last); }
+
+    template<std::convertible_to<T> U>
+    base(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : base(ALL(init_list)) {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
     inline size_type bits() const noexcept(NO_EXCEPT) { return this->_bits; }
 
-    template<class I> __attribute__((optimize("O3"))) void build(const I first, const I last) noexcept(NO_EXCEPT) {
-        this->_n = static_cast<size_type>(std::distance(first, last));
-        this->_max = first == last ? -1 : *std::max_element(first, last);
-        this->_bits = bit_width<std::make_unsigned_t<T>>(this->_max + 1);
+    template<std::ranges::input_range R>
+    inline void build(const R& range) noexcept(NO_EXCEPT) { this->build(ALL(range)); }
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+        __attribute__((optimize("O3")))
+    void build(const I first, const S last) noexcept(NO_EXCEPT) {
+        this->_n = static_cast<size_type>(std::ranges::distance(first, last));
+        this->_max = first == last ? -1 : *std::ranges::max_element(first, last);
+        this->_bits = bit_width(lib::to_unsigned(this->_max + 1));
 
         this->_index.assign(this->_bits, this->_n);
 
@@ -82,7 +100,10 @@ template<class T, class dict_type> struct base {
             }
             this->_index[h].build();
 
-            std::array<typename std::vector<T>::iterator,2> itrs{ std::begin(nxt), std::next(std::begin(nxt), this->_index[h].zeros()) };
+            std::array<typename std::vector<T>::iterator,2> itrs{
+                std::ranges::begin(nxt), std::ranges::next(std::ranges::begin(nxt), this->_index[h].zeros())
+            };
+
             for(size_type i=0; i<this->_n; ++i) *itrs[this->_index[h].get(i)]++ = bit[i];
 
             REP(i, this->_n) this->_sum[h][i+1] = this->_sum[h][i] + nxt[i];
@@ -94,11 +115,13 @@ template<class T, class dict_type> struct base {
     }
 
   protected:
-    inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_sum[this->_bits][k+1] - this->_sum[this->_bits][k]; }
+    inline T get(const size_type k) const noexcept(NO_EXCEPT) {
+        return this->_sum[this->_bits][k+1] - this->_sum[this->_bits][k];
+    }
 
     size_type select(const T& v, const size_type rank) const noexcept(NO_EXCEPT) {
-        if (v > this->_max) return this->_n;
-        if (this->_first_pos.count(v) == 0) return this->_n;
+        if(v > this->_max) return this->_n;
+        if(not this->_first_pos.contains(v)) return this->_n;
 
         size_type pos = this->_first_pos.at(v) + rank + 1;
         REP(h, this->_bits) {
@@ -260,9 +283,10 @@ template<class T, class dict_type> struct base {
 } // namespace internal
 
 
-template<class T, class dict_type = std::unordered_map<T,internal::size_t>> struct compressed_wavelet_matrix;
+template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
+struct compressed_wavelet_matrix;
 
-template<class T, class dict_type = std::unordered_map<T,internal::size_t>>
+template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
 struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
     using compressed = compressed_wavelet_matrix<T,dict_type>;
 
@@ -462,10 +486,10 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 };
 
 
-template<class T, class dict_type>
-struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<T>::size_type,dict_type> {
+template<std::unsigned_integral T, class dict_type>
+struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
   protected:
-    using core = wavelet_matrix<typename compressed<T>::size_type,dict_type>;
+    using core = wavelet_matrix<u32, dict_type>;
 
     compressed<T> _comp;
 
@@ -475,8 +499,14 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
 
     compressed_wavelet_matrix() = default;
 
-    template<class I> compressed_wavelet_matrix(const I first, const I last) noexcept(NO_EXCEPT) { this->build(first, last); }
-    template<class I> void build(const I first, const I last) noexcept(NO_EXCEPT) {
+    template<std::ranges::input_range R>
+    explicit compressed_wavelet_matrix(const R& range) noexcept(NO_EXCEPT) : compressed_wavelet_matrix(ALL(range)) {}
+
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    compressed_wavelet_matrix(const I first, const S last) noexcept(NO_EXCEPT) { this->build(first, last); }
+
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline void build(const I first, const S last) noexcept(NO_EXCEPT) {
         this->_comp = compressed<T>(first, last);
         this->core::build(ALL(this->_comp));
     }
@@ -610,6 +640,20 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<typename compressed<
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
+
+
+template<std::ranges::input_range R>
+explicit wavelet_matrix(const R&) -> wavelet_matrix<std::ranges::range_value_t<R>>;
+
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit wavelet_matrix(I, S) -> wavelet_matrix<std::iter_value_t<I>>;
+
+
+template<std::ranges::input_range R>
+explicit compressed_wavelet_matrix(const R&) -> compressed_wavelet_matrix<std::ranges::range_value_t<R>>;
+
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit compressed_wavelet_matrix(I, S) -> compressed_wavelet_matrix<std::iter_value_t<I>>;
 
 
 } // namespace lib
