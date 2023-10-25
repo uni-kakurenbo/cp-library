@@ -7,7 +7,7 @@ signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n); input >> a;
 
-    lib::wavelet_matrix<unsigned> data(a);
+    lib::compressed_wavelet_matrix data(a);
     debug(data);
 
     int q; std::cin >> q;

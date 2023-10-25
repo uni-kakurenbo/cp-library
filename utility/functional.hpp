@@ -76,11 +76,11 @@ inline constexpr std::common_type_t<Ts...> max_element(const std::tuple<Ts...>& 
 }
 
 
-template<interval INTERVAL, class T0, class T1, class T2>
+template<interval_notation INTERVAL, class T0, class T1, class T2>
 inline constexpr bool in_range(const T0& x, const T1& l, const T2& r) noexcept(NO_EXCEPT) {
-    if constexpr(INTERVAL == interval::right_open) return l <= x and x < r;
-    else if constexpr(INTERVAL == interval::left_open) return l < x and x <= r;
-    else if constexpr(INTERVAL == interval::open) return l < x and x < r;
+    if constexpr(INTERVAL == interval_notation::right_open) return l <= x and x < r;
+    else if constexpr(INTERVAL == interval_notation::left_open) return l < x and x <= r;
+    else if constexpr(INTERVAL == interval_notation::open) return l < x and x < r;
     return l <= x and x <= r;
 }
 

@@ -40,12 +40,12 @@ template<class Super> struct range_reference {
     }
 
   public:
-    template<lib::interval rng = lib::interval::right_open>
+    template<lib::interval_notation rng = lib::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(rng == lib::interval::right_open) return this->sub_range(l, r);
-        if constexpr(rng == lib::interval::left_open) return this->sub_range(l+1, r+1);
-        if constexpr(rng == lib::interval::open) return this->sub_range(l+1, r);
-        if constexpr(rng == lib::interval::closed) return this->sub_range(l, r+1);
+        if constexpr(rng == lib::interval_notation::right_open) return this->sub_range(l, r);
+        if constexpr(rng == lib::interval_notation::left_open) return this->sub_range(l+1, r+1);
+        if constexpr(rng == lib::interval_notation::open) return this->sub_range(l+1, r);
+        if constexpr(rng == lib::interval_notation::closed) return this->sub_range(l, r+1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this->_begin, this->_end); }
 

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
+#include <valarray>
 #include <unordered_map>
 #include <algorithm>
 #include <array>
@@ -235,8 +236,7 @@ struct base {
         return this->_sum[this->_bits][r] - this->_sum[this->_bits][l];
     }
 
-
-    inline size_type count_under(size_type l, size_type r, const value_type& y) const noexcept(NO_EXCEPT) {
+    size_type count_under(size_type l, size_type r, const value_type& y) const noexcept(NO_EXCEPT) {
         if(y >= (value_type{1} << this->_bits)) return r - l;
 
         size_type res = 0;
@@ -255,20 +255,20 @@ struct base {
         return res;
     }
 
-    inline size_type count_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
-        return this->count_under(l, r, y+1) - this->count_under(l, r, x);
-    }
-    inline size_type count_or_under(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_or_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->count_under(l, r, v+1);
     }
-    inline size_type count_over(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->count_or_over(l, r, v+1);
-    }
-    inline size_type count_or_over(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_or_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return r - l - this->count_under(l, r, v);
     }
+    inline size_type count_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+        return this->count_or_over(l, r, v+1);
+    }
+    inline size_type count_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
+        return this->count_or_under(l, r, y) - this->count_under(l, r, x);
+    }
     inline size_type count_equal_to(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->count_under(l, r, v+1) - this->count_under(l, r, v);
+        return this->count_in_range(l, r, v, v);
     }
 
     inline std::optional<value_type> next(const size_type l, const size_type r, const value_type& v, const size_type k) const noexcept(NO_EXCEPT) {
@@ -290,7 +290,7 @@ struct base {
 } // namespace internal
 
 
-template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
+template<class T, class dict_type = std::unordered_map<T, u32>>
 struct compressed_wavelet_matrix;
 
 template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
@@ -327,12 +327,12 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
     struct iterator;
     struct range_reference;
 
-    template<lib::interval rng = lib::interval::right_open>
+    template<lib::interval_notation rng = lib::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(rng == lib::interval::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval::left_open) return range_reference(this, l+1, r+1);
-        if constexpr(rng == lib::interval::open) return range_reference(this, l+1, r);
-        if constexpr(rng == lib::interval::closed) return range_reference(this, l, r+1);
+        if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
+        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l+1, r+1);
+        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l+1, r);
+        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r+1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
@@ -404,8 +404,11 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
         }
 
 
-        inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->_super->base::count_in_range(this->_begin, this->_end, x, y); }
+        inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
+            return this->_super->base::count_in_range(this->_begin, this->_end, x, y);
+        }
 
+        inline size_type count_equal_to(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_equal_to(this->_begin, this->_end, v); }
         inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_under(this->_begin, this->_end, v); }
         inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_over(this->_begin, this->_end, v); }
         inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_under(this->_begin, this->_end, v); }
@@ -413,7 +416,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
 
         template<comparison com = comparison::equal_to>
         inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) {
-            if constexpr(com == comparison::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
+            if constexpr(com == comparison::equal_to) return this->count_equal_to(v);
             if constexpr(com == comparison::under) return this->count_under(v);
             if constexpr(com == comparison::over) return this->count_over(v);
             if constexpr(com == comparison::or_under) return this->count_or_under(v);
@@ -460,12 +463,11 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
 
     inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
 
+    inline size_type count_qeual_to(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_qeual_to(v); }
     inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
     inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
     inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
     inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
-
-    inline size_type count(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count(x, y); }
 
     template<comparison com = comparison::equal_to>
     inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
@@ -495,28 +497,29 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
 };
 
 
-template<std::unsigned_integral T, class dict_type>
+template<class T, class dict_type>
 struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
     using value_type = T;
     using size_type = internal::size_t;
 
   protected:
     using core = wavelet_matrix<u32, dict_type>;
-    compressed<value_type> _comp;
+    using compresser = compressed<value_type, valarray<u32>>;
+
+    compresser _comp;
 
   public:
-
     compressed_wavelet_matrix() = default;
 
     template<std::ranges::input_range R>
     explicit compressed_wavelet_matrix(const R& range) noexcept(NO_EXCEPT) : compressed_wavelet_matrix(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    compressed_wavelet_matrix(const I first, const S last) noexcept(NO_EXCEPT) { this->build(first, last); }
+    compressed_wavelet_matrix(I first, S last) noexcept(NO_EXCEPT) { this->build(first, last); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    inline void build(const I first, const S last) noexcept(NO_EXCEPT) {
-        this->_comp = compressed<value_type>(first, last);
+    inline void build(I first, S last) noexcept(NO_EXCEPT) {
+        this->_comp = compresser(first, last);
         this->core::build(ALL(this->_comp));
     }
 
@@ -527,12 +530,12 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
     struct iterator;
     struct range_reference;
 
-    template<lib::interval rng = lib::interval::right_open>
+    template<lib::interval_notation rng = lib::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(rng == lib::interval::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval::left_open) return range_reference(this, l+1, r+1);
-        if constexpr(rng == lib::interval::open) return range_reference(this, l+1, r);
-        if constexpr(rng == lib::interval::closed) return range_reference(this, l, r+1);
+        if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
+        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l+1, r+1);
+        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l+1, r);
+        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r+1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
@@ -578,13 +581,27 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
             return this->_range().count_in_range(this->_super->_comp.rank(x), this->_super->_comp.rank2(y));
         }
 
+        inline size_type count_equal_to(const value_type& v) const noexcept(NO_EXCEPT) {
+            const auto p = this->_super->_comp.rank(v);
+            const auto q = this->_super->_comp.rank2(v);
+            if(p != q) return 0;
+            return this->_range().count_equal_to(p);
+        }
+
         inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_under(this->_super->_comp.rank(v)); }
         inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_over(this->_super->_comp.rank2(v)); }
         inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->_comp.rank2(v)); }
         inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->_comp.rank(v)); }
 
         template<comparison com = comparison::equal_to>
-        inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->_comp.rank(v)); }
+        inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) {
+            if constexpr(com == comparison::equal_to) return this->count_equal_to(v);
+            if constexpr(com == comparison::under) return this->count_under(v);
+            if constexpr(com == comparison::over) return this->count_over(v);
+            if constexpr(com == comparison::or_under) return this->count_or_under(v);
+            if constexpr(com == comparison::or_over) return this->count_or_over(v);
+            assert(false);
+        }
 
 
         inline auto next_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
@@ -618,13 +635,14 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
     inline value_type median() const noexcept(NO_EXCEPT) { return this->range().median(); }
 
     inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
-
+    inline size_type count_equal_to(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_equal_to(v); }
     inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
     inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
     inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
     inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
 
-    template<comparison com = comparison::equal_to> inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
+    template<comparison com = comparison::equal_to>
+    inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
 
     inline auto next_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
     inline auto prev_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }

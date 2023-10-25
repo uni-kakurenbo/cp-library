@@ -69,7 +69,7 @@ enum class comparison : std::uint8_t {
     geq = or_over
 };
 
-enum class interval : std::uint8_t {
+enum class interval_notation : std::uint8_t {
     right_open,
     left_open,
     open,
