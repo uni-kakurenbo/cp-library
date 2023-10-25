@@ -31,7 +31,6 @@
 #include "data_structure/bit_vector.hpp"
 
 #include "numeric/bit.hpp"
-#include "numeric/limits.hpp"
 #include "numeric/arithmetic.hpp"
 
 
