@@ -45,14 +45,15 @@ namespace wavelet_matrix_impl {
 template<std::unsigned_integral T, class dict_type>
 struct base {
     using size_type = internal::size_t;
+    using value_type = T;
 
   private:
     size_type _n, _bits;
     std::vector<bit_vector> _index;
-    std::vector<std::vector<T>> _sum;
+    std::vector<std::vector<value_type>> _sum;
     dict_type _first_pos;
 
-    T _max = 0;
+    value_type _max = 0;
 
   public:
     base() = default;
@@ -63,7 +64,7 @@ struct base {
     template<std::input_iterator I, std::sentinel_for<I> S>
     base(const I first, const S last) noexcept(NO_EXCEPT) { this->build(first, last); }
 
-    template<std::convertible_to<T> U>
+    template<std::convertible_to<value_type> U>
     base(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : base(ALL(init_list)) {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
@@ -81,9 +82,9 @@ struct base {
 
         this->_index.assign(this->_bits, this->_n);
 
-        std::vector<T> bit(first, last), nxt(this->_n);
+        std::vector<value_type> bit(first, last), nxt(this->_n);
 
-        this->_sum.assign(this->_bits+1, std::vector<T>(this->_n+1));
+        this->_sum.assign(this->_bits+1, std::vector<value_type>(this->_n+1));
 
         {
             size_type i = 0;
@@ -100,7 +101,7 @@ struct base {
             }
             this->_index[h].build();
 
-            std::array<typename std::vector<T>::iterator,2> itrs{
+            std::array<typename std::vector<value_type>::iterator,2> itrs{
                 std::ranges::begin(nxt), std::ranges::next(std::ranges::begin(nxt), this->_index[h].zeros())
             };
 
@@ -115,11 +116,11 @@ struct base {
     }
 
   protected:
-    inline T get(const size_type k) const noexcept(NO_EXCEPT) {
+    inline value_type get(const size_type k) const noexcept(NO_EXCEPT) {
         return this->_sum[this->_bits][k+1] - this->_sum[this->_bits][k];
     }
 
-    size_type select(const T& v, const size_type rank) const noexcept(NO_EXCEPT) {
+    size_type select(const value_type& v, const size_type rank) const noexcept(NO_EXCEPT) {
         if(v > this->_max) return this->_n;
         if(not this->_first_pos.contains(v)) return this->_n;
 
@@ -133,39 +134,32 @@ struct base {
         return pos - 1;
     }
 
-    inline T kth_smallest(size_type l, size_type r, size_type k) const noexcept(NO_EXCEPT) {
-        T val = 0;
+
+    value_type kth_smallest(size_type *const l, size_type *const r, size_type *const k) const noexcept(NO_EXCEPT) {
+        value_type val = 0;
 
         for(size_type h = this->_bits - 1; h >= 0; --h) {
-            size_type l0 = this->_index[h].rank0(l), r0 = this->_index[h].rank0(r);
-            if(k < r0 - l0) {
-                l = l0, r = r0;
+            size_type l0 = this->_index[h].rank0(*l), r0 = this->_index[h].rank0(*r);
+            if(*k < r0 - l0) {
+                *l = l0, *r = r0;
             }
             else {
-                k -= r0 - l0;
-                val |= T{1} << h;
-                l += this->_index[h].zeros() - l0;
-                r += this->_index[h].zeros() - r0;
+                *k -= r0 - l0;
+                val |= value_type{1} << h;
+                *l += this->_index[h].zeros() - l0;
+                *r += this->_index[h].zeros() - r0;
             }
         }
 
         return val;
     }
-    inline size_type kth_smallest_index(size_type l, size_type r, size_type k) const noexcept(NO_EXCEPT) {
-        T val = 0;
 
-        for(size_type h = this->_bits - 1; h >= 0; --h) {
-            size_type l0 = this->_index[h].rank0(l), r0 = this->_index[h].rank0(r);
-            if(k < r0 - l0) {
-                l = l0, r = r0;
-            }
-            else {
-                k -= r0 - l0;
-                val |= T{1} << h;
-                l += this->_index[h].zeros() - l0;
-                r += this->_index[h].zeros() - r0;
-            }
-        }
+    inline value_type kth_smallest(size_type l, size_type r, size_type k) const noexcept(NO_EXCEPT) {
+        return this->kth_smallest(&l, &r, &k);
+    }
+
+    size_type kth_smallest_index(size_type l, size_type r, size_type k) const noexcept(NO_EXCEPT) {
+       const value_type val = this->kth_smallest(&l, &r, &k);
 
         size_type left = 0;
         REPD(h, this->_bits) {
@@ -177,64 +171,73 @@ struct base {
         return this->select(val, l + k - left);
     }
 
-    inline T kth_largest(const size_type l, const size_type r, const size_type k) const noexcept(NO_EXCEPT) {
+    inline value_type kth_largest(const size_type l, const size_type r, const size_type k) const noexcept(NO_EXCEPT) {
         return this->kth_smallest(l, r, r-l-k-1);
     }
     inline size_type kth_largest_index(const size_type l, const size_type r, const size_type k) const noexcept(NO_EXCEPT) {
         return this->kth_smallest_index(l, r, r-l-k-1);
     }
 
+
     inline std::pair<size_type,size_type> succ0(const size_type l, const size_type r, const size_type h) const noexcept(NO_EXCEPT) {
         return std::make_pair(this->_index[h].rank0(l), this->_index[h].rank0(r));
     }
     inline std::pair<size_type,size_type> succ1(const size_type l, const size_type r, const size_type h) const noexcept(NO_EXCEPT) {
-        size_type l0 = this->_index[h].rank0(l);
-        size_type r0 = this->_index[h].rank0(r);
-        size_type vals = this->_index[h].zeros();
+        const size_type l0 = this->_index[h].rank0(l);
+        const size_type r0 = this->_index[h].rank0(r);
+        const size_type vals = this->_index[h].zeros();
         return std::make_pair(l + vals - l0, r + vals - r0);
     }
 
-    T sum_in_range(const size_type l, const size_type r, const T& x, const T& y, const T& cur, const size_type bit) const noexcept(NO_EXCEPT) {
+
+    value_type sum_in_range(
+        const size_type l, const size_type r,
+        const value_type& x, const value_type& y,
+        const value_type& cur, const size_type bit
+    ) const noexcept(NO_EXCEPT)
+    {
         if(l == r) return 0;
 
         if(bit == -1) {
-            if(x <= cur and cur < y) return cur * (r - l);
+            if(x <= cur and cur <= y) return cur * (r - l);
             return 0;
         }
 
-        const T& nxt = (T{1} << bit) | cur;
-        const T& ones = ((T{1} << bit) - 1) | nxt;
+        const value_type& nxt = (value_type{1} << bit) | cur;
+        const value_type& ones = ((value_type{1} << bit) - 1) | nxt;
 
-        if(ones < x or y <= cur) return 0;
+        if(ones < x or y < cur) return 0;
 
-        if(x <= cur and ones < y) return this->_sum[bit+1][r] - this->_sum[bit+1][l];
+        if(x <= cur and ones <= y) return this->_sum[bit+1][r] - this->_sum[bit+1][l];
 
         const size_type l0 = this->_index[bit].rank0(l), r0 = this->_index[bit].rank0(r);
         const size_type l1 = l - l0, r1 = r - r0;
 
         return this->sum_in_range(l0, r0, x, y, cur, bit - 1) + this->sum_in_range(this->_index[bit].zeros()+l1, this->_index[bit].zeros()+r1, x, y, nxt, bit - 1);
     }
-    inline T sum_in_range(const size_type l, const size_type r, const T& x, const T& y) const noexcept(NO_EXCEPT) {
+
+    inline value_type sum_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
         return this->sum_in_range(l, r, x, y, 0, this->_bits-1);
     }
-    inline T sum_under(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
+    inline value_type sum_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+        return this->sum_in_range(l, r, 0, v-1);
+    }
+    inline value_type sum_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+        return this->sum_in_range(l, r, v+1, std::numeric_limits<value_type>::max());
+    }
+    inline value_type sum_or_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->sum_in_range(l, r, 0, v);
     }
-    inline T sum_over(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, v+1, numeric_limits<T>::arithmetic_infinity());
+    inline value_type sum_or_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
+        return this->sum_in_range(l, r, v, std::numeric_limits<value_type>::max());
     }
-    inline T sum_or_under(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, 0, v+1);
-    }
-    inline T sum_or_over(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, v, numeric_limits<T>::arithmetic_infinity());
-    }
-    inline T sum(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+    inline value_type sum(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         return this->_sum[this->_bits][r] - this->_sum[this->_bits][l];
     }
 
-    inline size_type count_under(size_type l, size_type r, const T& y) const noexcept(NO_EXCEPT) {
-        if(y >= (T{1} << this->_bits)) return r - l;
+
+    inline size_type count_under(size_type l, size_type r, const value_type& y) const noexcept(NO_EXCEPT) {
+        if(y >= (value_type{1} << this->_bits)) return r - l;
 
         size_type res = 0;
         REPD(h, this->_bits) {
@@ -251,29 +254,33 @@ struct base {
         }
         return res;
     }
-    inline size_type count_in_range(const size_type l, const size_type r, const T& x, const T& y) const noexcept(NO_EXCEPT) {
-        return this->count_under(l, r, y) - this->count_under(l, r, x);
+
+    inline size_type count_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
+        return this->count_under(l, r, y+1) - this->count_under(l, r, x);
     }
-    inline size_type count_or_under(size_type l, size_type r, const T& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_or_under(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->count_under(l, r, v+1);
     }
-    inline size_type count_over(size_type l, size_type r, const T& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_over(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->count_or_over(l, r, v+1);
     }
-    inline size_type count_or_over(size_type l, size_type r, const T& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_or_over(size_type l, size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return r - l - this->count_under(l, r, v);
     }
-    inline size_type count_equal_to(const size_type l, const size_type r, const T& v) const noexcept(NO_EXCEPT) {
+    inline size_type count_equal_to(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->count_under(l, r, v+1) - this->count_under(l, r, v);
     }
 
-    inline std::optional<T> next(const size_type l, const size_type r, const T& v, const size_type k) const noexcept(NO_EXCEPT) {
+    inline std::optional<value_type> next(const size_type l, const size_type r, const value_type& v, const size_type k) const noexcept(NO_EXCEPT) {
         const size_type rank = this->count_under(l, r, v) + k;
-        return (rank < 0 or rank >= r - l) ? std::optional<T>{} : std::optional<T>(this->kth_smallest(l, r, rank));
+        if(rank < 0 or rank >= r - l) return {};
+        return { this->kth_smallest(l, r, rank) };
     }
-    inline std::optional<T> prev(const size_type l, const size_type r, const T& v, const size_type k) const noexcept(NO_EXCEPT) {
+
+    inline std::optional<value_type> prev(const size_type l, const size_type r, const value_type& v, const size_type k) const noexcept(NO_EXCEPT) {
         const size_type rank = this->count_over(l, r, v) + k;
-        return (rank < 0 or rank >= r - l) ? std::optional<T>{} : std::optional<T>(this->kth_largest(l, r, rank));
+        if(rank < 0 or rank >= r - l) return {};
+        return this->kth_largest(l, r, rank);
     }
 };
 
@@ -287,16 +294,16 @@ template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
 struct compressed_wavelet_matrix;
 
 template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
-struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
-    using compressed = compressed_wavelet_matrix<T,dict_type>;
+struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
+    using value_type = T;
+    using size_type = internal::size_t;
+
+    using compressed = compressed_wavelet_matrix<value_type, dict_type>;
 
   private:
-    using base = typename internal::wavelet_matrix_impl::base<T,dict_type>;
+    using base = typename internal::wavelet_matrix_impl::base<value_type, dict_type>;
 
   public:
-    using value_type = T;
-    using size_type = typename base::size_type;
-
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
         return p < 0 ? this->size() + p : p;
@@ -307,13 +314,15 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
-    inline T get(size_type p) const noexcept(NO_EXCEPT) {
+    inline value_type get(size_type p) const noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::get(p);
     }
-    inline T operator[](const size_type p) const noexcept(NO_EXCEPT) { return this->get(p); }
+    inline value_type operator[](const size_type p) const noexcept(NO_EXCEPT) { return this->get(p); }
 
-    inline size_type select(const T& v, const size_type p) const noexcept(NO_EXCEPT) { return this->base::select(v, p); }
+    inline size_type select(const value_type& v, const size_type p) const noexcept(NO_EXCEPT) {
+        return this->base::select(v, p);
+    }
 
     struct iterator;
     struct range_reference;
@@ -339,16 +348,16 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline T get(const size_type k) const noexcept(NO_EXCEPT) {
+        inline value_type get(const size_type k) const noexcept(NO_EXCEPT) {
             k = this->_super->_positivize_index(k);
             assert(0 <= k and k < this->size());
 
             return this->_super->get(this->_begin + k);
         }
-        inline T operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->get(k); }
+        inline value_type operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->get(k); }
 
 
-        inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) {
+        inline value_type kth_smallest(const size_type k) const noexcept(NO_EXCEPT) {
             assert(0 <= k && k < this->size());
             return this->_super->base::kth_smallest(this->_begin, this->_end, k);
         }
@@ -358,7 +367,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
             return std::next(this->_super->begin(), this->_super->base::kth_smallest_index(this->_begin, this->_end, k));
         }
 
-        inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) {
+        inline value_type kth_largest(const size_type k) const noexcept(NO_EXCEPT) {
             assert(0 <= k && k < this->size());
             return this->_super->base::kth_largest(this->_begin, this->_end, k);
         }
@@ -368,25 +377,25 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
             return std::next(this->_super->begin(), this->_super->base::kth_largest_index(this->_begin, this->_end, k));
         }
 
-        inline T min() const noexcept(NO_EXCEPT) { return this->kth_smallest(0); }
-        inline T max() const noexcept(NO_EXCEPT) { return this->kth_largest(0); }
+        inline value_type min() const noexcept(NO_EXCEPT) { return this->kth_smallest(0); }
+        inline value_type max() const noexcept(NO_EXCEPT) { return this->kth_largest(0); }
 
 
         // (r-l)/2 th smallest (0-origin)
-        inline T median() const noexcept(NO_EXCEPT) { return this->kth_smallest(this->size() / 2); }
+        inline value_type median() const noexcept(NO_EXCEPT) { return this->kth_smallest(this->size() / 2); }
 
-        inline T sum_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
+        inline value_type sum_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
 
-        inline T sum_under(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_under(this->_begin, this->_end, v); }
-        inline T sum_over(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_over(this->_begin, this->_end, v); }
-        inline T sum_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_or_under(this->_begin, this->_end, v); }
-        inline T sum_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_or_over(this->_begin, this->_end, v); }
+        inline value_type sum_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_under(this->_begin, this->_end, v); }
+        inline value_type sum_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_over(this->_begin, this->_end, v); }
+        inline value_type sum_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_or_under(this->_begin, this->_end, v); }
+        inline value_type sum_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::sum_or_over(this->_begin, this->_end, v); }
 
-        inline T sum(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
-        inline T sum() const noexcept(NO_EXCEPT) { return this->_super->base::sum(this->_begin, this->_end); }
+        inline value_type sum(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->_super->base::sum_in_range(this->_begin, this->_end, x, y); }
+        inline value_type sum() const noexcept(NO_EXCEPT) { return this->_super->base::sum(this->_begin, this->_end); }
 
         template<comparison com>
-        inline size_type sum(const T& v) const noexcept(NO_EXCEPT) {
+        inline size_type sum(const value_type& v) const noexcept(NO_EXCEPT) {
             if constexpr(com == comparison::under) return this->sum_under(v);
             if constexpr(com == comparison::over) return this->sum_over(v);
             if constexpr(com == comparison::or_under) return this->sum_or_under(v);
@@ -395,15 +404,15 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
         }
 
 
-        inline size_type count_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->_super->base::count_in_range(this->_begin, this->_end, x, y); }
+        inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->_super->base::count_in_range(this->_begin, this->_end, x, y); }
 
-        inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_under(this->_begin, this->_end, v); }
-        inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_over(this->_begin, this->_end, v); }
-        inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_under(this->_begin, this->_end, v); }
-        inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_over(this->_begin, this->_end, v); }
+        inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_under(this->_begin, this->_end, v); }
+        inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_over(this->_begin, this->_end, v); }
+        inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_under(this->_begin, this->_end, v); }
+        inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_super->base::count_or_over(this->_begin, this->_end, v); }
 
         template<comparison com = comparison::equal_to>
-        inline size_type count(const T& v) const noexcept(NO_EXCEPT) {
+        inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) {
             if constexpr(com == comparison::eq) return this->_super->count_equal_to(this->_begin, this->_end, v);
             if constexpr(com == comparison::under) return this->count_under(v);
             if constexpr(com == comparison::over) return this->count_over(v);
@@ -412,73 +421,73 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
             assert(false);
         }
 
-        inline auto next_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline auto next_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             return this->kth_smallest_element(std::clamp(this->count_under(v) + k, 0, this->size()));
         }
-        inline auto prev_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline auto prev_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             return this->kth_smallest_element(std::clamp(this->count_over(v) - k, 0, this->size()));
         }
 
-        inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::next(this->_begin, this->_end, v, k); }
-        inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::prev(this->_begin, this->_end, v, k); }
+        inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::next(this->_begin, this->_end, v, k); }
+        inline std::optional<value_type> prev(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::prev(this->_begin, this->_end, v, k); }
     };
 
-    inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest(k); }
-    inline T kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest_element(k); }
+    inline value_type kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest(k); }
+    inline value_type kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest_element(k); }
 
-    inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest(k); }
-    inline T kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest_element(k); }
+    inline value_type kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest(k); }
+    inline value_type kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest_element(k); }
 
-    inline T min() const noexcept(NO_EXCEPT) { return this->range().kth_smallest(0); }
-    inline T max() const noexcept(NO_EXCEPT) { return this->range().kth_largest(0); }
+    inline value_type min() const noexcept(NO_EXCEPT) { return this->range().kth_smallest(0); }
+    inline value_type max() const noexcept(NO_EXCEPT) { return this->range().kth_largest(0); }
 
     // (size)/2 th smallest (0-origin)
-    inline T median() const noexcept(NO_EXCEPT) { return this->range().median(); }
+    inline value_type median() const noexcept(NO_EXCEPT) { return this->range().median(); }
 
-    inline T sum_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().sum_in_range(x, y); }
+    inline value_type sum_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().sum_in_range(x, y); }
 
-    inline T sum_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().sum_under(v); }
-    inline T sum_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().sum_over(v); }
-    inline T sum_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().sum_or_under(v); }
-    inline T sum_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().sum_or_over(v); }
+    inline value_type sum_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().sum_under(v); }
+    inline value_type sum_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().sum_over(v); }
+    inline value_type sum_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().sum_or_under(v); }
+    inline value_type sum_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().sum_or_over(v); }
 
-    inline T sum(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().sum_in_range(x, y); }
-    inline T sum() const noexcept(NO_EXCEPT) { return this->range().sum(); }
+    inline value_type sum(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().sum_in_range(x, y); }
+    inline value_type sum() const noexcept(NO_EXCEPT) { return this->range().sum(); }
 
     template<comparison com>
-    inline size_type sum(const T& v) const noexcept(NO_EXCEPT) { return this->range().template sum<com>(v); }
+    inline size_type sum(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template sum<com>(v); }
 
 
-    inline size_type count_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
+    inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
 
-    inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
-    inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
-    inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
-    inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
+    inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
+    inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
+    inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
+    inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
 
-    inline size_type count(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().count(x, y); }
+    inline size_type count(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count(x, y); }
 
     template<comparison com = comparison::equal_to>
-    inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
+    inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
 
 
-    inline auto next_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
-    inline auto prev_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }
+    inline auto next_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
+    inline auto prev_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }
 
-    inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
-    inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
+    inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
+    inline std::optional<value_type> prev(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
 
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<T,wavelet_matrix,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type,wavelet_matrix,iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
         iterator(const wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline T operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
@@ -488,14 +497,14 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T,dict_type> {
 
 template<std::unsigned_integral T, class dict_type>
 struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
+    using value_type = T;
+    using size_type = internal::size_t;
+
   protected:
     using core = wavelet_matrix<u32, dict_type>;
-
-    compressed<T> _comp;
+    compressed<value_type> _comp;
 
   public:
-    using value_type = typename core::value_type;
-    using size_type = typename core::size_type;
 
     compressed_wavelet_matrix() = default;
 
@@ -507,11 +516,11 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline void build(const I first, const S last) noexcept(NO_EXCEPT) {
-        this->_comp = compressed<T>(first, last);
+        this->_comp = compressed<value_type>(first, last);
         this->core::build(ALL(this->_comp));
     }
 
-    inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_comp(this->core::get(k)); }
+    inline value_type get(const size_type k) const noexcept(NO_EXCEPT) { return this->_comp(this->core::get(k)); }
     inline size_type operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->core::get(k); }
 
 
@@ -543,98 +552,98 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
         inline auto _range() const noexcept(NO_EXCEPT) { return this->_super->core::range(this->_begin, this->_end); }
 
       public:
-        inline T get(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().get(k)); }
-        inline T operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->get(k); }
+        inline value_type get(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().get(k)); }
+        inline value_type operator[](const size_type k) const noexcept(NO_EXCEPT) { return this->get(k); }
 
 
-        inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_smallest(k)); }
+        inline value_type kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_smallest(k)); }
         inline auto kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) {
             return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_smallest_element(k)));
         }
 
-        inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_largest(k));}
+        inline value_type kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->_super->_comp(this->_range().kth_largest(k));}
         inline auto kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) {
             return std::next(this->_super->begin(), std::distance(this->_super->core::begin(), this->_range().kth_largest_element(k)));
         }
 
-        inline T min() const noexcept(NO_EXCEPT) { return this->kth_smallest(0); }
-        inline T max() const noexcept(NO_EXCEPT) { return this->kth_largest(0); }
+        inline value_type min() const noexcept(NO_EXCEPT) { return this->kth_smallest(0); }
+        inline value_type max() const noexcept(NO_EXCEPT) { return this->kth_largest(0); }
 
 
         // (r-l)/2 th smallest (0-origin)
-        inline T median() const noexcept(NO_EXCEPT) { return this->kth_smallest(this->size() / 2); }
+        inline value_type median() const noexcept(NO_EXCEPT) { return this->kth_smallest(this->size() / 2); }
 
 
-        inline size_type count_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) {
-            return this->_range().count_in_range(this->_super->_comp.rank(x), this->_super->_comp.rank(y));
+        inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
+            return this->_range().count_in_range(this->_super->_comp.rank(x), this->_super->_comp.rank2(y));
         }
 
-        inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_under(this->_super->_comp.rank(v)); }
-        inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_over(this->_super->_comp.rank2(v)); }
-        inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->_comp.rank2(v)); }
-        inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->_comp.rank(v)); }
+        inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_under(this->_super->_comp.rank(v)); }
+        inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_over(this->_super->_comp.rank2(v)); }
+        inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_under(this->_super->_comp.rank2(v)); }
+        inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().count_or_over(this->_super->_comp.rank(v)); }
 
         template<comparison com = comparison::equal_to>
-        inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->_comp.rank(v)); }
+        inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->_range().template count<com>(this->_super->_comp.rank(v)); }
 
 
-        inline auto next_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline auto next_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->_comp.rank(v) + k), 0, this->size()));
         }
-        inline auto prev_element(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline auto prev_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->_comp.rank2(v) + k), 0, this->size()));
         }
 
-        inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             const std::optional<size_type> res = this->_range().next(this->_super->_comp.rank(v), k);
             if(res.has_value()) return this->_super->_comp(res.value());
             return {};
         }
-        inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
+        inline std::optional<value_type> prev(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
             const std::optional<size_type> res = this->_range().prev(this->_super->_comp.rank2(v), k);
             if(res.has_value()) return this->_super->_comp(res.value());
             return {};
         }
     };
 
-    inline T kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest(k); }
+    inline value_type kth_smallest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest(k); }
     inline auto kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_smallest_element(k); }
 
-    inline T kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest(k); }
+    inline value_type kth_largest(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest(k); }
     inline auto kth_largest_element(const size_type k) const noexcept(NO_EXCEPT) { return this->range().kth_largest_element(k); }
 
-    inline T min() const noexcept(NO_EXCEPT) { return this->range().kth_smallest(0); }
-    inline T max() const noexcept(NO_EXCEPT) { return this->range().kth_largest(0); }
+    inline value_type min() const noexcept(NO_EXCEPT) { return this->range().kth_smallest(0); }
+    inline value_type max() const noexcept(NO_EXCEPT) { return this->range().kth_largest(0); }
 
-    inline T median() const noexcept(NO_EXCEPT) { return this->range().median(); }
+    inline value_type median() const noexcept(NO_EXCEPT) { return this->range().median(); }
 
-    inline size_type count_in_range(const T& x, const T& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
+    inline size_type count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
 
-    inline size_type count_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
-    inline size_type count_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
-    inline size_type count_or_under(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
-    inline size_type count_or_over(const T& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
+    inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
+    inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
+    inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }
+    inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_over(v); }
 
-    template<comparison com = comparison::equal_to> inline size_type count(const T& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
+    template<comparison com = comparison::equal_to> inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().template count<com>(v); }
 
-    inline auto next_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
-    inline auto prev_element(const T& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }
+    inline auto next_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().next_element(v); }
+    inline auto prev_element(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().prev_element(v); }
 
-    inline std::optional<T> next(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
-    inline std::optional<T> prev(const T& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
+    inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().next(v, k); }
+    inline std::optional<value_type> prev(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->range().prev(v, k); }
 
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<T,compressed_wavelet_matrix,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type,compressed_wavelet_matrix,iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
         iterator(const compressed_wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline T operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
-        inline T operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline value_type operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }

@@ -1,15 +1,12 @@
-// #include <bits/stdc++.h>
-// #include "template.hpp"
 #include <iostream>
-#include "adapter/io.hpp"
 #include "utility/functional.hpp"
 #include "snippet/iterations.hpp"
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {
-    int n, k; input >> n >> k;
-    std::vector<long> a(n); input >> a;
-    lib::wavelet_matrix<long> data(ALL(a));
+    int n, k; std::cin >> n >> k;
+    std::vector<unsigned> a(n); for(auto&& v : a) std::cin >> v;
+    lib::wavelet_matrix data(a);
 
     long ans = lib::INF64;
     FOR(i, 0, n-k) {
@@ -24,5 +21,5 @@ signed main() {
         lib::chmin(ans, costl + costr);
     }
 
-    print(ans);
+    std::cout << ans << "\n";
 }
