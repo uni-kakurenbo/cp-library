@@ -116,7 +116,7 @@ vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     u64 p;
-    if(n <= (1UL << 31)) p = find_factor<modint>(static_cast<u32>(n));
+    if(n <= (1UL << 31)) p = find_factor<lib::modint>(static_cast<u32>(n));
     else p = find_factor<modint64,u64>(n);
 
     if(p == n) return { static_cast<i64>(p) };

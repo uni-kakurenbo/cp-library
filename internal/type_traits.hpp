@@ -119,12 +119,16 @@ template<class T> struct has_iterator {
 };
 
 
-template<class T> struct is_iterable {
+template<class T>
+struct is_iterable {
     static constexpr bool value =  has_iterator<T>::adl_v || has_iterator<T>::stl_v || has_iterator<T>::member_v;
 };
 
-template<class T> inline constexpr auto is_iterable_v = is_iterable<T>::value;
+template<class T>
+inline constexpr auto is_iterable_v = is_iterable<T>::value;
 
+template<class T>
+concept iterable = is_iterable_v<T>;
 
 namespace iterator_resolver {
 
