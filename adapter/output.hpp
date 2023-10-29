@@ -44,7 +44,7 @@ struct output_adapter {
 
     template<std::ranges::range T>
     int _put(lib::internal::resolving_rank<3>, T&& val) noexcept(NO_EXCEPT) {
-        (*this)(std::ranges::begin(val), std::ranges::end(std::forward<T>(val)), false);
+        (*this)(std::ranges::begin(val), std::ranges::end(val), false);
         return 0;
     }
 
