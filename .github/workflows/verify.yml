@@ -3,7 +3,7 @@ name: verify
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-python@v4
 
     - name: Install dependencies
-      run: pip3 install -U git+https://github.com/${{ github.repository }}.git@master
+      run: pip3 install -U git+https://github.com/${{ github.repository }}.git@main
 
 
     # required only if you want to verify Haskell code
