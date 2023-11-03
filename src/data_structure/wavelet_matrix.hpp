@@ -42,7 +42,8 @@ namespace wavelet_matrix_impl {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
-template<std::unsigned_integral T, class dict_type>
+template<std::unsigned_integral T, class DictType>
+    requires std::same_as<T, typename DictType::key_type>
 struct base {
     using size_type = internal::size_t;
     using value_type = T;
@@ -51,7 +52,7 @@ struct base {
     size_type _n, _bits;
     std::vector<bit_vector> _index;
     std::vector<std::vector<value_type>> _sum;
-    dict_type _first_pos;
+    DictType _first_pos;
 
     value_type _max = 0;
 
@@ -78,7 +79,7 @@ struct base {
     void build(const I first, const S last) noexcept(NO_EXCEPT) {
         this->_n = static_cast<size_type>(std::ranges::distance(first, last));
         this->_max = first == last ? -1 : *std::ranges::max_element(first, last);
-        this->_bits = bit_width(lib::to_unsigned(this->_max + 1));
+        this->_bits = bit_width(this->_max + 1);
 
         this->_index.assign(this->_bits, this->_n);
 
@@ -89,6 +90,7 @@ struct base {
         {
             size_type i = 0;
             for(auto itr=first; itr!=last; ++i, ++itr) {
+                assert(*itr >= 0);
                 this->_sum[this->_bits][i+1] = this->_sum[this->_bits][i] + *itr;
             }
         }
@@ -289,18 +291,21 @@ struct base {
 } // namespace internal
 
 
-template<class T, class dict_type = std::unordered_map<T, u32>>
+template<std::integral T, template<class...> class DictAbstract = std::unordered_map>
 struct compressed_wavelet_matrix;
 
-template<std::unsigned_integral T, class dict_type = std::unordered_map<T, u32>>
-struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
+
+template<std::integral T, template<class...> class DictAbstract = std::unordered_map>
+struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t<T>, DictAbstract<std::make_unsigned_t<T>, u32>> {
     using value_type = T;
+    using impl_type = std::make_unsigned_t<value_type>;
+    using dict_type = DictAbstract<impl_type, u32>;
     using size_type = internal::size_t;
 
-    using compressed = compressed_wavelet_matrix<value_type, dict_type>;
+    using compressed = compressed_wavelet_matrix<value_type, DictAbstract>;
 
   private:
-    using base = typename internal::wavelet_matrix_impl::base<value_type, dict_type>;
+    using base = typename internal::wavelet_matrix_impl::base<impl_type, dict_type>;
 
   public:
   protected:
@@ -427,7 +432,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
             return this->kth_smallest_element(std::clamp(this->count_under(v) + k, 0, this->size()));
         }
         inline auto prev_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_smallest_element(std::clamp(this->count_over(v) - k, 0, this->size()));
+            return this->kth_largest_element(std::clamp(this->count_over(v) - k, 0, this->size()));
         }
 
         inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::next(this->_begin, this->_end, v, k); }
@@ -496,18 +501,20 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<T, dict_type> {
 };
 
 
-template<class T, class dict_type>
-struct compressed_wavelet_matrix : protected wavelet_matrix<u32, dict_type> {
+template<std::integral T, template<class...> class DictAbstract>
+struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
     using value_type = T;
     using size_type = internal::size_t;
 
   protected:
-    using core = wavelet_matrix<u32, dict_type>;
+    using core = wavelet_matrix<u32, DictAbstract>;
     using compresser = compressed<value_type, valarray<u32>>;
 
     compresser _comp;
 
   public:
+    using impl_type = typename core::impl_type;
+
     compressed_wavelet_matrix() = default;
 
     template<std::ranges::input_range R>

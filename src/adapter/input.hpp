@@ -30,7 +30,7 @@ struct input_adapter {
   private:
     template<class T>
         requires std::derived_from<T, std::valarray<typename T::value_type>>
-    auto _set(lib::internal::resolving_rank<5>, T& val) noexcept(NO_EXCEPT) -> int {
+    auto _set(lib::internal::resolving_rank<6>, T& val) noexcept(NO_EXCEPT) -> int {
         this->operator()(std::begin(val), std::end(val));
         return 0;
     }
@@ -40,13 +40,13 @@ struct input_adapter {
             requires (source_type& in, T& val) {
                 in >> val;
             }
-    int _set(lib::internal::resolving_rank<4>, T& val) noexcept(NO_EXCEPT) {
+    int _set(lib::internal::resolving_rank<5>, T& val) noexcept(NO_EXCEPT) {
         *this->in >> val;
         return 0;
     }
 
     template<std::ranges::range T>
-    int _set(lib::internal::resolving_rank<3>, T& val) noexcept(NO_EXCEPT) {
+    int _set(lib::internal::resolving_rank<4>, T& val) noexcept(NO_EXCEPT) {
         this->operator()(std::ranges::begin(val), std::ranges::end(val));
         return 0;
     }
@@ -57,7 +57,7 @@ struct input_adapter {
                 val.first;
                 val.second;
             }
-    int _set(lib::internal::resolving_rank<2>, T& val) noexcept(NO_EXCEPT) {
+    int _set(lib::internal::resolving_rank<3>, T& val) noexcept(NO_EXCEPT) {
         *this >> val.first >> val.second;
         return 0;
     }

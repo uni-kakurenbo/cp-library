@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "data_structure/range_action/base.hpp"
 
 
@@ -30,7 +31,7 @@ template<class> struct core;
 
 namespace implicit_treap_impl {
 
-template<actions::internal::action> struct core;
+template<actions::internal::full_action> struct core;
 
 } // namespace implici_treap_impl
 

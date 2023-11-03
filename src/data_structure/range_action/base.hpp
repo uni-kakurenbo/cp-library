@@ -41,6 +41,9 @@ concept full_action = operatable_action<T> && effective_action<T>;
 template<class T>
 concept operand_only_action = operatable_action<T> && (!effective_action<T>);
 
+template<class T>
+concept action = operatable_action<T> || operatable_action<T>;
+
 
 } // namespace internal
 

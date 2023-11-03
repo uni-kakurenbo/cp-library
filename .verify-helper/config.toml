@@ -1,0 +1,17 @@
+[[languages.cpp.environments]]
+CXX = "ccache"
+CXXFLAGS = [
+    "g++-12",
+    "-std=gnu++20",
+    "-fdiagnostics-color=always",
+    "-Wno-misleading-indentation",
+    "-Wall",
+    "-Wextra",
+    "-fconcepts-diagnostics-depth=5",
+    "-Wno-char-subscripts",
+    "-fsplit-stack",
+    "-O2",
+    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
+    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src",
+    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/debugger"
+]

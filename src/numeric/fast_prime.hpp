@@ -15,7 +15,6 @@
 #include "snippet/internal/types.hpp"
 
 #include "internal/dev_env.hpp"
-#include "internal/constants.hpp"
 
 #include "numeric/modint.hpp"
 #include "random/xorshift.hpp"
@@ -29,10 +28,14 @@ namespace lib {
 
 namespace internal {
 
+
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
 namespace fast_factorize_impl {
 
 namespace internal {
+
+
+constexpr int INTERNAL_MODINT_ID = -(1 << 30);
 
 
 // Miller-Rabin primality test
@@ -62,8 +65,8 @@ bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
     if(~n & 1) return n == 2;
     if(n <= 1) return false;
 
-    if(n < (1UL << 31)) return internal::primality_test<dynamic_modint<lib::internal::INTERNAL_MODINT_ID_FOR_FAST_PRIME>>(n, { 2, 7, 61 });
-    else return internal::primality_test<dynamic_modint_64bit<lib::internal::INTERNAL_MODINT_ID_FOR_FAST_PRIME>>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
+    if(n < (1UL << 31)) return internal::primality_test<dynamic_modint<INTERNAL_MODINT_ID>>(n, { 2, 7, 61 });
+    else return internal::primality_test<dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
 }
 
 

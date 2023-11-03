@@ -11,6 +11,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/range_reference.hpp"
+#include "internal/unconstructible.hpp"
 
 #include "numeric/bit.hpp"
 
@@ -24,6 +25,7 @@ namespace lib {
 namespace internal {
 
 namespace disjoint_sparse_table_impl {
+
 
 // Thanks to: https://noshi91.hatenablog.com/entry/2018/05/08/183946
 template<algebraic::internal::semigroup S>
@@ -85,7 +87,7 @@ struct base {
 };
 
 
-template<class> struct core {};
+template<class> struct core : unconstructible {};
 
 template<algebraic::internal::semigroup Semigroup>
 struct core<Semigroup> : base<Semigroup> {

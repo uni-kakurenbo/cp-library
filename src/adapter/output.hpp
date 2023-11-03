@@ -24,8 +24,8 @@ struct output_adapter {
   private:
     template<class T>
         requires
-            requires (destination_type& out, T&& val) {
-                out << std::forward<T>(val);
+            requires (destination_type& out, T& val) {
+                out << val;
             }
     int _put(lib::internal::resolving_rank<5>, T&& val) noexcept(NO_EXCEPT) {
         *this->out << std::forward<T>(val);
@@ -162,11 +162,6 @@ struct output_adapter {
     inline auto& conditional(const bool cond, const T0& a, const T1& b) noexcept(NO_EXCEPT) {
         if(cond) (*this)(a);
         else (*this)(b);
-        return *this;
-    }
-
-    inline auto& operator()(const bool cond) noexcept(NO_EXCEPT) {
-        this->conditional(cond, "Yes", "No");
         return *this;
     }
 

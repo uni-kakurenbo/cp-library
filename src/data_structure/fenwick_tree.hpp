@@ -15,6 +15,7 @@
 #include "internal/iterator.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
+#include "internal/unconstructible.hpp"
 
 #include "snippet/iterations.hpp"
 #include "numeric/bit.hpp"
@@ -53,6 +54,7 @@ struct base {
     explicit base(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _bit_ceil(lib::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
     {}
+
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
     inline S* data() noexcept(NO_EXCEPT) { return std::ranges::begin(this->_data); }
@@ -113,7 +115,7 @@ struct base {
 };
 
 
-template<class> struct core {};
+template<class> struct core : unconstructible {};
 
 template<algebraic::internal::monoid Monoid>
     requires algebraic::internal::commutative<Monoid>
@@ -133,7 +135,8 @@ struct core<Monoid> : base<Monoid> {
   public:
     core() noexcept(NO_EXCEPT) : base() {}
 
-    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit core(const size_type n) noexcept(NO_EXCEPT) : base(n) {}
+    explicit core(const size_type n, const value_type& v) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
 
     template<std::convertible_to<value_type> T>
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
@@ -210,6 +213,7 @@ struct core<Monoid> : base<Monoid> {
             if(this->_begin == 0) return this->_super->fold(this->_end);
             return this->_super->fold(this->_begin, this->_end);
         }
+
         inline value_type operator*() noexcept(NO_EXCEPT) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             if(this->_begin == 0) return this->_super->fold(this->_end);
@@ -241,8 +245,13 @@ struct core<Monoid> : base<Monoid> {
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
 
-    inline const range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
+    inline const range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+        return range_reference(this, l, r);
+    }
+
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        return range_reference(this, l, r);
+    }
 
     inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<value_type>
@@ -250,10 +259,12 @@ struct core<Monoid> : base<Monoid> {
         assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r);
     }
+
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= this->size());
         return this->base::fold(r);
     }
+
     inline value_type fold() const noexcept(NO_EXCEPT) {
         return this->base::fold(this->size());
     }

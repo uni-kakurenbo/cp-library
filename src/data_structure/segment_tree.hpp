@@ -16,7 +16,7 @@
 #include "internal/iterator.hpp"
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
-#include "internal/uncopyable.hpp"
+#include "internal/unconstructible.hpp"
 
 #include "numeric/bit.hpp"
 #include "algebraic/internal/concepts.hpp"
@@ -33,7 +33,7 @@ namespace segment_tree_impl {
 
 // Thanks to: atcoder::segtree
 template<algebraic::internal::monoid S>
-struct base : private lib::internal::uncopyable {
+struct base {
     using size_type = internal::size_t;
 
   protected:
@@ -142,7 +142,7 @@ struct base : private lib::internal::uncopyable {
 };
 
 
-template<class> struct core {};
+template<class> struct core : unconstructible {};
 
 template<algebraic::internal::monoid Monoid>
 struct core<Monoid> : base<Monoid> {
@@ -166,7 +166,7 @@ struct core<Monoid> : base<Monoid> {
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    explicit core(const I first, const S last) noexcept(NO_EXCEPT)
+    core(const I first, const S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
@@ -284,7 +284,7 @@ struct core<Monoid> : base<Monoid> {
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<actions::internal::full_action Action>
+template<actions::internal::operand_only_action Action>
 struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;

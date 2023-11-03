@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../libraries",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
+                "~/boost",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/debugger",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/adapter"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++-12",
+            "cStandard": "gnu23",
+            "cppStandard": "gnu++23",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -194,7 +194,8 @@ struct unfolded_container : base, container_base<T>, virtual interface<T> {
 
 }  // namespace grid_impl
 
-template<class T, class container> struct grid_core : container, virtual grid_impl::interface<T> {
+template<class T, class container>
+struct grid_core : container, virtual grid_impl::interface<T> {
     using container::container;
     using size_type = internal::size_t;
 

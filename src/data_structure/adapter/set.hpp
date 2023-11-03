@@ -1,22 +1,29 @@
 #pragma once
 
+
 #include <cstdint>
 #include <optional>
 #include <type_traits>
 #include <iterator>
+#include <concepts>
+#include <ranges>
+
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 #include "constants.hpp"
 
-#include "data_structure/internal/declarations.hpp"
+#include "data_structure/internal/concepts.hpp"
+#include "data_structure/fenwick_tree.hpp"
 #include "data_structure/range_action/range_add_range_sum.hpp"
+#include "data_structure/range_action/range_sum.hpp"
+
 
 namespace lib {
 
 
-template<template<class> class Tree = lib::fenwick_tree, class Size = internal::size_t>
+template<template<class...> class Tree = lib::fenwick_tree, std::integral Size = internal::size_t>
 struct set_adapter {
     using size_type = Size;
     using key_type = internal::size_t;
@@ -25,7 +32,17 @@ struct set_adapter {
   protected:
     set_adapter() noexcept(NO_EXCEPT) {}
 
-    using Impl = Tree<actions::range_add_range_sum<value_type>>;
+    using Impl =
+        Tree<
+            std::conditional_t<
+                internal::available_for<
+                    Tree,
+                    actions::range_add_range_sum<value_type>
+                >,
+                actions::range_add_range_sum<value_type>,
+                actions::range_sum<value_type>
+            >
+        >;
 
     Impl _data;
     size_type _elem = 0;
@@ -33,8 +50,8 @@ struct set_adapter {
   public:
     set_adapter(const size_type sup) noexcept(NO_EXCEPT) : _data(sup) {};
 
-    template<class I>
-    set_adapter(const I first, const I last) noexcept(NO_EXCEPT) : _data(*std::max_element(first, last)+1) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    set_adapter(const I first, const S last) noexcept(NO_EXCEPT) : _data(*std::ranges::max_element(first, last)+1) {
         valarray<bool> bits(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
@@ -43,13 +60,15 @@ struct set_adapter {
         this->build_from_bits(ALL(bits));
     };
 
+    template<std::ranges::input_range R>
+    set_adapter(const R& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
 
-    template<class I>
-    inline auto& build_from_bits(const I first, const I last) noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == this->_data.size());
-        using T = typename std::iterator_traits<I>::value_type;
-        static_assert(std::is_same_v<bool,T>, "bit type must be bool");
-        static_assert(std::is_same_v<Size,std::common_type_t<Size,T>>, "counter type must be narrower than size_type");
+    template<std::input_iterator I, std::sentinel_for<I> S>
+        // requires std::same_as<std::iter_value_t<I>, bool>
+    inline auto& build_from_bits(const I first, const S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->_data.size());
+        }
         this->_data.assign(first, last);
         return *this;
     };
@@ -58,30 +77,30 @@ struct set_adapter {
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_elem; }
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
-    inline size_type count(const key_type& k) const noexcept(NO_EXCEPT) { return this->_data.get(k); }
-    inline bool contains(const key_type& k) const noexcept(NO_EXCEPT) { return this->_data.get(k) > 0; }
+    inline size_type count(const key_type& k) const noexcept(NO_EXCEPT) { return this->_data.get(k).val(); }
+    inline bool contains(const key_type& k) const noexcept(NO_EXCEPT) { return this->_data.get(k).val() > 0; }
 
     inline bool insert(const key_type& k) noexcept(NO_EXCEPT) {
         assert(0 <= k && k < this->_data.size());
-        const bool res = !this->_data.get(k);
+        const bool res = !this->_data.get(k).val();
         if(res) this->_data.apply(k, 1), ++this->_elem;
         return res;
     }
 
     inline bool remove(const key_type& k) noexcept(NO_EXCEPT) {
         assert(0 <= k && k < this->_data.size());
-        const bool res = this->_data.get(k);
+        const bool res = this->_data.get(k).val();
         if(res) this->_data.apply(k, -1), --this->_elem;
         return res;
     }
 
     inline std::optional<value_type> next(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.max_right(k, [count](const size_type p) { return p <= count; });
+        const value_type v = this->_data.max_right(k, [count](const auto& p) { return p.val() <= count; });
         if(v == this->_data.size()) return {};
         return { v };
     }
     inline std::optional<value_type> prev(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.min_left(k+1, [count](const size_type p) { return p <= count; });
+        const value_type v = this->_data.min_left(k+1, [count](const auto& p) { return p.val() <= count; });
         if(v == 0) return {};
         return { v - 1 };
     }
@@ -92,10 +111,10 @@ struct set_adapter {
     inline value_type min() const noexcept(NO_EXCEPT) { return this->kth_smallest(0); }
     inline value_type max() const noexcept(NO_EXCEPT) { return this->kth_largest(0); }
 
-    inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(0, v); }
-    inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(v+1, this->_data.size()); }
-    inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(0, v+1); }
-    inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(v, this->_data.size()); }
+    inline size_type count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(0, v).val(); }
+    inline size_type count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(v+1, this->_data.size()).val(); }
+    inline size_type count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(0, v+1).val(); }
+    inline size_type count_or_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->_data.fold(v, this->_data.size()).val(); }
 
     template<comparison com = comparison::equal_to>
     inline size_type count(const value_type& v) const noexcept(NO_EXCEPT) {
@@ -111,34 +130,36 @@ struct set_adapter {
 };
 
 
-template<template<class> class Tree = lib::fenwick_tree, class Size = std::int64_t>
-struct multiset_adapter : protected set_adapter<Tree,Size> {
+template<template<class...> class Tree = lib::fenwick_tree, std::integral Size = std::int64_t>
+struct multiset_adapter : protected set_adapter<Tree, Size> {
     using size_type = Size;
     using key_type = internal::size_t;
     using value_type = key_type;
 
   private:
-    using base = set_adapter<Tree,Size>;
+    using base = set_adapter<Tree, Size>;
 
   public:
     multiset_adapter(const size_type sup) noexcept(NO_EXCEPT) : base(sup) {};
 
-    template<class I>
-    multiset_adapter(const I first, const I last) noexcept(NO_EXCEPT) : base(*max_element(first, last) + 1) {
-        vector<size_type> bits(this->_data.size());
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    multiset_adapter(const I first, const S last) noexcept(NO_EXCEPT) : base(*std::ranges::max_element(first, last) + 1) {
+        vector<size_type> cnts(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
-            bits[*itr]++;
+            cnts[*itr]++;
         }
-        this->build_from_histogram(ALL(bits));
+        this->build_from_histogram(ALL(cnts));
     };
 
-    template<class I>
-    inline auto& build_from_histogram(const I first, const I last) noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == this->_data.size());
-        using T = typename std::iterator_traits<I>::value_type;
-        static_assert(std::is_integral_v<T>, "counter type must be integal");
-        static_assert(std::is_same_v<Size,std::common_type_t<Size,T>>, "counter type must be narrower than size_type");
+    template<std::ranges::input_range R>
+    multiset_adapter(const R& range) noexcept(NO_EXCEPT) : multiset_adapter(ALL(range)) {}
+
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& build_from_histogram(const I first, const S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->_data.size());
+        }
         this->_data.assign(first, last);
         return *this;
     };
@@ -155,15 +176,13 @@ struct multiset_adapter : protected set_adapter<Tree,Size> {
         this->_elem -= count;
     }
 
-
-
     inline std::optional<value_type> next(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.max_right(k, [count](const size_type p) { return p <= count; });
+        const value_type v = this->_data.max_right(k, [count](const auto& p) { return p.val() <= count; });
         if(v == this->_data.size()) return {};
         return { v };
     }
     inline std::optional<value_type> prev(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.min_left(k+1, [count](const size_type p) { return p <= count; });
+        const value_type v = this->_data.min_left(k+1, [count](const auto& p) { return p.val() <= count; });
         if(v == 0) return {};
         return { v - 1 };
     }

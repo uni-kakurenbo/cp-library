@@ -458,7 +458,7 @@ struct Concat {
         requires (sizeof...(Ts) == 0 || internal::can_concat_view<Ts...>)
     inline constexpr auto operator() [[nodiscard]] (Ts&&... vs) const {
         if constexpr(sizeof...(Ts) == 0) return std::views::empty<std::nullptr_t>;
-        else return concat_view<Ts...>(std::forward<Ts>(vs)...);
+        else return concat_view<std::views::all_t<Ts>...>(std::forward<Ts>(vs)...);
     }
 };
 
