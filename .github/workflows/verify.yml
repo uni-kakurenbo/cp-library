@@ -3,7 +3,7 @@ name: verify
 on:
   push:
     branches:
-    - main
+    - master
   pull_request:
 
 jobs:
@@ -15,6 +15,9 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v4
+
+    - name: Install dependencies
+      run: pip3 install -U git+https://online-judge-tools.github.io/verification-helper.git@master
 
     - name: Run tests
       env:
