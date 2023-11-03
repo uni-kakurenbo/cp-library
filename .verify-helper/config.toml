@@ -1,7 +1,6 @@
 [[languages.cpp.environments]]
-CXX = "ccache"
+CXX = "g++-12"
 CXXFLAGS = [
-    "g++-12",
     "-std=gnu++20",
     "-fdiagnostics-color=always",
     "-Wno-misleading-indentation",
