@@ -96,7 +96,6 @@
 #include "numeric/fast_prime.hpp"
 #include "numeric/int128.hpp"
 #include "numeric/interval_scanner.hpp"
-#include "numeric/math.hpp"
 #include "numeric/matrix.hpp"
 #include "numeric/modint.hpp"
 #include "numeric/prime_enumerator.hpp"

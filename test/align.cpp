@@ -1,5 +1,3 @@
-#pragma once
-
 #include "template.hpp"
 
 signed main() {

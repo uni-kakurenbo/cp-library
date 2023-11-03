@@ -1,5 +1,3 @@
-#pragma once
-
 #include "view/cyclic.hpp"
 #include "view/zip.hpp"
 #include "view/concat.hpp"

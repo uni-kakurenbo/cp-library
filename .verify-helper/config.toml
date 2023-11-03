@@ -10,7 +10,6 @@ CXXFLAGS = [
     "-Wno-char-subscripts",
     "-fsplit-stack",
     "-O2",
-    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
     "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src",
     "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/debugger"
 ]

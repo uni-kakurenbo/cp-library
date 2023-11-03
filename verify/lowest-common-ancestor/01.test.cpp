@@ -6,38 +6,28 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include <bits/stdc++.h>
-using namespace std;
+// #include <bits/stdc++.h>
+// using namespace std;
 
 #include "template.hpp"
-#include "adapter/output.hpp"
-
-input_adapter _input;
-output_adapter _print;
-#define input _input
-#define print _print
 /* #endregion */
 
-// https://onlinejudge.u-aizu.ac.jp/problems/GRL_5_C
+#define PROBLEM "https://judge.yosupo.jp/problem/lca"
 
 #include "graph.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 
 signed main() {
-    int n; cin >> n;
+    int n, q; cin >> n >> q;
     lib::graph<> G(n);
 
-    REP(i, n) {
-        int k; cin >> k;
-        LOOP(k) {
-            int c; cin >> c;
-            G.add_edge_bidirectionally(i, c);
-        }
+    REP(i, 1, n) {
+        int p; cin >> p;
+        G.add_edge_bidirectionally(i, p);
     }
 
     lib::lowest_common_ancestor lca(G, 0);
 
-    int q; cin >> q;
     LOOP(q) {
         int u, v; cin >> u >> v;
         print(lca(u, v));
