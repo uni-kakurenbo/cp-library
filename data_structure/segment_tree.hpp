@@ -170,6 +170,9 @@ struct core<Monoid> : base<Monoid> {
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
+    template<std::ranges::input_range R>
+    explicit core(const R& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
+
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
 

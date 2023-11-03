@@ -7,9 +7,9 @@
                 "${workspaceFolder}/../..",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
                 "~/boost",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/debugger",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/src/adapter"
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/debugger",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/adapter"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++-12",

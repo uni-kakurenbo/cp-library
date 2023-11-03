@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 #include <functional>
 #include <queue>
+#include <optional>
+#include <concepts>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -10,39 +13,59 @@
 namespace lib {
 
 
-template<class T, class container = std::vector<T>, class comparer = std::less<T>, class rev_comparer = std::greater<T>>
+template<
+    class T,
+    class container = std::vector<T>,
+    std::strict_weak_order<T, T> comparer = std::less<T>,
+    std::strict_weak_order<T, T> rev_comparer = std::greater<T>
+>
 struct kth_element {
+    using value_type = T;
+
   protected:
     internal::size_t _k;
-    std::priority_queue<T,container,comparer> small;
-    std::priority_queue<T,container,rev_comparer> large;
+    std::priority_queue<T, container,comparer> _small;
+    std::priority_queue<T, container,rev_comparer> _large;
 
   public:
-    kth_element(internal::size_t k = 0) noexcept(NO_EXCEPT) : _k(k) {}
+    kth_element(internal::size_t k = 0) noexcept(NO_EXCEPT) : _k(k + 1) { assert(k >= 0); }
 
-    inline T get() const noexcept(NO_EXCEPT) { return small.top(); }
-    inline bool has() const noexcept(NO_EXCEPT) { return small.size() == _k; }
+    inline bool has() const noexcept(NO_EXCEPT) { return std::ssize(this->_small) == _k; }
 
-    inline void push(T v) noexcept(NO_EXCEPT) {
-        if(small.size() < _k) {
-            small.push(v);
+    inline value_type value() const noexcept(NO_EXCEPT) { return this->_small.top(); }
+
+    inline std::optional<value_type> get() const noexcept(NO_EXCEPT) {
+        if(this->has()) return this->value();
+        return {};
+    }
+
+    template<std::convertible_to<T> U>
+    inline auto value_or(U&& v) const noexcept(NO_EXCEPT) {
+        return this->get().value_or(std::forward<U>(v));
+    }
+
+    inline void push(const value_type& v) noexcept(NO_EXCEPT) {
+        if(std::ssize(this->_small) < _k) {
+            this->_small.push(v);
             return;
         }
-        T kth = small.top();
+        const value_type kth = this->_small.top();
         if(v < kth) {
-            small.pop(); small.push(v);
-            large.push(kth);
+            this->_small.pop();
+            this->_small.push(v);
+            this->_large.push(kth);
         }
         else {
-            large.push(v);
+            _large.push(v);
         }
     }
 
     inline void pop() noexcept(NO_EXCEPT) {
-        small.pop();
-        if(large.empty()) return;
-        T v = large.top(); large.pop();
-        small.push(v);
+        this->_small.pop();
+        if(this->_large.empty()) return;
+        const value_type v = this->_large.top();
+        this->_large.pop();
+        this->_small.push(v);
     }
 };
 

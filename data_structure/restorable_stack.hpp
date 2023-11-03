@@ -39,10 +39,13 @@ struct restorable_stack {
     inline const value_type& top() const noexcept(NO_EXCEPT) {
         return this->_current->val.value();
     }
+    inline auto get() const noexcept(NO_EXCEPT) {
+        return this->_current.val;
+    }
 
-    template<class U>
-    inline auto top_or(const U &&v) const noexcept(NO_EXCEPT) {
-        return this->_current->val.value_or(v);
+    template<std::convertible_to<T> U>
+    inline auto top_or(U &&v) const noexcept(NO_EXCEPT) {
+        return this->_current->val.value_or(std::forward<U>(v));
     }
 
     inline auto& push(const value_type& x) noexcept(NO_EXCEPT) {
