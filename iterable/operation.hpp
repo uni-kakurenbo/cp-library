@@ -36,9 +36,12 @@ namespace lib {
 
 
 template<std::input_iterator I, std::sentinel_for<I> S>
-std::string join(const I first, const S last, const char* sep = "") noexcept(NO_EXCEPT) {
+std::string join(const I first, S last, const char* sep = "") noexcept(NO_EXCEPT) {
+    if(first == last) return "";
+    std::advance(last, -1);
     std::ostringstream res;
     std::copy(first, last, std::ostream_iterator<std::iter_value_t<I>>(res, sep));
+    res << *last;
     return res.str();
 }
 

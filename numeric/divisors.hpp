@@ -4,13 +4,14 @@
 #include <vector>
 
 #include "internal/dev_env.hpp"
-
+#include "adapter/vector.hpp"
 
 namespace lib {
 
 
-template<class T> std::vector<T> divisors(const T k) noexcept(NO_EXCEPT) {
-    std::vector<T> res;
+template<class T>
+std::vector<T> divisors(const T k) noexcept(NO_EXCEPT) {
+    vector<T> res;
 
     for(T i=1; i*i<=k; ++i) {
         if(k%i == 0) {
@@ -18,6 +19,8 @@ template<class T> std::vector<T> divisors(const T k) noexcept(NO_EXCEPT) {
             if(i*i < k) res.emplace_back(k/i);
         }
     }
+
+    res.sort();
 
     return res;
 }
