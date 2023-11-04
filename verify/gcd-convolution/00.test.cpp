@@ -5,32 +5,21 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ GCC */
-/* #region template */
-// #include <bits/stdc++.h>
-
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://judge.yosupo.jp/problem/gcd_convolution"
 
-void solve();
-
-signed main() {
-    int $ = 1;
-    // std::cin >> $;
-    for(int _ = 0; _ < $; ++_) {
-        DEBUG("Case: #" + std::to_string(_));
-        solve();
-    }
-    return 0;
-}
-
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "adapter/io.hpp"
+#include "adapter/valarray.hpp"
+#include "numeric/modint.hpp"
 #include "convolution/gcd.hpp"
 
 using mint = lib::modint998244353;
 
-void solve() {
-    int n; cin >> n;
-    valarray<mint> a(n), b(n); input >> a >> b;
+signed main() {
+    int n; std::cin >> n;
+    lib::valarray<mint> a(n), b(n); input >> a >> b;
     print(lib::gcd_convolution(ALL(a), ALL(b)));
 }

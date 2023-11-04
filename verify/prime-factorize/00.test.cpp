@@ -1,13 +1,23 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
 #define PROBLEM "https://judge.yosupo.jp/problem/factorize"
 
-// #include <bits/stdc++.h>
-#include "template.hpp"
+#include <iostream>
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
 #include "numeric/fast_prime.hpp"
 
 signed main() {
     int q; std::cin >> q;
     REP(q) {
-        ll a; std::cin >> a;
+        lib::ll a; std::cin >> a;
         auto facts = lib::factorize(a);
         print(facts.size(), facts);
     }

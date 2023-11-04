@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <concepts>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 
@@ -12,38 +14,20 @@
 namespace lib {
 
 
-template<class I, class F, class C = valarray<typename std::iterator_traits<I>::value_type>>
-inline auto applied(const I first, const I last, F&& func) noexcept(NO_EXCEPT) {
-    C res(first, last);
-    func(std::begin(res), std::end(res));
-    return res;
+template<std::ranges::input_range R, class F>
+inline R applied(R v, F func) noexcept(NO_EXCEPT) {
+    func(std::ranges::begin(v), std::ranges::end(v));
+    return v;
 }
 
-template<class V, class F, class C = V>
-inline auto applied(V v, F&& func) noexcept(NO_EXCEPT) {
-    return applied<typename V::iterator,F,C>(std::begin(v), std::end(v), func);
+template<std::ranges::input_range R>
+inline auto sorted(const R& v) noexcept(NO_EXCEPT) {
+    return applied(v, std::ranges::sort);
 }
 
-
-template<class I>
-inline auto sorted(const I first, const I last) noexcept(NO_EXCEPT) {
-    return applied(first, last, std::sort<I>);
-}
-
-template<class V>
-inline auto sorted(V v) noexcept(NO_EXCEPT) {
-    return applied(v, std::sort<typename V::iterator>);
-}
-
-
-template<class I>
-inline auto reversed(const I first, const I last) noexcept(NO_EXCEPT) {
-    return applied(first, last, std::reverse<I>);
-}
-
-template<class V>
-inline auto reversed(V v) noexcept(NO_EXCEPT) {
-    return applied(v, std::reverse<typename V::iterator>);
+template<std::ranges::input_range R>
+inline auto reversed(R v) noexcept(NO_EXCEPT) {
+    return applied(v, std::ranges::reverse);
 }
 
 

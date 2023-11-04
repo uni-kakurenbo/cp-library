@@ -5,28 +5,19 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ GCC */
-/* #region template */
-// #include <bits/stdc++.h>
-
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://judge.yosupo.jp/problem/many_aplusb_128bit"
 
-void solve();
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "adapter/io.hpp"
+#include "numeric/int128.hpp"
 
 signed main() {
-    int $ = 1;
-    std::cin >> $;
-    for(int _ = 0; _ < $; ++_) {
-        DEBUG("Case: #" + std::to_string(_));
-        solve();
+    int t; std::cin >> t;
+    REP(t) {
+        lib::i128 a, b; std::cin >> a >> b;
+        print(a + b);
     }
-    return 0;
-}
-
-
-void solve() {
-    i128 a, b; cin >> a >> b;
-    print(a + b);
 }

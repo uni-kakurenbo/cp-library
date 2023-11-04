@@ -22,7 +22,6 @@
 
 #include "algebraic/internal/concepts.hpp"
 #include "data_structure/range_action/base.hpp"
-#include "data_structure/range_action/flags.hpp"
 
 
 namespace lib {
@@ -215,11 +214,6 @@ struct base {
 
 template<actions::internal::full_action Action>
 struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
-    static_assert(
-        Action::tags.none() or
-        Action::tags.has(actions::flags::range_folding, actions::flags::range_operation)
-    );
-
   public:
     using action = Action;
 
@@ -252,6 +246,9 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     explicit core(const I first, const S last) noexcept(NO_EXCEPT)
       : base(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
+
+    template<std::ranges::input_range R>
+    explicit core(const R& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
 
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT)

@@ -6,6 +6,7 @@
 #include <queue>
 #include <optional>
 #include <concepts>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -13,24 +14,27 @@
 namespace lib {
 
 
+// Thanks to: https://qiita.com/drken/items/1b7e6e459c24a83bb7fd
 template<
     class T,
-    class container = std::vector<T>,
-    std::strict_weak_order<T, T> comparer = std::less<T>,
-    std::strict_weak_order<T, T> rev_comparer = std::greater<T>
+    std::ranges::output_range<T> Container = std::vector<T>,
+    std::strict_weak_order<T, T> Comparer = std::less<T>,
+    std::strict_weak_order<T, T> RevComparer = std::greater<T>,
+    std::integral Size = internal::size_t
 >
 struct kth_element {
     using value_type = T;
+    using size_type = Size;
 
   protected:
-    internal::size_t _k;
-    std::priority_queue<T, container,comparer> _small;
-    std::priority_queue<T, container,rev_comparer> _large;
+    size_type _k;
+    std::priority_queue<T, Container, Comparer> _small;
+    std::priority_queue<T, Container, RevComparer> _large;
 
   public:
-    kth_element(internal::size_t k = 0) noexcept(NO_EXCEPT) : _k(k + 1) { assert(k >= 0); }
+    kth_element(const size_type k = 0) noexcept(NO_EXCEPT) : _k(k + 1) { assert(k >= 0); }
 
-    inline bool has() const noexcept(NO_EXCEPT) { return std::ssize(this->_small) == _k; }
+    inline bool has() const noexcept(NO_EXCEPT) { return std::ssize(this->_small) == this->_k; }
 
     inline value_type value() const noexcept(NO_EXCEPT) { return this->_small.top(); }
 
@@ -45,25 +49,32 @@ struct kth_element {
     }
 
     inline void push(const value_type& v) noexcept(NO_EXCEPT) {
-        if(std::ssize(this->_small) < _k) {
+        if(std::ssize(this->_small) < this->_k) {
             this->_small.push(v);
             return;
         }
+
         const value_type kth = this->_small.top();
-        if(v < kth) {
+
+        if(Comparer{}(v, kth)) {
             this->_small.pop();
             this->_small.push(v);
             this->_large.push(kth);
         }
         else {
-            _large.push(v);
+            this->_large.push(v);
         }
     }
 
     inline void pop() noexcept(NO_EXCEPT) {
+        assert(this->has());
+
         this->_small.pop();
+
         if(this->_large.empty()) return;
+
         const value_type v = this->_large.top();
+
         this->_large.pop();
         this->_small.push(v);
     }

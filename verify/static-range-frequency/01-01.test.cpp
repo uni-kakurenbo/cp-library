@@ -1,16 +1,27 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ GCC */
+
 #define PROBLEM "https://atcoder.jp/contests/abc248/tasks/abc248_d"
 
-#include <bits/stdc++.h>
-#include "template.hpp"
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "adapter/valarray.hpp"
 #include "data_structure/wavelet_matrix.hpp"
 #include "constants.hpp"
 
 signed main() {
     int n; std::cin >> n;
-    std::vector<int> a(n); input >> a;
+    lib::valarray<int> a(n); input >> a;
 
     lib::compressed_wavelet_matrix data(a);
-    debug(data);
 
     int q; std::cin >> q;
     REP(q) {

@@ -8,13 +8,18 @@
 
 #define PROBLEM "https://atcoder.jp/contests/abc284/tasks/abc284_f"
 
-#include "template.hpp"
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "adapter/string.hpp"
 #include "hash/sequence_hasher.hpp"
 
 signed main() {
-    int n; cin >> n;
-    string s; cin >> s;
-    string t = s; reverse(ALL(t));
+    int n; std::cin >> n;
+    lib::string s; std::cin >> s;
+    lib::string t = s; t.reverse();
 
     lib::sequence_hasher hash0(ALL(s)), hash1(ALL(t));
 

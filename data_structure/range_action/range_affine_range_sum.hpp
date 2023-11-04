@@ -4,7 +4,6 @@
 #include "internal/dev_env.hpp"
 
 #include "data_structure/range_action/base.hpp"
-#include "data_structure/range_action/flags.hpp"
 
 #include "algebraic/addition.hpp"
 #include "algebraic/affine.hpp"
@@ -17,8 +16,6 @@ namespace actions {
 
 
 template<class T> struct range_affine_range_sum : base<> {
-    static constexpr flags tags{ flags::range_folding, flags::range_operation };
-
     using operand = algebraic::addition<T>;
     using operation = algebraic::affine<T>;
 

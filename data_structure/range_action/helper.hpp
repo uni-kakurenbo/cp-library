@@ -11,8 +11,6 @@ namespace actions {
 
 template<class S, S (*op)(S, S), S (*e)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)(), F (*folding)(F, int) = nullptr>
 struct helper : lib::actions::base<algebraic::monoid_helper<F,composition,id>> {
-    static constexpr lib::actions::flags tags{};
-
     using operand = algebraic::monoid_helper<S,op,e>;
     using operation = algebraic::monoid_helper<F,composition,id>;
 

@@ -4,7 +4,6 @@
 #include "internal/dev_env.hpp"
 
 #include "data_structure/range_action/base.hpp"
-#include "data_structure/range_action/flags.hpp"
 
 #include "algebraic/minimum.hpp"
 #include "algebraic/assignment.hpp"
@@ -16,8 +15,6 @@ namespace actions {
 
 
 template<class T> struct range_set_range_min : base<algebraic::assignment<T>> {
-    static constexpr flags tags{ flags::range_folding, flags::range_operation };
-
     using operand = algebraic::minimum<T>;
     using operation = algebraic::assignment<T>;
 

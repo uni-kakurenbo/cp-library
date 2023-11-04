@@ -64,7 +64,6 @@ struct set_adapter {
     set_adapter(const R& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-        // requires std::same_as<std::iter_value_t<I>, bool>
     inline auto& build_from_bits(const I first, const S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->_data.size());
@@ -73,6 +72,10 @@ struct set_adapter {
         return *this;
     };
 
+    template<std::ranges::input_range R>
+    inline auto& build_from_bits(const R& range) noexcept(NO_EXCEPT) {
+        return this->build_from_bits(ALL(range));
+    }
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_elem; }
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
@@ -163,6 +166,11 @@ struct multiset_adapter : protected set_adapter<Tree, Size> {
         this->_data.assign(first, last);
         return *this;
     };
+
+    template<std::ranges::input_range R>
+    inline auto& build_from_histogram(const R& range) noexcept(NO_EXCEPT) {
+        return this->build_from_histogram(ALL(range));
+    }
 
     inline void insert(const key_type& k, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(0 <= k && k < this->_data.size());

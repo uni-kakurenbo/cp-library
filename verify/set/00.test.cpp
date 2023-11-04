@@ -1,43 +1,52 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
 #define PROBLEM "https://judge.yosupo.jp/problem/predecessor_problem"
 
-#include <bits/stdc++.h>
-#include "template.hpp"
-
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "adapter/valarray.hpp"
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/adapter/set.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    valarray<bool> t(n);
+    lib::valarray<bool> t(n);
     REP(i, n) {
-        char v; cin >> v;
+        char v; std::cin >> v;
         t[i] = v == '1';
     }
     lib::set_adapter<lib::fenwick_tree> st(n);
-    st.build_from_bits(ALL(t));
-    debug(st);
+    st.build_from_bits(t);
 
     REP(q) {
-        debug(st);
-        int t; cin >> t;
+        int t; std::cin >> t;
         if(t == 0) {
-            int k; cin >> k;
+            int k; std::cin >> k;
             st.insert(k);
         }
         if(t == 1) {
-            int k; cin >> k;
+            int k; std::cin >> k;
             st.remove(k);
         }
         if(t == 2) {
-            int k; cin >> k;
+            int k; std::cin >> k;
             print(st.contains(k));
         }
         if(t == 3) {
-            int k; cin >> k;
+            int k; std::cin >> k;
             print(st.next(k).value_or(-1));
         }
         if(t == 4) {
-            int k; cin >> k;
+            int k; std::cin >> k;
             print(st.prev(k).value_or(-1));
         }
     }

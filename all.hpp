@@ -60,7 +60,6 @@
 #include "graph/centroid_decomposition.hpp"
 #include "graph/centroid_path_decomposition.hpp"
 #include "graph/connected_components.hpp"
-#include "graph/directed_minimum_spanning_tree.hpp"
 #include "graph/from_grid.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 #include "graph/manhattan_minimum_spanning_tree.hpp"
@@ -101,7 +100,6 @@
 #include "numeric/prime_enumerator.hpp"
 #include "numeric/prime_sieve.hpp"
 #include "numeric/quotient_enumerator.hpp"
-#include "numeric/rational.hpp"
 
 #include "random/generator.hpp"
 #include "random/xorshift.hpp"
@@ -113,7 +111,7 @@
 
 #include "utility/applier.hpp"
 #include "utility/functional.hpp"
-#include "utility/hilbert_order.hpp"
+#include "numeric/hilbert_order.hpp"
 #include "utility/restrictor.hpp"
 
 #include "geometries.hpp"

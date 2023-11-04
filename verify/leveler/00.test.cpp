@@ -1,0 +1,43 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
+#define PROBLEM "https://atcoder.jp/contests/abc322/tasks/abc322_e"
+
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "adapter/valarray.hpp"
+#include "view/repeat.hpp"
+#include "view/zip.hpp"
+#include "grid.hpp"
+#include "leveler.hpp"
+#include "constants.hpp"
+#include "utility/functional.hpp"
+
+signed main() {
+    int n, k, p; std::cin >> n >> k >> p;
+    lib::valarray<int> c(n);
+    lib::valgrid<int> A(n, k);
+    input >> lib::views::zip(c, A);
+
+    lib::leveler<int> leveler(lib::views::repeat(p + 1, k));
+
+    lib::valarray<lib::i64> dp(leveler.sup(), lib::INF64);
+
+    dp[0] = 0;
+    REP(i, n) REPD(x, leveler.sup()) {
+        auto a = leveler.revert(x);
+        a += A[i];
+        ITRR(v, a) lib::chmin(v, p);
+        lib::chmin(dp[leveler.convert(a)], dp[x] + c[i]);
+    }
+
+    print(lib::to_optional_if_or_over(dp[leveler.convert(lib::views::repeat(p, k))], lib::INF64).value_or(-1));
+}

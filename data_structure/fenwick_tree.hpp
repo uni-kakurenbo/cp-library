@@ -20,7 +20,6 @@
 #include "snippet/iterations.hpp"
 #include "numeric/bit.hpp"
 
-#include "data_structure/range_action/flags.hpp"
 #include "data_structure/range_action/base.hpp"
 #include "algebraic/internal/concepts.hpp"
 
@@ -145,6 +144,9 @@ struct core<Monoid> : base<Monoid> {
     explicit core(const I first, const S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
+
+    template<std::ranges::input_range R>
+    explicit core(const R& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
 
 
     template<std::convertible_to<value_type> T>

@@ -25,16 +25,19 @@ struct inversion {
         const internal::size_t n = std::distance(first, last);
         const auto [ min, max ] = std::minmax_element(first, last);
         const auto m = *max - *min + 1;
+
         fenwick_tree<actions::range_sum<T>> cnt(m);
+
         T res = 0;
         {
             internal::size_t i = 0;
             I itr = first;
             for(; i < n; ++i, ++itr) {
-                res += cnt.sum(*itr - *min + STRICT, m);
-                cnt[*itr - *min]++;
+                res += cnt(*itr - *min + STRICT, m).fold().val();
+                cnt[*itr - *min] += 1;
             }
         }
+
         return res;
     }
 

@@ -5,34 +5,34 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ GCC */
-/* #region template */
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://judge.yosupo.jp/problem/point_add_range_sum"
 
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "adapter/vector.hpp"
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/range_action/range_sum.hpp"
 
-
 signed main() {
-    int n, q; cin >> n >> q;
-    vector<ll> a(n); input >> a;
+    int n, q; std::cin >> n >> q;
+    lib::vector<lib::ll> a(n); input >> a;
 
-    lib::fenwick_tree<lib::actions::range_sum<ll>> data(ALL(a));
-    debug(data);
+    lib::fenwick_tree<lib::actions::range_sum<lib::ll>> data(a);
 
     REP(q) {
-        int t; cin >> t;
+        int t; std::cin >> t;
         if(t == 0) {
-            int p, x; cin >> p >> x;
+            int p, x; std::cin >> p >> x;
             data[p] += x;
         }
         if(t == 1) {
-            int l, r; cin >> l >> r;
+            int l, r; std::cin >> l >> r;
             print(data(l, r).fold());
         }
-        debug(data);
     }
 
     return 0;

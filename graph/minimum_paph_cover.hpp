@@ -18,5 +18,5 @@ typename lib::internal::graph_impl::mixin<Graph>::size_type lib::internal::graph
         bm.add(i, j.to);
     }
 
-    return this->size() - bm.solve();
+    return this->size() - bm.max_matched();
 }

@@ -1,15 +1,25 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_H"
 
-#include <bits/stdc++.h>
-#include "template.hpp"
-
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "data_structure/range_action/range_add_range_min.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::lazy_segment_tree<lib::actions::range_add_range_min<ll>> data(n, 0);
+    lib::lazy_segment_tree<lib::actions::range_add_range_min<lib::ll>> data(n, 0);
     // debug(data);
 
     REP(q) {

@@ -342,7 +342,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         friend inline bool operator!=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index != rhs._index; }
         friend inline bool operator<(const iterator& lhs, const iterator& rhs) { return lhs._index < rhs._index; }
         friend inline bool operator>(const iterator& lhs, const iterator& rhs) { return lhs._index > rhs._index; }
-        friend inline size_type operator-(const iterator& lhs, const iterator& rhs) { return rhs._index - lhs._index; }
+        friend inline size_type operator-(const iterator& lhs, const iterator& rhs) { return lhs._index - rhs._index; }
     };
 };
 

@@ -1,11 +1,16 @@
 #pragma once
 
+
 #include <atcoder/maxflow>
 
-#include "snippet/iterations.hpp"
+
+#include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
@@ -15,23 +20,46 @@ struct maximum_bipartite_matching {
   protected:
     using MF = atcoder::mf_graph<size_type>;
 
-    size_type _n;
-    MF mf;
+    size_type _m, _n, _s, _edges = 0;
+    MF _mf;
 
   public:
-    maximum_bipartite_matching(size_type n = 0) noexcept(NO_EXCEPT) : _n(n), mf(2*n+2) {
+    explicit maximum_bipartite_matching(const size_type n) noexcept(NO_EXCEPT) : maximum_bipartite_matching(n, n) {}
+    maximum_bipartite_matching(const size_type m, const size_type n) noexcept(NO_EXCEPT)
+      : _m(m), _n(n), _s(m + n), _mf(m + n + 2)
+    {
+        REP(i, m) {
+            this->_mf.add_edge(this->_s, i, 1);
+        }
         REP(i, n) {
-            this->mf.add_edge(2*n, i, 1);
-            this->mf.add_edge(n+i, 2*n+1, 1);
+            this->_mf.add_edge(m + i, this->_s + 1, 1);
         }
     }
 
-    void add(size_type i, size_type j) {
-        this->mf.add_edge(i, this->_n+j, 1);
+    inline auto& add(const size_type i, const size_type j) noexcept(NO_EXCEPT) {
+        assert(0 <= i && i < this->_m);
+        assert(0 <= j && j < this->_n);
+        this->_mf.add_edge(i, this->_m + j, 1);
+        ++this->_edges;
+        return *this;
     }
 
-    size_type solve() {
-        return this->mf.flow(2*this->_n, 2*this->_n+1);
+    inline size_type max_matched() noexcept(NO_EXCEPT) {
+        return this->_mf.flow(this->_s, this->_s + 1);
+    }
+
+    inline auto get_matching() noexcept(NO_EXCEPT) {
+        this->max_matched();
+
+        vector<spair<size_type>> res;
+
+        REP(i, this->_edges) {
+            const auto edge = this->_mf.get_edge(this->_s + i);
+            if(edge.flow == 0) continue;
+            res.emplace_back(edge.from, edge.to - this->_m);
+        }
+
+        return res;
     }
 };
 

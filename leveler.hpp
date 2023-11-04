@@ -53,7 +53,7 @@ struct leveler {
 
     inline size_type dimension() const noexcept(NO_EXCEPT) { return this->_dim; }
 
-    inline value_type max() const noexcept(NO_EXCEPT) { return this->_max; }
+    inline value_type sup() const noexcept(NO_EXCEPT) { return this->_max; }
 
     template<class I>
     inline value_type convert(I first, I last) const noexcept(NO_EXCEPT) {
@@ -87,7 +87,7 @@ struct leveler {
     }
 
     inline lib::valarray<value_type> revert(value_type id) const noexcept(NO_EXCEPT) {
-        assert(0 <= id and id < this->max());
+        assert(0 <= id and id < this->sup());
 
         lib::valarray<value_type> res(std::size(this->_bases));
 

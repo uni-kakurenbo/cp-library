@@ -1,17 +1,25 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=1549"
 
 #include <bits/stdc++.h>
 #include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
+#include "adapter/valarray.hpp"
 #include "data_structure/wavelet_matrix.hpp"
-
-#include "template.hpp"
 
 signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n); ITRR(v, a) std::cin >> v;
 
-    lib::wavelet_matrix<ll>::compressed data(ALL(a));
+    lib::wavelet_matrix<lib::ll>::compressed data(ALL(a));
     // debug(data);
 
     int q; std::cin >> q;

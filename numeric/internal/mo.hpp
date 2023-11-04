@@ -15,7 +15,7 @@
 
 #include "numeric/bit.hpp"
 
-#include "utility/hilbert_order.hpp"
+#include "numeric/hilbert_order.hpp"
 
 
 namespace lib {

@@ -165,6 +165,12 @@ struct output_adapter {
         return *this;
     }
 
+    inline auto& yesno(const bool cond) noexcept(NO_EXCEPT) {
+        if(cond) this->yes();
+        else this->no();
+        return *this;
+    }
+
     inline auto yes() noexcept(NO_EXCEPT) {
         *this->out << "Yes";
         this->put_endline();

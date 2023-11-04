@@ -21,7 +21,6 @@
 #include "numeric/bit.hpp"
 #include "algebraic/internal/concepts.hpp"
 #include "data_structure/range_action/base.hpp"
-#include "data_structure/range_action/flags.hpp"
 
 
 namespace lib {
@@ -291,8 +290,6 @@ template<actions::internal::operand_only_action Action>
 struct core<Action> : core<typename Action::operand> {
     using action = Action;
     using core<typename action::operand>::core;
-
-    static_assert(Action::tags.none() or Action::tags.has(actions::flags::range_folding));
 };
 
 

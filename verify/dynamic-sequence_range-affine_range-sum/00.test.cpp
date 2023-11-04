@@ -1,24 +1,36 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ GCC */
+
 #define PROBLEM "https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum"
 
-#include "template.hpp"
-
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
+#include "numeric/modint.hpp"
+#include "adapter/vector.hpp"
 #include "data_structure/implicit_treap.hpp"
 #include "data_structure/range_action/range_affine_range_sum.hpp"
 
-#include <vector>
+using mint = lib::modint998244353;
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<modint998244353> a(n); input >> a;
+    lib::vector<mint> a(n); input >> a;
 
-    lib::implicit_treap<lib::actions::range_affine_range_sum<modint998244353>> data(ALL(a));
-    debug(data);
+    lib::implicit_treap<lib::actions::range_affine_range_sum<mint>> data(a);
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int p, x; std::cin >> p >> x;
-            data.insert(p, modint998244353{x});
+            data.insert(p, mint{ x });
         }
         if(t == 1) {
             int p; std::cin >> p;
@@ -36,6 +48,5 @@ signed main() {
             int l, r; std::cin >> l >> r;
             print(data(l, r).fold());
         }
-        debug(data);
     }
 }

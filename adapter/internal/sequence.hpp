@@ -85,8 +85,9 @@ struct extended_sequence : Base {
     }
 
     inline auto& unique() noexcept(NO_EXCEPT) {
-        std::sort(std::begin(*this), std::end(*this));
-        this->erase(std::ranges::unique(*this, std::ranges::end(*this)));
+        std::ranges::sort(*this);
+        const auto rest = std::ranges::unique(*this);
+        this->erase(ALL(rest));
         return *this;
     }
 

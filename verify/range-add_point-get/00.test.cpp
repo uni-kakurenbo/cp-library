@@ -1,20 +1,25 @@
+/*
+ * @uni_kakurenbo
+ * https://github.com/uni-kakurenbo/competitive-programming-workspace
+ *
+ * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
+ */
+/* #language C++ 20 GCC */
+
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_E"
 
-#include <bits/stdc++.h>
-
-#include "snippet/iterations.hpp"
+#include <iostream>
 #include "snippet/aliases.hpp"
-
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
 #include "data_structure/fenwick_tree.hpp"
 #include "data_structure/range_action/range_add.hpp"
-
-#include "template.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::fenwick_tree<lib::actions::range_add<ll>> data(n);
-    debug(data);
+    lib::fenwick_tree<lib::actions::range_add<lib::ll>> data(n);
 
     REP(q) {
         int t; std::cin >> t;
@@ -26,7 +31,6 @@ signed main() {
             int p; std::cin >> p; --p;
             print(data[p]);
         }
-        debug(data);
     }
 
     return 0;

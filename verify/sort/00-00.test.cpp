@@ -5,27 +5,15 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ GCC */
-/* #region template */
-#include <bits/stdc++.h>
-
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://atcoder.jp/contests/abc242/tasks/abc242_b"
 
-void solve();
+#include "snippet/fast_io.hpp"
+#include "adapter/io.hpp"
+#include "adapter/string.hpp"
+#include "iterable/applied.hpp"
 
 signed main() {
-    int $ = 1;
-    // std::cin >> $;
-    for(int _ = 0; _ < $; ++_) {
-        DEBUG("Case: #" + std::to_string(_));
-        solve();
-    }
-    return 0;
-}
-
-void solve() {
-    string s; input >> s;
+    lib::string s; input >> s;
     print(lib::sorted(s));
 }

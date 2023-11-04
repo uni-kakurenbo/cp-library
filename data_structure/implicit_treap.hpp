@@ -23,7 +23,6 @@
 #include "random/xorshift.hpp"
 #include "algebraic/internal/concepts.hpp"
 #include "data_structure/range_action/base.hpp"
-#include "data_structure/range_action/flags.hpp"
 
 
 namespace lib {
@@ -403,6 +402,11 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         this->clear();
         this->insert(0, first, last);
         return *this;
+    }
+
+    template<std::ranges::input_range R>
+    inline auto& assign(const R& range) noexcept(NO_EXCEPT) {
+        return this->assign(ALL(range));
     }
 
     inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {

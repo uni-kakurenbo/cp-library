@@ -11,28 +11,19 @@
 #include "template.hpp"
 /* #endregion */
 
-void solve();
-
-signed main() {
-    debug(__cplusplus);
-    int $ = 1;
-    // std::cin >> $;
-    for(int _ = 0; _ < $; ++_) {
-        DEBUG("Case: #" + std::to_string(_));
-        solve();
-    }
-    return 0;
-}
-
 #define PROBLEM "https://yukicoder.me/problems/no/649"
 
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
+#include "adapter/io.hpp"
 #include "data_structure/kth_element.hpp"
 
 
-void solve() {
+signed main() {
     int q, k; input >> q >> k, --k;
 
-    lib::kth_element<i64> data(k);
+    lib::kth_element<lib::i64> data(k);
 
     REP(q) {
         int t; input >> t;
@@ -41,8 +32,13 @@ void solve() {
             data.push(v);
         }
         if(t == 2) {
-            print(data.value_or(-1));
-            data.pop();
+            if(data.has()) {
+                print(data.value());
+                data.pop();
+            }
+            else {
+                print(-1);
+            }
         }
     }
 }

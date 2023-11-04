@@ -6,11 +6,14 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "adapter/valarray.hpp"
+#include "adapter/vector.hpp"
+
 
 namespace lib {
 
 
-template<class container = std::vector<bool>> struct prime_flags : container {
+template<class container = valarray<bool>> struct prime_flags : container {
     prime_flags(const internal::size_t max) noexcept(NO_EXCEPT) : container(max+1, true) {
         (*this)[0] = (*this)[1] = false;
         for(internal::size_t p=2; p*p<=max; p++) if((*this)[p]) {
@@ -19,7 +22,7 @@ template<class container = std::vector<bool>> struct prime_flags : container {
     }
 };
 
-template<class T, class container = std::vector<T>> struct prime_sieve : container {
+template<class T, class container = vector<T>> struct prime_sieve : container {
   protected:
     std::vector<bool> is_prime;
 

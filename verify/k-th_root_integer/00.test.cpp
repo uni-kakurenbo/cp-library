@@ -5,28 +5,19 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ 20 GCC */
-/* #region template */
-#include <bits/stdc++.h>
-
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://judge.yosupo.jp/problem/kth_root_integer"
 
-void solve();
+#include <iostream>
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "adapter/io.hpp"
+#include "numeric/arithmetic.hpp"
 
 signed main() {
-    debug(__cplusplus);
-    int $ = 1;
-    std::cin >> $;
-    for(int _ = 0; _ < $; ++_) {
-        DEBUG("Case: #" + std::to_string(_));
-        solve();
+    int t; std::cin >> t;
+    REP(t) {
+        lib::u64 a, k; std::cin >> a >> k;
+        print(lib::kth_root_floor(a, k));
     }
-    return 0;
-}
-
-void solve() {
-    u64 a, k; std::cin >> a >> k;
-    print(lib::kth_root_floor(a, k));
 }
