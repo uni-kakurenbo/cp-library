@@ -202,15 +202,6 @@ struct grid_core : container, virtual grid_impl::interface<T> {
     enum class invert_direction { vertical, horizontal };
     enum class rotate_direction { counter_clockwise, clockwise };
 
-    template<class U = T, class Stream = std::istream>
-    void inline read(Stream *const ist = &std::cin) noexcept(NO_EXCEPT) {
-        REP(i, this->height()) REP(j, this->width()) {
-            U val; *ist >> val;
-            (*this)(i, j) = val;
-        }
-    }
-
-
     inline bool is_valid(const size_type i, const size_type j) const noexcept(NO_EXCEPT) {
         return 0 <= i and i < this->height() and 0 <= j and j < this->width();
     }
