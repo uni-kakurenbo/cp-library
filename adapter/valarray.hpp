@@ -12,15 +12,15 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adapter/internal/sequence.hpp"
+#include "adapter/internal/container_extender.hpp"
 
 
 namespace lib {
 
 
-template<class T> struct valarray : internal::extended_sequence<std::valarray<T>> {
+template<class T> struct valarray : internal::extended_container<std::valarray<T>> {
   private:
-    using base = internal::extended_sequence<std::valarray<T>>;
+    using base = internal::extended_container<std::valarray<T>>;
 
   public:
     using size_type = internal::size_t;

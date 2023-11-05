@@ -4,13 +4,13 @@
 #include <string>
 #include <algorithm>
 
-#include "adapter/internal/sequence.hpp"
+#include "adapter/internal/container_extender.hpp"
 
 
 namespace lib {
 
 
-using string = internal::extended_sequence<std::string>;
+using string = internal::extended_container<std::string>;
 
 
 } // namespace lib

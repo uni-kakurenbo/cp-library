@@ -13,10 +13,10 @@ namespace internal {
 
 
 template<class Base>
-struct extended_sequence : Base {
+struct extended_container : Base {
     using Base::Base;
 
-    extended_sequence(const Base& base) : Base(base) {}
+    extended_container(const Base& base) : Base(base) {}
 
     using size_type = decltype(Base().size());
     using value_type = typename Base::value_type;

@@ -3,14 +3,14 @@
 
 #include <array>
 #include <algorithm>
-#include "adapter/internal/sequence.hpp"
+#include "adapter/internal/container_extender.hpp"
 
 
 namespace lib {
 
 
 template<class T, int N>
-using array = internal::extended_sequence<std::array<T,N>>;
+using array = internal::extended_container<std::array<T,N>>;
 
 
 } // namespace lib
