@@ -16,7 +16,7 @@ namespace actions {
 
 
 template<class T> struct null : base<algebraic::null<T>> {
-    using operand = algebraic::addition<T>;
+    using operand = algebraic::null<T>;
     using operation = algebraic::null<T>;
 
     static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }

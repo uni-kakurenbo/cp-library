@@ -10,9 +10,12 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct null : base<T>, associative {
+template<class T = std::nullptr_t> struct null : base<T>, associative, commutative {
     using base<T>::base;
-    inline null operator+(const null&) const noexcept(NO_EXCEPT) { return *this; }
+    inline null operator+(const null& x) const noexcept(NO_EXCEPT) {
+        if(x == null{}) return *this;
+        return x;
+    }
 };
 
 
