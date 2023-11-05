@@ -1,8 +1,5 @@
-#pragma once
-
-
-#ifndef $TYPE_TRAITS // for debuggers
-#define $TYPE_TRAITS
+#ifndef INCLUDED_TYPE_TRAITS // for debuggers
+#define INCLUDED_TYPE_TRAITS
 
 
 #include <iostream>
@@ -182,4 +179,4 @@ template<class T> concept pointer = std::is_pointer_v<T>;
 }  // namespace lib
 
 
-#endif //ifndef $TYPE_TRAITS
+#endif //ifndef INCLUDED_TYPE_TRAITS

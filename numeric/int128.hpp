@@ -1,7 +1,5 @@
-#pragma once
-
-#ifndef $INT128 // for debugger
-#define $INT128
+#ifndef INCLUDED_INT128 // for debugger
+#define INCLUDED_INT128
 
 #include <cctype>
 #include <cassert>
@@ -66,4 +64,4 @@ basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::u128 v) noexce
 
 }
 
-#endif //ifndef $INT128
+#endif //ifndef INCLUDED_INT128
