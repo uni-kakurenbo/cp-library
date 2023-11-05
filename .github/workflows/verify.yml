@@ -12,6 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      path: main
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -30,7 +31,7 @@ jobs:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
+        cd main
         oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 2
