@@ -33,7 +33,4 @@ jobs:
         DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        if [ -n "$DROPBOX_TOKEN" ]; then
-          echo "DROPBOX_TOKEN given."
-        fi
         oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 2
