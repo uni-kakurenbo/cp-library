@@ -34,5 +34,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: chmod +x ${{ github.workspace }}/verify.sh
-      run: ${{ github.workspace }}/verify.sh
+      run: chmod +x ${{ github.workspace }}/verify.sh \ ${{ github.workspace }}/verify.sh
