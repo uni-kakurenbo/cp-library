@@ -32,16 +32,17 @@ jobs:
         DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
       run:
         dropbox_token="$(
-            curl 'https://api.dropbox.com/oauth2/token' \
-                -d grant_type=refresh_token \
-                -d '$DROPBOX_REFRESH_TOKEN' \
-                -u '$DROPBOX_APP_KEY':'$DROPBOX_APP_SECRET' \
-                -s \
+            curl 'https://api.dropbox.com/oauth2/token'
+                -d grant_type=refresh_token
+                -d '$DROPBOX_REFRESH_TOKEN'
+                -u '$DROPBOX_APP_KEY':'$DROPBOX_APP_SECRET'
+                -s
             | jq -r '.access_token'
         )"
         echo "DROPBOX_TOKEN=$dropbox_token" >> $GITHUB_ENV
 
     - name: Run tests
+      uses: actions/checkout@v3
       env:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
