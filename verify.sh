@@ -10,4 +10,4 @@ dropbox_token="$(
 )"
 
 export DROPBOX_TOKEN=$dropbox_token
-oj-verify all --config-file="./.verify-helper/remote-config.toml"
+oj-verify all --config-file "./.verify-helper/remote-config.toml"
