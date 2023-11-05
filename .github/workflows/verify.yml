@@ -25,20 +25,12 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
 
-    - name: Refresh Dropbox Token
-      env:
-        DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
-        DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
-        DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
-      run: |
-        dropbox_token="$(curl 'https://api.dropbox.com/oauth2/token' -d grant_type=refresh_token -d '$DROPBOX_REFRESH_TOKEN' -u '$DROPBOX_APP_KEY':'$DROPBOX_APP_SECRET' -s  | jq -r '.access_token')"
-        echo "DROPBOX_TOKEN=$dropbox_token" >> $GITHUB_ENV
-
     - name: Run tests
       env:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+        DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         if [ -n "$DROPBOX_TOKEN" ]; then
