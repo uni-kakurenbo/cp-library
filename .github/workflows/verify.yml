@@ -48,7 +48,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run:
-      if [ -n "$DROPBOX_TOKEN" ]; then
-        echo "DROPBOX_TOKEN given."
-      fi
+        if [ -n "$DROPBOX_TOKEN" ]; then
+          echo "DROPBOX_TOKEN given."
+        fi
         oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 2
