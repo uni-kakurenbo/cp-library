@@ -25,16 +25,11 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
 
-    - name: Run tests
-      env:
-        CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
+    - name: Refresh Dropbox Token
+      run:
         DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
         DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
         DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run:
         dropbox_token="$(
             curl https://api.dropbox.com/oauth2/token \
                 -d grant_type=refresh_token \
@@ -43,6 +38,13 @@ jobs:
                 -s \
             | jq -r ".access_token"
         )"
-        export DROPBOX_TOKEN=$dropbox_token
+        echo "DROPBOX_TOKEN=$dropbox_token" >> $GITHUB_ENV
 
+    - name: Run tests
+      env:
+        CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run:
         oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 2
