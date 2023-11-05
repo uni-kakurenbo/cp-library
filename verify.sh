@@ -11,5 +11,11 @@ dropbox_token="$(
 
 export DROPBOX_TOKEN=$dropbox_token
 
-echo "$CPLUS_INCLUDE_PATH"
+
+
+cd "$CPLUS_INCLUDE_PATH" || exit
+ls -al
+
+
+cd "$GITHUB_WORKSPACE" || exit
 oj-verify --config-file "./.verify-helper/remote-config.toml" all
