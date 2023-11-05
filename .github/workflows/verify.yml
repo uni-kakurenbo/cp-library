@@ -19,9 +19,19 @@ jobs:
     - name: Install dependencies
       run: pip3 install -U git+https://github.com/online-judge-tools/verification-helper.git@master
 
+    - name: Install AC Library
+      uses: actions/checkout@v3
+      with:
+        repository: atcoder/ac-library
+        path: ac-library
+
     - name: Run tests
       env:
+        CPLUS_INCLUDE_PATH: "${{ github.workspace }}/../ac-library"
+        DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+        DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+        DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: oj-verify docs
+      run: ${{ github.workspace }}/verify.sh
