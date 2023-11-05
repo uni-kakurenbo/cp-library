@@ -10,4 +10,6 @@ dropbox_token="$(
 )"
 
 export DROPBOX_TOKEN=$dropbox_token
+
+echo "$CPLUS_INCLUDE_PATH"
 oj-verify --config-file "./.verify-helper/remote-config.toml" all
