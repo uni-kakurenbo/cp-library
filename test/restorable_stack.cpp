@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "data_structure/restorable_stack.hpp"
 
 signed main() {

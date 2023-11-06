@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "iterable/accumulation.hpp"
 
 signed main() {

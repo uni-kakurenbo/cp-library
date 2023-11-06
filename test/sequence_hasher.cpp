@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "hash/sequence_hasher.hpp"
 
 // https://atcoder.jp/contests/abc141/tasks/abc141_e

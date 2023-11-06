@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <atcoder/modint>
-#include "template.hpp"
+#include "template/standard.hpp"
 
 #include "data_structure/implicit_treap.hpp"
 #include "action/range_add_range_sum.hpp"

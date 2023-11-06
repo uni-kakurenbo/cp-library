@@ -9,7 +9,7 @@
 // #include <bits/stdc++.h>
 // using namespace std;
 
-// #include "template.hpp"
+// #include "template/standard.hpp"
 //
 // output_adapter _print;
 // #define print _print

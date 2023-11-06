@@ -9,13 +9,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#include "template.hpp"
+#include "template/standard.hpp"
 
 output_adapter _print;
 #define print _print
 /* #endregion */
 
-#include "template.hpp"
+#include "template/standard.hpp"
 
 #include "utility/applier.hpp"
 #include "structure/grid.hpp"

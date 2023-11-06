@@ -1,7 +1,7 @@
 // // https://judge.yosupo.jp/problem/range_affine_range_sum
 
 // #include <atcoder/modint>
-// #include "template.hpp"
+// #include "template/standard.hpp"
 
 // #include "data_structure/range_operations.hpp"
 // using namespace lib;

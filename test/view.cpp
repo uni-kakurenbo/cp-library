@@ -1,4 +1,4 @@
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "include/views.hpp"
 
 signed main() {

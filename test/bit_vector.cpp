@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "data_structure/bit_vector.hpp"
 
 signed main() {

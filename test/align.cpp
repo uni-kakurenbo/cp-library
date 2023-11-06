@@ -1,4 +1,4 @@
-#include "template.hpp"
+#include "template/standard.hpp"
 
 signed main() {
     int n; cin >> n;

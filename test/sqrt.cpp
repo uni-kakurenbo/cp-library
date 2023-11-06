@@ -8,7 +8,7 @@
 /* #region template */
 #include <bits/stdc++.h>
 
-#include "template.hpp"
+#include "template/standard.hpp"
 /* #endregion */
 
 void solve();

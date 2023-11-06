@@ -7,7 +7,7 @@
 /* #language C++ GCC */
 #include <bits/stdc++.h>
 
-#include "template.hpp"
+#include "template/standard.hpp"
 
 #include "graph/topological_sort.hpp"
 

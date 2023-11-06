@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "data_structure/kth_element.hpp"
 
 //https://yukicoder.me/problems/no/649
