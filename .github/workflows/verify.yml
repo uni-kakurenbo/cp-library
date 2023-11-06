@@ -31,11 +31,12 @@ jobs:
       with:
         repository: atcoder/ac-library
         path: ac-library
+        run:
+          echo "CPLUS_INCLUDE_PATH=${{ github.workspace }}/ac-library" >> $GITHUB_ENV
 
     - name: Run tests
       working-directory: main
       env:
-        CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:
