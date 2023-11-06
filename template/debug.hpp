@@ -9,5 +9,3 @@
     #define debug(...) ({ ; })
     #define DEBUG(...) ({ ; })
 #endif
-
-#include "include/template.hpp"
