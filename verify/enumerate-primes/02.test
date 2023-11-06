@@ -17,8 +17,7 @@
 #include "numeric/prime_enumerator.hpp"
 
 signed main() {
-    lib::i64 n; std::cin >> n;
-
+    lib::i64 n; std::cin >> n
     const lib::i64 r = std::ceil(std::pow(n, 1.0 / 5));
     const lib::i64 m = lib::sqrt_ceil((n + 11) / 12);
 
