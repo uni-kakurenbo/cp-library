@@ -13,9 +13,9 @@ jobs:
 
     steps:
     - run: |
-      fgrep 'physical id' /proc/cpuinfo | sort -u | wc -l
-      fgrep 'cpu cores' /proc/cpuinfo | sort -u | sed 's/.*: //'
-      fgrep 'processor' /proc/cpuinfo | wc -l
+        fgrep 'physical id' /proc/cpuinfo | sort -u | wc -l
+        fgrep 'cpu cores' /proc/cpuinfo | sort -u | sed 's/.*: //'
+        fgrep 'processor' /proc/cpuinfo | wc -l
 
     - name: Git checkout
       uses: actions/checkout@v3
