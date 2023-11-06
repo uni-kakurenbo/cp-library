@@ -11,12 +11,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
 
-    steps:
-    - run: |
-        fgrep 'physical id' /proc/cpuinfo | sort -u | wc -l
-        fgrep 'cpu cores' /proc/cpuinfo | sort -u | sed 's/.*: //'
-        fgrep 'processor' /proc/cpuinfo | wc -l
-
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -44,11 +38,11 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:
-        oj-verify verify --jobs 2 --timeout 3600
+        oj-verify run --jobs 4 --timeout 3600
 
     - name: Generate documentation
       working-directory: main
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run:
-        oj-verify docs --jobs 2
+        oj-verify docs --jobs 4
