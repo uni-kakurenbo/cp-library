@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - run: |
+      fgrep 'physical id' /proc/cpuinfo | sort -u | wc -l
+      fgrep 'cpu cores' /proc/cpuinfo | sort -u | sed 's/.*: //'
+      fgrep 'processor' /proc/cpuinfo | wc -l
+
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -32,12 +37,18 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
 
-    - name: Run tests and generate documentation
+    - name: Run tests
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        oj-verify verify --jobs 2 --timeout 3600
+
+    - name: Generate documentation
+      working-directory: main
+      env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run:
-        oj-verify all --jobs 3 --timeout 3600
+        oj-verify docs --jobs 2
