@@ -31,6 +31,8 @@ jobs:
       with:
         repository: atcoder/ac-library
         path: ac-library
+
+    - name: Set C++ include path
       run:
         echo "CPLUS_INCLUDE_PATH='${{ github.workspace }}/ac-library'" >> $GITHUB_ENV
 
