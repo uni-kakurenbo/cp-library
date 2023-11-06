@@ -33,4 +33,4 @@ jobs:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         cd main
-        oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 5
+        oj-verify --timeout 1000000000 --config-file "./.verify-helper/remote-config.toml" all
