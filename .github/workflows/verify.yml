@@ -41,14 +41,11 @@ jobs:
       env:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        echo $CPLUS_INCLUDE_PATH
-        oj-verify run --jobs 4 --timeout 3600
+      run: oj-verify run --jobs 4 --timeout 3600
 
     - name: Generate documentation
       working-directory: main
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        echo $CPLUS_INCLUDE_PATH
-        oj-verify docs --jobs 4
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: oj-verify docs --jobs 4
