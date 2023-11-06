@@ -26,11 +26,11 @@ jobs:
         path: ac-library
 
     - name: Run tests
+      working-directory: main
       env:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        cd main
+      run:
         oj-verify --config-file "./.verify-helper/remote-config.toml" all
