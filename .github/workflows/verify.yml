@@ -39,7 +39,6 @@ jobs:
     - name: Run tests
       working-directory: main
       env:
-        # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -49,7 +48,6 @@ jobs:
     - name: Generate documentation
       working-directory: main
       env:
-        # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         echo $CPLUS_INCLUDE_PATH
