@@ -34,4 +34,4 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run:
-        oj-verify --config-file "./.verify-helper/remote-config.toml" all
+        oj-verify --config-file "./.verify-helper/remote-config.toml" all --jobs 3 --timeout 3600
