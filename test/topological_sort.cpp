@@ -8,7 +8,6 @@
 #include <bits/stdc++.h>
 
 #include "template.hpp"
-#include "adapter/"
 
 #include "graph/topological_sort.hpp"
 

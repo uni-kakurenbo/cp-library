@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "template.hpp"
-#include "adapter/"
 
 input_adapter _input;
 output_adapter _print;
