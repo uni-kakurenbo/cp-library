@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
         path: main
@@ -30,7 +31,7 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
 
-    - name: Run tests
+    - name: Run tests and generate documentation
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: "${{ github.workspace }}/ac-library"
