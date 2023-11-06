@@ -11,8 +11,8 @@
 #include "numeric/limits.hpp"
 #include "adapter/valarray.hpp"
 
-#include "graph.hpp"
-#include "auto_holder.hpp"
+#include "structure/graph.hpp"
+#include "internal/auto_holder.hpp"
 
 
 template<class Graph>

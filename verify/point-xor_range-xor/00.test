@@ -14,7 +14,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/range_action/range_bitxor.hpp"
+#include "action/range_bitxor.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

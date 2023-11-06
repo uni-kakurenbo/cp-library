@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "template.hpp"
-#include "adapter/output.hpp"
 
 input_adapter _input;
 output_adapter _print;
@@ -20,7 +19,7 @@ output_adapter _print;
 
 // https://onlinejudge.u-aizu.ac.jp/problems/GRL_5_C
 
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 
 signed main() {

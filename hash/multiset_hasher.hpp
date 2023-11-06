@@ -24,9 +24,8 @@ template<
     class random_engine = std::mt19937_64,
     template<class...> class map = std::unordered_map
 >
+    requires (MOD < std::numeric_limits<std::make_signed_t<std::uint64_t>>::max())
 struct multiset_hasher {
-    static_assert(MOD < std::numeric_limits<std::make_signed_t<hash_type>>::max());
-
   private:
     using uint128_t = internal::uint128_t;
 

@@ -6,7 +6,7 @@
 #include "template.hpp"
 
 #include "data_structure/implicit_treap.hpp"
-#include "data_structure/range_action/range_add_range_sum.hpp"
+#include "action/range_add_range_sum.hpp"
 
 signed main() {
     lib::implicit_treap<lib::actions::range_add_range_sum<int>> data;

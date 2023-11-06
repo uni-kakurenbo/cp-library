@@ -8,7 +8,7 @@
 
 #include "internal/dev_env.hpp"
 
-#include "grid.hpp"
+#include "structure/grid.hpp"
 #include "adapter/valarray.hpp"
 
 

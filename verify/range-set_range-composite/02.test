@@ -28,7 +28,7 @@ signed main() {
 }
 
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/helpers.hpp"
+#include "action/helpers.hpp"
 
 using mint = lib::modint998244353;
 valarray<mint> ten, one;

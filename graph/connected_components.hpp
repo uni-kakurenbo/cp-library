@@ -7,7 +7,7 @@
 // #include "snippet/internal/types.hpp"
 
 #include "internal/dev_env.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 
 template<class Graph>

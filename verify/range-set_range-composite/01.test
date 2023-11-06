@@ -28,7 +28,7 @@ signed main() {
 }
 
 #include "data_structure/implicit_treap.hpp"
-#include "data_structure/range_action/range_set_range_sum.hpp"
+#include "action/range_set_range_sum.hpp"
 
 using mint = lib::modint998244353;
 valarray<mint> ten, one;

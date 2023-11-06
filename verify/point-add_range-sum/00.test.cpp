@@ -15,7 +15,7 @@
 #include "adapter/io.hpp"
 #include "adapter/vector.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/range_action/range_sum.hpp"
+#include "action/range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

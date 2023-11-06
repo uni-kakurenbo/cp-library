@@ -15,7 +15,7 @@
 #include "numeric/modint.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/range_affine_range_sum.hpp"
+#include "action/range_affine_range_sum.hpp"
 
 
 signed main() {

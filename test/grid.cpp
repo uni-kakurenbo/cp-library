@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "template.hpp"
-#include "adapter/output.hpp"
 
 output_adapter _print;
 #define print _print
@@ -19,7 +18,7 @@ output_adapter _print;
 #include "template.hpp"
 
 #include "utility/applier.hpp"
-#include "grid.hpp"
+#include "structure/grid.hpp"
 
 signed main() {
     int h, w; cin >> h >> w;

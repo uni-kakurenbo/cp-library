@@ -13,7 +13,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 
 signed main() {

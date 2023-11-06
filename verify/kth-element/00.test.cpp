@@ -5,11 +5,6 @@
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
 /* #language C++ 20 GCC */
-/* #region template */
-#include <bits/stdc++.h>
-
-#include "template.hpp"
-/* #endregion */
 
 #define PROBLEM "https://yukicoder.me/problems/no/649"
 
@@ -28,7 +23,7 @@ signed main() {
     REP(q) {
         int t; input >> t;
         if(t == 1) {
-            i64 v; input >> v;
+            lib::i64 v; input >> v;
             data.push(v);
         }
         if(t == 2) {

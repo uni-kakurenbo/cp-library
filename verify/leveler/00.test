@@ -16,9 +16,9 @@
 #include "adapter/valarray.hpp"
 #include "view/repeat.hpp"
 #include "view/zip.hpp"
-#include "grid.hpp"
-#include "leveler.hpp"
-#include "constants.hpp"
+#include "structure/grid.hpp"
+#include "numeric/leveler.hpp"
+#include "global/constants.hpp"
 #include "utility/functional.hpp"
 
 signed main() {

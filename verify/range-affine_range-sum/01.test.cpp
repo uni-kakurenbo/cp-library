@@ -15,7 +15,7 @@
 #include "numeric/modint.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/implicit_treap.hpp"
-#include "data_structure/range_action/range_affine_range_sum.hpp"
+#include "action/range_affine_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

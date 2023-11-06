@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/range_action/range_sum.hpp"
+#include "action/range_sum.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"

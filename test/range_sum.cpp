@@ -10,8 +10,7 @@
 // using namespace std;
 
 // #include "template.hpp"
-// #include "adapter/output.hpp"
-
+//
 // output_adapter _print;
 // #define print _print
 // /* #endregion */

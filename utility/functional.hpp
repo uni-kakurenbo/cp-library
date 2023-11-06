@@ -11,7 +11,7 @@
 
 #include "numeric/arithmetic.hpp"
 
-#include "constants.hpp"
+#include "global/constants.hpp"
 
 
 namespace lib {
