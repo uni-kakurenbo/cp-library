@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Git checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -22,10 +22,10 @@ jobs:
       with:
         python-version: 3.12.0
 
-    - name: Install dependencies
+    - name: Install oj-verify
       run: pip3 install -U online-judge-verify-helper
 
-    - name: Install AC-Library
+    - name: Clone AC-Library
       uses: actions/checkout@v3
       with:
         repository: atcoder/ac-library
