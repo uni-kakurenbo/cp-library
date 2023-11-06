@@ -8,7 +8,5 @@ CXXFLAGS = [
     "-fconcepts-diagnostics-depth=5",
     "-Wno-char-subscripts",
     "-fsplit-stack",
-    "-O2",
-    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
-    "-I/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original/debugger"
+    "-O2"
 ]
