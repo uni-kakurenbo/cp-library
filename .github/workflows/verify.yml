@@ -21,7 +21,7 @@ jobs:
         python-version: '3.10'
         cache: 'pip'
 
-    - name: Install dependencies
+    - name: Install oj-verify
       run: pip3 install -U online-judge-verify-helper
 
     - name: Install AC-Library
@@ -42,6 +42,9 @@ jobs:
 
   generate:
     needs: verify
+    runs-on: ubuntu-latest
+
+    steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -52,6 +55,8 @@ jobs:
         python-version: '3.10'
         cache: 'pip'
 
+    - name: Install oj-verify
+      run: pip3 install -U online-judge-verify-helper
 
     - name: Run tests
       env:
