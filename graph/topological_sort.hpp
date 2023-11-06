@@ -6,7 +6,7 @@
 
 #include "snippet/iterations.hpp"
 #include "internal/dev_env.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 
 
 template<class Graph>

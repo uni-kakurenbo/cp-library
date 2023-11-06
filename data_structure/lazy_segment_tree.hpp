@@ -21,7 +21,7 @@
 #include "numeric/arithmetic.hpp"
 
 #include "algebraic/internal/concepts.hpp"
-#include "data_structure/range_action/base.hpp"
+#include "action/base.hpp"
 
 
 namespace lib {

@@ -12,12 +12,12 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "constants.hpp"
+#include "global/constants.hpp"
 
 #include "data_structure/internal/concepts.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/range_action/range_add_range_sum.hpp"
-#include "data_structure/range_action/range_sum.hpp"
+#include "action/range_add_range_sum.hpp"
+#include "action/range_sum.hpp"
 
 
 namespace lib {

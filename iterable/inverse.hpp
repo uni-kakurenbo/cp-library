@@ -9,7 +9,7 @@
 
 #include "adapter/vector.hpp"
 
-#include "auto_holder.hpp"
+#include "internal/auto_holder.hpp"
 
 
 namespace lib {

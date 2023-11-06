@@ -1,6 +1,6 @@
 #include "template.hpp"
 
-#include "leveler.hpp"
+#include "numeric/leveler.hpp"
 
 signed main() {
     int n; std::cin >> n;

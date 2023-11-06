@@ -1,7 +1,7 @@
 #pragma once
 
-#include "adapter/input.hpp"
-#include "adapter/output.hpp"
+#include "adapter/internal/input.hpp"
+#include "adapter/internal/output.hpp"
 
 namespace lib {
 

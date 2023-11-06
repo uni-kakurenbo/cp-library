@@ -29,7 +29,7 @@
 #include "iterable/z_array.hpp"
 #include "adapter/vector.hpp"
 #include "view/concat.hpp"
-#include "constants.hpp"
+#include "global/constants.hpp"
 
 
 namespace lib {

@@ -16,7 +16,7 @@
 
 #include "adapter/vector.hpp"
 
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/spanning_tree.hpp"
 
 

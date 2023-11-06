@@ -9,7 +9,7 @@
 #include "numeric/bit.hpp"
 #include "adapter/valarray.hpp"
 
-#include "graph.hpp"
+#include "structure/graph.hpp"
 
 
 namespace lib {

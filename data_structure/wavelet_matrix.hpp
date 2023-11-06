@@ -24,7 +24,7 @@
 #include "internal/iterator.hpp"
 #include "internal/range_reference.hpp"
 
-#include "constants.hpp"
+#include "global/constants.hpp"
 
 #include "iterable/compressed.hpp"
 

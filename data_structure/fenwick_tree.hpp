@@ -20,7 +20,7 @@
 #include "snippet/iterations.hpp"
 #include "numeric/bit.hpp"
 
-#include "data_structure/range_action/base.hpp"
+#include "action/base.hpp"
 #include "algebraic/internal/concepts.hpp"
 
 

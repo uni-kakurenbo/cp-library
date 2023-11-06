@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "internal/dev_env.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 
 namespace lib {
 

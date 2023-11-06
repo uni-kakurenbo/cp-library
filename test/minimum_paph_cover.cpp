@@ -10,7 +10,7 @@
 using namespace std;
 
 #include "template.hpp"
-#include "adapter/output.hpp"
+#include "adapter/
 
 output_adapter _print;
 #define print _print
@@ -18,7 +18,7 @@ output_adapter _print;
 
 // https://codingcompetitions.withgoogle.com/codejam/round/0000000000432cc7/0000000000432a83#problem
 
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/minimum_paph_cover.hpp"
 using namespace lib;
 
