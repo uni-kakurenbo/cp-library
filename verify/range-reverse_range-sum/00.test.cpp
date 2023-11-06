@@ -15,8 +15,8 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/implicit_treap.hpp"
-#include "data_structure/range_action/range_sum.hpp"
-#include "data_structure/range_action/helpers.hpp"
+#include "action/range_sum.hpp"
+#include "action/helpers.hpp"
 
 int main() {
     int n, q; std::cin >> n >> q;

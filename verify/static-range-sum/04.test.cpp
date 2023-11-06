@@ -16,7 +16,7 @@
 #include "adapter/valarray.hpp"
 #include "iterable/accumulation.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/helpers.hpp"
+#include "action/helpers.hpp"
 #include "algebraic/addition.hpp"
 
 signed main() {

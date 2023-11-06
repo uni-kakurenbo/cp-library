@@ -15,7 +15,7 @@
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
 #include "data_structure/wavelet_matrix.hpp"
-#include "constants.hpp"
+#include "global/constants.hpp"
 
 signed main() {
     int n; std::cin >> n;

@@ -15,7 +15,7 @@
 #include "adapter/io.hpp"
 #include "adapter/string.hpp"
 #include "adapter/vector.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/minimum_paph_cover.hpp"
 
 signed main() {

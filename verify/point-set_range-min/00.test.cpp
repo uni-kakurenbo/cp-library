@@ -13,7 +13,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/segment_tree.hpp"
-#include "data_structure/range_action/range_min.hpp"
+#include "action/range_min.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

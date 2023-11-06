@@ -16,8 +16,8 @@
 #include "adapter/valarray.hpp"
 #include "iterable/accumulation.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/helpers.hpp"
-#include "data_structure/range_action/range_sum.hpp"
+#include "action/helpers.hpp"
+#include "action/range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

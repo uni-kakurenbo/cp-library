@@ -15,7 +15,7 @@
 #include "adapter/vector.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/segment_tree.hpp"
-#include "data_structure/range_action/range_sum.hpp"
+#include "action/range_sum.hpp"
 
 
 signed main() {

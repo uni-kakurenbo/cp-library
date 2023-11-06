@@ -15,7 +15,7 @@
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
 #include "data_structure/segment_tree.hpp"
-#include "data_structure/range_action/range_max.hpp"
+#include "action/range_max.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;

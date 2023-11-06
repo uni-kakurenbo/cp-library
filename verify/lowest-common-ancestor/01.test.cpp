@@ -8,7 +8,7 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/lca"
 
-#include "graph.hpp"
+#include "structure/graph.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 
 signed main() {

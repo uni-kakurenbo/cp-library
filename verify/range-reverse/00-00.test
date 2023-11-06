@@ -13,9 +13,9 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "grid.hpp"
+#include "structure/grid.hpp"
 #include "data_structure/implicit_treap.hpp"
-#include "data_structure/range_action/null.hpp"
+#include "action/null.hpp"
 
 signed main() {
     int h, w; std::cin >> h >> w;

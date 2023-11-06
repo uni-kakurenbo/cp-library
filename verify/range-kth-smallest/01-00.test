@@ -14,7 +14,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/wavelet_matrix.hpp"
-#include "graph.hpp"
+#include "structure/graph.hpp"
 
 signed main() {
 

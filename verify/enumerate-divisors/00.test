@@ -17,5 +17,5 @@
 
 signed main() {
     lib::i64 n; std::cin >> n;
-    print(lib::join(lib::divisors(n), "\n"));
+    print(lib::join(lib::divisors_sieve(n), "\n"));
 }

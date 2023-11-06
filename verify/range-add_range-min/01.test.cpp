@@ -14,7 +14,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
-#include "data_structure/range_action/range_affine_range_minmax.hpp"
+#include "action/range_affine_range_minmax.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
