@@ -1,7 +1,7 @@
 #define PROBLEM "https://atcoder.jp/contests/math-and-algorithm/tasks/math_and_algorithm_ah"
 #define IGNORE
 
-#include "template.hpp"
+#include "template/standard.hpp"
 
 using ld = long double;
 

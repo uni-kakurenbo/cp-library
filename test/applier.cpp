@@ -1,5 +1,6 @@
-#include "template.hpp"
+#include "template/standard.hpp"
 #include "utility/applier.hpp"
+using namespace lib;
 
 signed main() {
     maximum<int> maximum(10);

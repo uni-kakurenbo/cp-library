@@ -6,7 +6,7 @@
  */
 /* #language C++ GCC */
 /* #region template */
-#include "template.hpp"
+#include "template/standard.hpp"
 /* #endregion */
 
 #define PROBLEM "https://atcoder.jp/contests/joig2023-open/tasks/joig2023_c"
