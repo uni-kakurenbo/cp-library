@@ -3,7 +3,8 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
   push:
-    branch: main
+    branches:
+      - main
   pull_request:
 
 jobs:
