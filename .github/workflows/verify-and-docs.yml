@@ -1,4 +1,4 @@
-name: verify-and-make-documentation
+name: library-verification and documentation-generation
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  verify:
+  verify-and-docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,11 +17,8 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        cache: 'pip'
 
-    - name: Install oj-verify
+    - name: Install dependencies
       run: pip3 install -U online-judge-verify-helper
 
     - name: Install AC-Library
@@ -38,29 +35,4 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run:
-        oj-verify verify --jobs 5 --timeout 3600
-
-  generate:
-    needs: verify
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        cache: 'pip'
-
-    - name: Install oj-verify
-      run: pip3 install -U online-judge-verify-helper
-
-    - name: Run tests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run:
-        oj-verify docs --jobs 5
+        oj-verify all --jobs 3 --timeout 3600
