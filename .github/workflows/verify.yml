@@ -51,5 +51,6 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         GH_PAT: ${{ secrets.GH_PAT }}
-      run:
+      run: |
+        echo $CPLUS_INCLUDE_PATH
         oj-verify docs --jobs 4
