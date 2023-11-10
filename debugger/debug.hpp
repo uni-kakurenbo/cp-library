@@ -70,7 +70,7 @@ template<size_t N = 0, class T> void iterate_tuple(const T&, std::stringstream&)
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>* = nullptr> std::string lit(T&&);
 
-template<class T> std::string lit(const T*);
+template<lib::internal::pointer T> std::string lit(T const);
 
 template<class T> std::string lit(const std::optional<T>&);
 
