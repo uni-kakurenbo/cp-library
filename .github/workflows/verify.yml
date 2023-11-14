@@ -46,7 +46,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        find spec -type f -name *.test.cpp | \
+        find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
               -v i=${{ strategy.job-index }} \
               '{ if((NR-1)%n == i) { system("oj-verify run $0 --jobs 4 --timeout 3600") } }'
