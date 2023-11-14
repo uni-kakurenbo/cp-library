@@ -53,6 +53,7 @@ jobs:
 
   gen-docs:
     runs-on: ubuntu-latest
+    needs: verify
 
     steps:
     - name: Git checkout
