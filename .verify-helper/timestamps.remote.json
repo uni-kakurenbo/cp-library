@@ -1,5 +1,6 @@
 {
 "verify/prev-value_next-value/00-01.test.cpp": "2023-11-06 22:13:01 +0900",
+"verify/range-add_range-min/02.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-set_range-min/01.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-set_range-sum/00.test.cpp": "2023-11-06 22:50:44 +0900"
 }
