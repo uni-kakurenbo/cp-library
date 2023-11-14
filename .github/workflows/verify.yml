@@ -13,7 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24]
+        id-0: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        id-1: [0, 1, 2]
 
     steps:
     - name: Git checkout
@@ -82,8 +83,10 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
-        cat ./timestamps.remote.json
+        cd timestamps
+        ls
+      # jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
+      # cat ./timestamps.remote.json
 
     - name: push timestamps
       run: |
