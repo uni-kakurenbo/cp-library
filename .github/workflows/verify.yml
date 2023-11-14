@@ -96,6 +96,7 @@ jobs:
           git config --global user.name "GitHub"
           git config --global user.email "noreply@github.com"
           if (git diff --shortstat | grep '[0-9]'); then \
+            git pull origin main; \
             git add .; \
             git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
             git push origin HEAD:${GITHUB_REF}; \
