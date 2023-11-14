@@ -26,6 +26,7 @@
 "verify/static-range-frequency/00-01.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/static-range-min/03.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/static-range-sum/00.test.cpp": "2023-11-06 22:13:01 +0900",
+"verify/static-range-sum/01.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/static-range-sum/04.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/static-range-sum/05.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/static-range-sum/06.test.cpp": "2023-11-06 22:50:44 +0900"
