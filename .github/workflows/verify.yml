@@ -11,6 +11,10 @@ jobs:
   verify:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        id: [0, 1, 2, 3]
+
     steps:
     - name: Git checkout
       uses: actions/checkout@v3
@@ -41,7 +45,39 @@ jobs:
       env:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: oj-verify run --jobs 4 --timeout 3600
+      run: |
+        find spec -type f -name *_spec.rb | \
+          awk -v n=${{ strategy.job-total }}  \
+              -v i=${{ strategy.job-index }} \
+              '{ if((NR-1)%n == i) { system("oj-verify run $0 --jobs 4 --timeout 3600") } }'
+
+  gen-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        path: main
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12.0
+
+    - name: Install oj-verify
+      run: pip3 install -U online-judge-verify-helper
+
+    - name: Clone AC-Library
+      uses: actions/checkout@v3
+      with:
+        repository: atcoder/ac-library
+        path: ac-library
+
+    - name: Set C++ include path
+      run:
+        echo "CPLUS_INCLUDE_PATH=${{ github.workspace }}/ac-library" >> $GITHUB_ENV
 
     - name: Generate documentation
       working-directory: main
@@ -49,3 +85,4 @@ jobs:
         GH_PAT: ${{ secrets.GH_PAT }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: oj-verify docs --jobs 4
+
