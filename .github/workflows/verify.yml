@@ -50,17 +50,18 @@ jobs:
         mv ./timestamps.remote.json ./timestamps.local.json
         cd ..
 
-        find verify -type f -name *.test.cpp | \
+        commands=$(find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
               -v i=${{ strategy.job-index }} \
               '{
-                if((NR-1) % n == i) {
+                if((NR - 1) % n == i) {
                   command = sprintf("oj-verify run %s --jobs 4 --timeout 3600", $0);
                   print command
-                  system(command);
-                  close(command);
                 }
-              }'
+              }')
+
+        echo "$commands"
+        $commands
 
         cd .verify-helper
         cat ./timestamps.local.json
