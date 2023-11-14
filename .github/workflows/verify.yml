@@ -64,7 +64,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: timestamps
-        path: main/.verify-helper/timestamps.remote.json
+        path: main/.verify-helper/timestamps-${{ matrix.id }}.json
 
   post-verify:
     runs-on: ubuntu-latest
