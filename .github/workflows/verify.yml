@@ -93,7 +93,7 @@ jobs:
       run: |
         cd timestamps
         ls
-        find . -name *.json | cat
+        find -type f -print0 | xargs -0 more | cat
         cd ..
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
