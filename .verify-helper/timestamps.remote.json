@@ -18,6 +18,7 @@
 "verify/prime-factorize/01.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/range-add_range-min/00.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-add_range-min/03.test.cpp": "2023-11-06 22:50:44 +0900",
+"verify/range-add_range-min/04.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-add_range-sum/00.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-add_range-sum/01.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-affine_range-sum/01.test.cpp": "2023-11-06 22:50:44 +0900",
