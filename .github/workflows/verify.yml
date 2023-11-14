@@ -55,11 +55,11 @@ jobs:
               -v i=${{ strategy.job-index }} \
               '{
                 if((NR - 1) % n == i) {
-                  args = sprintf("%s --jobs 4 --timeout 3600", $0);
+                  args = sprintf("%s --timeout 3600", $0);
                   print args
                 }
               }' | \
-          xargs -n5 oj-verify run
+          xargs -n3 -P4 oj-verify run
 
         cd .verify-helper
         cat ./timestamps.local.json
