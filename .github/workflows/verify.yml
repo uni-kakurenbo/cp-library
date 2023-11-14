@@ -62,24 +62,39 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: timestamps-${{ strategy.job-index }}
-        path: .verify-helper/timestamps.remote.json
+        path: main/.verify-helper/timestamps.remote.json
 
   post-verify:
     runs-on: ubuntu-latest
     needs: verify
 
     steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
     - name: Load timestamps
       uses: actions/download-artifact@v3
       with:
         path: .verify-helper/timestamps/
 
     - name: Merge timestamps
-      working-directory: main/.verify-helper
       run: |
         timestamps = $("jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/*")
         echo timestamps
         echo timestamps > ./timestamps.remote.json
+
+    - name: push timestamps
+      run: |
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git config --global user.name "GitHub"
+          git config --global user.email "noreply@github.com"
+          if (git diff --shortstat | grep '[0-9]'); then \
+            git add .; \
+            git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
+            git push origin HEAD:${GITHUB_REF}; \
+          fi
 
   gen-docs:
     runs-on: ubuntu-latest
