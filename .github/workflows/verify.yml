@@ -57,10 +57,33 @@ jobs:
                   close(command);
                 }
               }'
+              
+    - name: Save timestamps
+      uses: actions/upload-artifact@v3
+      with:
+        name: timestamps-${{ strategy.job-index }}
+        path: .verify-helper/timestamps.remote.json
+
+  post-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+
+    steps:
+    - name: Load timestamps
+      uses: actions/download-artifact@v3
+      with:
+        path: .verify-helper/timestamps/
+
+    - name: Merge timestamps
+      working-directory: main/.verify-helper
+      run: |
+        timestamps = $("jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/*")
+        echo timestamps
+        echo timestamps > ./timestamps.remote.json
 
   gen-docs:
     runs-on: ubuntu-latest
-    needs: verify
+    needs: post-verify
 
     steps:
     - name: Git checkout
