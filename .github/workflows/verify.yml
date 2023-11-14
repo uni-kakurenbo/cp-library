@@ -54,6 +54,7 @@ jobs:
                 }
               }' | \
           xargs -t -n3 oj-verify run
+        cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save timestamps
