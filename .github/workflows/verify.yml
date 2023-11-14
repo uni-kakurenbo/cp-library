@@ -59,9 +59,10 @@ jobs:
                   print args
                 }
               }' | \
-          xargs -n3 -P4 oj-verify run
+          xargs -t -n3 -P4 oj-verify run
 
         cd .verify-helper
+        ls
         cat ./timestamps.local.json
         mv ./timestamps.local.json ./timestamps-${{ matrix.id }}.json
 
