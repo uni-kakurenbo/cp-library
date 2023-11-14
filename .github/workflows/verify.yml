@@ -59,7 +59,7 @@ jobs:
                   print args
                 }
               }' | \
-          xargs -I {} oj-verify run {}
+          xargs -n5 oj-verify run
 
         cd .verify-helper
         cat ./timestamps.local.json
