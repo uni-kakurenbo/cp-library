@@ -46,9 +46,6 @@ jobs:
       env:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        cd .verify-helper
-        mv ./timestamps.remote.json ./timestamps.local.json
-        cd ..
 
         find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
@@ -63,8 +60,8 @@ jobs:
 
         cd .verify-helper
         ls
-        cat ./timestamps.local.json
-        mv ./timestamps.local.json ./timestamps-${{ matrix.id }}.json
+        cat ./timestamps.remote.json
+        mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
