@@ -13,6 +13,7 @@
 "verify/longest-common-subsequence/00.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/longest-increasing-subsequence/00.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/lowest-common-ancestor/00.test.cpp": "2023-11-06 22:50:44 +0900",
+"verify/lowest-common-ancestor/01.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/manhattan-mst/00.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/maximum-bipartite-matching/00.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/point-add_range-sum/00.test.cpp": "2023-11-06 22:50:44 +0900",
