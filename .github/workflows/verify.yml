@@ -76,39 +76,22 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Git pull
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-          git config --global user.name "GitHub"
-          git config --global user.email "noreply@github.com"
-          git pull origin main
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
       with:
-        path: .verify-helper/timestamps/
+        path: .verify-helper/
 
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/timestamps/* > ./timestamps.remote.json
-        cat ./timestamps.remote.json
-
-    - name: Push timestamps
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-          git config --global user.name "GitHub"
-          git config --global user.email "noreply@github.com"
-          if (git diff --shortstat | grep '[0-9]'); then \
-            git pull origin main; \
-            git add .; \
-            git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
-            git push origin HEAD:${GITHUB_REF}; \
-          fi
+        jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
+    
+    - name: Save merged timestamps
+      uses: actions/upload-artifact@v3
+      with:
+        name: .verify-helper
+        path: .verify-helper/remote.json
 
   gen-docs:
     runs-on: ubuntu-latest
@@ -138,6 +121,12 @@ jobs:
     - name: Set C++ include path
       run:
         echo "CPLUS_INCLUDE_PATH=${{ github.workspace }}/ac-library" >> $GITHUB_ENV
+
+    - name: Load merged timestamps
+      uses: actions/download-artifact@v3
+      with:
+        name: .verify-helper
+        path: main
 
     - name: Generate documentation
       working-directory: main
