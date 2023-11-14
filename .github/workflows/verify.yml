@@ -63,6 +63,9 @@ jobs:
         echo "$commands"
         $commands
 
+        IFS=$'\n'
+        for command in "$commands"; do $command; done
+
         cd .verify-helper
         cat ./timestamps.local.json
         mv ./timestamps.local.json ./timestamps-${{ matrix.id }}.json
