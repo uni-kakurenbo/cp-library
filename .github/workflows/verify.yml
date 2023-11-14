@@ -59,7 +59,7 @@ jobs:
                   print args
                 }
               }' | \
-          xargs -t -n3 -P4 oj-verify run
+          xargs -t -n3 oj-verify run
 
         cd .verify-helper
         ls
