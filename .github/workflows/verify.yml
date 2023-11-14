@@ -62,7 +62,7 @@ jobs:
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
-        name: timestamps-${{ strategy.job-index }}
+        name: timestamps-${{ strategy.job-index }}.json
         path: main/.verify-helper/timestamps.remote.json
 
   post-verify:
