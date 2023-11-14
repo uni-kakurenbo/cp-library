@@ -16,6 +16,7 @@ jobs:
         id: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
 
     steps:
+
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -84,11 +85,8 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        cd timestamps
-        cd timestamps
-        ls
-      # jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
-      # cat ./timestamps.remote.json
+        jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/timestamps/* > ./timestamps.remote.json
+        cat ./timestamps.remote.json
 
     - name: push timestamps
       run: |
