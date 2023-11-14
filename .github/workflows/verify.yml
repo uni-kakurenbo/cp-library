@@ -76,6 +76,12 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: Git pull
+      run: |
+          git remote set-url origin https://${ GITHUB_ACTOR }:${{ secrets.GITHUB_TOKEN }}@github.com/${ GITHUB_REPOSITORY }
+          git config --global user.name "GitHub"
+          git config --global user.email "noreply@github.com"
+          git pull origin main
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
@@ -88,11 +94,9 @@ jobs:
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
-    - name: push timestamps
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push timestamps
       run: |
-          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git remote set-url origin https://${ GITHUB_ACTOR }:${{ secrets.GITHUB_TOKEN }}@github.com/${ GITHUB_REPOSITORY }
           git config --global user.name "GitHub"
           git config --global user.email "noreply@github.com"
           if (git diff --shortstat | grep '[0-9]'); then \
