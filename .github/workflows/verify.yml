@@ -61,7 +61,7 @@ jobs:
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
-        name: timestamps-${{ matrix.id }}.json
+        name: timestamps-${{ matrix.id }}
         path: main/.verify-helper/timestamps.remote.json
 
   post-verify:
@@ -83,7 +83,7 @@ jobs:
       working-directory: .verify-helper
       run: |
         cd timestamps
-        cd timestamps-00.json
+        cd timestamps-0
         ls
       # jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
       # cat ./timestamps.remote.json
