@@ -55,13 +55,12 @@ jobs:
               -v i=${{ strategy.job-index }} \
               '{
                 if((NR - 1) % n == i) {
-                  command = sprintf("oj-verify run %s --jobs 4 --timeout 3600 ;", $0);
+                  command = sprintf("oj-verify run %s --jobs 4 --timeout 3600", $0);
                   print command
                 }
               }')
 
         echo "$commands"
-        $commands
 
         IFS=$'\n'
         for command in "$commands"; do $command; done
