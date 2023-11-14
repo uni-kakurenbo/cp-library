@@ -63,6 +63,7 @@ jobs:
               }'
 
         cd .verify-helper
+        cat ./timestamps.local.json
         mv ./timestamps.local.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save timestamps
@@ -82,6 +83,7 @@ jobs:
     - name: Load timestamps
       uses: actions/download-artifact@v3
       with:
+        name: timestamps
         path: .verify-helper
 
     - name: Merge timestamps
