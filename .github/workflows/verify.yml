@@ -79,6 +79,8 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
@@ -89,6 +91,7 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
+        ls
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
