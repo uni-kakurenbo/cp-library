@@ -58,7 +58,7 @@ jobs:
                   args = sprintf("%s --jobs 4 --timeout 3600", $0);
                   print args
                 }
-              }') | \
+              }' | \
           xargs oj-verify run
 
         cd .verify-helper
