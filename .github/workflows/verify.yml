@@ -45,8 +45,11 @@ jobs:
       working-directory: main
       env:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        cd .verify-helper
+        mv ./timestamps.remote.json ./timestamps.local.json
+        cd ..
+
         find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
               -v i=${{ strategy.job-index }} \
@@ -58,9 +61,10 @@ jobs:
                   close(command);
                 }
               }'
+
         cd .verify-helper
-        mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
-              
+        mv ./timestamps.local.json ./timestamps-${{ matrix.id }}.json
+
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
@@ -74,8 +78,6 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
@@ -87,12 +89,25 @@ jobs:
       run: |
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         echo ./timestamps.remote.json
-    
+
     - name: Save merged timestamps
       uses: actions/upload-artifact@v3
       with:
         name: .verify-helper
         path: .verify-helper/timestamps.remote.json
+
+    - name: Push merged timestamps
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+        git config --global user.name "GitHub"
+        git config --global user.email "noreply@github.com"
+        if (git diff --shortstat | grep '[0-9]'); then \
+          git add .verify-helper/timestamps.remote.json; \
+          git commit -m "[auto-verifier] docs commit $GITHUB_SHA"; \
+          git push origin HEAD:${GITHUB_REF}; \
+        fi
 
   gen-docs:
     runs-on: ubuntu-latest
@@ -135,4 +150,3 @@ jobs:
         GH_PAT: ${{ secrets.GH_PAT }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: oj-verify docs --jobs 4
-
