@@ -3,6 +3,7 @@
 "verify/binomial-coefficient/01-00.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/binomial-coefficient/01-01.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/convolution/00.test.cpp": "2023-11-06 22:13:01 +0900",
+"verify/convolution/01.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/counting-primes/00.test.cpp": "2023-11-14 09:59:05 +0900",
 "verify/dynamic-sequence_range-affine_range-sum/00.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/enumerate-primes/00.test.cpp": "2023-11-06 22:50:44 +0900",
