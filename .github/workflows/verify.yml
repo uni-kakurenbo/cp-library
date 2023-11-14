@@ -13,8 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        id-0: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        id-1: [0, 1, 2]
+        id: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
     steps:
     - name: Git checkout
@@ -62,7 +61,7 @@ jobs:
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
-        name: timestamps-${{ strategy.job-index }}.json
+        name: timestamps-${{ matrix.id }}.json
         path: main/.verify-helper/timestamps.remote.json
 
   post-verify:
@@ -83,10 +82,8 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        cd timestamps
-        ls
-      # jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
-      # cat ./timestamps.remote.json
+        jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
+        cat ./timestamps.remote.json
 
     - name: push timestamps
       run: |
