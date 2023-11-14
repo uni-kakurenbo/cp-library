@@ -19,6 +19,7 @@
 "verify/range-add_range-sum/01.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-affine_range-sum/01.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-kth-smallest/00-02.test.cpp": "2023-11-06 22:13:01 +0900",
+"verify/range-kth-smallest/00-03.test.cpp": "2023-11-06 22:13:01 +0900",
 "verify/range-reverse_range-sum/00.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-set_range-min/00.test.cpp": "2023-11-06 22:50:44 +0900",
 "verify/range-set_range-min/01.test.cpp": "2023-11-06 22:50:44 +0900",
