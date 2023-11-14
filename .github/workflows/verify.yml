@@ -82,13 +82,13 @@ jobs:
     - name: Load timestamps
       uses: actions/download-artifact@v3
       with:
-        path: .verify-helper/
+        path: .verify-helper
 
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
-        echo ./timestamps.remote.json
+        cat ./timestamps.remote.json
 
     - name: Save merged timestamps
       uses: actions/upload-artifact@v3
@@ -100,12 +100,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        cat .verify-helper/timestamps.remote.json
         git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
         if (git diff --shortstat | grep '[0-9]'); then \
           git add .verify-helper/timestamps.remote.json; \
-          git commit -m "[auto-verifier] docs commit $GITHUB_SHA"; \
+          git commit -m "[auto-verifier] verify commit $GITHUB_SHA"; \
           git push origin HEAD:${GITHUB_REF}; \
         fi
 
@@ -149,4 +150,8 @@ jobs:
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: oj-verify docs --jobs 4
+      run: |
+        cd .verify-helper
+        ls
+        cd ..
+        oj-verify docs --jobs 4
