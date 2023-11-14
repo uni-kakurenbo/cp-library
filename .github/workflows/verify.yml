@@ -89,8 +89,10 @@ jobs:
         cat ./timestamps.remote.json
 
     - name: push timestamps
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
           git config --global user.name "GitHub"
           git config --global user.email "noreply@github.com"
           if (git diff --shortstat | grep '[0-9]'); then \
