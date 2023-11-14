@@ -85,6 +85,7 @@ jobs:
       working-directory: .verify-helper
       run: |
         cd timestamps
+        cd timestamps
         ls
       # jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
       # cat ./timestamps.remote.json
