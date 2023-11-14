@@ -91,7 +91,9 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
+        cd timestamps
         ls
+        cd ..
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
