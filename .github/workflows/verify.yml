@@ -86,12 +86,13 @@ jobs:
       working-directory: .verify-helper
       run: |
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
+        echo ./timestamps.remote.json
     
     - name: Save merged timestamps
       uses: actions/upload-artifact@v3
       with:
         name: .verify-helper
-        path: .verify-helper/remote.json
+        path: .verify-helper/timestamps.remote.json
 
   gen-docs:
     runs-on: ubuntu-latest
