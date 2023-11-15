@@ -102,7 +102,7 @@ jobs:
       run: |
         git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
         git config --global user.name "GitHub"
-        git config --global user.email "noreply@github.com".verify-helper
+        git config --global user.email "noreply@github.com"
         git diff
         if (git diff --shortstat | grep '[0-9]'); then \
           git add .verify-helper/timestamps.remote.json; \
