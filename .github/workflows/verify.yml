@@ -90,12 +90,6 @@ jobs:
         jq -s 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
-    # - name: Save merged timestamps
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: merged-timestamps
-    #     path: .verify-helper/timestamps.remote.json
-
     - name: Push merged timestamps
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -137,23 +131,14 @@ jobs:
         sparse-checkout: atcoder
         path: ac-library
 
-    # - name: Load merged timestamps
-    #   uses: actions/download-artifact@v3
-    #   with:
-    #     name: merged-timestamps
-    #     path: main/.verify-helper
-
+    - name: Git pull
+      working-directory: main
+      run: git pull
+      
     - name: Generate documentation
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git pull
-        cd .verify-helper
-        ls
-        cd ..
-        cat .verify-helper/timestamps.remote.json
-        oj-verify docs --jobs 4
-        ls
+      run: oj-verify docs --jobs 4
