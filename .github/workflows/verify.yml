@@ -63,6 +63,7 @@ jobs:
         ls
         cd ~
         cd .cache
+        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
