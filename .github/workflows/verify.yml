@@ -43,6 +43,7 @@ jobs:
       uses: actions/cache/restore@v3
       with:
         path: main/.verify-helper/cache
+        key: verify-
         restore-keys: verify-
 
     - name: Run tests
@@ -67,7 +68,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: cache
-        path: main/.verfy-helper/cache/**¥
+        path: main/.verfy-helper/cache/**
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
