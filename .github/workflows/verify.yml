@@ -53,9 +53,12 @@ jobs:
                   print $0
                 }
               }' | \
-          xargs -t -n 1 -P 4 oj-verify run
+          xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
+
+        cd ~
+        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
