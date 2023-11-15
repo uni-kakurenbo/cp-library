@@ -68,7 +68,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: cache
-        path: main/.verfy-helper/cache/**
+        path: main/.verify-helper/cache/**
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
