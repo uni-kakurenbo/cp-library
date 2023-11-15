@@ -108,6 +108,7 @@ jobs:
   gen-docs:
     runs-on: ubuntu-latest
     needs: post-verify
+    if: ${{ !cancelled() }}
 
     steps:
     - name: Git checkout
