@@ -84,7 +84,7 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        jq --slurp 'reduce .[] as $item ({}; . * $item)' timestamps/* | jq --sort-keys > ./timestamps.remote.json
+        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' timestamps/* > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
     - name: Push merged timestamps
