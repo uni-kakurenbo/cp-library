@@ -95,9 +95,9 @@ jobs:
         git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
+        git add .verify-helper/timestamps.remote.json
         git diff --cached
         if (git diff --cached --shortstat | grep '[0-9]'); then \
-        　git add .verify-helper/timestamps.remote.json; \
           git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
           git push origin HEAD:${GITHUB_REF}; \
         fi
