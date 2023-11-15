@@ -64,7 +64,7 @@ jobs:
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save caches
-      uses: actions/upload-artifacts@v3
+      uses: actions/upload-artifact@v3
       with:
         name: cache
         path: main/.verfy-helper/cache/**¥
@@ -88,7 +88,7 @@ jobs:
         sparse-checkout: .verify-helper
 
     - name: Load caches
-      uses: actions/download-artifacts@v3
+      uses: actions/download-artifact@v3
       with:
         name: cache
         path: .verfy-helper/cache
