@@ -67,6 +67,7 @@ jobs:
         cd ~/.cache/online-judge-tools
         cat pypi.json
         cd library-checker-problems
+        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
