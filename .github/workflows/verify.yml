@@ -150,4 +150,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
+        cat .verify-helper/timestamps.remote.json
         oj-verify docs --jobs 4
