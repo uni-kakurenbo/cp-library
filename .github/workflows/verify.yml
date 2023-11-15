@@ -39,6 +39,13 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
 
+    # - name: Cache judge data
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.cache/online-judge-tools
+    #     key: oj-${{ hashFiles('') }}
+    #     restore-keys: verify-
+
     - name: Run tests
       working-directory: main
       env:
@@ -57,12 +64,7 @@ jobs:
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
-        cd ~
-        ls
-        cd ..
-        ls
-        cd ~
-        cd .cache
+        cd ~/.cache/online-judge-tools
         ls
 
     - name: Save timestamps
