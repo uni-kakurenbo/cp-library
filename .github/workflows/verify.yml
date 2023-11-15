@@ -93,22 +93,23 @@ jobs:
     - name: Save merged timestamps
       uses: actions/upload-artifact@v3
       with:
-        name: .verify-helper
+        name: merged-timestamps
         path: .verify-helper/timestamps.remote.json
 
     - name: Push merged timestamps
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-        git config --global user.name "GitHub"
-        git config --global user.email "noreply@github.com"
-        git diff
-        if (git diff --shortstat | grep '[0-9]'); then \
-          git add .verify-helper/timestamps.remote.json; \
-          git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
-          git push origin HEAD:${GITHUB_REF}; \
-        fi
+        git state
+        # git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+        # git config --global user.name "GitHub"
+        # git config --global user.email "noreply@github.com"
+        # git diff
+        # if (git diff --shortstat | grep '[0-9]'); then \
+        #   git add .verify-helper/timestamps.remote.json; \
+        #   git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
+        #   git push origin HEAD:${GITHUB_REF}; \
+        # fi
 
   gen-docs:
     runs-on: ubuntu-latest
@@ -140,7 +141,7 @@ jobs:
     - name: Load merged timestamps
       uses: actions/download-artifact@v3
       with:
-        name: .verify-helper
+        name: merged-timestamps
         path: main
 
     - name: Generate documentation
@@ -150,10 +151,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        cd .verify-helper
         ls
-        cd ..
+        cd merged-timestamps
         find .verify-helper -type f -print0 | xargs -0 more | cat
         echo
+        cd ..
+        cd mv merged-timestamps/timestamps.remote.json .verify-helper/timestamps.remote.json
         oj-verify docs --jobs 4
       #cat .verify-helper/timestamps.remote.json
