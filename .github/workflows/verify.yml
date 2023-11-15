@@ -39,12 +39,12 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
 
-    # - name: Cache judge data
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.cache/online-judge-tools
-    #     key: oj-${{ hashFiles('') }}
-    #     restore-keys: verify-
+    - name: Cache judge data
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache
+        key: verify-${{ hashFiles('~/.cache/pypi.json') }}
+        restore-keys: verify-
 
     - name: Run tests
       working-directory: main
@@ -63,11 +63,6 @@ jobs:
           xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
-
-        cd ~/.cache/online-judge-tools
-        cat pypi.json
-        cd library-checker-problems
-        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
