@@ -152,6 +152,6 @@ jobs:
       run: |
         cd .verify-helper
         ls
-        cd..
+        cd ..
         oj-verify docs --jobs 4
       # cat .verify-helper/timestamps.remote.json
