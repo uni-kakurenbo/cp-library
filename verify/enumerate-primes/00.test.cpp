@@ -20,7 +20,7 @@
 #include "numeric/prime_enumerator.hpp"
 
 signed main() {
-    print("Hello World");
+    print("Hello World.");
 
     lib::random_engine<lib::xorshift> rng;
     lib::timer timer(1000);
