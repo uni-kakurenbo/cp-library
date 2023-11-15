@@ -154,4 +154,4 @@ jobs:
         ls
         cd ..
         oj-verify docs --jobs 4
-      # cat .verify-helper/timestamps.remote.json
+        cat .verify-helper/timestamps.remote.json
