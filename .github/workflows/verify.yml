@@ -150,6 +150,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
+        cd .verify-helper
+        ls
+        cd ..
         find .verify-helper -type f -print0 | xargs -0 more | cat
         echo
         oj-verify docs --jobs 4
