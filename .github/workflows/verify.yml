@@ -44,7 +44,6 @@ jobs:
       with:
         path: main/.verify-helper/cache
         key: verify-${{ hashFiles('main/.verify-helper/cache/**') }}
-        restore-keys: verify-
 
     - name: Run tests
       working-directory: main
@@ -63,6 +62,8 @@ jobs:
           xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
+        echo ${{ hashFiles('./cache/**') }}
+        echo ${{ hashFiles('main/.verify-helper/cache/**') }}
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
