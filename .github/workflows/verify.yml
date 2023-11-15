@@ -39,11 +39,12 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
 
-    - name: Cache judge data
-      uses: actions/cache@v3
+    - name: Cache judge data [restore]
+      uses: actions/cache/restore@v3
       with:
         path: main/.verify-helper/cache
         key: verify-${{ hashFiles('main/.verify-helper/cache/**') }}
+        restore-keys: verify-
 
     - name: Run tests
       working-directory: main
@@ -62,8 +63,12 @@ jobs:
           xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
-        echo ${{ hashFiles('./cache/**') }}
-        echo ${{ hashFiles('main/.verify-helper/cache/**') }}
+
+    - name: Cache judge data [save]
+      uses: actions/cache/save@v3
+      with:
+        path: main/.verify-helper/cache
+        key: verify-${{ hashFiles('main/.verify-helper/cache/**') }}
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
