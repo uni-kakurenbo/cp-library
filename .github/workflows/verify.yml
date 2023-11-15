@@ -65,7 +65,8 @@ jobs:
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
         cd ~/.cache/online-judge-tools
-        ls
+        cat pypi.json
+        cd library-checker-problems
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
