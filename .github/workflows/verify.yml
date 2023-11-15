@@ -107,7 +107,10 @@ jobs:
         git status
         git config --global user.email "noreply@github.com"
         git status
-        # git diff
+        git diff
+        git status
+        git diff --shortstat
+        git status
         # if (git diff --shortstat | grep '[0-9]'); then \
         #   git add .verify-helper/timestamps.remote.json; \
         #   git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
