@@ -50,11 +50,10 @@ jobs:
               -v i=${{ strategy.job-index }} \
               '{
                 if((NR - 1) % n == i) {
-                  args = sprintf("%s --timeout 3600", $0);
-                  print args
+                  print $0
                 }
               }' | \
-          xargs -t -n3 oj-verify run
+          xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
@@ -131,7 +130,7 @@ jobs:
     - name: Git pull
       working-directory: main
       run: git pull
-      
+
     - name: Generate documentation
       working-directory: main
       env:
