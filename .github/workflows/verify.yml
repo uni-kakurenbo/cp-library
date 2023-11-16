@@ -56,8 +56,8 @@ jobs:
               }' \
           )
         echo 'TESTER_ARGS="${TESTER_ARGS}"' >> '${GITHUB_ENV}'
-        echo '${TEST_ARGS}'
-        echo '${TEST_ARGS}' >> verify/target.txt
+        echo '${TESTER_ARGS}'
+        echo '${TESTER_ARGS}' >> verify/target.txt
 
     - name: Cache judge data
       uses: actions/cache@v3
@@ -72,6 +72,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
+        echo '${TESTER_ARGS}'
         '${TESTER_ARGS}' | xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
