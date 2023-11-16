@@ -73,11 +73,13 @@ jobs:
     - name: Run tests
       working-directory: main
       env:
+        CACHE_HIT: ${{ steps.cache-judge.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=0
-        if [ ${{ steps.cache-judge.outputs.cache-hit }} != 'true' ]; then
+        echo ${CACHE_HIT}
+        if [ ${CACHE_HIT} != 'true' ]; then
           parallel=1
         fi
 
