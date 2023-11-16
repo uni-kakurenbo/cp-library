@@ -68,7 +68,6 @@ jobs:
           main/.verify-helper/cache/
           ~/.cache/online-judge-tools/
         key: verify-${{ hashFiles('main/verify/**', 'main/.verify-helper/targets.txt') }}
-        restore-keys: verify-
 
     - name: Run tests
       working-directory: main
