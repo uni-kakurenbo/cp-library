@@ -2,6 +2,7 @@ name: library-verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -61,8 +62,8 @@ jobs:
 
     - name: Cache judge data
       uses: actions/cache@v3
-      id: cache-judge
       with:
+        id: cache-judge
         path: |
           main/.verify-helper/cache/
           ~/.cache/online-judge-tools/
