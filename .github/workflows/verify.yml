@@ -77,7 +77,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=0
-        if [ ${{ steps.cache-judge.outputs.cache-hit }} != 'true' ]; then
+        if [ ${{ steps.aaa.outputs.cache-hit }} != 'true' ]; then
           parallel=1
         fi
 
@@ -89,7 +89,7 @@ jobs:
         }
         export -f run
 
-        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {}'
+        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {} || exit 255'
 
         cat .verify-helper/timestamps-${{ matrix.id }}.json
 
