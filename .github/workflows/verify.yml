@@ -92,7 +92,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: cache
-        path: .verfy-helper/cache
+        path: .verify-helper/cache
 
     - name: Store caches
       uses: actions/cache/save@v3
