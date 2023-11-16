@@ -81,6 +81,7 @@ jobs:
         if [ "${CACHE_HIT}" -ne 'true' ]; then
           parallel=1
         fi
+        echo ${parallel}
 
         function run() {
           oj-verify run $1 || exit 1
