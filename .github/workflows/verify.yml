@@ -83,7 +83,7 @@ jobs:
         function run() {
           oj-verify run $1
           cd .verify-helper
-          cat ./timestamps.remote.json
+          echo >> ./timestamps.remote.json
           cat ./timestamps.remote.json >> ./timestamps-${{ matrix.id }}.json
         }
         export -f run
