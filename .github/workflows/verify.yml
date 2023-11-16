@@ -51,6 +51,7 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+        VERIFY_DIRECTORY: ${{ join(github.workspace, '/main/verify/**.test.cpp') }}
       run: |
         find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
@@ -63,6 +64,9 @@ jobs:
           xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
+        echo ${VERIFY_DIRECTORY}
+        cd ${VERIFY_DIRECTORY}
+        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
