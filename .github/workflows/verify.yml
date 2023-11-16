@@ -78,7 +78,7 @@ jobs:
       run: |
         parallel=0
         echo ${CACHE_HIT}
-        if [ ${CACHE_HIT} != 'true' ]; then
+        if [ ${CACHE_HIT} -ne 'true' ]; then
           parallel=1
         fi
 
