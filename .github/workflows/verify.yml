@@ -39,11 +39,11 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
     
-    - name: Restore caches
-      uses: actions/cache/restore@v3
+    - name: Cache judge data
+      uses: actions/cache@v3
       with:
         path: main/.verify-helper/cache
-        key: verify-
+        key: verify-${{ hashFiles(main/verify/**.test.cpp) }}
         restore-keys: verify-
 
     - name: Run tests
@@ -64,12 +64,6 @@ jobs:
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
-    - name: Save caches
-      uses: actions/upload-artifact@v3
-      with:
-        name: cache
-        path: main/.verify-helper/cache/**
-
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
@@ -87,18 +81,6 @@ jobs:
       with:
         fetch-depth: 0
         sparse-checkout: .verify-helper
-
-    - name: Load caches
-      uses: actions/download-artifact@v3
-      with:
-        name: cache
-        path: .verify-helper/cache
-
-    - name: Store caches
-      uses: actions/cache/save@v3
-      with:
-        path: .verify-helper/cache
-        key: verify-${{ hashFiles('.verify-helper/cache/**') }}
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
