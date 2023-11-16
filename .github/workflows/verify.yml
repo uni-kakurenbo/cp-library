@@ -55,7 +55,7 @@ jobs:
                 }
               }' \
           )
-        echo 'TESTER_ARGS=${TESTER_ARGS}' >> '${GITHUB_ENV}'
+        echo 'TESTER_ARGS=${TESTER_ARGS}' >> '$GITHUB_ENV'
         echo ${TESTER_ARGS}
         echo ${TESTER_ARGS} >> verify/target.txt
 
