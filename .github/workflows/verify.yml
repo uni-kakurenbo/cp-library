@@ -61,7 +61,7 @@ jobs:
 
     - name: Cache judge data
       uses: actions/cache@v3
-      id: judge-cache
+      id: cache-judge
       with:
         path: |
           main/.verify-helper/cache/
@@ -76,7 +76,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=0
-        if [ ${{ steps.cache-npm.outputs.cache-hit }} != 'true' ]; then
+        if [ ${{ steps.cache-judge.outputs.cache-hit }} != 'true' ]; then
           parallel=1
         fi
 
