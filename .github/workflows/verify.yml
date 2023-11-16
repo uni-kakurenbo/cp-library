@@ -80,13 +80,14 @@ jobs:
           parallel=1
         fi
 
-        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 oj-verify run
+        function run() {
+          oj-verify run $1
+          cat ./timestamps.remote.json
+          cat ./timestamps.remote.json >> ./timestamps-${{ matrix.id }}.json
+        }
+        export -f run
 
-    - name: Rename timestamps
-      working-directory: main/.verify-helper
-      run: |
-        cat ./timestamps.remote.json
-        mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
+        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} bash -c "run {}"
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
