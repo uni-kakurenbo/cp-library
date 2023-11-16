@@ -71,9 +71,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        TEST_FILES=$(cat ./verify/targets.txt)
-        echo ${TEST_FILES}
-        ${TEST_FILES} | xargs -t -n 1 oj-verify run
+        cat ./verify/targets.txt | xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
