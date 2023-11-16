@@ -38,12 +38,32 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
         sparse-checkout: atcoder
-    
+
+    - name: Assign test files
+      working-directory: main
+      env:
+        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+      run: |
+        TESTER_ARGS=$(
+          find verify -type f -name *.test.cpp | \
+          awk -v n=${{ strategy.job-total }}  \
+              -v i=${{ strategy.job-index }} \
+              '{
+                if((NR - 1) % n == i) {
+                  print $0
+                }
+              }' \
+          )
+        echo "TESTER_ARGS=${TESTER_ARGS}" >> "${GITHUB_ENV}"
+        echo ${TEST_ARGS}
+        echo ${TEST_ARGS} >> verify/target.txt
+
     - name: Cache judge data
       uses: actions/cache@v3
       with:
         path: main/.verify-helper/cache
-        key: verify-${{ hashFiles(format('{0}/main/verify/**.test.cpp', github.workspace)) }}
+        key: verify-${{ hashFiles(format('{0}/main/verify/**', github.workspace)) }}
         restore-keys: verify-
 
     - name: Run tests
@@ -51,7 +71,6 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        VERIFY_DIRECTORY: ${{ format('{0}/main/verify/**.test.cpp', github.workspace) }}
       run: |
         find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
@@ -64,9 +83,6 @@ jobs:
           xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
-        echo ${VERIFY_DIRECTORY}
-        cd ${VERIFY_DIRECTORY}
-        ls
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
