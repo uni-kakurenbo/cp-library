@@ -61,7 +61,9 @@ jobs:
     - name: Cache judge data
       uses: actions/cache@v3
       with:
-        path: main/.verify-helper/cache
+        path: |
+          main/.verify-helper/cache/
+          ~/.cache/online-judge-tools/library-checker-problems/
         key: verify-${{ hashFiles(format('{0}/main/verify/**', github.workspace)) }}
         restore-keys: verify-
 
