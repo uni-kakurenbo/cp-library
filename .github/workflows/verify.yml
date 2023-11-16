@@ -43,7 +43,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: main/.verify-helper/cache
-        key: verify-${{ hashFiles(main/verify/**.test.cpp) }}
+        key: verify-${{ hashFiles(${{ github.workspace }}/main/verify/**.test.cpp) }}
         restore-keys: verify-
 
     - name: Run tests
