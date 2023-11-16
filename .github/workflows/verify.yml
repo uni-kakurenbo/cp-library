@@ -45,7 +45,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        TESTER_ARGS=$(
+        TEST_FILES=$(
           find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
               -v i=${{ strategy.job-index }} \
@@ -55,10 +55,8 @@ jobs:
                 }
               }' \
           )
-        echo 'TESTER_ARGS=${TESTER_ARGS}'
-        echo 'TESTER_ARGS=${TESTER_ARGS}' >> '$GITHUB_ENV'
-        echo ${TESTER_ARGS}
-        echo ${TESTER_ARGS} >> verify/target.txt
+        echo ${TEST_FILES} >> ./verify/targets.txt
+        cat ./verify/targets.txt
 
     - name: Cache judge data
       uses: actions/cache@v3
@@ -73,8 +71,9 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        echo ${TESTER_ARGS}
-        ${TESTER_ARGS} | xargs -t -n 1 oj-verify run
+        TEST_FILES=$(cat ./verify/targets.txt)
+        echo ${TEST_FILES}
+        ${TEST_FILES} | xargs -t -n 1 oj-verify run
         cd .verify-helper
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
