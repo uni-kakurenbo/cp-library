@@ -43,7 +43,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: main/.verify-helper/cache
-        key: verify-${{ hashFiles(join(github.workspace, '/main/verify/**.test.cpp')) }}
+        key: verify-${{ hashFiles(format(github.workspace/{0}, 'main/verify/**.test.cpp')) }}
         restore-keys: verify-
 
     - name: Run tests
@@ -51,7 +51,7 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        VERIFY_DIRECTORY: ${{ join(github.workspace, '/main/verify/**.test.cpp') }}
+        VERIFY_DIRECTORY: ${{ format(github.workspace/{0}, 'main/verify/**.test.cpp') }}
       run: |
         find verify -type f -name *.test.cpp | \
           awk -v n=${{ strategy.job-total }}  \
