@@ -89,7 +89,7 @@ jobs:
         }
         export -f run
 
-        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {} || exit 255'
+        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {} || exit 1'
 
         cat .verify-helper/timestamps-${{ matrix.id }}.json
 
