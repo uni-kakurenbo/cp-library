@@ -85,7 +85,7 @@ jobs:
     - name: Rename timestamps
       working-directory: main/.verify-helper
       run:
-        echo ./timestamps.remote.json
+        cat ./timestamps.remote.json
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save timestamps
