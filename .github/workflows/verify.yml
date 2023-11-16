@@ -64,7 +64,7 @@ jobs:
       with:
         path: |
           main/.verify-helper/cache/
-          ~/.cache/online-judge-tools/library-checker-problems/
+          ~/.cache/online-judge-tools/
         key: verify-${{ hashFiles(format('{0}/main/verify/**', github.workspace)) }}
         restore-keys: verify-
 
