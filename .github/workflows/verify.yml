@@ -56,8 +56,8 @@ jobs:
                 }
               }' \
           )
-        echo ${TEST_FILES} >> ./verify/targets.txt
-        cat ./verify/targets.txt
+        echo ${TEST_FILES} >> .verify-helper/targets.txt
+        cat .verify-helper/targets.txt
 
     - name: Cache judge data
       uses: actions/cache@v3
@@ -65,7 +65,7 @@ jobs:
         path: |
           main/.verify-helper/cache/
           ~/.cache/online-judge-tools/
-        key: verify-${{ hashFiles(format('{0}/main/verify/**', github.workspace)) }}
+        key: verify-${{ hashFiles(main/verify/**, main/.verify-helper/targets.txt) }}
         restore-keys: verify-
 
     - name: Run tests
