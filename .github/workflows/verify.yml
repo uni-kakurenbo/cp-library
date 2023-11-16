@@ -61,6 +61,7 @@ jobs:
 
     - name: Cache judge data
       uses: actions/cache@v3
+      id: judge-cache
       with:
         path: |
           main/.verify-helper/cache/
@@ -74,8 +75,16 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        cat .verify-helper/targets.txt | xargs -t -P 4 -n 1 oj-verify run
-        cd .verify-helper
+        parallel=4
+        if [ ${{ steps.cache-npm.outputs.cache-hit }} != 'true' ]; then
+          parallel=1
+        fi
+
+        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 oj-verify run
+
+    - name: Rename timestamps
+      working-directory: main/.verify-helper
+      run:
         mv ./timestamps.remote.json ./timestamps-${{ matrix.id }}.json
 
     - name: Save timestamps
@@ -116,9 +125,9 @@ jobs:
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
         git add .verify-helper/timestamps.remote.json
-        if (git diff --cached --shortstat | grep '[0-9]'); then \
-          git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"; \
-          git push origin HEAD:${GITHUB_REF}; \
+        if (git diff --cached --shortstat | grep '[0-9]'); then
+          git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+          git push origin HEAD:${GITHUB_REF}
         fi
 
   gen-docs:
