@@ -82,14 +82,14 @@ jobs:
         fi
 
         function run() {
-          oj-verify run $1
+          oj-verify run $1 || exit 1
           cd .verify-helper
           echo >> ./timestamps.remote.json
           cat ./timestamps.remote.json >> ./timestamps-${{ matrix.id }}.json
         }
         export -f run
 
-        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {} || exit 1'
+        cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {}'
 
         cat .verify-helper/timestamps-${{ matrix.id }}.json
 
