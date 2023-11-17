@@ -76,7 +76,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        parallel=0
+        parallel=$(nproc)
         echo "${CACHE_HIT}"
         if [ "${CACHE_HIT}" != 'true' ]; then
           parallel=1
