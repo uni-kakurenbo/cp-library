@@ -8,6 +8,10 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -79,8 +83,9 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=$(nproc)
-        if [ "${CACHE_HIT}" != 'true' ]; then
+        if [ '${CACHE_HIT}' != 'true' ]; then
           parallel=1
+          echo '{}'' > .verify-helper/timestamps.remote.json
         fi
         echo "Parallel execution: ${parallel}"
 
