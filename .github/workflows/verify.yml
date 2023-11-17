@@ -46,6 +46,8 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
+        oj-verify stats
+
         TEST_FILES=$(
           find verify -type f -name *.test.cpp | \
           sort | \
@@ -77,11 +79,10 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=$(nproc)
-        echo "${CACHE_HIT}"
         if [ "${CACHE_HIT}" != 'true' ]; then
           parallel=1
         fi
-        echo ${parallel}
+        echo "Parallel execution: ${parallel}"
 
         function run() {
           oj-verify run $1 || exit 1
