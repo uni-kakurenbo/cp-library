@@ -83,7 +83,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         parallel=$(nproc)
-        if [ '${CACHE_HIT}' != 'true' ]; then
+        if [ ${CACHE_HIT} != 'true' ]; then
           parallel=1
           echo '{}' > .verify-helper/timestamps.remote.json
         fi
