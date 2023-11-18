@@ -119,8 +119,6 @@ jobs:
 
         cat .verify-helper/targets.txt | xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c 'run {}'
 
-        cat .verify-helper/timestamps-${{ matrix.id }}.json
-
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       with:
