@@ -9,7 +9,7 @@ on:
   pull_request:
 
 concurrency:
-  group: verify-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -50,6 +50,8 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         # oj-verify stats
+
+        echo "${{ github.workflow }}-${{ github.ref }}"
 
         TEST_FILES=$(
           find verify -type f -name *.test.cpp | \
