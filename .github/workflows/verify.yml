@@ -146,9 +146,4 @@ jobs:
   finalize:
     needs: post-verify
     if: ${{ !cancelled() }}
-
-    concurrency:
-      group: verify-finalize-${{ github.ref }}
-      cancel-in-progress: true
-
     uses: ./.github/workflows/gen-docs.yml
