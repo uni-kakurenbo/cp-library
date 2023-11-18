@@ -29,7 +29,9 @@ jobs:
     - run: pip3 install -U online-judge-verify-helper
 
     - run: oj-verify stats
-      working-drectory: main
+      working-directory: main
+      env:
+        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
 
   verify:
     runs-on: ubuntu-latest
