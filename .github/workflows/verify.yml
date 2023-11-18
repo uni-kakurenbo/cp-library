@@ -166,3 +166,4 @@ jobs:
 
   gen-docs:
     uses: ./.github/workflows/gen-doc.yml
+    secrets: inherit
