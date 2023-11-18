@@ -8,7 +8,7 @@
 #include <utility>
 #include <optional>
 #include <algorithm>
-#include <atcoder/math.hpp>
+#include <atcoder/math>
 #include <concepts>
 
 
