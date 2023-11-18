@@ -165,5 +165,9 @@ jobs:
         fi
 
   gen-docs:
-    uses: ./.github/workflows/gen-docs.yml
-    secrets: inherit
+    runs-on: ubuntu-latest
+    needs: post-verify
+    if: ${{ !cancelled() }}
+
+    steps:
+    - uses: ./.github/workflows/gen-docs.yml
