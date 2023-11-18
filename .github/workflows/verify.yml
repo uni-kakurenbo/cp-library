@@ -15,24 +15,23 @@ concurrency:
 jobs:
   pre-verify:
     runs-on: ubuntu-latest
-    if: false
 
     steps:
     - uses: actions/checkout@v3
       with:
         path: main
 
-    - uses: actions/checkout@v3
-      with:
-        repository: atcoder/ac-library
-        path: ac-library
+    # - uses: actions/checkout@v3
+    #   with:
+    #     repository: atcoder/ac-library
+    #     path: ac-library
 
-    - run: pip3 install -U online-judge-verify-helper
+    # - run: pip3 install -U online-judge-verify-helper
 
-    - run: oj-verify stats
-      working-directory: main
-      env:
-        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+    # - run: oj-verify stats
+    #   working-directory: main
+    #   env:
+    #     CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
 
   verify:
     runs-on: ubuntu-latest
