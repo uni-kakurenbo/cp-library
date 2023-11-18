@@ -17,11 +17,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+      with:
+        path: main
+        fetch-depth: 0
     - run: pip3 install -U online-judge-verify-helper
     - run: oj-verify stats
 
   verify:
     runs-on: ubuntu-latest
+    needs: pre-verify
 
     strategy:
       fail-fast: false
