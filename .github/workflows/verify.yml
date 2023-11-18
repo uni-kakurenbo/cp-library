@@ -141,7 +141,7 @@ jobs:
           git push origin HEAD:${GITHUB_REF}
         fi
 
-  gen-docs:
+  finalize:
     needs: post-verify
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/gen-docs.yml
