@@ -165,5 +165,5 @@ jobs:
         fi
 
   gen-docs:
-    uses: ./.github/workflows/gen-doc.yml
+    uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
