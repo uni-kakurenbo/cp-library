@@ -1,0 +1,58 @@
+name: documentation-generation
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+  workflow_dispatch:
+
+  workflow_call:
+    secrets: inherit
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gen-docs:
+    runs-on: ubuntu-latest
+    needs: post-verify
+    if: ${{ !cancelled() }}
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        path: main
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12.0
+
+    - name: Install oj-verify
+      run: pip3 install -U online-judge-verify-helper
+
+    - name: Clone AC-Library
+      uses: actions/checkout@v3
+      with:
+        repository: atcoder/ac-library
+        sparse-checkout: atcoder
+        path: ac-library
+
+    - name: Git pull
+      working-directory: main
+      run: git pull
+
+    - name: Generate documentation
+      working-directory: main
+      env:
+        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: oj-verify docs --jobs 4 2> /dev/null
