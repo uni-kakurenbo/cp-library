@@ -13,6 +13,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pre-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: pip3 install -U online-judge-verify-helper
+    - run: oj-verify stats
+
   verify:
     runs-on: ubuntu-latest
 
@@ -22,7 +29,6 @@ jobs:
         id: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
 
     steps:
-
     - name: Git checkout
       uses: actions/checkout@v3
       with:
