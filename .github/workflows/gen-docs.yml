@@ -4,6 +4,9 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      GH_PAT:
+        required: true
 
 concurrency:
   group: docs-${{ github.ref }}

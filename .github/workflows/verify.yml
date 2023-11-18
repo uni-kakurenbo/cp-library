@@ -147,3 +147,4 @@ jobs:
     needs: post-verify
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/gen-docs.yml
+    secrets: inherit
