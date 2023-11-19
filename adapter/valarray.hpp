@@ -48,8 +48,8 @@ template<class T> struct valarray : internal::extended_container<std::valarray<T
 
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
 
-    template<class I, class = typename std::iterator_traits<I>::value_type>
-    valarray(const I first, const I last) noexcept(NO_EXCEPT) : base(std::distance(first, last)) { std::copy(first, last, std::begin(*this)); }
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    valarray(I first, S last) noexcept(NO_EXCEPT) : base(std::ranges::distance(first, last)) { std::ranges::copy(first, last, std::ranges::begin(*this)); }
 
     template<class U> valarray(const U* pointer, const size_t n) noexcept(NO_EXCEPT) : base(pointer, n) {};
 
@@ -67,10 +67,10 @@ template<class T> struct valarray : internal::extended_container<std::valarray<T
 
     inline void reserve(const size_type) noexcept(NO_EXCEPT) { /* do nothing */ }
 
-    template<class I, typename std::iterator_traits<I>::value_type* = nullptr>
-    inline void assign(const I first, const I last) noexcept(NO_EXCEPT) {
-        this->resize(std::distance(first, last));
-        std::copy(first, last, std::begin(*this));
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline void assign(I first, S last) noexcept(NO_EXCEPT) {
+        this->resize(std::ranges::distance(first, last));
+        std::ranges::copy(first, last, std::ranges::begin(*this));
     }
 
     inline void assign(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) {

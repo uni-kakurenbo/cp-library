@@ -42,7 +42,8 @@ struct set_hasher : protected set<T> {
   public:
     set_hasher() noexcept(NO_EXCEPT) {}
 
-    template<class I> set_hasher(const I first, const I last) noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    set_hasher(I first, S last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr != last; ++itr) this->_insert(*itr);
     }
 

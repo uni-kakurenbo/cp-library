@@ -290,14 +290,14 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     core() noexcept(NO_EXCEPT) {}
 
     template<std::forward_iterator I, std::sentinel_for<I> S>
-    inline void insert(size_type p, const I first, const S last) noexcept(NO_EXCEPT) {
+    inline void insert(size_type p, I first, S last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr != last; ++itr, ++p) {
             this->insert(p, *itr);
         }
     }
 
     template<std::ranges::input_range R>
-    inline void insert(const size_type p, const R& range) noexcept(NO_EXCEPT) {
+    inline void insert(const size_type p, R&& range) noexcept(NO_EXCEPT) {
         return this->insert(p, std::ranges::begin(range), std::ranges::end(range));
     }
 
@@ -398,14 +398,14 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+    inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         this->clear();
         this->insert(0, first, last);
         return *this;
     }
 
     template<std::ranges::input_range R>
-    inline auto& assign(const R& range) noexcept(NO_EXCEPT) {
+    inline auto& assign(R&& range) noexcept(NO_EXCEPT) {
         return this->assign(ALL(range));
     }
 

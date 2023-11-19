@@ -59,7 +59,7 @@ struct fenwick_tree<actions::range_add<T>> : fenwick_tree<actions::range_sum<T>>
     fenwick_tree(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : fenwick_tree(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    fenwick_tree(const I first, const S last) noexcept(NO_EXCEPT)
+    fenwick_tree(I first, S last) noexcept(NO_EXCEPT)
       : fenwick_tree(std::ranges::distance(first, last))
     {
         size_type pos = 0;

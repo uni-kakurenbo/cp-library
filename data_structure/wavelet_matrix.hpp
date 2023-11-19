@@ -60,10 +60,10 @@ struct base {
     base() = default;
 
     template<std::ranges::input_range R>
-    explicit base(const R& range) noexcept(NO_EXCEPT) : base(ALL(range)) {}
+    explicit base(R&& range) noexcept(NO_EXCEPT) : base(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    base(const I first, const S last) noexcept(NO_EXCEPT) { this->build(first, last); }
+    base(I first, S last) noexcept(NO_EXCEPT) { this->build(first, last); }
 
     template<std::convertible_to<value_type> U>
     base(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : base(ALL(init_list)) {}
@@ -72,11 +72,11 @@ struct base {
     inline size_type bits() const noexcept(NO_EXCEPT) { return this->_bits; }
 
     template<std::ranges::input_range R>
-    inline void build(const R& range) noexcept(NO_EXCEPT) { this->build(ALL(range)); }
+    inline void build(R&& range) noexcept(NO_EXCEPT) { this->build(ALL(range)); }
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
         __attribute__((optimize("O3")))
-    void build(const I first, const S last) noexcept(NO_EXCEPT) {
+    void build(I first, S last) noexcept(NO_EXCEPT) {
         this->_n = static_cast<size_type>(std::ranges::distance(first, last));
         this->_max = first == last ? -1 : *std::ranges::max_element(first, last);
         this->_bits = bit_width(this->_max + 1);
@@ -518,7 +518,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
     compressed_wavelet_matrix() = default;
 
     template<std::ranges::input_range R>
-    explicit compressed_wavelet_matrix(const R& range) noexcept(NO_EXCEPT) : compressed_wavelet_matrix(ALL(range)) {}
+    explicit compressed_wavelet_matrix(R&& range) noexcept(NO_EXCEPT) : compressed_wavelet_matrix(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     compressed_wavelet_matrix(I first, S last) noexcept(NO_EXCEPT) { this->build(first, last); }
@@ -676,14 +676,14 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
 
 
 template<std::ranges::input_range R>
-explicit wavelet_matrix(const R&) -> wavelet_matrix<std::ranges::range_value_t<R>>;
+explicit wavelet_matrix(R&&) -> wavelet_matrix<std::ranges::range_value_t<R>>;
 
 template<std::input_iterator I, std::sentinel_for<I> S>
 explicit wavelet_matrix(I, S) -> wavelet_matrix<std::iter_value_t<I>>;
 
 
 template<std::ranges::input_range R>
-explicit compressed_wavelet_matrix(const R&) -> compressed_wavelet_matrix<std::ranges::range_value_t<R>>;
+explicit compressed_wavelet_matrix(R&&) -> compressed_wavelet_matrix<std::ranges::range_value_t<R>>;
 
 template<std::input_iterator I, std::sentinel_for<I> S>
 explicit compressed_wavelet_matrix(I, S) -> compressed_wavelet_matrix<std::iter_value_t<I>>;

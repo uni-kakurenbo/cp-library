@@ -34,18 +34,12 @@ struct leveler {
     }
 
   public:
-    leveler(const std::initializer_list<value_type> bases) noexcept(NO_EXCEPT) : _bases(bases), _dim(std::size(bases)) {
+    leveler(const std::initializer_list<value_type> bases) noexcept(NO_EXCEPT) : _bases(bases), _dim(std::ranges::size(bases)) {
         this->_max = this->_compute_max();
     }
-
-    template<class I>
-    leveler(I first, I last) noexcept(NO_EXCEPT) : _bases(first, last), _dim(std::distance(first, last)) {
-        this->_max = this->_compute_max();
-    }
-
 
     template<std::ranges::forward_range R>
-    leveler(R range) noexcept(NO_EXCEPT) : leveler(std::ranges::begin(range), std::ranges::end(range)) {}
+    leveler(R&& range) noexcept(NO_EXCEPT) : leveler(std::ranges::begin(range), std::ranges::end(range)) {}
 
 
     template<std::integral... Values>
@@ -55,30 +49,25 @@ struct leveler {
 
     inline value_type sup() const noexcept(NO_EXCEPT) { return this->_max; }
 
-    template<class I>
-    inline value_type convert(I first, I last) const noexcept(NO_EXCEPT) {
-        assert(std::distance(first, last) == std::size(this->_bases));
+    inline value_type convert(const std::initializer_list<value_type> inds) const noexcept(NO_EXCEPT) {
+        return this->convert(inds | std::views::all);
+    }
+
+    template<std::ranges::forward_range R>
+    inline value_type convert(R&& range) const noexcept(NO_EXCEPT) {
+        assert(std::ranges::distance(range) == std::ranges::ssize(this->_bases));
 
         value_type res = 0;
         {
-            auto size = std::begin(this->_bases);
-            for(auto itr=first; itr!=last; ++itr, ++size) {
-                assert(0 <= *itr and *itr < *size);
-                res *= *size;
-                res += *itr;
+            auto size = std::ranges::begin(this->_bases);
+            ITR(v, range) {
+                assert(0 <= v and v < *size);
+                res *= *(size++);
+                res += v;
             }
         }
 
         return res;
-    }
-
-    inline value_type convert(const std::initializer_list<value_type> inds) const noexcept(NO_EXCEPT) {
-        return this->convert(std::begin(inds), std::end(inds));
-    }
-
-    template<std::ranges::forward_range R>
-    inline value_type convert(R range) const noexcept(NO_EXCEPT) {
-        return this->convert(std::ranges::begin(range), std::ranges::end(range));
     }
 
     template<std::integral... Values>

@@ -29,7 +29,8 @@ struct bit_vector {
   public:
     bit_vector(const size_type _n = 0) noexcept(NO_EXCEPT) { this->init(_n); }
 
-    template<class I> explicit bit_vector(const I first, const I last) noexcept(NO_EXCEPT)
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    bit_vector(I first, S last) noexcept(NO_EXCEPT)
       : bit_vector(std::ranges::distance(first, last))
     {
         size_type pos = 0;

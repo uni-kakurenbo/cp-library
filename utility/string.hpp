@@ -10,16 +10,16 @@
 namespace lib {
 
 
-template<class I, class Res = std::string>
-Res to_lower(const I first, const I last) noexcept(NO_EXCEPT) {
+template<std::input_iterator I, std::sentinel_for<I> S, class Res = std::string>
+Res to_lower(I first, S last) noexcept(NO_EXCEPT) {
     Res res;
     res.reserve(std::distance(first, last));
     std::transform(first, last, std::back_inserter(res), ::tolower);
     return res;
 }
 
-template<class I, class Res = std::string>
-Res to_uppwer(const I first, const I last) noexcept(NO_EXCEPT) {
+template<std::input_iterator I, std::sentinel_for<I> S, class Res = std::string>
+Res to_uppwer(I first, S last) noexcept(NO_EXCEPT) {
     Res res;
     res.reserve(std::distance(first, last));
     std::transform(first, last, std::back_inserter(res), ::toupper);

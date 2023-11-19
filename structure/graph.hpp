@@ -212,54 +212,57 @@ struct mixin : Graph {
   public:
     // graph/shortest_path.hpp
     template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_without_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT) ;
+    inline void distances_without_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
 
     template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_without_cost(const node_type) const noexcept(NO_EXCEPT) ;
+    inline auto_holder<node_type,Cost> distances_without_cost(const node_type) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
     template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_with_01cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT) ;
+    inline void distances_with_01cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
 
     template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_with_01cost(const node_type) const noexcept(NO_EXCEPT) ;
+    inline auto_holder<node_type,Cost> distances_with_01cost(const node_type) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
     template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_with_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT) ;
+    inline void distances_with_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
 
     template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_with_cost(const node_type) const noexcept(NO_EXCEPT) ;
+    inline auto_holder<node_type,Cost> distances_with_cost(const node_type) const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
-    inline bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT) ;
-    inline bool sort_topologically() const noexcept(NO_EXCEPT) ;
+    inline bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);
+    inline bool sort_topologically() const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
-    template<class> inline bool sort_topologically_with_priority(vector<node_type> *const) const noexcept(NO_EXCEPT) ;
-    template<class> inline bool sort_topologically_with_priority() const noexcept(NO_EXCEPT) ;
+    template<class> inline bool sort_topologically_with_priority(vector<node_type> *const) const noexcept(NO_EXCEPT);
+    template<class> inline bool sort_topologically_with_priority() const noexcept(NO_EXCEPT);
 
     // graph/minimum_paph_cover.hpp
-    inline size_type minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT) ;
+    inline size_type minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
     template<class Cost = cost_type>
-    inline Cost minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT) ;
+    inline Cost minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
     template<class Cost = cost_type>
-    inline Cost maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT) ;
+    inline Cost maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
-    inline dsu components() const noexcept(NO_EXCEPT) ;
+    inline dsu components() const noexcept(NO_EXCEPT);
 
     // graph/parse_grid.hpp
     template<bool = false, class G, class U = char>
-    inline void parse_grid(const G&, U = '.') noexcept(NO_EXCEPT) ;
+    inline void parse_grid(const G&, U = '.') noexcept(NO_EXCEPT);
 
     // graph/manhattan_minimum_spanning_tree.hpp
-    template<class I, class J = I, class distance_type = cost_type, class = internal::size_t>
-    inline distance_type build_manhattan_mst(const I, const I, const J, const J) noexcept(NO_EXCEPT) ;
+    template<
+        std::input_iterator I0, std::input_iterator I1,
+        std::sentinel_for<I0> S0, std::sentinel_for<I1> S1
+    >
+    inline cost_type build_manhattan_mst(I0, S0, I1, S1) noexcept(NO_EXCEPT);
 };
 
 } // namespace graph_impl

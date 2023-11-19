@@ -21,7 +21,7 @@ inline R applied(R v, F func) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R>
-inline auto sorted(const R& v) noexcept(NO_EXCEPT) {
+inline auto sorted(R&& v) noexcept(NO_EXCEPT) {
     return applied(v, std::ranges::sort);
 }
 

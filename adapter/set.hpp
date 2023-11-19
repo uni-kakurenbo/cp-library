@@ -136,22 +136,22 @@ struct set_wrapper : Set {
 
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator<=(const V val, const set_wrapper& st) noexcept(NO_EXCEPT) {
+    friend inline set_wrapper operator<=(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
         return st.contains(val);
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator>=(const set_wrapper& st, const V val) noexcept(NO_EXCEPT) {
+    friend inline set_wrapper operator>=(const set_wrapper& st, const V&val) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator<(const V val, const set_wrapper& st) noexcept(NO_EXCEPT) {
+    friend inline set_wrapper operator<(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator>(const set_wrapper& st, const V val) noexcept(NO_EXCEPT) {
+    friend inline set_wrapper operator>(const set_wrapper& st, const V& val) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 

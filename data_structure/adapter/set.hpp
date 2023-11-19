@@ -51,7 +51,7 @@ struct set_adapter {
     set_adapter(const size_type sup) noexcept(NO_EXCEPT) : _data(sup) {};
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    set_adapter(const I first, const S last) noexcept(NO_EXCEPT) : _data(*std::ranges::max_element(first, last)+1) {
+    set_adapter(I first, S last) noexcept(NO_EXCEPT) : _data(*std::ranges::max_element(first, last)+1) {
         valarray<bool> bits(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
@@ -61,10 +61,10 @@ struct set_adapter {
     };
 
     template<std::ranges::input_range R>
-    set_adapter(const R& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
+    set_adapter(R&& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    inline auto& build_from_bits(const I first, const S last) noexcept(NO_EXCEPT) {
+    inline auto& build_from_bits(I first, S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->_data.size());
         }
@@ -73,7 +73,7 @@ struct set_adapter {
     };
 
     template<std::ranges::input_range R>
-    inline auto& build_from_bits(const R& range) noexcept(NO_EXCEPT) {
+    inline auto& build_from_bits(R&& range) noexcept(NO_EXCEPT) {
         return this->build_from_bits(ALL(range));
     }
 
@@ -146,7 +146,7 @@ struct multiset_adapter : protected set_adapter<Tree, Size> {
     multiset_adapter(const size_type sup) noexcept(NO_EXCEPT) : base(sup) {};
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    multiset_adapter(const I first, const S last) noexcept(NO_EXCEPT) : base(*std::ranges::max_element(first, last) + 1) {
+    multiset_adapter(I first, S last) noexcept(NO_EXCEPT) : base(*std::ranges::max_element(first, last) + 1) {
         vector<size_type> cnts(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
@@ -156,10 +156,10 @@ struct multiset_adapter : protected set_adapter<Tree, Size> {
     };
 
     template<std::ranges::input_range R>
-    multiset_adapter(const R& range) noexcept(NO_EXCEPT) : multiset_adapter(ALL(range)) {}
+    multiset_adapter(R&& range) noexcept(NO_EXCEPT) : multiset_adapter(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    inline auto& build_from_histogram(const I first, const S last) noexcept(NO_EXCEPT) {
+    inline auto& build_from_histogram(I first, S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->_data.size());
         }
@@ -168,7 +168,7 @@ struct multiset_adapter : protected set_adapter<Tree, Size> {
     };
 
     template<std::ranges::input_range R>
-    inline auto& build_from_histogram(const R& range) noexcept(NO_EXCEPT) {
+    inline auto& build_from_histogram(R&& range) noexcept(NO_EXCEPT) {
         return this->build_from_histogram(ALL(range));
     }
 

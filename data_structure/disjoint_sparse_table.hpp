@@ -109,14 +109,14 @@ struct core<Semigroup> : base<Semigroup> {
     }
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    core(const I first, const S last) noexcept(NO_EXCEPT)
+    core(I first, S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     {
         std::ranges::copy(first, last, this->_table.begin()->begin());
     }
 
     template<std::ranges::input_range R>
-    explicit core(const R& range) noexcept(NO_EXCEPT)
+    explicit core(R&& range) noexcept(NO_EXCEPT)
       : core(std::ranges::begin(range), std::ranges::end(range))
     {}
 

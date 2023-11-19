@@ -20,18 +20,21 @@ struct adjacent_difference : container {
   public:
     explicit adjacent_difference() noexcept(NO_EXCEPT) {}
 
-    template<class I, class Operator = std::minus<T>>
-    explicit adjacent_difference(const I first, const I last, const bool remove_first = true, const Operator op = std::minus<T>{}) noexcept(NO_EXCEPT) {
-        this->resize(std::distance(first, last));
+    template<
+        std::input_iterator I, std::sentinel_for<I> S,
+        class Operator = std::minus<T>
+    >
+    explicit adjacent_difference(I first, S last, const bool remove_first = true, const Operator op = std::minus<T>{}) noexcept(NO_EXCEPT) {
+        this->resize(std::ranges::distance(first, last));
         std::vector<T> diff(this->size());
-        std::adjacent_difference(first, last, begin(diff), op);
-        if(remove_first) diff.erase(begin(diff));
-        this->assign(std::begin(diff), std::end(diff));
+        std::adjacent_difference(first, last, std::ranges::begin(diff), op);
+        if(remove_first) diff.erase(std::ranges::begin(diff));
+        this->assign(std::ranges::begin(diff), std::ranges::end(diff));
     }
 };
 
-template<class I>
-explicit adjacent_difference(const I, const I) -> adjacent_difference<typename std::iterator_traits<I>::value_type>;
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit adjacent_difference(I, S) -> adjacent_difference<typename std::iterator_traits<I>::value_type>;
 
 
 } // namespace lib

@@ -15,13 +15,14 @@ namespace lib {
 template<class T, class container = dynamic_auto_holder<T,internal::size_t>>
 struct counter : container {
     explicit counter() noexcept(NO_EXCEPT) {}
-    template<class I> counter(const I first, const I last) noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    counter(I first, S last) noexcept(NO_EXCEPT) {
         for(auto itr=first; itr!=last; ++itr) ++(*this)[*itr];
     }
 };
 
-template<class I>
-explicit counter(const I, const I) -> counter<typename std::iterator_traits<I>::value_type>;
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit counter(I, S) -> counter<typename std::iterator_traits<I>::value_type>;
 
 
 } // namespace lib

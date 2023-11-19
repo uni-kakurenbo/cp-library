@@ -45,7 +45,7 @@ struct compressed : Container {
     }
 
     template<std::ranges::input_range R>
-    compressed(const R& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
+    compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
 
     inline size_type rank_sup() const { return static_cast<size_type>(this->values.size()); }
 
@@ -69,7 +69,7 @@ template<std::input_iterator I, std::sized_sentinel_for<I> S>
 explicit compressed(I, S) -> compressed<typename std::iterator_traits<I>::value_type>;
 
 template<std::ranges::input_range R>
-explicit compressed(const R&) -> compressed<typename std::ranges::range_value_t<R>>;
+explicit compressed(R&&) -> compressed<typename std::ranges::range_value_t<R>>;
 
 
 } // namespace lib

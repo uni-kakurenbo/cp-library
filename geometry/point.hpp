@@ -196,7 +196,7 @@ inline constexpr positional_relation relation(const point<T>& p, const point<T>&
 
 
 template<bool ALLOW_LINE, std::ranges::range R>
-inline bool is_convex(const R range) noexcept(NO_EXCEPT) {
+inline bool is_convex(R&& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::size(range);
 
     REP(i, n) {
@@ -213,14 +213,14 @@ inline bool is_convex(const R range) noexcept(NO_EXCEPT) {
     return true;
 }
 
-template<class I>
-inline bool is_convex(const I first, const I last) noexcept(NO_EXCEPT) { return is_convex<true>(first, last); }
+template<std::input_iterator I, std::sentinel_for<I> S>
+inline bool is_convex(I first, S last) noexcept(NO_EXCEPT) { return is_convex<true>(first, last); }
 
-template<bool ALLOW_LINE, class V>
-inline bool is_convex(const V& v) noexcept(NO_EXCEPT) { return is_convex<ALLOW_LINE>(std::begin(v), std::end(v)); }
+template<bool ALLOW_LINE, std::ranges::input_range R>
+inline bool is_convex(R&& range) noexcept(NO_EXCEPT) { return is_convex<ALLOW_LINE>(std::ranges::begin(range), std::ranges::end(range)); }
 
-template<class V>
-inline bool is_convex(const V& v) noexcept(NO_EXCEPT) { return is_convex<true>(std::begin(v), std::end(v)); }
+template<std::ranges::input_range R>
+inline bool is_convex(R&& range) noexcept(NO_EXCEPT) { return is_convex<true>(std::ranges::begin(range), std::ranges::end(range)); }
 
 
 } // namespace lib

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iterator>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 
@@ -15,8 +16,9 @@
 namespace lib {
 
 
-template<bool LEAVE_MARGIN, bool ALLOW_LINE, class I, class P = typename std::iterator_traits<I>::value_type>
-vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) {
+template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::input_iterator I, std::sentinel_for<I> S>
+vector<std::iter_value_t<I>> convex_hull(I first, S last) noexcept(NO_EXCEPT) {
+    using P = std::iter_value_t<I>;
     using size_type = internal::size_t;
 
     auto remove = [&](const P& p, const P& q, const P& r) -> bool {
@@ -49,15 +51,15 @@ vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) {
     return res;
 }
 
-template<class I, class P = typename std::iterator_traits<I>::value_type>
-inline vector<P> convex_hull(const I first, const I last) noexcept(NO_EXCEPT) { return convex_hull<false,true>(first, last); }
+template<std::input_iterator I, std::sentinel_for<I> S>
+inline auto convex_hull(I first, S last) noexcept(NO_EXCEPT) { return convex_hull<false,true>(first, last); }
 
 
-template<bool LEAVE_MARGIN, bool ALLOW_LINE, class V>
-inline auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN,ALLOW_LINE>(std::begin(v), std::end(v)); }
+template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::ranges::input_range V>
+inline auto convex_hull(V&& v) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN,ALLOW_LINE>(std::begin(v), std::end(v)); }
 
-template<class V>
-inline auto convex_hull(const V& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
+template<std::ranges::input_range V>
+inline auto convex_hull(V&& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
 
 
 } // namespace lib

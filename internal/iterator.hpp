@@ -107,8 +107,8 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     inline bool operator!=(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return not (*this->_derived() == other); }
 };
 
-template<class V, class I>
-inline auto to_non_const_iterator(V v, const I itr) noexcept(NO_EXCEPT) {
+template<class V, std::input_or_output_iterator I>
+inline auto to_non_const_iterator(V v, I itr) noexcept(NO_EXCEPT) {
     return std::ranges::next(std::ranges::begin(v), std::ranges::distance(std::ranges::cbegin(v), itr));
 }
 

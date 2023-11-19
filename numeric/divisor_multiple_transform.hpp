@@ -17,24 +17,24 @@ namespace divisor_transform {
 
 using size_type = internal::size_t;
 
-template<class I>
-auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
     const auto n = static_cast<size_type>(std::distance(first, last));
     ITR(p, lib::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) first[k*p-1] += first[k-1];
     }
 }
 
-template<class I>
-auto mobius(const I first, const I last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
     const auto n = static_cast<size_type>(std::distance(first, last));
     ITR(p, lib::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) first[k*p-1] -= first[k-1];
     }
 }
 
-template<class I>
-auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
     for(auto itr1 = last; itr1-- != first; ) {
         for(auto itr2 = first; itr2 != last; ++itr2) {
             if(itr1->first == itr2->first) break;
@@ -43,8 +43,8 @@ auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->fi
     }
 }
 
-template<class I>
-auto mobius(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
     for(auto itr2 = first; itr2 != last; ++itr2) {
         for(auto itr1 = last; (itr1--) != first; ) {
             if(itr1->first == itr2->first) break;
@@ -62,24 +62,24 @@ namespace multiple_transform  {
 
 using size_type = internal::size_t;
 
-template<class I>
-auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
     const auto n = static_cast<size_type>(std::distance(first, last));
     ITR(p, lib::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) first[k-1] += first[k*p-1];
     }
 }
 
-template<class I>
-auto mobius(const I first, const I last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
     const auto n = static_cast<size_type>(std::distance(first, last));
     ITR(p, lib::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) first[k-1] -= first[k*p-1];
     }
 }
 
-template<class I>
-auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
     for(auto itr2 = first; itr2 != last; ++itr2) {
         for(auto itr1 = last; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second += itr1->second;
@@ -87,8 +87,8 @@ auto zeta(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->fi
     }
 }
 
-template<class I>
-auto mobius(const I first, const I last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
+template<std::input_iterator I, std::sentinel_for<I> S>
+auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
     for(auto itr2 = last; itr2-- != first; ) {
         for(auto itr1 = last; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second -= itr1->second;

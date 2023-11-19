@@ -141,19 +141,19 @@ struct core<Monoid> : base<Monoid> {
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    explicit core(const I first, const S last) noexcept(NO_EXCEPT)
+    explicit core(I first, S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
     template<std::ranges::input_range R>
-    explicit core(const R& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
+    explicit core(R&& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
 
 
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT){ return this->assign(ALL(init_list)); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    inline auto& assign(const I first, const S last) noexcept(NO_EXCEPT) {
+    inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->size());
         }
@@ -163,7 +163,7 @@ struct core<Monoid> : base<Monoid> {
     }
 
     template<std::ranges::input_range R>
-    inline auto& assign(const R& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
+    inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         std::fill(this->data(), this->data() + this->size(), v);

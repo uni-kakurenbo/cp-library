@@ -207,8 +207,8 @@ struct grid_core : container, virtual grid_impl::interface<T> {
     }
 
 
-    template<class I>
-    inline auto vicinities(const size_type i, const size_type j, const I dirs_first, const I dirs_last) const noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto vicinities(const size_type i, const size_type j, I dirs_first, S dirs_last) const noexcept(NO_EXCEPT) {
         std::vector<std::pair<size_type,size_type>> res;
         REP(itr, dirs_first, dirs_last) {
             const size_type ii = i + itr->first, jj = j + itr->second;

@@ -24,8 +24,8 @@ struct lis : container {
 
     explicit lis() noexcept(NO_EXCEPT) {}
 
-    template<class I>
-    explicit lis(const I first, const I last) noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    explicit lis(I first, S last) noexcept(NO_EXCEPT) {
         std::vector<size_type> positions(std::distance(first, last), -1);
 
         size_type pos = 0;

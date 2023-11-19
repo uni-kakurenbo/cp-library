@@ -33,15 +33,18 @@ struct accumulation : container {
 
     template<std::ranges::input_range R, class Operator = std::plus<T>>
         requires std::regular_invocable<Operator, T, T>
-    accumulation(const R& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
+    accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::ranges::size(range) + 1);
         std::exclusive_scan(ALL(range), std::begin(*this), head, op);
         const auto back = std::prev(std::end(*this));
         *back = op(*std::prev(back), *std::prev(std::ranges::end(range)));
     }
 
-    template<class I, class Operator = std::plus<T>>
-    accumulation(I first, I last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
+    template<
+        std::input_iterator I, std::sentinel_for<I> S,
+        class Operator = std::plus<T>
+    >
+    accumulation(I first, S last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::distance(first, last) + 1);
         std::exclusive_scan(first, last, std::begin(*this), head, op);
         const auto back = std::prev(std::end(*this));
@@ -57,11 +60,11 @@ struct accumulation : container {
     }
 };
 
-template<class I>
-explicit accumulation(const I, const I) -> accumulation<typename std::iterator_traits<I>::value_type>;
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit accumulation(I, S) -> accumulation<typename std::iterator_traits<I>::value_type>;
 
 template<std::ranges::input_range R>
-explicit accumulation(const R&) -> accumulation<typename std::ranges::range_value_t<R>>;
+explicit accumulation(R&&) -> accumulation<typename std::ranges::range_value_t<R>>;
 
 
 template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>
@@ -78,8 +81,8 @@ struct accumulation_2d : container {
   public:
     explicit accumulation_2d() noexcept(NO_EXCEPT) {}
 
-    template<class I>
-    explicit accumulation_2d(const I first, const I last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    explicit accumulation_2d(I first, S last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
         const size_type h = static_cast<size_type>(std::distance(first, last));
         const size_type w = static_cast<size_type>(std::distance(std::begin(*first), std::end(*first)));
         {
@@ -112,14 +115,14 @@ struct accumulation_2d : container {
     }
 };
 
-template<class I>
-explicit accumulation_2d(const I, const I) ->
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit accumulation_2d(I, S) ->
     accumulation_2d<
         typename std::iterator_traits<typename std::ranges::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;
 
-template<class I>
-explicit accumulation_2d(const I, const I) ->
+template<std::input_iterator I, std::sentinel_for<I> S>
+explicit accumulation_2d(I, S) ->
     accumulation_2d<
         typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;

@@ -36,7 +36,7 @@ namespace lib {
 
 
 template<std::input_iterator I, std::sentinel_for<I> S>
-std::string join(const I first, S last, const char* sep = "") noexcept(NO_EXCEPT) {
+std::string join(I first, S last, const char* sep = "") noexcept(NO_EXCEPT) {
     if(first == last) return "";
     std::advance(last, -1);
     std::ostringstream res;
@@ -46,7 +46,7 @@ std::string join(const I first, S last, const char* sep = "") noexcept(NO_EXCEPT
 }
 
 template<std::ranges::input_range R>
-std::string join(const R& range, const char* sep = "") noexcept(NO_EXCEPT) {
+std::string join(R&& range, const char* sep = "") noexcept(NO_EXCEPT) {
     return join(ALL(range), sep);
 }
 
@@ -55,7 +55,7 @@ template<std::ranges::input_range R0, std::ranges::input_range R1>
     requires std::constructible_from<
         R0, std::common_type_t<std::ranges::range_size_t<R0>,std::ranges::range_size_t<R1>>
     >
-R0 concat(const R0& r0, const R1& r1) noexcept(NO_EXCEPT) {
+R0 concat(R0&& r0, R1&& r1) noexcept(NO_EXCEPT) {
     R0 res(std::ranges::size(r0) + std::ranges::size(r1));
     std::ranges::copy(r0, std::ranges::begin(res));
     std::ranges::copy(r1, std::ranges::next(std::ranges::begin(res), std::ranges::size(r0)));
@@ -63,20 +63,21 @@ R0 concat(const R0& r0, const R1& r1) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R, std::ranges::input_range... Rs>
-R concat(const R& range, const Rs&... tails) noexcept(NO_EXCEPT) {
+R concat(R&& range, Rs&&... tails) noexcept(NO_EXCEPT) {
     return lib::concat(range, lib::concat(tails...));
 }
 
 
 template<class I, class T = std::iter_value_t<I>>
     requires std::sentinel_for<I, I>
-T sum(const I first, const I last, const T& base = {}) noexcept(NO_EXCEPT) {
+T sum(I first, I last, const T& base = {}) noexcept(NO_EXCEPT) {
     return std::accumulate(first, last, base);
 }
 
-template<std::ranges::common_range R, class T = std::ranges::range_value_t<R>>
-auto sum(const R& range, T base = {}) noexcept(NO_EXCEPT) {
-    return sum(ALL(range), base);
+template<std::ranges::input_range R, class T = std::ranges::range_value_t<R>>
+auto sum(R&& range, T base = {}) noexcept(NO_EXCEPT) {
+    auto&& r = range | std::views::common;
+    return sum(ALL(r), base);
 }
 
 template<std::ranges::input_range R>
@@ -96,7 +97,7 @@ template<
     std::sentinel_for<I> S,
     class T = std::iter_value_t<I>
 >
-T mex(const I first, const S last, const T& base = {}) noexcept(NO_EXCEPT) {
+T mex(I first, S last, const T& base = {}) noexcept(NO_EXCEPT) {
     std::vector<T> val(first, last);
     std::ranges::sort(val);
     val.erase(std::ranges::unique(ALL(val)), val.end());
@@ -147,28 +148,28 @@ inline constexpr auto max(I first, I last) noexcept(NO_EXCEPT) {
 }
 
 
-template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
-auto min(const R& range) noexcept(NO_EXCEPT) {
+template<std::ranges::input_range R>
+auto min(R&& range) noexcept(NO_EXCEPT) {
     return std::valarray(ALL(range)).min();
 }
 
-template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
-auto max(const R& range) noexcept(NO_EXCEPT) {
+template<std::ranges::input_range R>
+auto max(R&& range) noexcept(NO_EXCEPT) {
     return std::valarray(ALL(range)).max();
 }
 
-template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
-auto mex(const R& range, const T& base) noexcept(NO_EXCEPT) {
+template<std::ranges::input_range R, class T = std::ranges::range_value_t<R>>
+auto mex(R&& range, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(range), base);
 }
 
-template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
-auto gcd(const R& range) noexcept(NO_EXCEPT) {
+template<std::ranges::input_range R>
+auto gcd(R&& range) noexcept(NO_EXCEPT) {
     return gcd(ALL(range));
 }
 
-template<std::ranges::range R, class T = std::ranges::range_value_t<R>>
-auto lcm(const R& range) noexcept(NO_EXCEPT) {
+template<std::ranges::input_range R>
+auto lcm(R&& range) noexcept(NO_EXCEPT) {
     return lcm(ALL(range));
 }
 
@@ -177,7 +178,7 @@ template<class R, std::input_iterator I, std::sentinel_for<I> S, class D>
         requires (R r, I itr) {
             r.emplace_back(itr, itr);
         }
-auto split(const I first, const S last, const D& delim = ' ') noexcept(NO_EXCEPT) {
+auto split(I first, S last, const D& delim = ' ') noexcept(NO_EXCEPT) {
     R res;
 
     for(auto itr=first, fnd=first; ; itr=std::next(fnd)) {
@@ -190,11 +191,11 @@ auto split(const I first, const S last, const D& delim = ' ') noexcept(NO_EXCEPT
 }
 
 template<class R, std::ranges::input_range V, class D>
-    requires (!internal::iterable<D>)
-auto split(const V& v, const D& d) noexcept(NO_EXCEPT) { return split<R>(ALL(v), d); }
+    requires (!std::ranges::range<D>)
+auto split(V&& v, D&& d) noexcept(NO_EXCEPT) { return split<R>(ALL(v), d); }
 
-template<class R, std::ranges::input_range V, internal::iterable Ds>
-auto split(const V& v, const Ds& ds) noexcept(NO_EXCEPT) {
+template<class R, std::ranges::input_range V, std::ranges::range Ds>
+auto split(V&& v, Ds&& ds) noexcept(NO_EXCEPT) {
     R res = { v };
     ITR(d, ds) {
         R tmp;
@@ -205,13 +206,13 @@ auto split(const V& v, const Ds& ds) noexcept(NO_EXCEPT) {
 }
 
 template<class R, std::ranges::input_range V, class T>
-auto split(const V& v, const std::initializer_list<T> ds) noexcept(NO_EXCEPT){
+auto split(V&& v, const std::initializer_list<T> ds) noexcept(NO_EXCEPT){
     return split<R,V>(v, std::vector<T>(ALL(ds)));
 }
 
 
 template<std::ranges::sized_range R>
-auto find(const R source,  const R query) noexcept(NO_EXCEPT) {
+auto find(R source,  R query) noexcept(NO_EXCEPT) {
     using value_type = std::ranges::range_value_t<R>;
 
     const auto joined = views::concat(source, query);
@@ -225,7 +226,7 @@ auto find(const R source,  const R query) noexcept(NO_EXCEPT) {
     {
         auto itr = std::ranges::begin(source);
         REP(i, query_size, z_arr.size()) {
-            if(z_arr[i] >= query_size) res.emplace_back(itr);
+            if(z_arr[i] >= query_size) res.push_back(internal::to_non_const_iterator(source, itr));
             ++itr;
         }
     }
@@ -234,7 +235,7 @@ auto find(const R source,  const R query) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R, replacement_policy POLICY = replacement_policy::insert_sync>
-auto replace(const R& source, const R& from, const R& to) noexcept(NO_EXCEPT) {
+auto replace(R&& source, R&& from, R&& to) noexcept(NO_EXCEPT) {
     R res;
 
     if constexpr(POLICY == replacement_policy::insert_sync) {
@@ -269,7 +270,7 @@ auto replace(const R& source, const R& from, const R& to) noexcept(NO_EXCEPT) {
 }
 
 template<alignment ALIGNMENT, internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto align(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     if(std::ssize(source) >= size) return source;
 
     if(ALIGNMENT == alignment::left) {
@@ -298,17 +299,17 @@ auto align(const R& source, const internal::size_t size, const T& v = {}) noexce
 
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto ljust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto ljust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     return align<alignment::left>(source, size, v);
 }
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto cjust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto cjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     return align<alignment::center>(source, size, v);
 }
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto rjust(const R& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto rjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     return align<alignment::right>(source, size, v);
 }
 

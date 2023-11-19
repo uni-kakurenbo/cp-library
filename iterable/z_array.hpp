@@ -14,8 +14,8 @@ template<class SizeType = internal::size_t, class Container = valarray<SizeType>
 struct z_array : Container {
     using size_type = SizeType;
 
-    template<class I>
-    explicit z_array(const I first, const I last) : Container(std::distance(first, last), {}) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    explicit z_array(I first, S last) : Container(std::distance(first, last), {}) {
         const size_type n = static_cast<size_type>(std::distance(first, last));
         if(n == 0) return;
         for(size_type i=1, j=0; i<n; ++i) {
