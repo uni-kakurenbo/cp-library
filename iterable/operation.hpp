@@ -133,31 +133,6 @@ inline constexpr auto lcm(I first, S last) noexcept(NO_EXCEPT) {
     return res;
 }
 
-template<class I, class T = typename std::iterator_traits<I>::value_type>
-inline constexpr auto min(I first, I last) noexcept(NO_EXCEPT) {
-    T res = std::numeric_limits<T>::max();
-    for(auto itr=first; itr!=last; ++itr) res = std::min(res, *itr);
-    return res;
-}
-
-template<class I, class T = typename std::iterator_traits<I>::value_type>
-inline constexpr auto max(I first, I last) noexcept(NO_EXCEPT) {
-    T res = std::numeric_limits<T>::lowest();
-    for(auto itr=first; itr!=last; ++itr) res = std::max(res, *itr);
-    return res;
-}
-
-
-template<std::ranges::input_range R>
-auto min(R&& range) noexcept(NO_EXCEPT) {
-    return std::valarray(ALL(range)).min();
-}
-
-template<std::ranges::input_range R>
-auto max(R&& range) noexcept(NO_EXCEPT) {
-    return std::valarray(ALL(range)).max();
-}
-
 template<std::ranges::input_range R, class T = std::ranges::range_value_t<R>>
 auto mex(R&& range, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(range), base);
