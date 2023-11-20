@@ -15,6 +15,15 @@ namespace internal {
 
 template<class Base>
 struct extended_container : Base {
+  private:
+    inline Base* _base() noexcept(NO_EXCEPT) {
+        return static_cast<Base*>(this);
+    }
+    inline const Base* _base() const noexcept(NO_EXCEPT) {
+        return static_cast<const Base*>(this);
+    }
+
+  public:
     using Base::Base;
 
     extended_container(const Base& base) : Base(base) {}
@@ -25,49 +34,49 @@ struct extended_container : Base {
     // inline auto ssize() const noexcept(NO_EXCEPT) { return to_signed(this->size()); }
 
     inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
-        std::ranges::fill(*this, v);
+        std::ranges::fill(*this->_base(), v);
         return *this;
     }
 
     inline auto& swap(const size_type i, const size_type j) noexcept(NO_EXCEPT) {
-        std::swap(this->operator[](i), this->operator[](j));
+        std::swap(this->_base()->operator[](i), this->_base()->operator[](j));
         return *this;
     }
 
     inline auto& sort() noexcept(NO_EXCEPT) {
-        std::ranges::sort(*this);
+        std::ranges::sort(*this->_base());
         return *this;
     }
 
     template<class F>
     inline auto& sort(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::sort(*this, f);
+        std::ranges::sort(*this->_base(), f);
         return *this;
     }
 
     inline auto& stable_sort() noexcept(NO_EXCEPT) {
-        std::ranges::stable_sort(*this);
+        std::ranges::stable_sort(*this->_base());
         return *this;
     }
 
     template<class F>
     inline auto& stable_sort(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::stable_sort(*this, f);
+        std::ranges::stable_sort(*this->_base(), f);
         return *this;
     }
 
     inline auto& reverse() noexcept(NO_EXCEPT) {
-        std::ranges::reverse(*this);
+        std::ranges::reverse(*this->_base());
         return *this;
     }
 
     inline auto count(const value_type& v) const noexcept(NO_EXCEPT) {
-        return std::ranges::count(*this, v);
+        return std::ranges::count(*this->_base(), v);
     }
 
     template<class F>
     inline auto count_if(F& f) const noexcept(NO_EXCEPT) {
-        return std::ranges::count_if(*this, f);
+        return std::ranges::count_if(*this->_base(), f);
     }
 
     inline auto& resize(const size_type k) noexcept(NO_EXCEPT) {
@@ -81,30 +90,30 @@ struct extended_container : Base {
 
     template<class F>
     inline auto& shuffle(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::shuffle(*this, f);
+        std::ranges::shuffle(*this->_base(), f);
         return *this;
     }
 
     inline auto& unique() noexcept(NO_EXCEPT) {
-        std::ranges::sort(*this);
-        const auto rest = std::ranges::unique(*this);
+        std::ranges::sort(*this->_base());
+        const auto rest = std::ranges::unique(*this->_base());
         this->erase(ALL(rest));
         return *this;
     }
 
     template<class T>
     inline auto binary_search(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::binary_search(*this, v);
+        return std::ranges::binary_search(*this->_base(), v);
     }
 
     template<class T>
     inline auto lower_bound(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::lower_bound(*this, v);
+        return std::ranges::lower_bound(*this->_base(), v);
     }
 
     template<class T>
     inline auto upper_bound(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::upper_bound(*this, v);
+        return std::ranges::upper_bound(*this->_base(), v);
     }
 };
 
