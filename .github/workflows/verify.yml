@@ -83,11 +83,11 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        parallel=2
-        if [ "${CACHE_HIT}" != 'true' ]; then
-          parallel=1
-          echo '{}' > .verify-helper/timestamps.remote.json
-        fi
+        parallel=1
+        # if [ "${CACHE_HIT}" != 'true' ]; then
+        #   parallel=1
+        #   echo '{}' > .verify-helper/timestamps.remote.json
+        # fi
         echo "Parallel execution: ${parallel}"
 
         function run() {
