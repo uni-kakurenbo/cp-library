@@ -13,3 +13,5 @@
 
 #include "adapter/multi_container.hpp"
 #include "adapter/range_extractor.hpp"
+
+#include "adapter/virtual_map.hpp"

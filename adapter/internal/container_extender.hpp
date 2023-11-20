@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <ranges>
 
 #include "internal/dev_env.hpp"
 
