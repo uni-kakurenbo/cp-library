@@ -6,7 +6,8 @@
 #include <utility>
 #include <ranges>
 
-#include "internal/types.hpp"
+
+#include "snippet/aliases.hpp"
 #include "internal/types.hpp"
 
 #include "adapter/vector.hpp"
@@ -16,10 +17,10 @@ namespace lib {
 
 template<class T, class container = vector<std::pair<T,internal::size_t>>>
 struct run_length : container {
-    explicit run_length() noexcept(NO_EXCEPT) {}
+    run_length() noexcept(NO_EXCEPT) = default;
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    explicit run_length(I first, S last) noexcept(NO_EXCEPT) {
+    run_length(I first, S last) noexcept(NO_EXCEPT) {
         this->clear();
         typename container::value_type::second_type cnt = 0;
         for(I itr=first, prev=itr; itr!=last; ++itr) {
@@ -29,10 +30,16 @@ struct run_length : container {
         }
         this->emplace_back(*std::ranges::prev(last), cnt);
     }
+
+    template<std::ranges::input_range R>
+    explicit run_length(R&& range) : run_length(ALL(range)) {};
 };
 
 template<std::input_iterator I, std::sentinel_for<I> S>
-explicit run_length(I, S) -> run_length<typename std::iterator_traits<I>::value_type>;
+run_length(I, S) -> run_length<std::iter_value_t<I>>;
+
+template<std::ranges::range R>
+explicit run_length(R&& range) -> run_length<std::ranges::range_value_t<R>>;
 
 
 } // namespace lib
