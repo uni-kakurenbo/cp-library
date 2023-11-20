@@ -28,6 +28,7 @@
 #include "numeric/fast_prime.hpp"
 #include "numeric/prime_enumerator.hpp"
 #include "numeric/prime_sieve.hpp"
+#include "numeric/factorial.hpp"
 
 #include "utility/string.hpp"
 #include "utility/applier.hpp"

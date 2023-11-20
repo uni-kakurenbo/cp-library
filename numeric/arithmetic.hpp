@@ -70,15 +70,6 @@ inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
 }
 
 
-template<class T, class R = T>
-inline constexpr R factorial(const T& n) noexcept(NO_EXCEPT) {
-    assert(n >= 0);
-    R ans = 1;
-    FOR(k, 1, n) ans *= k;
-    return ans;
-}
-
-
 template<class T, class U>
     requires lib::internal::is_modint_v<T>
 inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }

@@ -8,6 +8,7 @@
 #include "numeric/divisor_multiple_transform.hpp"
 #include "numeric/divisors.hpp"
 #include "numeric/extremum_seeker.hpp"
+#include "numeric/factorial.hpp"
 #include "numeric/fast_prime.hpp"
 #include "numeric/float.hpp"
 #include "numeric/hilbert_order.hpp"
@@ -21,4 +22,3 @@
 #include "numeric/prime_enumerator.hpp"
 #include "numeric/prime_sieve.hpp"
 #include "numeric/quotient_enumerator.hpp"
-#include "adapter/virtual_map.hpp"
