@@ -47,7 +47,6 @@ jobs:
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
-        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         # oj-verify stats
 
