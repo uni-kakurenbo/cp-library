@@ -73,7 +73,16 @@ using lib::chmin;
 using lib::chmax;
 
 using lib::matrix;
+
+using lib::set;
+using lib::multiset;
+using lib::unordered_set;
 using lib::unordered_multiset;
+
+using lib::map;
+using lib::multimap;
+using lib::unordered_map;
+using lib::unordered_multimap;
 
 using lib::valarray;
 using lib::vector;
