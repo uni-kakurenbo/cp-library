@@ -16,7 +16,6 @@
 #include "random/generator.hpp"
 #include "random/xorshift.hpp"
 
-#include "utility/applier.hpp"
 #include "utility/functional.hpp"
 #include "utility/restrictor.hpp"
 #include "utility/string.hpp"

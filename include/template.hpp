@@ -31,7 +31,6 @@
 #include "numeric/factorial.hpp"
 
 #include "utility/string.hpp"
-#include "utility/applier.hpp"
 #include "utility/functional.hpp"
 #include "utility/restrictor.hpp"
 

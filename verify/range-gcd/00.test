@@ -13,7 +13,6 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "utility/applier.hpp"
 #include "data_structure/disjoint_sparse_table.hpp"
 #include "action/range_gcd.hpp"
 

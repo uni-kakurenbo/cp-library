@@ -61,9 +61,6 @@ using lib::spair;
 
 using lib::multi_container;
 
-using lib::minimum;
-using lib::maximum;
-
 using lib::modint998244353;
 using lib::modint1000000007;
 using lib::modint;

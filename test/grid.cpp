@@ -17,7 +17,6 @@ output_adapter _print;
 
 #include "template/standard.hpp"
 
-#include "utility/applier.hpp"
 #include "structure/grid.hpp"
 
 signed main() {
