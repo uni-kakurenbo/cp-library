@@ -50,8 +50,6 @@ jobs:
       run: |
         # oj-verify stats
 
-        echo "${{ github.workflow }}-${{ github.ref }}"
-
         TEST_FILES=$(
           find verify -type f -name *.test.cpp | \
           sort | \
@@ -63,7 +61,8 @@ jobs:
                 }
               }' \
           )
-        echo ${TEST_FILES} >> .verify-helper/targets.txt
+
+        echo ${TEST_FILES} > .verify-helper/targets.txt
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
