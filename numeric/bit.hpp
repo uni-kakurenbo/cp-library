@@ -6,19 +6,20 @@
 #include <type_traits>
 #include <cstdint>
 #include <limits>
+#include <concepts>
+
 
 #include "internal/dev_env.hpp"
+
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
 
-#define LIB_STATUC_ASSERT_UNSIGNED(T) static_assert(std::is_unsigned_v<T>, "only unsigned type is supported")
 
-
-template<class T>
-__attribute__((target("bmi,bmi2,popcnt"))) inline constexpr int popcount(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
-
+template<std::unsigned_integral T>
+__attribute__((target("bmi,bmi2,popcnt")))
+inline constexpr int popcount(const T v) noexcept(NO_EXCEPT) {
     using u = unsigned int;
     using ul = unsigned long;
     using ull = unsigned long long;
@@ -44,10 +45,9 @@ __attribute__((target("bmi,bmi2,popcnt"))) inline constexpr int popcount(const T
     }
 }
 
-template<class T>
-__attribute__((target("bmi,bmi2,lzcnt"))) inline constexpr int countl_zero(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
-
+template<std::unsigned_integral T>
+__attribute__((target("bmi,bmi2,lzcnt")))
+inline constexpr int countl_zero(const T v) noexcept(NO_EXCEPT) {
     using u = unsigned int;
     using ul = unsigned long;
     using ull = unsigned long long;
@@ -75,23 +75,19 @@ __attribute__((target("bmi,bmi2,lzcnt"))) inline constexpr int countl_zero(const
     }
 }
 
-template<class T>
+template<std::unsigned_integral T>
 inline constexpr int bit_width(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
     return std::numeric_limits<T>::digits - countl_zero(v);
 }
 
-template<class T>
+template<std::unsigned_integral T>
 inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
     return bit_width(v) - 1;
 }
 
-template<class T>
+template<std::unsigned_integral T>
 __attribute__((target("bmi,bmi2,lzcnt")))
 inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
-
     using u = unsigned int;
     using ul = unsigned long;
     using ull = unsigned long long;
@@ -118,21 +114,21 @@ inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
     }
 }
 
-template<class T>
+template<std::unsigned_integral T>
 inline constexpr int countr_zero(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
     if(v == 0) return std::numeric_limits<T>::digits;
     return lowest_bit_pos(v);
 }
 
-template<class T> constexpr int countl_one(const T x) { return countl_zero<T>(~x); }
+template<std::unsigned_integral T>
+constexpr int countl_one(const T x) { return countl_zero<T>(~x); }
 
-template<class T> constexpr int countr_one(const T x) { return countr_zero<T>(~x); }
+template<std::unsigned_integral T>
+constexpr int countr_one(const T x) { return countr_zero<T>(~x); }
 
 
-template<class T>
+template<std::unsigned_integral T>
 inline constexpr T bit_ceil(const T v) noexcept(NO_EXCEPT) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
     if(v <= 1U) return 1;
     if constexpr(std::is_same_v<T,decltype(+v)>) return T{1} << bit_width<T>(v - 1);
     else {
@@ -141,11 +137,12 @@ inline constexpr T bit_ceil(const T v) noexcept(NO_EXCEPT) {
     }
 }
 
-template<class T>
-__attribute__((target("bmi2"))) inline constexpr T clear_higher_bits(const T v, const T p) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+__attribute__((target("bmi2")))
+inline constexpr T clear_higher_bits(const T v, const T p) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
     assert(p < DIGITS);
+
     if constexpr(DIGITS <= 32) return _bzhi_u64(v, p);
     if constexpr(DIGITS <= 64) return _bzhi_u64(v, p);
     else {
@@ -161,34 +158,35 @@ __attribute__((target("bmi2"))) inline constexpr T clear_higher_bits(const T v, 
     }
 }
 
-template<class T> constexpr bool has_single_bit(const T x) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+constexpr bool has_single_bit(const T x) {
     return (x != 0) and (x & (x - 1)) == 0;
 }
 
-template<class T> constexpr T shiftl(const T, const int);
-template<class T> constexpr T shiftr(const T, const int);
+template<std::unsigned_integral T> constexpr T shiftl(const T, const int);
+template<std::unsigned_integral T> constexpr T shiftr(const T, const int);
 
-template<class T> constexpr T shiftl(const T x, const int n) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+constexpr T shiftl(const T x, const int n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
     if(n < 0) return shiftr(x, -n);
     if(n >= DIGITS) return 0;
     return x << n;
 }
 
-template<class T> constexpr T shiftr(const T x, const int n) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+constexpr T shiftr(const T x, const int n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
     if(n < 0) return shiftl(x, -n);
     if(n >= DIGITS) return 0;
     return x >> n;
 }
 
-template<class T> constexpr T rotl(const T x, const int n) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+constexpr T rotl(const T x, const int n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    constexpr unsigned U_DIGITS = to_unsigned(DIGITS);
+
     if constexpr(has_single_bit(U_DIGITS)) {
         const unsigned r = static_cast<unsigned>(n);
         return (x << (r % U_DIGITS)) | (x >> ((-r) % U_DIGITS));
@@ -199,10 +197,11 @@ template<class T> constexpr T rotl(const T x, const int n) {
     return (x >> (-r)) | (x << ((DIGITS + r) % DIGITS)); // rotr
 }
 
-template<class T> constexpr T rotr(const T x, const int n) {
-    LIB_STATUC_ASSERT_UNSIGNED(T);
+template<std::unsigned_integral T>
+constexpr T rotr(const T x, const int n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    constexpr unsigned U_DIGITS = static_cast<unsigned>(DIGITS);
+    constexpr unsigned U_DIGITS = to_unsigned(DIGITS);
+
     if constexpr(has_single_bit(U_DIGITS)) {
         const unsigned r = static_cast<unsigned>(n);
         return (x >> (r % U_DIGITS)) | (x << ((-r) % U_DIGITS)); // rotl
@@ -213,6 +212,11 @@ template<class T> constexpr T rotr(const T x, const int n) {
     return (x << (-r)) | (x >> ((DIGITS + r) % DIGITS));
 }
 
-#undef LIB_STATUC_ASSERT_UNSIGNED
+
+template<std::unsigned_integral T>
+constexpr T bit(const T x, const int p) {
+    return shiftr(x, p) & T{1};
+}
+
 
 } // namespace lib

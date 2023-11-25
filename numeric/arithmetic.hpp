@@ -26,11 +26,36 @@
 
 namespace lib {
 
+template<class T>
+inline constexpr T div_floor(const T& x, const T& d) noexcept(NO_EXCEPT) {
+    if constexpr(std::is_integral_v<T>) {
+        return x / d;
+    }
+    else {
+        return std::floor(x / d);
+    }
+}
 
 template<class T>
 inline constexpr T div_ceil(const T& x, const T& d) noexcept(NO_EXCEPT) {
-    return x / d + static_cast<T>(x % d);;
+    if constexpr(std::is_integral_v<T>) {
+        return x / d + static_cast<T>(x % d);;
+    }
+    else {
+        return std::ceil(x / d);
+    }
 }
+
+template<class T>
+inline constexpr T div_round(const T& x, const T& d) noexcept(NO_EXCEPT) {
+    if constexpr(std::is_integral_v<T>) {
+        return div_round<ld>(x, d);
+    }
+    else {
+        return std::round(x / d);
+    }
+}
+
 
 template<class T>
 inline constexpr std::make_signed_t<T> to_signed(const T& x) noexcept(NO_EXCEPT) {

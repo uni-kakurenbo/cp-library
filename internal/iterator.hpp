@@ -117,16 +117,16 @@ namespace iterator_impl {
 
 
 template<class... Tags>
-using is_all_random_access_iterator = are_base_of<std::random_access_iterator_tag,Tags...>;
+using is_all_random_access_iterator = is_base_of_all<std::random_access_iterator_tag,Tags...>;
 
 template<class... Tags>
-using is_all_bidirectional_iterator = are_base_of<std::bidirectional_iterator_tag,Tags...>;
+using is_all_bidirectional_iterator = is_base_of_all<std::bidirectional_iterator_tag,Tags...>;
 
 template<class... Tags>
-using is_all_forward_iterator = are_base_of<std::forward_iterator_tag,Tags...>;
+using is_all_forward_iterator = is_base_of_all<std::forward_iterator_tag,Tags...>;
 
 template<class... Tags>
-using is_all_input_iterator = are_base_of<std::input_iterator_tag,Tags...>;
+using is_all_input_iterator = is_base_of_all<std::input_iterator_tag,Tags...>;
 
 
 template<class... Tags>

@@ -34,7 +34,7 @@ inline constexpr bool are_same_v = std::conjunction_v<std::is_same<T,Us>...>;
 
 
 template<class Base, class... Derived>
-using are_base_of = std::conjunction<std::is_base_of<Base,Derived>...>;
+using is_base_of_all = std::conjunction<std::is_base_of<Base,Derived>...>;
 
 template<class Base, class... Derived>
 inline constexpr bool are_base_of_v = std::conjunction_v<std::is_same<Base,Derived>...>;
