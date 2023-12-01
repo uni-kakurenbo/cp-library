@@ -39,7 +39,8 @@ constexpr int INTERNAL_MODINT_ID = -(1 << 30);
 
 
 // Miller-Rabin primality test
-template<typename mint> bool primality_test(const u64 n, const std::initializer_list<u64> as) noexcept(NO_EXCEPT) {
+template<modint_family mint>
+bool primality_test(const u64 n, const std::initializer_list<u64> as) noexcept(NO_EXCEPT) {
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
     if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
