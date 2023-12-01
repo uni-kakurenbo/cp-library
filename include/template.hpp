@@ -19,6 +19,7 @@
 #include "graph/spanning_tree.hpp"
 #include "graph/topological_sort.hpp"
 #include "graph/connected_components.hpp"
+#include "graph/is_bipartite.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 
 #include "numeric/int128.hpp"
