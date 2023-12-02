@@ -3,7 +3,6 @@
 
 #include "algebraic/base.hpp"
 
-
 namespace lib {
 
 namespace algebraic {

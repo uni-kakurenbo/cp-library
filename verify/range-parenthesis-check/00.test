@@ -25,7 +25,7 @@ struct monoid : lib::algebraic::base<lib::spair<T>>, lib::algebraic::associative
     friend inline monoid operator+(const monoid& lhs, const monoid& rhs) noexcept(NO_EXCEPT) {
         return monoid({ lib::min(lhs->first, lhs->second + rhs->first), lhs->second + rhs->second });
     }
-    // inline bitxor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
+    // inline bit_xor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
 };
 
 signed main() {

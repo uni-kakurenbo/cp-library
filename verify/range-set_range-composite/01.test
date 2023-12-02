@@ -46,7 +46,7 @@ struct monoid : lib::algebraic::base<pair<T,int>>, lib::algebraic::associative/*
             lhs->second + rhs->second
         });
     }
-    // inline bitxor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
+    // inline bit_xor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
 };
 
 template<class T> struct action : lib::actions::base<lib::algebraic::assignment<T>> {

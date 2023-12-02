@@ -13,6 +13,16 @@ namespace internal {
 
 
 template<class T>
+concept commutative = std::derived_from<T, algebraic::commutative>;
+
+template<class T>
+concept invertible =
+    requires(const T& v) {
+        { -v } -> std::same_as<T>;
+    };
+
+
+template<class T>
 concept magma =
     requires(const T& u, const T& v) {
         { u + v } -> std::same_as<T>;
@@ -25,18 +35,7 @@ template<class T>
 concept monoid = semigroup<T> && std::default_initializable<T>;
 
 template<class T>
-concept group =
-    monoid<T> &&
-    requires(const T& v) {
-        { -v } -> std::same_as<T>;
-    };
-
-
-template<class T>
-concept commutative = std::derived_from<T, algebraic::commutative>;
-
-template<class T>
-concept invertible = std::derived_from<T, algebraic::invertible>;
+concept group = monoid<T> && invertible<T>;
 
 
 } // namespace internal

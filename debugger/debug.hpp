@@ -207,11 +207,11 @@ std::string lit(T&& val, const Brackets& brcs, const std::string& sep) {
 
 template<class T, std::enable_if_t<lib::internal::is_loggable_v<T>>*>
 std::string lit(T &&val) {
-    auto res = _debug(std::forward<T>(val));
+    auto res = _debug(val);
     if constexpr(std::is_same_v<decltype(res),debug_t>) {
         return res;
     } else {
-        return lit(std::forward<decltype(res)>(res));
+        return lit(res);
     }
 }
 

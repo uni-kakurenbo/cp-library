@@ -22,7 +22,7 @@ namespace internal {
 template<class T> constexpr T plus(const T a, const T b) noexcept(NO_EXCEPT) { return std::plus<T>{}(a, b); }
 template<class T> constexpr T minus(const T a, const T b) noexcept(NO_EXCEPT) { return std::minus<T>{}(a, b); }
 
-template<class T> constexpr T bitxor(const T a, const T b) noexcept(NO_EXCEPT) { return a xor b; }
+template<class T> constexpr T bit_xor(const T a, const T b) noexcept(NO_EXCEPT) { return a xor b; }
 
 
 } // namespace internal

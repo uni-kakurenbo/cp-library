@@ -5,7 +5,7 @@
 
 #include "action/base.hpp"
 
-#include "algebraic/bitxor.hpp"
+#include "algebraic/bit_xor.hpp"
 
 
 
@@ -15,7 +15,7 @@ namespace actions {
 
 
 template<class T> struct range_bitxor : base<> {
-    using operand = algebraic::bitxor<T>;
+    using operand = algebraic::bit_xor<T>;
 };
 
 } // namespace actions

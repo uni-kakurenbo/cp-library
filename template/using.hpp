@@ -74,7 +74,6 @@ using lib::chmax;
 
 using lib::matrix;
 
-using lib::set;
 using lib::multiset;
 using lib::unordered_set;
 using lib::unordered_multiset;

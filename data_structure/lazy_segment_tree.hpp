@@ -75,6 +75,8 @@ struct base {
         }
     }
 
+    inline S fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
+
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
     inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_size; }
@@ -114,8 +116,6 @@ struct base {
 
         return sml + smr;
     }
-
-    inline S fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
 
     inline void apply(size_type p, const F& f) noexcept(NO_EXCEPT) {
         p += this->_size;
