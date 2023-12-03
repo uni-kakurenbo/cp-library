@@ -25,7 +25,7 @@ inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
 
 template<std::unsigned_integral T>
 inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
-    if(v == 0) return 0;
+    if(v == 0) return -1;
     return std::countr_zero(v);
 }
 
