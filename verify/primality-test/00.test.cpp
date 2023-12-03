@@ -20,4 +20,6 @@ int main() {
         lib::i64 n; std::cin >> n;
         print.yesno(lib::is_prime(n));
     }
+
+    static_assert(lib::internal::dynamic_modint_family<lib::modint64>);
 }

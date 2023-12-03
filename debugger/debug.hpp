@@ -26,6 +26,7 @@
 
 #include "numeric/int128.hpp"
 #include "internal/type_traits.hpp"
+#include "internal/concepts.hpp"
 
 
 namespace debugger {

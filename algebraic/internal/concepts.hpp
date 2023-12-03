@@ -1,9 +1,14 @@
 #pragma once
 
+
 #include <type_traits>
 #include <concepts>
 
+
+#include "internal/concepts.hpp"
+
 #include "algebraic/base.hpp"
+
 
 namespace lib {
 
@@ -16,17 +21,11 @@ template<class T>
 concept commutative = std::derived_from<T, algebraic::commutative>;
 
 template<class T>
-concept invertible =
-    requires(const T& v) {
-        { -v } -> std::same_as<T>;
-    };
+concept invertible = lib::internal::unary_subtractable<T>;
 
 
 template<class T>
-concept magma =
-    requires(const T& u, const T& v) {
-        { u + v } -> std::same_as<T>;
-    };
+concept magma = lib::internal::addable<T> && std::same_as<std::common_type_t<T>, T>;
 
 template<class T>
 concept semigroup = magma<T> && std::derived_from<T, associative>;

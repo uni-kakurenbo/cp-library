@@ -16,7 +16,9 @@
 
 #include "internal/dev_env.hpp"
 
+#include "numeric/internal/primality_test.hpp"
 #include "numeric/modint.hpp"
+
 #include "random/xorshift.hpp"
 
 #include "adapter/set.hpp"
@@ -35,39 +37,16 @@ namespace fast_factorize_impl {
 namespace internal {
 
 
-constexpr int INTERNAL_MODINT_ID = -(1 << 30);
+constexpr i64 INTERNAL_MODINT_ID = -(1UL << 62);
 
-
-// Miller-Rabin primality test
-template<modint_family mint>
-bool primality_test(const u64 n, const std::initializer_list<u64> as) noexcept(NO_EXCEPT) {
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wconversion"
-    if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
-  #pragma GCC diagnostic pop
-
-    u64 d = n-1;
-
-    while(~d & 1) d >>= 1;
-
-    mint e(1), rev(n - 1);
-    for(u64 a : as) {
-        if(n <= a) break;
-        u64 t = d;
-        mint y = mint(a).pow(t);
-        while(t != n - 1 && y != e && y != rev) y *= y, t *= 2;
-        if(y != rev && t % 2 == 0) return false;
-    }
-
-    return true;
+inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
+    return is_prime<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
-bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
-    if(~n & 1) return n == 2;
-    if(n <= 1) return false;
 
-    if(n < (1UL << 31)) return internal::primality_test<dynamic_modint<INTERNAL_MODINT_ID>>(n, { 2, 7, 61 });
-    else return internal::primality_test<dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n, { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 });
+template<u64 N>
+inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
+    return is_prime<static_modint_32bit<N>, static_modint_64bit<N>>(N);
 }
 
 
@@ -137,9 +116,7 @@ vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
 } // namespace internal
 
 
-inline i64 is_prime(const i64 n) noexcept(NO_EXCEPT) {
-    return internal::is_prime(static_cast<u64>(n));
-}
+using internal::is_prime;
 
 inline vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
     auto res = internal::factorize(n);

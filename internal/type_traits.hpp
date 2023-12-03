@@ -170,9 +170,6 @@ using maybe_const_t = std::conditional_t<Const, const T, T>;
 template<class T> using with_ref = T&;
 template<class T> concept can_reference = requires { typename with_ref<T>; };
 
-template<class T> concept arithmetic = std::is_arithmetic_v<T>;
-template<class T> concept pointer = std::is_pointer_v<T>;
-
 
 } // namespace internal
 
