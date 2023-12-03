@@ -7,7 +7,7 @@
 /* #language C++ 20 GCC */
 
 #define PROBLEM "https://judge.yosupo.jp/problem/factorize"
-
+#include "template/debug.hpp"
 #include <iostream>
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
@@ -18,7 +18,9 @@ signed main() {
     int q; std::cin >> q;
     REP(q) {
         lib::ll a; std::cin >> a;
+        print(a);
         auto facts = lib::factorize(a);
         print(facts.size(), facts);
+        std::cout << std::flush;
     }
 }

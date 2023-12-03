@@ -26,6 +26,8 @@
 #include "adapter/vector.hpp"
 
 
+#include <atcoder/modint>
+
 namespace lib {
 
 namespace internal {
@@ -57,29 +59,25 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(is_prime(n)) return n;
 
     if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
+    mint rr, one = 1;
 
-    mint R, one = 1;
-
-    auto f = [&](mint x) noexcept(NO_EXCEPT) { return x * x + R; };
+    auto f = [&](mint x) noexcept(NO_EXCEPT) { return x * x + rr; };
 
     static xorshift64 rand(std::random_device{}());
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
-
         mint x, y, ys, q = one;
-        R = rand_(), y = rand_();
+        rr = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
 
         for(int r = 1; g == 1; r <<= 1) {
             x = y;
-            for(int i = 0; i < r; ++i)
-                y = f(y);
+            for(int i = 0; i < r; ++i) y = f(y);
             for(int k = 0; g == 1 && k < r; k += m) {
                 ys = y;
-                for(int i = 0; i < m && i < r - k; ++i)
-                    q *= x - (y = f(y));
+                for(int i = 0; i < m && i < r - k; ++i) q *= x - (y = f(y));
                 g = std::gcd(q.val(), n);
             }
         }
@@ -101,10 +99,10 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     u64 p;
-    if(n <= (1UL << 31)) p = find_factor<dynamic_modint_32bit<INTERNAL_MODINT_ID>,u32>(static_cast<u32>(n));
+    if(n <= dynamic_modint_32bit<>::max()) p = find_factor<dynamic_modint_32bit<INTERNAL_MODINT_ID>>(static_cast<u32>(n));
     else p = find_factor<dynamic_modint_64bit<INTERNAL_MODINT_ID>,u64>(n);
 
-    if(p == n) return { static_cast<i64>(p) };
+    if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
     auto l = internal::factorize(p);
     auto r = internal::factorize(n / p);

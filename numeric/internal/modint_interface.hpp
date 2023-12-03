@@ -63,11 +63,11 @@ template<class T> concept static_modint_family = modint_family<T> && !dynamic_mo
 template<u32 Mod> using static_modint_32bit = internal::static_modint_impl<u32, u64, Mod>;
 template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, u128, Mod>;
 
-template<i64 id> using dynamic_modint_32bit = internal::dynamic_modint_impl<u32, u64, id>;
-template<i64 id> using dynamic_modint_64bit = internal::dynamic_modint_impl<u64, u128, id>;
+template<i64 id = -1> using dynamic_modint_32bit = internal::dynamic_modint_impl<u32, u64, id>;
+template<i64 id = -1> using dynamic_modint_64bit = internal::dynamic_modint_impl<u64, u128, id>;
 
 template<u32 Mod> using static_modint = static_modint_32bit<Mod>;
-template<i64 id> using dynamic_modint = dynamic_modint_32bit<id>;
+template<i64 id = -1> using dynamic_modint = dynamic_modint_32bit<id>;
 
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;

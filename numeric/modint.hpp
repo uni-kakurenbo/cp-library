@@ -42,7 +42,7 @@ struct static_modint_impl {
     unsigned_value_type _v = 0;
 
   public:
-    static constexpr bool is_prime = lib::internal::is_prime<mint>(Mod);
+    static constexpr bool is_prime = lib::internal::is_prime<static_modint_32bit, static_modint_64bit>(Mod);
 
     static constexpr spair<signed_value_type> inv_gcd(const signed_value_type a, const signed_value_type b) noexcept(NO_EXCEPT) {
         if(a == 0) return { b, 0 };
@@ -143,8 +143,8 @@ struct dynamic_modint_impl {
     using signed_large_type = std::make_signed_t<Large>;
     using unsigned_large_type = Large;
 
-    static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits;
-    static constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
+    static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits - 2;
+    static constexpr unsigned_value_type max() noexcept { return (unsigned_value_type{ 1 } << mint::digits) - 1; }
 
   private:
     using mint = dynamic_modint_impl;
@@ -152,13 +152,13 @@ struct dynamic_modint_impl {
     unsigned_value_type _val;
 
     static unsigned_value_type _mod;
-    static unsigned_value_type r;
-    static unsigned_value_type n2;
+    static unsigned_value_type _r;
+    static unsigned_value_type _n2;
 
     constexpr static unsigned_value_type get_r() noexcept(NO_EXCEPT) {
-        unsigned_value_type ret = mint::_mod;
-        while(mint::_mod * ret != 1) ret *= unsigned_value_type{ 2 } - mint::_mod * ret;
-        return ret;
+        unsigned_value_type res = mint::_mod;
+        while(mint::_mod * res != 1) res *= unsigned_value_type{ 2 } - mint::_mod * res;
+        return res;
     }
 
     constexpr static unsigned_value_type reduce(const unsigned_large_type &v) noexcept(NO_EXCEPT) {
@@ -167,9 +167,9 @@ struct dynamic_modint_impl {
                 (
                     v +
                     static_cast<unsigned_large_type>(
-                        static_cast<unsigned_value_type>(v) * static_cast<unsigned_value_type>(-r)
+                        static_cast<unsigned_value_type>(v) * static_cast<unsigned_value_type>(-_r)
                     ) * _mod
-                ) >> mint::digits
+                ) >> std::numeric_limits<unsigned_value_type>::digits
             );
     }
 
@@ -178,39 +178,41 @@ struct dynamic_modint_impl {
     static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return _mod; }
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
-        assert(m < (1UL << 63));
+        assert(m < mint::max());
         assert((m & 1) == 1);
 
-        _mod = m;
-        n2 = static_cast<unsigned_value_type>(-static_cast<unsigned_large_type>(m) % m);
-        r = get_r();
+        if(mint::mod() == m) return;
 
-        assert(r * _mod == 1);
+        mint::_mod = m;
+        mint::_n2 = static_cast<unsigned_value_type>(-static_cast<unsigned_large_type>(m) % m);
+        mint::_r = mint::get_r();
+
+        assert(mint::_r * mint::_mod == 1);
     }
 
     constexpr unsigned_value_type val() const noexcept(NO_EXCEPT) {
-        unsigned_value_type res = this->reduce(this->_val);
-        return res >= this->_mod ? res - this->_mod : res;
+        unsigned_value_type res = mint::reduce(this->_val);
+        return res >= mint::_mod ? res - mint::_mod : res;
     }
 
     constexpr dynamic_modint_impl() noexcept(NO_EXCEPT) : _val(0) {}
     constexpr dynamic_modint_impl(const signed_value_type v) noexcept(NO_EXCEPT)
-      : _val(this->reduce((static_cast<unsigned_large_type>(v) + this->_mod) * this->n2))
+      : _val(mint::reduce((static_cast<unsigned_large_type>(v) + mint::_mod) * mint::_n2))
     {};
 
 
     constexpr mint &operator+=(const mint &rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(_val += rhs._val - 2 * _mod) < 0) this->_val += 2 * this->_mod;
+        if(static_cast<signed_value_type>(this->_val += rhs._val - 2 * _mod) < 0) this->_val += 2 * mint::_mod;
         return *this;
     }
 
     constexpr mint &operator-=(const mint &rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += 2 * this->_mod;
+        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += 2 * mint::_mod;
         return *this;
     }
 
     constexpr mint &operator*=(const mint &rhs) noexcept(NO_EXCEPT) {
-        this->_val = reduce(static_cast<unsigned_large_type>(this->_val) * rhs._val);
+        this->_val = mint::reduce(static_cast<unsigned_large_type>(this->_val) * rhs._val);
         return *this;
     }
 
@@ -244,7 +246,15 @@ struct dynamic_modint_impl {
         return res;
     }
 
-    constexpr mint inv() const noexcept(NO_EXCEPT) { return this->pow(this->_mod - 2); }
+    constexpr mint inv() const {
+        signed_value_type x = this->val(), y = mint::mod(), u = 1, v = 0;
+        while(y > 0) {
+            signed_value_type t = x / y;
+            std::swap(x -= t * y, y);
+            std::swap(u -= t * v, v);
+        }
+        return mint{ u };
+    }
 
 
     friend constexpr bool operator==(const mint &lhs, const mint &rhs) noexcept(NO_EXCEPT) {
@@ -262,8 +272,8 @@ struct dynamic_modint_impl {
 
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_mod;
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::r;
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::n2;
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_r;
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_n2;
 
 
 } // namespace internal
