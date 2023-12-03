@@ -6,8 +6,11 @@
  */
 /* #language C++ 20 GCC */
 
+
 #define PROBLEM "https://judge.yosupo.jp/problem/factorize"
-#include <iostream>
+
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"

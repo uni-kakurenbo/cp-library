@@ -10,6 +10,7 @@
 #include <utility>
 #include <algorithm>
 #include <random>
+#include <ranges>
 
 
 #include "snippet/internal/types.hpp"
@@ -41,6 +42,7 @@ namespace internal {
 
 constexpr i64 INTERNAL_MODINT_ID = -(1UL << 62);
 
+
 inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
     return is_prime<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
@@ -56,9 +58,9 @@ inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
 template<dynamic_modint_family mint, class T>
 T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
-    if(is_prime(n)) return n;
+    if(is_prime<mint>(n)) return n;
 
-    if(static_cast<u64>(mint::mod()) != n) mint::set_mod(n);
+    assert(static_cast<u64>(mint::mod()) == n);
     mint rr, one = 1;
 
     auto f = [&](mint x) noexcept(NO_EXCEPT) { return x * x + rr; };
@@ -100,7 +102,7 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
     u64 p;
     if(n <= dynamic_modint_32bit<>::max()) p = find_factor<dynamic_modint_32bit<INTERNAL_MODINT_ID>>(static_cast<u32>(n));
-    else p = find_factor<dynamic_modint_64bit<INTERNAL_MODINT_ID>,u64>(n);
+    else p = find_factor<dynamic_modint_64bit<INTERNAL_MODINT_ID>, u64>(n);
 
     if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
@@ -121,7 +123,7 @@ using internal::is_prime;
 inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     auto res = internal::factorize(n);
-    std::sort(ALL(res));
+    std::ranges::sort(res);
     return res;
 }
 
@@ -167,7 +169,7 @@ inline vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     };
 
     f(f, 0, 1);
-    std::sort(std::begin(res), std::end(res));
+    std::ranges::sort(res);
 
     return res;
 }

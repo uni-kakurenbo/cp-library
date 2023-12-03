@@ -78,4 +78,24 @@ inline constexpr T bit(const T x, const int p) {
 }
 
 
+template<std::unsigned_integral T>
+T binary_gcd(T a, T b) {
+    if(!a || !b) return a | b;
+    T t, s = std::countr_zero(a | b);
+    a >>= std::countr_zero(a);
+    do {
+        b >>= std::countr_zero(b);
+        if(a > b) t = a, a = b, b = t;
+        b -= a;
+    } while(b);
+    return a << s;
+}
+
+
+template<std::integral T>
+T binary_gcd(const T a, const T b) {
+    return binary_gcd(a < 0 ? -a : a, b < 0 ? -b : b);
+}
+
+
 } // namespace lib

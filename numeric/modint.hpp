@@ -57,7 +57,12 @@ struct static_modint_impl {
     }
 
   public:
-    static constexpr mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT) { mint a; a._v = v; return a; }
+    static constexpr mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT) {
+        mint res;
+        res._v = v;
+        return res;
+    }
+
     constexpr static_modint_impl() noexcept(NO_EXCEPT) {}
 
     template<std::integral T>
@@ -133,10 +138,11 @@ struct static_modint_impl {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/modint/modint-montgomery64.hpp
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-    requires
-        (std::numeric_limits<Value>::digits <= 64) &&
-        (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
+// template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+//     requires
+//         (std::numeric_limits<Value>::digits <= 64) &&
+//         (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
+template<class Value, class Large, i64 Id>
 struct dynamic_modint_impl {
     using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
@@ -173,9 +179,15 @@ struct dynamic_modint_impl {
             );
     }
 
-
   public:
     static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return _mod; }
+
+    static constexpr mint raw(const unsigned_large_type v) noexcept(NO_EXCEPT)
+    {
+        mint res;
+        res._val = v * mint::_n2;
+        return res;
+    };
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         assert(m < mint::max());
@@ -188,6 +200,8 @@ struct dynamic_modint_impl {
         mint::_r = mint::get_r();
 
         assert(mint::_r * mint::_mod == 1);
+
+        return;
     }
 
     constexpr unsigned_value_type val() const noexcept(NO_EXCEPT) {
@@ -196,9 +210,24 @@ struct dynamic_modint_impl {
     }
 
     constexpr dynamic_modint_impl() noexcept(NO_EXCEPT) : _val(0) {}
-    constexpr dynamic_modint_impl(const signed_value_type v) noexcept(NO_EXCEPT)
-      : _val(mint::reduce((static_cast<unsigned_large_type>(v) + mint::_mod) * mint::_n2))
-    {};
+
+    template<std::integral T>
+    constexpr dynamic_modint_impl(T v) noexcept(NO_EXCEPT) {
+        using common_type = std::common_type_t<T, unsigned_value_type>;
+
+        const auto m = static_cast<signed_large_type>(mint::_mod);
+
+        if(static_cast<common_type>(v) >= mint::_mod) {
+            v %= m;
+        }
+
+        if constexpr(std::is_signed_v<T>) {
+            if(v < -m) v %= m;
+            if(v < 0) v += m;
+        }
+
+        this->_val = mint::reduce(static_cast<unsigned_large_type>(v) * mint::_n2);
+    }
 
 
     constexpr mint &operator+=(const mint &rhs) noexcept(NO_EXCEPT) {
@@ -271,9 +300,9 @@ struct dynamic_modint_impl {
 };
 
 
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_mod;
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_r;
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_n2;
+template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_mod;
+template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_r;
+template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_n2;
 
 
 } // namespace internal
