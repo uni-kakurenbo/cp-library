@@ -16,9 +16,12 @@
 #include "data_structure/implicit_treap.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
+#include "numeric/modint.hpp"
+
 
 using lib::algebraic::affine;
-using mint = atcoder::modint998244353;
+using mint = lib::modint998244353;
+
 
 struct action {
     using operand = affine<mint,true>;
