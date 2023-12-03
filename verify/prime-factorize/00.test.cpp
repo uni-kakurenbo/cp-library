@@ -17,7 +17,6 @@ signed main() {
     int q; std::cin >> q;
     REP(q) {
         lib::ll a; std::cin >> a;
-        print(a);
         auto facts = lib::factorize(a);
         print(facts.size(), facts);
     }
