@@ -24,7 +24,7 @@ signed main() {
         char v; std::cin >> v;
         t[i] = v == '1';
     }
-    lib::set_adapter<lib::fenwick_tree> st(n);
+    lib::set_adapter st(n);
     st.build_from_bits(t);
 
     REP(q) {
