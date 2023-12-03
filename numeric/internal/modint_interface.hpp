@@ -77,4 +77,14 @@ using modint = dynamic_modint_32bit<-1>;
 using modint64 = dynamic_modint_64bit<-1>;
 
 
+template<const unsigned v, const unsigned mod = 998244353>
+const lib::static_modint<mod> MINT = v;
+
+template<const unsigned v, const unsigned mod = 998244353>
+const unsigned INV = lib::static_modint<mod>{v}.inv().val();
+
+template<const unsigned v, const unsigned mod = 998244353>
+const int SINV = lib::static_modint<mod>{v}.inv().val();
+
+
 } // namespace lib

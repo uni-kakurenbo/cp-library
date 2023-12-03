@@ -27,10 +27,18 @@
 namespace lib {
 
 
+constexpr char LN = '\n';
+constexpr char SPC = ' ';
+
+
+constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
+
+
 template<class T> using spair = std::pair<T,T>;
 
 
-}
+}  // namespace lib
 
 
 namespace std {

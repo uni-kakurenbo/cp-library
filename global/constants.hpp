@@ -10,39 +10,9 @@
 #include "internal/type_traits.hpp"
 
 #include "numeric/limits.hpp"
-#include "numeric/modint.hpp"
 
 
 namespace lib {
-
-
-constexpr i32 INF32 = numeric_limits<i32>::arithmetic_infinity();
-constexpr i64 INF64 = numeric_limits<i64>::arithmetic_infinity();
-
-
-template<class T>
-constexpr T EPSILON = numeric_limits<T>::arithmetic_epsilon();
-
-template<class T>
-constexpr T INF = numeric_limits<T>::arithmetic_infinity();
-
-
-template<const unsigned v, const unsigned mod = 998244353>
-const lib::static_modint<mod> MINT = v;
-
-template<const unsigned v, const unsigned mod = 998244353>
-const unsigned INV = lib::static_modint<mod>{v}.inv().val();
-
-template<const unsigned v, const unsigned mod = 998244353>
-const int SINV = lib::static_modint<mod>{v}.inv().val();
-
-
-constexpr char LN = '\n';
-constexpr char SPC = ' ';
-
-
-constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
-constexpr std::pair<int,int> DIRS8[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 } };
 
 
 enum class comparison : std::uint8_t {
@@ -69,12 +39,14 @@ enum class comparison : std::uint8_t {
     geq = or_over
 };
 
+
 enum class interval_notation : std::uint8_t {
     right_open,
     left_open,
     open,
     closed,
 };
+
 
 enum class replacement_policy : std::uint8_t {
     insert_sync,
@@ -89,6 +61,7 @@ enum class rotation : std::int8_t {
     counter_clockwise,
     anti_clockwise = counter_clockwise,
 };
+
 
 enum class positional_relation : std::int8_t {
     clockwise,
@@ -111,5 +84,6 @@ enum class alignment : std::int8_t {
     center,
     right
 };
+
 
 } // namespace lib

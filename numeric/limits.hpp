@@ -34,4 +34,14 @@ struct numeric_limits : std::numeric_limits<T> {
 };
 
 
+constexpr i32 INF32 = numeric_limits<i32>::arithmetic_infinity();
+constexpr i64 INF64 = numeric_limits<i64>::arithmetic_infinity();
+
+template<class T>
+constexpr T INF = numeric_limits<T>::arithmetic_infinity();
+
+template<class T>
+constexpr T EPSILON = numeric_limits<T>::arithmetic_epsilon();
+
+
 } // namespace lib
