@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <concepts>
 #include <ranges>
+#include <bit>
 
 
 #include "snippet/iterations.hpp"
@@ -43,7 +44,7 @@ struct base {
 
   protected:
     base() noexcept(NO_EXCEPT) {}
-    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
+    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(std::bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
         this->_size = 1 << this->_depth;
         this->_data.resize(this->_size << 1);
     }

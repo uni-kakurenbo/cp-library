@@ -5,6 +5,8 @@
 #include <vector>
 #include <iterator>
 #include <ranges>
+#include <bit>
+
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -58,13 +60,13 @@ struct bit_vector {
 
     inline void build() noexcept(NO_EXCEPT) {
         for(auto k = 1UL; k < this->_block.size(); ++k) {
-            this->_count[k] = this->_count[k-1] + static_cast<size_type>(lib::popcount(this->_block[k-1]));
+            this->_count[k] = this->_count[k-1] + static_cast<size_type>(std::popcount(this->_block[k-1]));
         }
         this->_zeros = this->rank0(this->_n);
     }
 
     inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
-        return this->_count[k / w] + static_cast<size_type>(lib::popcount(lib::clear_higher_bits(this->_block[k / w], k % w)));
+        return this->_count[k / w] + static_cast<size_type>(std::popcount(lib::clear_higher_bits(this->_block[k / w], k % w)));
     }
     inline size_type rank0(size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
 
@@ -97,7 +99,7 @@ struct bit_vector {
         size_type ng = -1, ok = w;
         while(ok - ng > 1) {
             const size_type mid = (ok + ng) / 2;
-            size_type r = count + static_cast<size_type>(lib::popcount(lib::clear_higher_bits(block, mid)));
+            size_type r = count + static_cast<size_type>(std::popcount(lib::clear_higher_bits(block, mid)));
             if(!bit) r = base_index + mid - r;
             (r >= rank ? ok : ng) = mid;
         }

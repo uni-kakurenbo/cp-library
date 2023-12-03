@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <ranges>
 #include <concepts>
+#include <bit>
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -41,7 +42,7 @@ struct base {
 
   public:
     explicit base(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
-        this->_depth = bit_width<std::make_unsigned_t<size_type>>(n);
+        this->_depth = std::bit_width<std::make_unsigned_t<size_type>>(n);
         this->_table.resize(this->_depth+1, std::vector<S>(n));
     }
 

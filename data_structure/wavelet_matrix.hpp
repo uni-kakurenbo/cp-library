@@ -15,6 +15,7 @@
 #include <type_traits>
 #include <ranges>
 #include <concepts>
+#include <bit>
 
 
 #include "snippet/iterations.hpp"
@@ -79,7 +80,7 @@ struct base {
     void build(I first, S last) noexcept(NO_EXCEPT) {
         this->_n = static_cast<size_type>(std::ranges::distance(first, last));
         this->_max = first == last ? -1 : *std::ranges::max_element(first, last);
-        this->_bits = bit_width(this->_max + 1);
+        this->_bits = std::bit_width(this->_max + 1);
 
         this->_index.assign(this->_bits, this->_n);
 

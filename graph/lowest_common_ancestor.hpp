@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <bit>
+
+
 #include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
@@ -43,7 +46,7 @@ struct lowest_common_ancestor {
 
     void init(const graph_type &G, const size_type root = 0) noexcept(NO_EXCEPT) {
         const size_type n = static_cast<size_type>(G.size());
-        const size_type d = lib::bit_width<std::make_unsigned_t<size_type>>(n);
+        const size_type d = std::bit_width<std::make_unsigned_t<size_type>>(n);
 
         this->parent.assign(d, valarray<size_type>(n, -1));
         this->depth.assign(n, 0), this->cost.assign(n, 0);

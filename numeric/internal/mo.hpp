@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <concepts>
 #include <ranges>
+#include <bit>
 
 
 #include "snippet/aliases.hpp"
@@ -21,6 +22,7 @@
 
 #include "numeric/bit.hpp"
 #include "numeric/hilbert_order.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -62,7 +64,7 @@ class interval_plannner {
         for(auto query=query_first; query!=query_last; ++query) {
             chmax(n, std::ranges::max(query->first, query->second));
         }
-        n = 1 << bit_width<std::make_unsigned_t<size_type>>(n);
+        n = std::bit_ceil(lib::to_unsigned(n));
 
         std::vector<i64> orders(q);
         {

@@ -51,7 +51,8 @@ inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
 
 
 // Pollard's rho algorithm
-template<class mint, class T> T find_factor(const T n) noexcept(NO_EXCEPT) {
+template<dynamic_modint_family mint, class T>
+T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
     if(is_prime(n)) return n;
 
@@ -95,19 +96,20 @@ template<class mint, class T> T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
-vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
+vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
     if(n <= 1) return {};
 
     u64 p;
-    if(n <= (1UL << 31)) p = find_factor<lib::modint>(static_cast<u32>(n));
-    else p = find_factor<modint64,u64>(n);
+    if(n <= (1UL << 31)) p = find_factor<dynamic_modint_32bit<INTERNAL_MODINT_ID>,u32>(static_cast<u32>(n));
+    else p = find_factor<dynamic_modint_64bit<INTERNAL_MODINT_ID>,u64>(n);
 
     if(p == n) return { static_cast<i64>(p) };
 
     auto l = internal::factorize(p);
     auto r = internal::factorize(n / p);
 
-    std::copy(std::begin(r), std::end(r), std::back_inserter(l));
+    std::ranges::copy(r, std::back_inserter(l));
 
     return l;
 }
@@ -118,25 +120,29 @@ vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
 
 using internal::is_prime;
 
-inline vector<i64> factorize(const u64 n) noexcept(NO_EXCEPT) {
+inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
     auto res = internal::factorize(n);
-    std::sort(std::begin(res), std::end(res));
+    std::sort(ALL(res));
     return res;
 }
 
-inline set<i64> prime_factors(const u64 n) noexcept(NO_EXCEPT) {
-    auto factors = factorize(n);
-    set<i64> res(std::begin(factors), std::end(factors));
+inline set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
+    const auto factors = factorize(n);
+    set<i64> res(ALL(factors));
     return res;
 }
 
-inline map<i64,i64> count_factors(const u64 n) noexcept(NO_EXCEPT) {
+inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
     map<i64,i64> mp;
     for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }
 
-inline vector<i64> divisors(const u64 n) noexcept(NO_EXCEPT) {
+inline vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
     if(n == 0) return {};
 
     std::vector<std::pair<i64, i64>> v;

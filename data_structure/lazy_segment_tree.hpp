@@ -8,6 +8,8 @@
 #include <type_traits>
 #include <concepts>
 #include <ranges>
+#include <bit>
+
 
 #include "snippet/aliases.hpp"
 
@@ -61,8 +63,8 @@ struct base {
     base() noexcept(NO_EXCEPT) {}
 
     explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n) {
-        this->_size = lib::bit_ceil(lib::to_unsigned(n));
-        this->_depth = lib::countr_zero(lib::to_unsigned(this->_size));
+        this->_size = std::bit_ceil(lib::to_unsigned(n));
+        this->_depth = std::countr_zero(lib::to_unsigned(this->_size));
         this->_lengths.resize(2 * this->_size);
         this->_values.resize(2 * this->_size);
         this->_lazy.resize(this->_size);

@@ -6,6 +6,7 @@
 #include <vector>
 #include <valarray>
 #include <ranges>
+#include <bit>
 
 
 #include "internal/dev_env.hpp"
@@ -14,7 +15,6 @@
 
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
-#include "internal/endian.hpp"
 
 #include "numeric/arithmetic.hpp"
 #include "numeric/bit.hpp"
@@ -134,7 +134,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 
         REP(i, this->_sqrt_ni) {
             for(small_bit_type flags = this->_small[i]; flags; flags &= flags - 1) {
-                int ibit = lowest_bit_pos(flags);
+                const int ibit = lowest_bit_pos(flags);
                 const impl_type m = internal::prime_enumerator_impl::MOD30[ibit];
                 impl_type j = i * (30 * i + 2 * m) + (m * m) / 30;
                 this->_indecies.emplace_back(((j + internal::prime_enumerator_impl::SEGMENT_SIZE) << 3) | ibit);
@@ -168,7 +168,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 
     prime_enumerator(const value_type n) noexcept(NO_EXCEPT) : n(n) {
         assert(n >= 0);
-        assert(internal::discern_endian() == internal::endian::little);
+        assert(std::endian::native == std::endian::little);
 
         this->_sqrt_n = static_cast<impl_type>(sqrt_ceil(this->n + 1));
         this->_sqrt_ni = this->_sqrt_n / 30 + 1;
@@ -189,7 +189,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         }
 
         this->_size = (this->n >= 2) + (this->n >= 3) + (this->n >= 5);
-        for(const large_bit_type f : this->_large) this->_size += popcount(f);
+        for(const large_bit_type f : this->_large) this->_size += std::popcount(f);
     }
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_size; }
@@ -212,7 +212,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
                 }
                 break;
             }
-            res += popcount(f);
+            res += std::popcount(f);
             count += large_bit_size;
         }
 

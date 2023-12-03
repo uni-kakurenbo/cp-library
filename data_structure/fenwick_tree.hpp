@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <concepts>
 #include <ranges>
+#include <bit>
 
 
 #include "internal/dev_env.hpp"
@@ -51,7 +52,7 @@ struct base {
     }
 
     explicit base(const size_type n) noexcept(NO_EXCEPT)
-      : _n(n), _bit_ceil(lib::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
+      : _n(n), _bit_ceil(std::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
     {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
@@ -102,7 +103,7 @@ struct base {
         assert(f(S{}));
         if(r == 0) return 0;
         S fold_r = this->fold(r);
-        size_type p = 0, q = lib::bit_ceil<std::make_unsigned_t<size_type>>(r);
+        size_type p = 0, q = std::bit_ceil<std::make_unsigned_t<size_type>>(r);
         for(size_type k=q; k>0; k >>= 1) {
             if(p+k < r and !f(fold_r + -this->_data[p+k-1])) {
                 fold_r = fold_r + -this->_data[(p+=k)-1];
