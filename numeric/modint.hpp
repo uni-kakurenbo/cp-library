@@ -7,6 +7,8 @@
 
 #include <atcoder/modint>
 
+#include "macro/expand_tails.hpp"
+
 #include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
@@ -25,7 +27,6 @@ namespace internal {
 // Thanks to: https://hackmd.io/@tatyam-is_prime/rkVCOcwQn
 template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
     requires
-        (std::numeric_limits<Value>::digits <= 64) &&
         (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits) &&
         (0 < Mod)
 struct static_modint_impl {
@@ -138,11 +139,8 @@ struct static_modint_impl {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/modint/modint-montgomery64.hpp
-// template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-//     requires
-//         (std::numeric_limits<Value>::digits <= 64) &&
-//         (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
-template<class Value, class Large, i64 Id>
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
 struct dynamic_modint_impl {
     using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
@@ -177,6 +175,11 @@ struct dynamic_modint_impl {
                     ) * _mod
                 ) >> std::numeric_limits<unsigned_value_type>::digits
             );
+    }
+
+    inline unsigned_value_type normalized() const noexcept(NO_EXCEPT) {
+        if(this->_val < mint::_mod) return this->_val;
+        return this->_val - mint::_mod;
     }
 
   public:
@@ -215,37 +218,39 @@ struct dynamic_modint_impl {
     constexpr dynamic_modint_impl(T v) noexcept(NO_EXCEPT) {
         using common_type = std::common_type_t<T, unsigned_value_type>;
 
-        const auto m = static_cast<signed_large_type>(mint::_mod);
-
-        if(static_cast<common_type>(v) >= mint::_mod) {
-            v %= m;
-        }
+        const common_type m = static_cast<common_type>(mint::_mod);
 
         if constexpr(std::is_signed_v<T>) {
-            if(v < -m) v %= m;
+            if(
+                (v > 0 && static_cast<common_type>(v) > m) ||
+                (v < 0 && static_cast<common_type>(-v) > m)
+            ) v %= m;
             if(v < 0) v += m;
+        }
+        else {
+            if(static_cast<common_type>(v) >= m) v %= m;
         }
 
         this->_val = mint::reduce(static_cast<unsigned_large_type>(v) * mint::_n2);
     }
 
 
-    constexpr mint &operator+=(const mint &rhs) noexcept(NO_EXCEPT) {
+    constexpr mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
         if(static_cast<signed_value_type>(this->_val += rhs._val - 2 * _mod) < 0) this->_val += 2 * mint::_mod;
         return *this;
     }
 
-    constexpr mint &operator-=(const mint &rhs) noexcept(NO_EXCEPT) {
+    constexpr mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
         if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += 2 * mint::_mod;
         return *this;
     }
 
-    constexpr mint &operator*=(const mint &rhs) noexcept(NO_EXCEPT) {
+    constexpr mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {
         this->_val = mint::reduce(static_cast<unsigned_large_type>(this->_val) * rhs._val);
         return *this;
     }
 
-    constexpr mint &operator/=(const mint &rhs) noexcept(NO_EXCEPT) {
+    constexpr mint& operator/=(const mint& rhs) noexcept(NO_EXCEPT) {
         *this *= rhs.inv(); return *this;
     }
 
@@ -286,23 +291,24 @@ struct dynamic_modint_impl {
     }
 
 
-    friend constexpr bool operator==(const mint &lhs, const mint &rhs) noexcept(NO_EXCEPT) {
-        return (lhs._val >= lhs._mod ? lhs._val - lhs._mod :lhs._val) == (rhs._val >= lhs._mod ? rhs._val - lhs._mod : rhs._val);
-    }
-    friend constexpr bool operator!=(const mint &lhs, const mint &rhs) noexcept(NO_EXCEPT) {
-        return (lhs._val >=lhs._mod ? lhs._val - lhs._mod : lhs._val) != (rhs._val >= lhs._mod ? rhs._val - lhs._mod : rhs._val);
-    }
+    friend constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs.normalized() == rhs.normalized(); }
+    friend constexpr bool operator!=(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs.normalized() != rhs.normalized(); }
 
-    friend constexpr mint operator+(mint lhs, const mint &rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
-    friend constexpr mint operator-(mint lhs, const mint &rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
-    friend constexpr mint operator*(mint lhs, const mint &rhs) noexcept(NO_EXCEPT) { return lhs *= rhs; }
-    friend constexpr mint operator/(mint lhs, const mint &rhs) noexcept(NO_EXCEPT) { return lhs /= rhs; }
+    friend constexpr mint operator+(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
+    friend constexpr mint operator-(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
+    friend constexpr mint operator*(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs *= rhs; }
+    friend constexpr mint operator/(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs /= rhs; }
 };
 
 
-template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_mod;
-template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_r;
-template<class Value, class Large, i64 Id> Value dynamic_modint_impl<Value, Large, Id>::_n2;
+EXPAND_TAILS(
+    (
+        template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+            requires (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
+        Value dynamic_modint_impl<Value, Large, Id>::
+    ),
+    (_mod), (_r), (_n2)
+)
 
 
 } // namespace internal

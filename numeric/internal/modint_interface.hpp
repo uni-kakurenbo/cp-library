@@ -19,16 +19,12 @@ namespace internal {
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
     requires
-        (std::numeric_limits<Value>::digits <= 64) &&
         (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits) &&
         (0 < Mod)
 struct static_modint_impl;
 
-// template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-//     requires
-//         (std::numeric_limits<Value>::digits <= 64) &&
-//         (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
-template<class Value, class Large, i64 Id>
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
 struct dynamic_modint_impl;
 
 
