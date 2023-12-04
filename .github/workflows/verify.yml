@@ -100,6 +100,7 @@ jobs:
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
+      if: ${{ !cancelled() }}
       with:
         name: timestamps
         path: main/.verify-helper/timestamps-${{ matrix.id }}.json
