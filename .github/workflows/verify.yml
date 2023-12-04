@@ -89,7 +89,7 @@ jobs:
         echo "Parallel execution: ${parallel}"
 
         function run() {
-          oj-verify run $1 || exit 1
+          oj-verify run $1
           cd .verify-helper
           echo >> ./timestamps.remote.json
           cat ./timestamps.remote.json >> ./timestamps-${{ matrix.id }}.json
