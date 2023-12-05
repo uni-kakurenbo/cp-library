@@ -19,7 +19,7 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(p);
     assert(Mint::mod() == p);
 
-    const auto divs = divisors(p - 1);
+    const auto divs = divisors<Mint>(p - 1);
 
     const Mint one = Mint::raw(1), rev = Mint::raw(p - 1);
     REP(x, 1, p) {
@@ -35,6 +35,12 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
     }
 
     assert(false);
+}
+
+template<modint_family Small, modint_family Large>
+constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
+    if(p <= Small::max()) return primitive_root<Small>(p);
+    else return primitive_root<Large>(p);
 }
 
 
