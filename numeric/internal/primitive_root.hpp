@@ -17,8 +17,6 @@ namespace internal {
 template<modint_family Mint>
 constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
     const auto divs = divisors<Mint>(p - 1);
-    for(auto d : divs) std::cout << d << " ";
-    std::cout << std::endl;
 
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(p);
     assert(Mint::mod() == p);
@@ -28,10 +26,10 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
         bool ok = true;
         ITR(div, divs) {
             const Mint r = Mint{ x }.pow(div);
-	        if (r == one && div != p - 1) {
-		    ok = false;
-		    break;
-		}
+	    if (r == one && div != p - 1) {
+		ok = false;
+		break;
+	    }
         }
 	if(ok) return x;
     }
