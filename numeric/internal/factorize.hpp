@@ -84,8 +84,11 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     if(n <= 1) return {};
 
     u64 p;
-    if(n <= Small::max()) p = find_factor<Small>(static_cast<u32>(n));
-    else p = find_factor<Large, u64>(n);
+    if constexpr(std::same_as<Small, Large>) p = find_factor<Small>(static_cast<u32>(n));
+    else {
+        if(n <= Small::max()) p = find_factor<Small>(static_cast<u32>(n));
+        else p = find_factor<Large, u64>(n);
+    }
 
     if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
