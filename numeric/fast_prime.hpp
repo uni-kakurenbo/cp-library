@@ -56,7 +56,7 @@ inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
 
 // Pollard's rho algorithm
 template<dynamic_modint_family mint, class T>
-T find_factor(const T n) noexcept(NO_EXCEPT) {
+constexpr T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
     if(is_prime<mint>(n)) return n;
 
@@ -96,7 +96,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
-vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+constexpr vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n <= 1) return {};
 
@@ -120,28 +120,28 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
 using internal::is_prime;
 
-inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+constexpr vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     auto res = internal::factorize(n);
     std::ranges::sort(res);
     return res;
 }
 
-inline set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
+constexpr set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     const auto factors = factorize(n);
     set<i64> res(ALL(factors));
     return res;
 }
 
-inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
+constexpr map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     map<i64,i64> mp;
     for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }
 
-inline vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
+constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n == 0) return {};
 
