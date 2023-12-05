@@ -5,6 +5,7 @@
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/factorize.hpp"
 #include "numeric/internal/divisors.hpp"
+#include "numeric/internal/primitive_root.hpp"
 
 
 namespace lib {
@@ -37,8 +38,11 @@ inline auto divisors(const u64 n) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
+
 using internal::is_prime;
 using internal::divisors;
+using internal::primitive_root;
+
 
 inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
