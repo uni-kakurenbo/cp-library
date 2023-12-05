@@ -26,7 +26,7 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
         bool ok = true;
         ITR(div, divs) {
             const Mint r = Mint{ x }.pow(div);
-	    std::cout << x.val() << std::endl;
+	    std::cout << x << std::endl;
 	    std::cout << r.val() << std::endl;
 	    std::cout << div << std::endl;
 	    if (r == one && div != p - 1) {
