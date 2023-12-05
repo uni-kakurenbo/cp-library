@@ -17,20 +17,28 @@ namespace lib {
 namespace internal {
 
 
-template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
-    requires
-        (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits) &&
-        (0 < Mod)
+template<class Value, class Large>
+concept valid_for_modint_impl =
+    std::unsigned_integral<Value> && std::unsigned_integral<Large> &&
+    wider_than<Large, Value>;
+
+template<class Value, class Large, Value Mod>
+concept valid_for_static_modint_impl = valid_for_modint_impl<Value, Large> && (0 < Mod);
+
+
+template<class Value, class Large, Value Mod>
+    requires valid_for_static_modint_impl<Value, Large, Mod>
 struct static_modint_impl;
 
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-    requires (2 * std::numeric_limits<Value>::digits <= std::numeric_limits<Large>::digits)
+template<class Value, class Large, i64 Id>
+    requires valid_for_modint_impl<Value, Large>
 struct dynamic_modint_impl;
 
 
 using atcoder::internal::is_modint;
 template<class T> constexpr bool is_modint_v = is_modint<T>::value;
 using atcoder::internal::is_modint_t;
+
 
 template<class T> concept modint_family =
     numeric<T> &&
@@ -44,12 +52,14 @@ template<class T> concept modint_family =
         T::digits;
     };
 
+
 template<class T>
 concept dynamic_modint_family =
     modint_family<T> &&
     requires (int v) {
         T::set_mod(v);
     };
+
 
 template<class T> concept static_modint_family = modint_family<T> && !dynamic_modint_family<T>;
 
