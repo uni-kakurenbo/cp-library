@@ -36,6 +36,8 @@ inline auto divisors(const u64 n) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
+using internal::is_prime;
+using internal::divisors;
 
 inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
