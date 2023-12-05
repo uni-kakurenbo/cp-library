@@ -19,7 +19,7 @@
 #include "internal/types.hpp"
 
 #include "numeric/internal/number_base.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/internal/modint_interface.hpp"
 
 #include "iterable/operation.hpp"
 
@@ -96,11 +96,11 @@ inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
 
 
 template<class T, class U>
-    requires lib::internal::is_modint_v<T>
+    requires lib::internal::modint_family<T>
 inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }
 
 template<class T, class U>
-    requires (not lib::internal::is_modint_v<T>)
+    requires (not lib::internal::modint_family<T>)
 inline constexpr T pow(T x, U n) noexcept(NO_EXCEPT) {
     T res = 1;
     while(n > 0) {
