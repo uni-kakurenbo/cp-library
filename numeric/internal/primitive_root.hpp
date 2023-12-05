@@ -16,10 +16,10 @@ namespace internal {
 
 template<modint_family Mint>
 constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
+    const auto divs = divisors<Mint>(p - 1);
+
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(p);
     assert(Mint::mod() == p);
-
-    const auto divs = divisors<Mint>(p - 1);
 
     const Mint one = Mint::raw(1), rev = Mint::raw(p - 1);
     REP(x, 1, p) {
