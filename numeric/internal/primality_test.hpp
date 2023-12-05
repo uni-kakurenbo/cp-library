@@ -16,7 +16,6 @@ namespace lib {
 
 namespace internal {
 
-
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
 namespace fast_factorize_impl {
 
@@ -69,13 +68,23 @@ inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
 }
 
 
+constexpr i64 INTERNAL_MODINT_ID = -(1UL << 62);
+
+
+inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
+    return is_prime<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+}
+
+
+template<u64 N>
+inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
+    return is_prime<static_modint_32bit<N>, static_modint_64bit<N>>(N);
+}
+
+
 } // namespace internal
 
 } // namespace fast_factorize_impl
-
-
-using fast_factorize_impl::internal::is_prime;
-
 
 } // namespace internal
 
