@@ -188,7 +188,7 @@ struct dynamic_modint_impl {
     static constexpr mint raw(const unsigned_large_type v) noexcept(NO_EXCEPT)
     {
         mint res;
-        res._val = v * mint::_n2;
+        res._val = mint::reduce(v * mint::_n2);
         return res;
     };
 
