@@ -78,8 +78,11 @@ inline constexpr T bit(const T x, const int p) {
 }
 
 
+namespace internal {
+
+
 template<std::unsigned_integral T>
-T binary_gcd(T a, T b) {
+constexpr T binary_gcd(T a, T b) noexcept(NO_EXCEPT) {
     if(!a || !b) return a | b;
     T t, s = std::countr_zero(a | b);
     a >>= std::countr_zero(a);
@@ -92,9 +95,19 @@ T binary_gcd(T a, T b) {
 }
 
 
-template<std::integral T>
-T binary_gcd(const T a, const T b) {
+template<std::signed_integral T>
+inline constexpr T binary_gcd(const T a, const T b) noexcept(NO_EXCEPT) {
     return binary_gcd(a < 0 ? -a : a, b < 0 ? -b : b);
+}
+
+
+} // namespace internal
+
+
+template<std::integral T0, std::integral T1>
+inline constexpr auto binary_gcd(T0 v0, T1 v1) noexcept(NO_EXCEPT) {
+    using common_type = std::common_type_t<T0, T1>;
+    return binary_gcd(static_cast<common_type>(v0), static_cast<common_type>(v1));
 }
 
 
