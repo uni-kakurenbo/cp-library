@@ -49,13 +49,14 @@ struct base : private uncopyable {
     struct node;
     using Tree = node*;
 
-    static xorshift rand;
+    static constexpr i64 XORSHIFT_ID = -(1L << 62);
+    static inline xorshift<XORSHIFT_ID> rand;
 
     struct node {
         operand v, acc;
         operation lazy;
 
-        xorshift::result_type priority;
+        xorshift<>::result_type priority;
 
         size_type cnt = 1;
 
@@ -246,14 +247,6 @@ struct base : private uncopyable {
         return ret;
     }
 };
-
-template<
-    algebraic::internal::monoid OperandMonoid,
-    algebraic::internal::monoid OperatorMonoid,
-    OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&),
-    OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t)
->
-xorshift base<OperandMonoid,OperatorMonoid,_map,_fold>::rand(std::random_device{}());
 
 
 template<actions::internal::full_action Action>

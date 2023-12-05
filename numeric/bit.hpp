@@ -107,7 +107,7 @@ inline constexpr T binary_gcd(const T a, const T b) noexcept(NO_EXCEPT) {
 template<std::integral T0, std::integral T1>
 inline constexpr auto binary_gcd(T0 v0, T1 v1) noexcept(NO_EXCEPT) {
     using common_type = std::common_type_t<T0, T1>;
-    return binary_gcd(static_cast<common_type>(v0), static_cast<common_type>(v1));
+    return internal::binary_gcd(static_cast<common_type>(v0), static_cast<common_type>(v1));
 }
 
 

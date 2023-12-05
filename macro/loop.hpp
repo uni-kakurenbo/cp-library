@@ -1,5 +1,6 @@
 #pragma once
 
+
 #define INDEX_RSEQ() 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
 #define VA_ARGS_SIZE_IMPL(ARG1,  ARG2,  ARG3,  ARG4,  ARG5,  ARG6,  ARG7,  ARG8,  ARG9,  ARG10, ARG11, ARG12, ARG13, ARG14, ARG15, ARG16, N, ...) N

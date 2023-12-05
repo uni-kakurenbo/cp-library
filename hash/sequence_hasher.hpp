@@ -110,7 +110,7 @@ struct sequence_hasher {
 
     sequence_hasher(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         if(sequence_hasher::base <= 0) {
-            xorshift64 rand64(std::random_device{}());
+            xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
             sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
         }
     }

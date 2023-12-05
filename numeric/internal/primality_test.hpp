@@ -16,7 +16,6 @@ namespace lib {
 
 namespace internal {
 
-
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
 namespace fast_factorize_impl {
 
@@ -26,21 +25,19 @@ namespace internal {
 // Miller-Rabin primality test
 template<modint_family Mint>
 constexpr bool primality_test(const u64 n, const std::vector<u64>& ws) noexcept(NO_EXCEPT) {
-    assert(n <= Mint::max());
-
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(n);
-    assert(Mint::mod() == n);
+    // assert(Mint::mod() == n);
 
     const u64 d = (n - 1) >> std::countr_zero(n - 1);
 
-    const Mint zero, one = Mint::raw(1), rev = Mint::raw(n - 1);
+    const Mint rev = n - 1;
     for(u64 w : ws) {
         Mint x = w;
-        if(x == zero) continue;
+        if(x == Mint::zero) continue;
         x = x.pow(d);
-        if(x == one || x == rev) continue;
+        if(x == Mint::one || x == rev) continue;
         u64 t = d;
-        while(t != n-1 && x != one && x != rev) x *= x, t <<= 1;
+        while(t != n-1 && x != Mint::one && x != rev) x *= x, t <<= 1;
         if(x != rev) return false;
     }
 
