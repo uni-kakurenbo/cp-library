@@ -86,6 +86,10 @@ inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
 
 } // namespace fast_factorize_impl
 
+
+using fast_factorize_impl::internal::is_prime;
+
+
 } // namespace internal
 
 } // namespace lib
