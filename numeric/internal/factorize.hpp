@@ -16,7 +16,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/internal/primality_test.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modint_interface.hpp"
 
 #include "random/xorshift.hpp"
 
