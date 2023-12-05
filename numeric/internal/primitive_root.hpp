@@ -24,7 +24,7 @@ namespace internal {
 
 // Thanks to: https://37zigen.com/primitive-root/
 template<modint_family Small, modint_family Large, modint_family Mint, std::unsigned_integral T>
-constexpr T primitive_root(const T p) noexcept(NO_EXCEPT) {
+T primitive_root(const T p) noexcept(NO_EXCEPT) {
     std::vector<T> pows;
     factorize<Small, Large>(p - 1, &pows);
     {
@@ -38,7 +38,7 @@ constexpr T primitive_root(const T p) noexcept(NO_EXCEPT) {
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(p);
     assert(Mint::mod() == p);
 
-    xorshift64 rand;
+    static xorshift64 rand;
     while(true) {
         const Mint x = rand();
         if(x == Mint::zero) continue;

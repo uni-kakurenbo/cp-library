@@ -49,13 +49,14 @@ struct base : private uncopyable {
     struct node;
     using Tree = node*;
 
-    static xorshift rand;
+    static constexpr XORSHIFT_ID = -(1L << 62);
+    static xorshift<XORSHIFT_ID> rand;
 
     struct node {
         operand v, acc;
         operation lazy;
 
-        xorshift::result_type priority;
+        xorshift<>::result_type priority;
 
         size_type cnt = 1;
 
