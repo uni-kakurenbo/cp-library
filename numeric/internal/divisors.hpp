@@ -15,10 +15,8 @@ namespace lib {
 
 namespace internal {
 
+
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
-namespace fast_factorize_impl {
-
-
 template<modint_family Small, modint_family Large>
 constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
@@ -52,12 +50,6 @@ constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
 
     return res;
 }
-
-
-} // namespace fast_factorize_impl
-
-
-using fast_factorize_impl::divisors;
 
 
 } // namespace internal
