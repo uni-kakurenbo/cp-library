@@ -16,6 +16,7 @@
 
 #include "numeric/internal/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
+#include "numeric/internal/primitive_root.hpp"
 
 
 namespace lib {
@@ -44,6 +45,7 @@ struct static_modint_impl {
 
   public:
     static constexpr bool is_prime = lib::internal::is_prime<static_modint_32bit, static_modint_64bit>(Mod);
+    static constexpr bool primitive_root = lib::internal::pirimitive_root<static_modint_32bit, static_modint_64bit>(Mod);
 
     static constexpr spair<signed_value_type> inv_gcd(const signed_value_type a, const signed_value_type b) noexcept(NO_EXCEPT) {
         if(a == 0) return { b, 0 };
