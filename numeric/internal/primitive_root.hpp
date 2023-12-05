@@ -29,7 +29,7 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
 	    std::cout << x << std::endl;
 	    std::cout << r.val() << std::endl;
 	    std::cout << div << std::endl;
-	    std::cout << one << std::endl;
+	    std::cout << one.val() << std::endl;
 	    if (r == one && div != p - 1) {
 		ok = false;
 		break;
