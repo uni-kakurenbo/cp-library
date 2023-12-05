@@ -20,19 +20,16 @@ inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
     return is_prime<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
-template<u64 N>
-inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
-    return is_prime<lib::static_modint_32bit<N>, lib::static_modint_64bit<N>>(N);
-}
-
-
 inline auto factorize(const u64 n) noexcept(NO_EXCEPT) {
     return factorize<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
-
 inline auto divisors(const u64 n) noexcept(NO_EXCEPT) {
     return divisors<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+}
+
+inline auto primitive_root(const u64 n) noexcept(NO_EXCEPT) {
+    return primitive_root<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 
