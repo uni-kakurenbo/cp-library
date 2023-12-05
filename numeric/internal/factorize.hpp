@@ -78,7 +78,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
-template<modint_family Small, modint_family Large>
+template<modint_family Small, modint_family Large = Small>
 vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n <= 1) return {};
