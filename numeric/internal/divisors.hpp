@@ -4,6 +4,7 @@
 #include <cassert>
 #include <vector>
 #include <ranges>
+#include <algorithm>
 
 
 #include "adapter/vector.hpp"
@@ -23,7 +24,9 @@ constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     if(n == 0) return {};
 
     std::vector<std::pair<i64, i64>> v;
-    for(auto &p : factorize<Small, Large>(n)) {
+    auto facts = factorize<Small, Large>(n);
+    std::ranges::sort(facts);
+    for(auto &p : facts) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
         } else {
