@@ -7,7 +7,7 @@
 /* #language C++ 20 GCC */
 
 
-#define PROBLEM "https://judge.yosupo.jp/problem/factorize"
+#define PROBLEM "https://judge.yosupo.jp/problem/primitive_root"
 
 #include "sneaky/enforce_int128_enable.hpp"
 
