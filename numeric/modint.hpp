@@ -45,8 +45,8 @@ struct static_modint_impl {
     unsigned_value_type _v = 0;
 
   public:
-    static constexpr bool is_prime = lib::internal::is_prime<static_modint_32bit, static_modint_64bit>(Mod);
-    //static constexpr bool primitive_root = lib::internal::primitive_root<static_modint_32bit, static_modint_64bit>(Mod);
+    static constexpr bool is_prime = lib::internal::is_prime<mint>(Mod);
+    static constexpr u64 primitive_root = lib::internal::primitive_root<mint>(Mod);
 
     static constexpr spair<signed_value_type> inv_gcd(const signed_value_type a, const signed_value_type b) noexcept(NO_EXCEPT) {
         if(a == 0) return { b, 0 };
@@ -67,7 +67,10 @@ struct static_modint_impl {
         return res;
     }
 
-    constexpr static_modint_impl() noexcept(NO_EXCEPT) {}
+    static constexpr mint zero = 0;
+    static constexpr mint one = 1;
+
+    constexpr static_modint_impl() = default;
 
     template<std::integral T>
     constexpr static_modint_impl(const T& v) noexcept(NO_EXCEPT) {
@@ -183,7 +186,7 @@ struct dynamic_modint_impl {
     }
 
   public:
-    static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return _mod; }
+    static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_mod; }
 
     static inline mint zero;
     static inline mint one;
