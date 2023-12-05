@@ -17,13 +17,13 @@ namespace internal {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
-template<modint_family Mint>
+template<modint_family Small, modint_family Large>
 constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n == 0) return {};
 
     std::vector<std::pair<i64, i64>> v;
-    for(auto &p : factorize<Mint>(n)) {
+    for(auto &p : factorize<Small, Large>(n)) {
         if(v.empty() || v.back().first != p) {
             v.emplace_back(p, 1);
         } else {
