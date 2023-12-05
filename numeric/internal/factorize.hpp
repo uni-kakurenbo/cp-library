@@ -89,8 +89,8 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
     if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
-    auto l = internal::factorize<Mint>(p);
-    auto r = internal::factorize<Mint>(n / p);
+    auto l = factorize<Small, Large>(p);
+    auto r = factorize<Small, Large>(n / p);
 
     std::ranges::copy(r, std::back_inserter(l));
 
