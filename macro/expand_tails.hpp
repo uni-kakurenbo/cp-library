@@ -4,7 +4,7 @@
 #include "macro/basic.hpp"
 #include "macro/loop.hpp"
 
-#define EXPAND_TAILS_IMPL(base, tail) UNPAREN base UNPAREN tail;
+#define EXPAND_TAILS_IMPL(base, tail) UNPAREN base UNPAREN tail
 
 #define EXPAND_TAILS_AUX_1(base, tails) EXPAND_TAILS_IMPL(base, tails)
 #define EXPAND_TAILS_AUX_2(base, tails, ...) EXPAND_TAILS_IMPL(base, tails) EXPAND_TAILS_AUX_1(base, __VA_ARGS__)

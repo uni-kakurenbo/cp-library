@@ -14,6 +14,10 @@ template<class T> concept arithmetic = std::is_arithmetic_v<T>;
 template<class T> concept pointer = std::is_pointer_v<T>;
 
 
+template<class Large, class Small>
+concept wider_than = (std::numeric_limits<Large>::digits >= 2 * std::numeric_limits<Small>::digits);
+
+
 template<class L, class R = L>
 concept weakly_addable = requires (L lhs, R rhs) { lhs + rhs; };
 
