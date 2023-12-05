@@ -1,33 +1,14 @@
 #pragma once
 
-// #include "../inner/inner_math.hpp"
-// #include "../misc/rng.hpp"
 
 #include <cassert>
 #include <vector>
-#include <set>
-#include <map>
-#include <utility>
-#include <algorithm>
-#include <random>
 #include <ranges>
 
 
-#include "snippet/internal/types.hpp"
-
-#include "internal/dev_env.hpp"
-
-#include "numeric/internal/primality_test.hpp"
-#include "numeric/modint.hpp"
-
-#include "random/xorshift.hpp"
-
-#include "adapter/set.hpp"
-#include "adapter/map.hpp"
 #include "adapter/vector.hpp"
+#include "numeric/internal/factorize.hpp"
 
-
-#include <atcoder/modint>
 
 namespace lib {
 
@@ -74,5 +55,9 @@ constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
 } // namespace fast_factorize_impl
 
 } // namespace internal
+
+
+using internal::fast_factorize_impl::divisors;
+
 
 } // namespace lib
