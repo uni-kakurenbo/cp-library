@@ -56,10 +56,10 @@ constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
 
 } // namespace fast_factorize_impl
 
+
+using fast_factorize_impl::divisors;
+
+
 } // namespace internal
-
-
-using internal::fast_factorize_impl::divisors;
-
 
 } // namespace lib
