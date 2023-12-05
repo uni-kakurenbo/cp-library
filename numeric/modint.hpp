@@ -159,9 +159,9 @@ struct dynamic_modint_impl {
 
     unsigned_value_type _val = 0;
 
-    static unsigned_value_type _mod;
-    static unsigned_value_type _np;
-    static unsigned_value_type _r2;
+    static inline unsigned_value_type _mod;
+    static inline unsigned_value_type _np;
+    static inline unsigned_value_type _r2;
 
     constexpr static unsigned_value_type _mni() noexcept(NO_EXCEPT) {
         unsigned_value_type res = mint::_mod;
