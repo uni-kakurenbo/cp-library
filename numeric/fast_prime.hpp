@@ -6,6 +6,7 @@
 #include "numeric/internal/factorize.hpp"
 #include "numeric/internal/divisors.hpp"
 #include "numeric/internal/primitive_root.hpp"
+#include "numeric/modint.hpp"
 
 
 namespace lib {
