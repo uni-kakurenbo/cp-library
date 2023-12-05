@@ -17,7 +17,7 @@ namespace internal {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
-template<modint_family Small, modint_family Large>
+template<modint_family Small, modint_family Large = Small>
 constexpr vector<i64> divisors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n == 0) return {};
