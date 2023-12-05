@@ -198,7 +198,7 @@ struct dynamic_modint_impl {
     };
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
-        assert(m < mint::max());
+        assert(m <= mint::max());
         assert((m & 1) == 1);
 
         if(mint::mod() == m) return;
