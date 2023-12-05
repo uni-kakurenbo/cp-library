@@ -37,21 +37,21 @@ namespace internal {
 
 
 // Pollard's rho algorithm
-template<dynamic_modint_family mint, class T>
+template<dynamic_modint_family Mint, class T>
 T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(~n & 1) return 2;
-    if(is_prime<mint>(n)) return n;
+    if(is_prime<Mint>(n)) return n;
 
-    assert(static_cast<u64>(mint::mod()) == n);
-    mint rr, one = 1;
+    assert(static_cast<u64>(Mint::mod()) == n);
+    Mint rr, one = 1;
 
-    auto f = [&](mint x) noexcept(NO_EXCEPT) { return x * x + rr; };
+    auto f = [&](const Mint x&) noexcept(NO_EXCEPT) { return x * x + rr; };
 
     static xorshift64 rand(std::random_device{}());
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
-        mint x, y, ys, q = one;
+        Mint x, y, ys, q = one;
         rr = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
@@ -89,8 +89,8 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
     if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
-    auto l = internal::factorize(p);
-    auto r = internal::factorize(n / p);
+    auto l = internal::factorize<Mint>(p);
+    auto r = internal::factorize<Mint>(n / p);
 
     std::ranges::copy(r, std::back_inserter(l));
 
