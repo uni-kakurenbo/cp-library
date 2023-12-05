@@ -20,6 +20,6 @@ signed main() {
     int q; std::cin >> q;
     REP(q) {
         lib::i64 p; std::cin >> p;
-        print(lib::divisors(p - 1));
+        print(lib::primitive_root(p - 1));
     }
 }
