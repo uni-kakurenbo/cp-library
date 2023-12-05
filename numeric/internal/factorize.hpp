@@ -21,10 +21,6 @@
 
 #include "random/xorshift.hpp"
 
-#include "adapter/set.hpp"
-#include "adapter/map.hpp"
-#include "adapter/vector.hpp"
-
 
 namespace lib {
 
@@ -44,7 +40,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
     if(is_prime<Mint>(n)) return n;
 
     assert(static_cast<u64>(Mint::mod()) == n);
-    Mint rr, one = 1;
+    Mint rr;
 
     auto f = [&](const Mint& x) noexcept(NO_EXCEPT) { return x * x + rr; };
 
@@ -52,7 +48,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
-        Mint x, y, ys, q = one;
+        Mint x, y, ys, q = Mint::one;
         rr = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
@@ -79,26 +75,24 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
-template<modint_family Small, modint_family Large = Small>
-vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
-    assert(n >= 0);
-    if(n <= 1) return {};
+template<modint_family Small, modint_family Large, std::ranges::range R>
+void factorize(const u64 n, R *const res) noexcept(NO_EXCEPT) {
+    if(n <= 1) return;
 
     u64 p;
-    if constexpr(std::same_as<Small, Large>) p = find_factor<Small>(static_cast<u32>(n));
+    if constexpr(std::same_as<Small, Large>) p = find_factor<Small, typename Small::unsigned_value_type>(n);
     else {
-        if(n <= Small::max()) p = find_factor<Small>(static_cast<u32>(n));
-        else p = find_factor<Large, u64>(n);
+        if(n <= Small::max()) p = find_factor<Small, typename Small::unsigned_value_type>(n);
+        else p = find_factor<Large, typename Large::unsigned_value_type>(n);
     }
 
-    if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
+    if(p == static_cast<u64>(n)) {
+        res->emplace_back(p);
+        return;
+    }
 
-    auto l = factorize<Small, Large>(p);
-    auto r = factorize<Small, Large>(n / p);
-
-    std::ranges::copy(r, std::back_inserter(l));
-
-    return l;
+    factorize<Small, Large>(p, res);
+    factorize<Small, Large>(n / p, res);
 }
 
 

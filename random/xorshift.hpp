@@ -9,6 +9,8 @@
 
 namespace lib {
 
+
+template<i64 Id = -1>
 struct xorshift {
     using result_type = std::uint32_t;
 
@@ -38,6 +40,8 @@ struct xorshift {
     result_type w = 88675123;
 };
 
+
+template<i64 Id = -1>
 struct xorshift64 {
     using result_type = std::uint64_t;
 
