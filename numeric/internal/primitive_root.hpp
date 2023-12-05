@@ -26,7 +26,7 @@ constexpr u64 primitive_root(const u64 p) noexcept(NO_EXCEPT) {
         bool ok = true;
         ITR(div, divs) {
             const Mint r = Mint{ x }.pow(div);
-	        if (r == one && r != rev) {
+	        if (r != one && r != rev) {
 		    ok = false;
 		    break;
 		}
