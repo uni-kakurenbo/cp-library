@@ -25,7 +25,12 @@ inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
 
 
 inline auto factorize(const u64 n) noexcept(NO_EXCEPT) {
-    return internal::factorize<is_prime<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+    return internal::factorize<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+}
+
+
+inline auto divisors(const u64 n) noexcept(NO_EXCEPT) {
+    return internal::divisors<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 
