@@ -99,8 +99,37 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
+
+inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
+    auto res = internal::factorize(n);
+    std::ranges::sort(res);
+    return res;
+}
+
+inline set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
+    const auto factors = factorize(n);
+    set<i64> res(ALL(factors));
+    return res;
+}
+
+inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
+    assert(n >= 0);
+    map<i64,i64> mp;
+    for(auto &x : internal::factorize(n)) mp[x]++;
+    return mp;
+}
+
+
 } // namespace fast_factorize_impl
 
 } // namespace internal
+
+
+using fast_factorize_impl::factorize;
+using fast_factorize_impl::prime_factors;
+using fast_factorize_impl::count_factors;
+
 
 } // namespace lib
