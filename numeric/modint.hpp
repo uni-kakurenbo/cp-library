@@ -151,7 +151,7 @@ struct dynamic_modint_impl {
     using signed_large_type = std::make_signed_t<Large>;
     using unsigned_large_type = Large;
 
-    static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits - 1;
+    static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits - 2;
     static constexpr unsigned_value_type max() noexcept { return (unsigned_value_type{ 1 } << mint::digits) - 1; }
 
   private:
@@ -232,10 +232,9 @@ struct dynamic_modint_impl {
             ) {
                 v %= m;
             }
-            if(
-                (v < 0 && static_cast<common_type>(-v) > m)
-            ) {
-                v = (v % m) + m;
+            if(v < 0) {
+                if(static_cast<common_type>(-v) > m) v %= m;
+                v += m;
             }
         }
         else {
