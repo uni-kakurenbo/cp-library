@@ -49,7 +49,7 @@ struct base : private uncopyable {
     struct node;
     using Tree = node*;
 
-    static constexpr XORSHIFT_ID = -(1L << 62);
+    static constexpr i64 XORSHIFT_ID = -(1L << 62);
     static xorshift<XORSHIFT_ID> rand;
 
     struct node {

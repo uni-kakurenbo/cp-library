@@ -22,7 +22,7 @@ namespace lib {
 namespace internal {
 
 
-constexpr i64 INTERNAL_MODINT_ID = -(1UL << 62);
+constexpr i64 INTERNAL_MODINT_ID = -(1L << 62);
 
 
 inline constexpr bool is_prime(const i64 n) noexcept(NO_EXCEPT) {
