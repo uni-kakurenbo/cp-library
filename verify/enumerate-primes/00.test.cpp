@@ -22,7 +22,7 @@
 signed main() {
     print("Hello World");
 
-    lib::random_engine<lib::xorshift> rng;
+    lib::random_engine<lib::xorshift<>> rng;
     lib::timer timer(1000);
 
     // int i = 0;
