@@ -102,6 +102,10 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
 } // namespace fast_factorize_impl
 
+
+using fast_factorize::internal::factorize;
+
+
 } // namespace internal
 
 } // namespace lib
