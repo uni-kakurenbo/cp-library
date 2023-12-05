@@ -78,13 +78,14 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
+template<modint_family Small, modint_family Large>
 vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     if(n <= 1) return {};
 
     u64 p;
-    if(n <= dynamic_modint_32bit<>::max()) p = find_factor<dynamic_modint_32bit<INTERNAL_MODINT_ID>>(static_cast<u32>(n));
-    else p = find_factor<dynamic_modint_64bit<INTERNAL_MODINT_ID>, u64>(n);
+    if(n <= Small::max()) p = find_factor<Small>(static_cast<u32>(n));
+    else p = find_factor<Large, u64>(n);
 
     if(p == static_cast<u64>(n)) return { static_cast<i64>(p) };
 
@@ -98,29 +99,6 @@ vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
 
 
 } // namespace internal
-
-
-inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
-    assert(n >= 0);
-    auto res = internal::factorize(n);
-    std::ranges::sort(res);
-    return res;
-}
-
-inline set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
-    assert(n >= 0);
-    const auto factors = factorize(n);
-    set<i64> res(ALL(factors));
-    return res;
-}
-
-inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
-    assert(n >= 0);
-    map<i64,i64> mp;
-    for(auto &x : internal::factorize(n)) mp[x]++;
-    return mp;
-}
-
 
 } // namespace fast_factorize_impl
 
