@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "numeric/internal/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/factorize.hpp"
 #include "numeric/internal/divisors.hpp"
@@ -15,22 +16,22 @@ constexpr i64 INTERNAL_MODINT_ID = -(1UL << 62);
 
 
 inline constexpr bool is_prime(const u64 n) noexcept(NO_EXCEPT) {
-    return is_prime<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+    return is_prime<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 template<u64 N>
 inline constexpr bool is_prime() noexcept(NO_EXCEPT) {
-    return is_prime<static_modint_32bit<N>, static_modint_64bit<N>>(N);
+    return is_prime<lib::static_modint_32bit<N>, lib::static_modint_64bit<N>>(N);
 }
 
 
 inline auto factorize(const u64 n) noexcept(NO_EXCEPT) {
-    return internal::factorize<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+    return factorize<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 
 inline auto divisors(const u64 n) noexcept(NO_EXCEPT) {
-    return internal::divisors<dynamic_modint_32bit<INTERNAL_MODINT_ID>, dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
+    return divisors<lib::dynamic_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 
