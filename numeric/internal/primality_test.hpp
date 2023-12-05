@@ -78,8 +78,4 @@ using fast_factorize_impl::internal::is_prime;
 
 } // namespace internal
 
-
-using internal::fast_factorize_impl::is_prime;
-
-
 } // namespace lib
