@@ -127,9 +127,9 @@ inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
 } // namespace internal
 
 
-using fast_factorize_impl::factorize;
-using fast_factorize_impl::prime_factors;
-using fast_factorize_impl::count_factors;
+using internal::fast_factorize_impl::factorize;
+using internal::fast_factorize_impl::prime_factors;
+using internal::fast_factorize_impl::count_factors;
 
 
 } // namespace lib
