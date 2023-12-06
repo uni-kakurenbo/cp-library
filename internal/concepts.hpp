@@ -12,7 +12,7 @@ namespace internal {
 
 template<class T> concept arithmetic = std::is_arithmetic_v<T>;
 template<class T> concept pointer = std::is_pointer_v<T>;
-
+template<class T> concept structural = std::is_class_v<T>;
 
 template<class Large, class Small>
 concept has_double_digits_of = (std::numeric_limits<Large>::digits == 2 * std::numeric_limits<Small>::digits);
@@ -106,11 +106,28 @@ concept weakly_incrementable =
     };
 
 template<class T>
+concept weakly_decrementable =
+    std::movable<T> &&
+    requires (T v) {
+        { --v } -> std::same_as<T&>;
+        v--;
+    };
+
+
+template<class T>
 concept incrementable =
     std::regular<T> &&
     weakly_incrementable<T> &&
     requires (T v) {
         { v++ } -> std::same_as<T>;
+    };
+
+template<class T>
+concept decrementable =
+    std::regular<T> &&
+    weakly_decrementable<T> &&
+    requires (T v) {
+        { v-- } -> std::same_as<T>;
     };
 
 

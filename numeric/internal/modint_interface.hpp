@@ -13,8 +13,147 @@
 
 namespace lib {
 
-
 namespace internal {
+
+
+template<structural Derived, std::unsigned_integral Value>
+    requires std::same_as<std::remove_cv_t<Derived>, Derived>
+struct modint_interface {
+  private:
+    inline constexpr Derived* _derived() noexcept(NO_EXCEPT) {
+        return static_cast<Derived*>(this);
+    }
+    inline constexpr const Derived* _derived() const noexcept(NO_EXCEPT) {
+        return static_cast<const Derived*>(this);
+    }
+
+  public:
+    modint_interface() = default;
+
+    explicit inline operator Value() const noexcept(NO_EXCEPT)
+        requires requires (Derived v) { v.val(); }
+    {
+        return this->_derived()->val();
+    }
+
+    constexpr inline auto& operator++() noexcept(NO_EXCEPT)
+        requires requires (Derived v) { v += Derived::one; }
+    {
+        return *this->_derived() += Derived::one;
+    }
+
+    constexpr inline auto& operator--() noexcept(NO_EXCEPT)
+        requires requires (Derived v) { v -= Derived::one; }
+    {
+        return *this->_derived() -= Derived::one;
+    }
+
+
+    constexpr inline auto operator++(int) noexcept(NO_EXCEPT)
+        requires requires (Derived v) { ++v; }
+    {
+        Derived res = *this->_derived();
+        return ++*this->_derived(), res;
+    }
+
+    constexpr inline auto operator--(int) noexcept(NO_EXCEPT)
+        requires requires (Derived v) { --v; }
+    {
+        Derived res = *this->_derived();
+        return --*this->_derived(), res;
+    }
+
+
+    constexpr inline auto operator+() const noexcept(NO_EXCEPT) { return *this->_derived(); }
+
+    constexpr inline auto operator-() const noexcept(NO_EXCEPT)
+        requires requires (const Derived v) { Derived::zero - v; }
+    {
+        return Derived::zero - *this->_derived();
+    }
+
+    constexpr inline auto& operator/=(const Derived& rhs) noexcept(NO_EXCEPT)
+        requires requires (Derived v) { v *= v.inv(); }
+    {
+        return *this->_derived() *= rhs.inv();
+    }
+
+
+    constexpr auto pow(i64 n) const noexcept(NO_EXCEPT)
+        requires multipliation_assignalbe<Derived> && requires { Derived::one; }
+    {
+        assert(0 <= n);
+
+        if(n == 0) return Derived::one;
+        if(n == 1 || *this->_derived() == 0 || *this->_derived() == 1) return *this->_derived();
+
+        Derived res = Derived::one, mul = *this->_derived();
+
+        while(n > 0) {
+            if(n & 1) res *= mul;
+            mul *= mul;
+            n >>= 1;
+        }
+
+        return res;
+    }
+
+
+    constexpr Derived inv() const noexcept(NO_EXCEPT)
+        requires
+            requires(Derived v, int n) {
+                v.val();
+                Derived::mod();
+                Derived::raw(n);
+            }
+    {
+        using signed_value_type = std::make_signed_t<Value>;
+
+        signed_value_type x = this->_derived()->val(), y = Derived::mod(), u = 1, v = 0;
+        while(y > 0) {
+            signed_value_type t = x / y;
+            std::swap(x -= t * y, y);
+            std::swap(u -= t * v, v);
+        }
+        assert(x == 1);
+
+        if(u < 0) u += v / x;
+        return Derived::raw(u);
+    }
+
+
+    friend inline constexpr bool operator!=(const Derived& lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+        requires requires(Derived v) { v == v; }
+    {
+        return !(lhs == rhs);
+    }
+
+
+    friend inline constexpr auto operator+(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+        requires addition_assignable<Derived>
+    {
+        return lhs += rhs;
+    }
+
+    friend inline constexpr auto operator-(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+        requires subtraction_assignable<Derived>
+    {
+        return lhs -= rhs;
+    }
+
+    friend inline constexpr auto operator*(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+        requires multipliation_assignalbe<Derived>
+    {
+        return lhs *= rhs;
+    }
+
+    friend inline constexpr auto operator/(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+        requires division_assignable<Derived>
+    {
+        return lhs /= rhs;
+    }
+};
+
 
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
