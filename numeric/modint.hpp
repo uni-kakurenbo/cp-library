@@ -90,12 +90,14 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
 
     constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
         if(this->_val >= Mod - rhs._val) this->_val -= Mod;
-        this->_val += rhs._val; return *this;
+        this->_val += rhs._val;
+        return *this;
     }
 
     constexpr inline mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
         if(this->_val < rhs._val) this->_val += Mod;
-        this->_val -= rhs._val; return *this;
+        this->_val -= rhs._val;
+        return *this;
     }
 
     constexpr inline mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {

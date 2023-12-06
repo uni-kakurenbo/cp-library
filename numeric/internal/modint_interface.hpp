@@ -130,27 +130,34 @@ struct modint_interface {
         return !(lhs == rhs);
     }
 
-
     friend inline constexpr auto operator+(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+#if __GNUC__ < 13
         requires addition_assignable<Derived>
+#endif
     {
         return lhs += rhs;
     }
 
     friend inline constexpr auto operator-(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+#if __GNUC__ < 13
         requires subtraction_assignable<Derived>
+#endif
     {
         return lhs -= rhs;
     }
 
     friend inline constexpr auto operator*(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+#if __GNUC__ < 13
         requires multipliation_assignalbe<Derived>
+#endif
     {
         return lhs *= rhs;
     }
 
     friend inline constexpr auto operator/(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
+#if __GNUC__ < 13
         requires division_assignable<Derived>
+#endif
     {
         return lhs /= rhs;
     }
