@@ -288,19 +288,20 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
         using common_type = std::common_type_t<T, u32>;
         const common_type m = static_cast<common_type>(mint::mod());
 
-        if constexpr(std::is_signed_v<T>) {
-            if(
-                (v > 0 && static_cast<common_type>(v) >= m)
-            ) {
+        if(v > 0) {
+            if constexpr(std::numeric_limits<common_type>::digits() <= 64) {
+                v = mint::_barrett.remainder(v);
+            }
+            else {
                 v %= m;
             }
+        }
+
+        if constexpr(std::is_signed_v<T>) {
             if(v < 0) {
                 if(static_cast<common_type>(-v) >= m) v %= m;
                 v += m;
             }
-        }
-        else {
-            if(static_cast<common_type>(v) >= m) v %= m;
         }
 
         this->_val = static_cast<u32>(v);
