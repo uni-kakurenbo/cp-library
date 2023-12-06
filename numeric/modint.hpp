@@ -78,7 +78,7 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
     template<std::integral T>
     constexpr static_modint_impl(T v) noexcept(NO_EXCEPT) {
         using common_type = std::common_type_t<T, unsigned_value_type>;
-        const common_type m = static_cast<common_type>(mint::_mod);
+        const common_type m = static_cast<common_type>(Mod);
 
         v %= m;
 
