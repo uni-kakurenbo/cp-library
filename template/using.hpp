@@ -63,8 +63,9 @@ using lib::multi_container;
 
 using lib::modint998244353;
 using lib::modint1000000007;
+using lib::modint32bit;
+using lib::modint64bit;
 using lib::modint;
-using lib::modint64;
 
 using lib::sorted;
 using lib::reversed;
