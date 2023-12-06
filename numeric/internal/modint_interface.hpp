@@ -17,21 +17,13 @@ namespace lib {
 namespace internal {
 
 
-template<class Value, class Large>
-concept valid_for_modint_impl =
-    std::unsigned_integral<Value> && std::unsigned_integral<Large> &&
-    wider_than<Large, Value>;
-
-template<class Value, class Large, Value Mod>
-concept valid_for_static_modint_impl = valid_for_modint_impl<Value, Large> && (0 < Mod);
-
-
-template<class Value, class Large, Value Mod>
-    requires valid_for_static_modint_impl<Value, Large, Mod>
+template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
+    requires has_double_digits_of<Large, Value> && (Mod > 0)
 struct static_modint_impl;
 
-template<class Value, class Large, i64 Id>
-    requires valid_for_modint_impl<Value, Large>
+
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires has_double_digits_of<Large, Value>
 struct dynamic_modint_impl;
 
 
@@ -56,7 +48,7 @@ template<class T> concept modint_family =
 template<class T>
 concept dynamic_modint_family =
     modint_family<T> &&
-    requires (int v) {
+    requires (typename T::unsigned_value_type v) {
         T::set_mod(v);
     };
 
