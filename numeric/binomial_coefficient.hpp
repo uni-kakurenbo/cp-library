@@ -12,6 +12,7 @@
 #include "snippet/iterations.hpp"
 
 #include "numeric/barrett_reduction.hpp"
+#include "numeric/internal/modint_interface.hpp"
 
 
 
@@ -22,7 +23,7 @@ namespace internal {
 
 
 template<class T, class R = T>
-    requires (std::numeric_limits<R>::digits > 30) or (std::derived_from<R,atcoder::internal::modint_base>)
+    requires (std::numeric_limits<R>::digits > 30) || modint_family<R>
 struct binomial_coefficient_prime_power_mod {
     using value_type = T;
     using mod_type = R;
@@ -179,7 +180,7 @@ using internal::binomial_coefficient_prime_power_mod;
 
 // (md < 10^7 and N < 2^30) or (md < 2^30 and N < 2 * 10^7)
 template<class T, class R = T>
-    requires (std::numeric_limits<R>::digits > 30) or (std::derived_from<R,atcoder::internal::modint_base>)
+    requires (std::numeric_limits<R>::digits > 30) || internal::modint_family<R>
 struct binomial_coefficient {
     using value_type = T;
     using mod_type = R;

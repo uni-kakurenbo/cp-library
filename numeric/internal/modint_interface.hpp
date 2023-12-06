@@ -84,18 +84,20 @@ struct modint_interface {
     {
         assert(0 <= n);
 
+        if(Derived::mod() == 1) return Derived::zero;
         if(n == 0) return Derived::one;
         if(n == 1 || *this->_derived() == 0 || *this->_derived() == 1) return *this->_derived();
 
         Derived res = Derived::one, mul = *this->_derived();
 
-        while(n > 0) {
+        while(true) {
             if(n & 1) res *= mul;
-            mul *= mul;
             n >>= 1;
+            if(n == 0) return res;
+            mul *= mul;
         }
 
-        return res;
+        assert(false);
     }
 
 
@@ -163,7 +165,11 @@ struct static_modint_impl;
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
     requires has_double_digits_of<Large, Value>
-struct dynamic_modint_impl;
+struct montgomery_modint_impl;
+
+
+template<i64 Id>
+struct barrett_modint_impl;
 
 
 using atcoder::internal::is_modint;
@@ -201,27 +207,27 @@ template<class T> concept static_modint_family = modint_family<T> && !dynamic_mo
 template<u32 Mod> using static_modint_32bit = internal::static_modint_impl<u32, u64, Mod>;
 template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, u128, Mod>;
 
-template<i64 id = -1> using dynamic_modint_32bit = internal::dynamic_modint_impl<u32, u64, id>;
-template<i64 id = -1> using dynamic_modint_64bit = internal::dynamic_modint_impl<u64, u128, id>;
+template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<u32, u64, Id>;
+template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
 
-template<u32 Mod> using static_modint = static_modint_32bit<Mod>;
-template<i64 id = -1> using dynamic_modint = dynamic_modint_32bit<id>;
+template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<Id>;
 
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
 
-using modint = dynamic_modint_32bit<-1>;
-using modint64 = dynamic_modint_64bit<-1>;
+using modint32bit = montgomery_modint_32bit<-1>;
+using modint64bit = montgomery_modint_64bit<-1>;
 
-
-template<const unsigned v, const unsigned mod = 998244353>
-const lib::static_modint<mod> MINT = v;
+using modint = barrett_modint_32bit<-1>;
 
 template<const unsigned v, const unsigned mod = 998244353>
-const unsigned INV = lib::static_modint<mod>{v}.inv().val();
+const lib::static_modint_32bit<mod> MINT = v;
 
 template<const unsigned v, const unsigned mod = 998244353>
-const int SINV = lib::static_modint<mod>{v}.inv().val();
+const unsigned INV = lib::static_modint_32bit<mod>{v}.inv().val();
+
+template<const unsigned v, const unsigned mod = 998244353>
+const int SINV = lib::static_modint_32bit<mod>{v}.inv().val();
 
 
 } // namespace lib

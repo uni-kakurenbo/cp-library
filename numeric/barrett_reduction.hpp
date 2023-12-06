@@ -16,14 +16,14 @@ namespace internal {
 
 
 //Thanks to: https://nyaannyaan.github.io/library/modint/barrett-reduction.hpp
-template<class T, class R = T>
-    requires (std::numeric_limits<R>::digits > 30)
+template<std::integral T, std::integral R = T>
+    requires (std::numeric_limits<T>::digits > 60) && (std::numeric_limits<R>::digits > 30)
 struct barrett_32bit {
     using value_type = T;
     using mod_type = R;
 
   private:
-    value_type _mod;
+    value_type _mod = -1;
     u64 _m;
 
     constexpr inline std::pair<u64,u32> _reduce(const value_type v) const noexcept(NO_EXCEPT) {
@@ -33,7 +33,11 @@ struct barrett_32bit {
 
   public:
     constexpr barrett_32bit() noexcept = default;
-    constexpr explicit inline barrett_32bit(const mod_type m) : _mod(m), _m(static_cast<u64>(-1) / m + 1) {}
+    constexpr explicit inline barrett_32bit(const mod_type m) : _mod(m), _m(std::numeric_limits<u64>::max() / m + 1) {
+        assert(0 < m && m < std::numeric_limits<u32>::max());
+    }
+
+    constexpr inline value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
     constexpr inline value_type quotient(const value_type v) const noexcept(NO_EXCEPT) {
         const auto [ x, r ] = this->_reduce(v);
@@ -51,13 +55,22 @@ struct barrett_32bit {
         return { static_cast<value_type>(x), static_cast<mod_type>(r) };
     }
 
+    constexpr inline mod_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return this->remainder(x * y);
+    }
+
     constexpr inline mod_type pow(const value_type v, value_type p) const noexcept(NO_EXCEPT) {
         value_type d = this->remainder(v);
-        mod_type r = this->_mod == 1 ? 0 : 1;
+
+        if(this->_mod == 1) return 0;
+        if(p == 0) return 1;
+        if(p == 1 || d == 0 || d == 1) return d;
+
+        mod_type r = 1;
 
         while(p > 0) {
-            if(p & 1) r = this->remainder(static_cast<value_type>(r) * d);
-            d = this->remainder(d * d);
+            if(p & 1) r = this->remainder(static_cast<u64>(r) * d);
+            d = this->remainder(static_cast<u64>(d) * d);
             p >>= 1;
         }
 

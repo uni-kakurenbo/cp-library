@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <iostream>
 
-#include <atcoder/modint>
 
 #include "macro/expand_tails.hpp"
 
@@ -17,8 +16,10 @@
 #include "numeric/internal/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/primitive_root.hpp"
+#include "numeric/barrett_reduction.hpp"
 
 #include "template/debug.hpp"
+
 
 namespace lib {
 
@@ -121,7 +122,7 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
     requires has_double_digits_of<Large, Value>
-struct dynamic_modint_impl : modint_interface<dynamic_modint_impl<Value, Large, Id>, Value> {
+struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, Large, Id>, Value> {
     using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
     using signed_large_type = std::make_signed_t<Large>;
@@ -131,11 +132,11 @@ struct dynamic_modint_impl : modint_interface<dynamic_modint_impl<Value, Large, 
     static constexpr unsigned_value_type max() noexcept { return (unsigned_value_type{ 1 } << mint::digits) - 1; }
 
   private:
-    using mint = dynamic_modint_impl;
+    using mint = montgomery_modint_impl;
 
     unsigned_value_type _val = 0;
 
-    static inline unsigned_value_type _mod;
+    static inline unsigned_value_type _mod = -1;
     static inline unsigned_value_type _np;
     static inline unsigned_value_type _r2;
 
@@ -166,10 +167,10 @@ struct dynamic_modint_impl : modint_interface<dynamic_modint_impl<Value, Large, 
     static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_mod; }
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
+        if(mint::mod() == m) return;
+
         assert(m <= mint::max());
         assert((m & 1) == 1);
-
-        if(mint::mod() == m) return;
 
         mint::_mod = m;
         mint::_r2 = static_cast<unsigned_value_type>(-static_cast<unsigned_large_type>(m) % m);
@@ -185,22 +186,22 @@ struct dynamic_modint_impl : modint_interface<dynamic_modint_impl<Value, Large, 
     };
 
 
-    constexpr dynamic_modint_impl() = default;
+    constexpr montgomery_modint_impl() = default;
 
     template<std::integral T>
-    constexpr dynamic_modint_impl(T v) noexcept(NO_EXCEPT) {
+    constexpr montgomery_modint_impl(T v) noexcept(NO_EXCEPT) {
         using common_type = std::common_type_t<T, unsigned_value_type>;
 
         const common_type m2 = static_cast<common_type>(mint::_mod << 1);
 
         if constexpr(std::is_signed_v<T>) {
             if(
-                (v > 0 && static_cast<common_type>(v) > m2)
+                (v > 0 && static_cast<common_type>(v) >= m2)
             ) {
                 v %= m2;
             }
             if(v < 0) {
-                if(static_cast<common_type>(-v) > m2) v %= m2;
+                if(static_cast<common_type>(-v) >= m2) v %= m2;
                 v += m2;
             }
         }
@@ -234,6 +235,90 @@ struct dynamic_modint_impl : modint_interface<dynamic_modint_impl<Value, Large, 
     }
 
     friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs._normalized() == rhs._normalized(); }
+};
+
+
+template<i64 Id>
+struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
+    using signed_value_type = i32;
+    using unsigned_value_type = u32;
+
+    static constexpr int digits = std::numeric_limits<u32>::digits;
+    static constexpr u32 max() noexcept { return std::numeric_limits<u32>::max(); }
+
+  private:
+    using mint = barrett_modint_impl;
+
+    u32 _val = 0;
+
+    static inline barrett_32bit<u64, u32> _barrett;
+
+  public:
+    static inline mint zero;
+    static inline mint one = 1;
+
+    static constexpr u32 mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
+
+    static constexpr void set_mod(const u32 m) noexcept(NO_EXCEPT) {
+        if(mint::mod() == m) return;
+
+        assert(0 < m && m <= mint::max());
+
+        mint::_barrett = barrett_32bit<u64, u32>(m);
+    }
+
+    static constexpr inline mint raw(const u32 v) noexcept(NO_EXCEPT)
+    {
+        mint res;
+        res._val = v;
+        return res;
+    };
+
+    constexpr barrett_modint_impl() = default;
+
+    template<std::integral T>
+    constexpr barrett_modint_impl(T v) noexcept(NO_EXCEPT) {
+        using common_type = std::common_type_t<T, u32>;
+        const common_type m = static_cast<common_type>(mint::mod());
+
+        if constexpr(std::is_signed_v<T>) {
+            if(
+                (v > 0 && static_cast<common_type>(v) >= m)
+            ) {
+                v %= m;
+            }
+            if(v < 0) {
+                if(static_cast<common_type>(-v) >= m) v %= m;
+                v += m;
+            }
+        }
+        else {
+            if(static_cast<common_type>(v) >= m) v %= m;
+        }
+
+        this->_val = static_cast<u32>(v);
+    }
+
+
+    constexpr inline u32 val() const noexcept(NO_EXCEPT) { return this->_val; }
+
+
+    constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
+        if((this->_val += rhs._val) >= mint::mod()) this->_val -= mint::mod();
+        return *this;
+    }
+
+    constexpr inline mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
+        if((this->_val += mint::mod() - rhs._val) >= mint::mod()) this->_val -= mint::mod();
+        return *this;
+    }
+
+    constexpr inline mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {
+        this->_val = mint::_barrett.multiply(this->_val, rhs._val);
+        return *this;
+    }
+
+    friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs._val == rhs._val; }
 };
 
 

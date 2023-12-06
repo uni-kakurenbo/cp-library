@@ -103,12 +103,15 @@ template<class T, class U>
     requires (not lib::internal::modint_family<T>)
 inline constexpr T pow(T x, U n) noexcept(NO_EXCEPT) {
     T res = 1;
-    while(n > 0) {
+
+    while(true) {
         if(n & 1) res *= x;
         x *= x;
+        if(n == 0) return res;
         n >>= 1;
     }
-    return res;
+
+    assert(false);
 }
 
 using atcoder::pow_mod;
