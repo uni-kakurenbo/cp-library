@@ -26,8 +26,8 @@ struct barrett_32bit {
     }
 
   public:
-    static constexpr digits = std::numeric_limits<u32>::max() - 1;
-    static constexpr max() noexcept { return (1 << barrett_32bit::digits) - 1; }
+    static constexpr int digits = std::numeric_limits<u32>::max() - 1;
+    static constexpr u32 max() noexcept { return (1 << barrett_32bit::digits) - 1; }
 
     constexpr barrett_32bit() noexcept = default;
     constexpr explicit inline barrett_32bit(const u32 m) : _mod(m), _m(std::numeric_limits<u64>::max() / m + 1) {
