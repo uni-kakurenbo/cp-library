@@ -45,8 +45,8 @@ struct barrett_context {
     static constexpr int digits = std::numeric_limits<value_type>::digits - 1;
     static constexpr value_type max() noexcept { return (1 << barrett_context::digits) - 1; }
 
-    constexpr barrett_32bit() noexcept = default;
-    constexpr explicit inline barrett_32bit(const value_type m)
+    constexpr barrett_context() noexcept = default;
+    constexpr explicit inline barrett_context(const value_type m)
       : _mod(m), _m(std::numeric_limits<large_type>::max() / m + 1)
     {
         assert(0 < m && m <= barrett_context::max());
