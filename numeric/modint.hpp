@@ -38,23 +38,12 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
     static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits;
     static constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
 
+
   private:
     using mint = static_modint_impl;
     using base = modint_interface<static_modint_impl<Value, Large, Mod>, Value>;
 
     unsigned_value_type _val = 0;
-
-    static constexpr spair<signed_value_type> inv_gcd(const signed_value_type a, const signed_value_type b) noexcept(NO_EXCEPT) {
-        if(a == 0) return { b, 0 };
-        signed_value_type s = b, t = a, m0 = 0, m1 = 1;
-        while(t) {
-            const signed_value_type u = s / t;
-            s -= t * u; m0 -= m1 * u;
-            std::swap(s, t), std::swap(m0, m1);
-        }
-        if(m0 < 0) m0 += b / s;
-        return { s, m0 };
-    }
 
 
   public:
@@ -143,7 +132,7 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
     unsigned_value_type _val = 0;
 
-    static inline unsigned_value_type _mod = -1;
+    static inline unsigned_value_type _mod;
     static inline unsigned_value_type _np;
     static inline unsigned_value_type _r2;
 
@@ -174,10 +163,11 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_mod; }
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
+        assert((m & 1) == 1);
+
         if(mint::mod() == m) return;
 
         assert(m <= mint::max());
-        assert((m & 1) == 1);
 
         mint::_mod = m;
         mint::_r2 = static_cast<unsigned_value_type>(-static_cast<unsigned_large_type>(m) % m);
@@ -227,12 +217,12 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
 
     constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(this->_val += rhs._val - 2 * _mod) < 0) this->_val += 2 * mint::_mod;
+        if(static_cast<signed_value_type>(this->_val += rhs._val - (mint::_mod << 1)) < 0) this->_val += mint::_mod << 1;
         return *this;
     }
 
     constexpr inline mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += 2 * mint::_mod;
+        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += mint::_mod << 1;
         return *this;
     }
 
@@ -272,9 +262,6 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, 
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         if(mint::mod() == m) return;
-
-        assert(0 < m && m <= mint::max());
-
         mint::_barrett = mint::barrett(m);
     }
 
