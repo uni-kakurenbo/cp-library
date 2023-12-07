@@ -247,7 +247,7 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
     requires has_double_digits_of<Large, Value>
-struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, Value> {
+struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, Id>, Value> {
     using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
     using signed_large_type = std::make_signed_t<Large>;
@@ -338,6 +338,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, Value> {
 
 
 } // namespace lib
+
 
 constexpr lib::modint998244353 operator""_mod998244353(unsigned long long x) { return x; }
 constexpr lib::modint1000000007 operator""_mod1000000007(unsigned long long x) { return x; }
