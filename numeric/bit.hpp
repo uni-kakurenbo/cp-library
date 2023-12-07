@@ -21,16 +21,22 @@ namespace lib {
 template<std::unsigned_integral T>
 constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
     constexpr int digits = std::numeric_limits<T>::digits / 2;
-    constexpr T mask = (T{ 1 } << digits) - 1;
 
-    const T xh = x >> digits, xl = x & mask;
-    const T yh = y >> digits, yl = y & mask;
-    const T p = xh * yl, q = xl * yh;
+    if constexpr(std::numeric_limits<T>::digits <= 32) {
+        return (static_cast<u64>(x) * static_cast<u64>(y)) >> digits;
+    }
+    if constexpr(std::numeric_limits<T>::digits <= 64) {
+        return (static_cast<u128>(x) * static_cast<u128>(y)) >> digits;
+    }
+    else {
+        constexpr T mask = (T{ 1 } << digits) - 1;
 
-    return (
-            ((((xl * yl) >> digits) + (p & mask) + (q & mask)) >> digits) +
-            (p >> digits) + (q >> digits) + xh * yh
-        );
+        const T xh = x >> digits, yh = y >> digits;
+        const T xl = x & mask, yl = y & mask;
+        const T ph = xh * yh, pl = xl * yl;
+
+        return (((pl >> digits) + (xh + xl) * (yh + yl) - (ph + pl)) >> digits) + ph;
+    }
 }
 
 

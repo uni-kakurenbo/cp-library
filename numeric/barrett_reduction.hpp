@@ -28,16 +28,7 @@ struct barrett_context {
     large_type _m;
 
     constexpr inline std::pair<large_type,value_type> _reduce(const large_type v) const noexcept(NO_EXCEPT) {
-        large_type x;
-        if constexpr(std::numeric_limits<large_type>::digits <= 64) {
-            x = static_cast<large_type>(
-                    (static_cast<u128>(v) * this->_m) >> std::numeric_limits<large_type>::digits
-                );
-        }
-        else {
-            x = multiply_high(v, this->_m);
-        }
-
+        large_type x = multiply_high(v, this->_m);
         return { x, static_cast<value_type>(v - x * this->_mod) };
     }
 
