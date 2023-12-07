@@ -224,7 +224,7 @@ template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_imp
 template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
 
 template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
-template<i64 Id> using barrett_modint_64but = internal::barrett_modint_impl<u64, u128, Id>;
+template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;
 
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
