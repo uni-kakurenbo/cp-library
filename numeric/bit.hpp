@@ -20,22 +20,23 @@ namespace lib {
 
 template<std::unsigned_integral T>
 constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
-    constexpr int digits = std::numeric_limits<T>::digits / 2;
+    constexpr int digits = std::numeric_limits<T>::digits;
 
-    if constexpr(std::numeric_limits<T>::digits <= 32) {
-        return (static_cast<u64>(x) * static_cast<u64>(y)) >> digits;
+    if constexpr(digits <= 32) {
+        return static_cast<T>((static_cast<u64>(x) * static_cast<u64>(y)) >> digits);
     }
-    if constexpr(std::numeric_limits<T>::digits <= 64) {
-        return (static_cast<u128>(x) * static_cast<u128>(y)) >> digits;
+    else if constexpr(digits <= 64) {
+        return static_cast<T>((static_cast<u128>(x) * static_cast<u128>(y)) >> digits);
     }
     else {
-        constexpr T mask = (T{ 1 } << digits) - 1;
+        constexpr int h_digits = digits / 2;
+        constexpr T mask = (T{ 1 } << h_digits) - 1;
 
-        const T xh = x >> digits, yh = y >> digits;
+        const T xh = x >> h_digits, yh = y >> h_digits;
         const T xl = x & mask, yl = y & mask;
         const T ph = xh * yh, pl = xl * yl;
 
-        return (((pl >> digits) + (xh + xl) * (yh + yl) - (ph + pl)) >> digits) + ph;
+        return (((pl >> h_digits) + (xh + xl) * (yh + yl) - (ph + pl)) >> h_digits) + ph;
     }
 }
 
