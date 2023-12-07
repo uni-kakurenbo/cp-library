@@ -187,9 +187,10 @@ using atcoder::internal::is_modint_t;
 
 template<class T> concept modint_family =
     numeric<T> &&
-    requires (T v, i64 p) {
+    requires (T v, i64 p, typename T::unsigned_value_type x) {
         { v.pow(p) } -> std::same_as<T>;
         { v.inv() } -> std::same_as<T>;
+        { T::raw(x) } -> std::same_as<T>;
 
         { v.val() } -> std::same_as<typename T::unsigned_value_type>;
         { T::mod() } -> std::same_as<typename T::unsigned_value_type>;
