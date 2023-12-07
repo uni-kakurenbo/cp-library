@@ -289,7 +289,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
         const common_type m = static_cast<common_type>(mint::mod());
 
         if(v > 0) {
-            if constexpr(std::numeric_limits<common_type>::digits() <= 64) {
+            if constexpr(std::numeric_limits<common_type>::digits <= 64) {
                 v = mint::_barrett.remainder(v);
             }
             else {
