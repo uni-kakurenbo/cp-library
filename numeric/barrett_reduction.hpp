@@ -24,7 +24,7 @@ struct barrett_context {
     using large_type = Large;
 
   private:
-    large_type _mod = -1;
+    large_type _mod;
     large_type _m;
 
     constexpr inline std::pair<large_type,value_type> _reduce(const large_type v) const noexcept(NO_EXCEPT) {
