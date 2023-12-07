@@ -31,33 +31,33 @@ struct modint_interface {
     modint_interface() = default;
 
     explicit inline operator Value() const noexcept(NO_EXCEPT)
-        requires requires (Derived V) { V.val(); }
+        requires requires (Derived v) { v.val(); }
     {
         return this->_derived()->val();
     }
 
     constexpr inline auto& operator++() noexcept(NO_EXCEPT)
-        requires requires (Derived V) { V += Derived::one; }
+        requires requires (Derived v) { v += Derived::one; }
     {
         return *this->_derived() += Derived::one;
     }
 
     constexpr inline auto& operator--() noexcept(NO_EXCEPT)
-        requires requires (Derived V) { V -= Derived::one; }
+        requires requires (Derived v) { v -= Derived::one; }
     {
         return *this->_derived() -= Derived::one;
     }
 
 
     constexpr inline auto operator++(int) noexcept(NO_EXCEPT)
-        requires requires (Derived V) { ++V; }
+        requires requires (Derived v) { ++v; }
     {
         Derived res = *this->_derived();
         return ++*this->_derived(), res;
     }
 
     constexpr inline auto operator--(int) noexcept(NO_EXCEPT)
-        requires requires (Derived V) { --V; }
+        requires requires (Derived v) { --v; }
     {
         Derived res = *this->_derived();
         return --*this->_derived(), res;
@@ -67,13 +67,13 @@ struct modint_interface {
     constexpr inline auto operator+() const noexcept(NO_EXCEPT) { return *this->_derived(); }
 
     constexpr inline auto operator-() const noexcept(NO_EXCEPT)
-        requires requires (const Derived V) { Derived::zero - V; }
+        requires requires (const Derived v) { Derived::zero - v; }
     {
         return Derived::zero - *this->_derived();
     }
 
     constexpr inline auto& operator/=(const Derived& rhs) noexcept(NO_EXCEPT)
-        requires requires (Derived V) { V *= V.inv(); }
+        requires requires (Derived v) { v *= v.inv(); }
     {
         return *this->_derived() *= rhs.inv();
     }
@@ -84,7 +84,7 @@ struct modint_interface {
     {
         assert(0 <= n);
 
-        if(Derived::Mod() == 1) return Derived::zero;
+        if(Derived::mod() == 1) return Derived::zero;
         if(n == 0) return Derived::one;
         if(n == 1 || *this->_derived() == 0 || *this->_derived() == 1) return *this->_derived();
 
@@ -103,29 +103,29 @@ struct modint_interface {
 
     constexpr Derived inv() const noexcept(NO_EXCEPT)
         requires
-            requires(Derived V, int n) {
-                V.val();
-                Derived::Mod();
+            requires(Derived v, int n) {
+                v.val();
+                Derived::mod();
                 Derived::raw(n);
             }
     {
         using signed_value_type = std::make_signed_t<Value>;
 
-        signed_value_type x = this->_derived()->val(), y = Derived::Mod(), u = 1, V = 0;
+        signed_value_type x = this->_derived()->val(), y = Derived::mod(), u = 1, v = 0;
         while(y > 0) {
             signed_value_type t = x / y;
             std::swap(x -= t * y, y);
-            std::swap(u -= t * V, V);
+            std::swap(u -= t * v, v);
         }
         assert(x == 1);
 
-        if(u < 0) u += V / x;
+        if(u < 0) u += v / x;
         return Derived::raw(u);
     }
 
 
     friend inline constexpr bool operator!=(const Derived& lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-        requires requires(Derived V) { V == V; }
+        requires requires(Derived v) { v == v; }
     {
         return !(lhs == rhs);
     }
@@ -187,13 +187,13 @@ using atcoder::internal::is_modint_t;
 
 template<class T> concept modint_family =
     numeric<T> &&
-    requires (T V, i64 p, typename T::unsigned_value_type x) {
-        { V.pow(p) } -> std::same_as<T>;
-        { V.inv() } -> std::same_as<T>;
+    requires (T v, i64 p, typename T::unsigned_value_type x) {
+        { v.pow(p) } -> std::same_as<T>;
+        { v.inv() } -> std::same_as<T>;
         { T::raw(x) } -> std::same_as<T>;
 
-        { V.val() } -> std::same_as<typename T::unsigned_value_type>;
-        { T::Mod() } -> std::same_as<typename T::unsigned_value_type>;
+        { v.val() } -> std::same_as<typename T::unsigned_value_type>;
+        { T::mod() } -> std::same_as<typename T::unsigned_value_type>;
         { T::max() } -> std::same_as<typename T::unsigned_value_type>;
         T::digits;
     };
@@ -202,8 +202,8 @@ template<class T> concept modint_family =
 template<class T>
 concept dynamic_modint_family =
     modint_family<T> &&
-    requires (typename T::unsigned_value_type V) {
-        T::set_mod(V);
+    requires (typename T::unsigned_value_type v) {
+        T::set_mod(v);
     };
 
 
@@ -235,14 +235,14 @@ using modint_32 = barrett_modint_32bit<-1>;
 using modint_64 = barrett_modint_64bit<-1>;
 
 
-template<const unsigned V, const unsigned Mod = 998244353>
-const lib::static_modint_32bit<Mod> MINT = V;
+template<const unsigned Val, const unsigned Mod = 998244353>
+const lib::static_modint_32bit<Mod> MINT = Val;
 
-template<const unsigned V, const unsigned Mod = 998244353>
-const unsigned INV = lib::static_modint_32bit<Mod>{ V }.inv().val();
+template<const unsigned Val, const unsigned Mod = 998244353>
+const unsigned INV = lib::static_modint_32bit<Mod>{ Val }.inv().val();
 
-template<const unsigned V, const unsigned Mod = 998244353>
-const int SINV = lib::static_modint_32bit<Mod>{ V }.inv().val();
+template<const unsigned Val, const unsigned Mod = 998244353>
+const int SINV = lib::static_modint_32bit<Mod>{ Val }.inv().val();
 
 
 } // namespace lib
