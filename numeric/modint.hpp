@@ -258,7 +258,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
 
     u32 _val = 0;
 
-    static inline barrett_32bit<u64, u32> _barrett;
+    static inline barrett_32bit _barrett;
 
   public:
     static inline mint zero;
@@ -271,7 +271,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
 
         assert(0 < m && m <= mint::max());
 
-        mint::_barrett = barrett_32bit<u64, u32>(m);
+        mint::_barrett = barrett_32bit(m);
     }
 
     static constexpr inline mint raw(const u32 v) noexcept(NO_EXCEPT)
