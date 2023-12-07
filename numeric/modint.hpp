@@ -270,15 +270,16 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     template<std::integral T>
     constexpr montgomery_modint_impl(T v) noexcept(NO_EXCEPT) {
         using common_type = std::common_type_t<T, unsigned_value_type>;
+        const common_type mod2 = static_cast<common_type>(mint::_mod << 1);
 
-        if(static_cast<common_type>(v) >= static_cast<common_type>(mint::_mod << 1)) {
-            v %= mint::_mod << 1;
+        if(static_cast<common_type>(v) >= mod2) {
+            v %= mod2;
         }
 
         if constexpr(std::is_signed_v<T>) {
             if(v < 0) {
-                if(static_cast<common_type>(-v) >= mint::_mod2) v %= mint::_mod << 1;
-                v += mint::_mod << 1;
+                if(static_cast<common_type>(-v) >= mod2) v %= mod2;
+                v += mod2;
             }
         }
 
