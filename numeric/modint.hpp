@@ -59,7 +59,7 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
 
   public:
     static constexpr bool is_prime = lib::internal::is_prime<mint>(Mod);
-    static constexpr u64 primitive_root = lib::internal::primitive_root<mint>(Mod);
+    static constexpr unsigned_value_type primitive_root = lib::internal::primitive_root<mint>(Mod);
 
     static constexpr mint zero = 0;
     static constexpr mint one = 1;
@@ -245,36 +245,40 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 };
 
 
-template<i64 Id>
-struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
-    using signed_value_type = i32;
-    using unsigned_value_type = u32;
-
-    static constexpr int digits = barrett_32bit::digits;
-    static constexpr u32 max() noexcept { return barrett_32bit::max(); }
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires has_double_digits_of<Large, Value>
+struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, Value> {
+    using signed_value_type = std::make_signed_t<Value>;
+    using unsigned_value_type = Value;
+    using signed_large_type = std::make_signed_t<Large>;
+    using unsigned_large_type = Large;
 
   private:
+    using barrett = barrett_context<unsigned_value_type, unsigned_large_type>;
     using mint = barrett_modint_impl;
 
-    u32 _val = 0;
+    unsigned_value_type _val = 0;
 
-    static inline barrett_32bit _barrett;
+    static inline barrett _barrett;
 
   public:
+    static constexpr int digits = barrett::digits;
+    static constexpr unsigned_value_type max() noexcept { return barrett::max(); }
+
     static inline mint zero;
     static inline mint one = 1;
 
-    static constexpr u32 mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
+    static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
 
-    static constexpr void set_mod(const u32 m) noexcept(NO_EXCEPT) {
+    static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         if(mint::mod() == m) return;
 
         assert(0 < m && m <= mint::max());
 
-        mint::_barrett = barrett_32bit(m);
+        mint::_barrett = mint::barrett(m);
     }
 
-    static constexpr inline mint raw(const u32 v) noexcept(NO_EXCEPT)
+    static constexpr inline mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT)
     {
         mint res;
         res._val = v;
@@ -285,7 +289,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
 
     template<std::integral T>
     constexpr barrett_modint_impl(T v) noexcept(NO_EXCEPT) {
-        using common_type = std::common_type_t<T, u32>;
+        using common_type = std::common_type_t<T, unsigned_value_type>;
         const common_type m = static_cast<common_type>(mint::mod());
 
         if(v > 0) {
@@ -304,11 +308,11 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
             }
         }
 
-        this->_val = static_cast<u32>(v);
+        this->_val = static_cast<unsigned_value_type>(v);
     }
 
 
-    constexpr inline u32 val() const noexcept(NO_EXCEPT) { return this->_val; }
+    constexpr inline unsigned_value_type val() const noexcept(NO_EXCEPT) { return this->_val; }
 
 
     constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
