@@ -92,7 +92,9 @@ struct binomial_coefficient_prime_power_mod {
 
   public:
     explicit binomial_coefficient_prime_power_mod(const value_type max = 20'000'000) noexcept(NO_EXCEPT)
-        requires (1 < mod_type::mod() and mod_type::mod() < self::MOD_SUP)
+        requires
+            internal::modint_family<mod_type> &&
+            (1 < mod_type::mod() and mod_type::mod() < self::MOD_SUP)
       : _m(mod_type::mod()), _max(max)
     {
         constexpr std::pair<u32,u32> pq = self::_factorize(mod_type::mod());
@@ -105,7 +107,7 @@ struct binomial_coefficient_prime_power_mod {
     }
 
     explicit binomial_coefficient_prime_power_mod(const mod_type p, mod_type q = 1, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
-        requires (not internal::is_modint_v<mod_type>)
+        requires (!internal::modint_family<mod_type>)
       : _p(static_cast<u32>(p)), _q(static_cast<u32>(q)), _max(max)
     {
         assert(1 < p and p < self::MOD_SUP);
