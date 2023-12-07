@@ -25,7 +25,7 @@ constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
 
     const T xh = x >> digits, xl = x & mask;
     const T yh = y >> digits, yl = y & mask;
-    const T p = xh * yl, ph, q = xl * yh;
+    const T p = xh * yl, q = xl * yh;
 
     return (
             ((((xl * yl) >> digits) + (p & mask) + (q & mask)) >> digits) +
