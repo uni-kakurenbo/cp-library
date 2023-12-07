@@ -28,7 +28,7 @@ struct barrett_32bit {
     }
 
   public:
-    static constexpr int digits = std::numeric_limits<u32>::max() - 1;
+    static constexpr int digits = std::numeric_limits<u32>::digits - 1;
     static constexpr u32 max() noexcept { return (1 << barrett_32bit::digits) - 1; }
 
     constexpr barrett_32bit() noexcept = default;
@@ -90,7 +90,7 @@ struct barrett_64bit {
     }
 
   public:
-    static constexpr int digits = std::numeric_limits<u32>::max() - 1;
+    static constexpr int digits = std::numeric_limits<u32>::digits - 1;
     static constexpr u32 max() noexcept { return (1 << barrett_64bit::digits) - 1; }
 
     constexpr barrett_64bit() noexcept = default;
