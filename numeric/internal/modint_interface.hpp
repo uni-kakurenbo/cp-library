@@ -226,8 +226,13 @@ template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_imp
 template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
 template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;
 
+
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
+
+using modint_32 = barrett_modint_32bit<-1>;
+using modint_64 = barrett_modint_64bit<-1>;
+
 
 template<const unsigned v, const unsigned mod = 998244353>
 const lib::static_modint_32bit<mod> MINT = v;
