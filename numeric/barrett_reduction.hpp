@@ -1,16 +1,14 @@
 #pragma once
 
 
-#include <intrin.h>
-
-
 #include <utility>
 #include <limits>
 #include <type_traits>
 
 
-#include "internal/types.hpp"
 #include "snippet/aliases.hpp"
+#include "internal/types.hpp"
+#include "numeric/bit.hpp"
 
 
 namespace lib {
@@ -25,7 +23,7 @@ struct barrett_32bit {
 
     constexpr inline std::pair<u64,u32> _reduce(const u64 v) const noexcept(NO_EXCEPT) {
         // const u64 x = static_cast<u64>((static_cast<u128>(v) * this->_m) >> std::numeric_limits<u64>::digits);
-        const u64 x = __umulh(v, this->_m);
+        const u64 x = multiply_high(v, this->_m);
         return { x, static_cast<u32>(v - x * this->_mod) };
     }
 
