@@ -239,10 +239,10 @@ template<const unsigned V, const unsigned Mod = 998244353>
 const lib::static_modint_32bit<Mod> MINT = V;
 
 template<const unsigned V, const unsigned Mod = 998244353>
-const unsigned INV = lib::static_modint_32bit<Mod>{V}.inv().val();
+const unsigned INV = lib::static_modint_32bit<Mod>{ V }.inv().val();
 
 template<const unsigned V, const unsigned Mod = 998244353>
-const int SINV = lib::static_modint_32bit<Mod>{V}.inv().val();
+const int SINV = lib::static_modint_32bit<Mod>{ V }.inv().val();
 
 
 } // namespace lib
