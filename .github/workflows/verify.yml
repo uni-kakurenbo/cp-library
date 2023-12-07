@@ -108,7 +108,7 @@ jobs:
   post-verify:
     runs-on: ubuntu-latest
     needs: verify
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && github.ref_name == 'main' }}
 
     steps:
     - name: Git checkout
@@ -144,6 +144,6 @@ jobs:
 
   finalize:
     needs: post-verify
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && github.ref_name == 'main' }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
