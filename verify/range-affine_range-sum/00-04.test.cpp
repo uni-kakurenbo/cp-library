@@ -19,12 +19,12 @@
 
 
 signed main() {
-    lib::modint::set_mod(998244353);
+    lib::montgomery_modint_32bit<-1>::set_mod(998244353);
 
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint> a(n); input >> a;
+    std::vector<lib::montgomery_modint_32bit<-1>> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint>> data(ALL(a));
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::montgomery_modint_32bit<-1>>> data(ALL(a));
 
     REP(q) {
         int t; std::cin >> t;

@@ -38,28 +38,17 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
     static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits;
     static constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
 
+
   private:
     using mint = static_modint_impl;
     using base = modint_interface<static_modint_impl<Value, Large, Mod>, Value>;
 
     unsigned_value_type _val = 0;
 
-    static constexpr spair<signed_value_type> inv_gcd(const signed_value_type a, const signed_value_type b) noexcept(NO_EXCEPT) {
-        if(a == 0) return { b, 0 };
-        signed_value_type s = b, t = a, m0 = 0, m1 = 1;
-        while(t) {
-            const signed_value_type u = s / t;
-            s -= t * u; m0 -= m1 * u;
-            std::swap(s, t), std::swap(m0, m1);
-        }
-        if(m0 < 0) m0 += b / s;
-        return { s, m0 };
-    }
-
 
   public:
     static constexpr bool is_prime = lib::internal::is_prime<mint>(Mod);
-    static constexpr u64 primitive_root = lib::internal::primitive_root<mint>(Mod);
+    static constexpr unsigned_value_type primitive_root = lib::internal::primitive_root<mint>(Mod);
 
     static constexpr mint zero = 0;
     static constexpr mint one = 1;
@@ -143,7 +132,7 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
     unsigned_value_type _val = 0;
 
-    static inline unsigned_value_type _mod = -1;
+    static inline unsigned_value_type _mod;
     static inline unsigned_value_type _np;
     static inline unsigned_value_type _r2;
 
@@ -174,10 +163,11 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_mod; }
 
     static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
+        assert((m & 1) == 1);
+
         if(mint::mod() == m) return;
 
         assert(m <= mint::max());
-        assert((m & 1) == 1);
 
         mint::_mod = m;
         mint::_r2 = static_cast<unsigned_value_type>(-static_cast<unsigned_large_type>(m) % m);
@@ -227,12 +217,12 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
 
     constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(this->_val += rhs._val - 2 * _mod) < 0) this->_val += 2 * mint::_mod;
+        if(static_cast<signed_value_type>(this->_val += rhs._val - (mint::_mod << 1)) < 0) this->_val += mint::_mod << 1;
         return *this;
     }
 
     constexpr inline mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
-        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += 2 * mint::_mod;
+        if(static_cast<signed_value_type>(this->_val -= rhs._val) < 0) this->_val += mint::_mod << 1;
         return *this;
     }
 
@@ -245,36 +235,37 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 };
 
 
-template<i64 Id>
-struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
-    using signed_value_type = i32;
-    using unsigned_value_type = u32;
-
-    static constexpr int digits = barrett_32bit::digits;
-    static constexpr u32 max() noexcept { return barrett_32bit::max(); }
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires has_double_digits_of<Large, Value>
+struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, Id>, Value> {
+    using signed_value_type = std::make_signed_t<Value>;
+    using unsigned_value_type = Value;
+    using signed_large_type = std::make_signed_t<Large>;
+    using unsigned_large_type = Large;
 
   private:
+    using barrett = barrett_context<unsigned_value_type, unsigned_large_type>;
     using mint = barrett_modint_impl;
 
-    u32 _val = 0;
+    unsigned_value_type _val = 0;
 
-    static inline barrett_32bit _barrett;
+    static inline barrett _barrett;
 
   public:
+    static constexpr int digits = barrett::digits;
+    static constexpr unsigned_value_type max() noexcept { return barrett::max(); }
+
     static inline mint zero;
     static inline mint one = 1;
 
-    static constexpr u32 mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
+    static constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
 
-    static constexpr void set_mod(const u32 m) noexcept(NO_EXCEPT) {
+    static constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         if(mint::mod() == m) return;
-
-        assert(0 < m && m <= mint::max());
-
-        mint::_barrett = barrett_32bit(m);
+        mint::_barrett = mint::barrett(m);
     }
 
-    static constexpr inline mint raw(const u32 v) noexcept(NO_EXCEPT)
+    static constexpr inline mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT)
     {
         mint res;
         res._val = v;
@@ -285,7 +276,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
 
     template<std::integral T>
     constexpr barrett_modint_impl(T v) noexcept(NO_EXCEPT) {
-        using common_type = std::common_type_t<T, u32>;
+        using common_type = std::common_type_t<T, unsigned_value_type>;
         const common_type m = static_cast<common_type>(mint::mod());
 
         if(v > 0) {
@@ -304,11 +295,11 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
             }
         }
 
-        this->_val = static_cast<u32>(v);
+        this->_val = static_cast<unsigned_value_type>(v);
     }
 
 
-    constexpr inline u32 val() const noexcept(NO_EXCEPT) { return this->_val; }
+    constexpr inline unsigned_value_type val() const noexcept(NO_EXCEPT) { return this->_val; }
 
 
     constexpr inline mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
@@ -334,6 +325,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
 
 
 } // namespace lib
+
 
 constexpr lib::modint998244353 operator""_mod998244353(unsigned long long x) { return x; }
 constexpr lib::modint1000000007 operator""_mod1000000007(unsigned long long x) { return x; }
