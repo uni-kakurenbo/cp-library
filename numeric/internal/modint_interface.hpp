@@ -220,8 +220,8 @@ concept static_modint_family =
 template<u32 Mod> using static_modint_32bit = internal::static_modint_impl<u32, u64, Mod>;
 template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, u128, Mod>;
 
-template<i64 Id> using montgomery_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;//internal::montgomery_modint_impl<u32, u64, Id>;
-template<i64 Id> using montgomery_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;//internal::montgomery_modint_impl<u64, u128, Id>;
+template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<u32, u64, Id>;
+template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
 
 template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
 template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;
