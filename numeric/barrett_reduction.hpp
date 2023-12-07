@@ -43,7 +43,7 @@ struct barrett_context {
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 1;
-    static constexpr value_type max() noexcept { return (1 << barrett_context::digits) - 1; }
+    static constexpr value_type max() noexcept { return (value_type{ 1 } << barrett_context::digits) - 1; }
 
     constexpr barrett_context() noexcept = default;
     constexpr explicit inline barrett_context(const value_type m)
