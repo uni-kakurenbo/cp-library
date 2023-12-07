@@ -175,7 +175,8 @@ template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
 struct montgomery_modint_impl;
 
 
-template<i64 Id>
+template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
+    requires has_double_digits_of<Large, Value>
 struct barrett_modint_impl;
 
 
@@ -205,7 +206,12 @@ concept dynamic_modint_family =
     };
 
 
-template<class T> concept static_modint_family = modint_family<T> && !dynamic_modint_family<T>;
+template<class T>
+concept static_modint_family =
+    modint_family<T> &&
+    requires {
+        T::is_prime;
+    };
 
 
 } // namespace internal
@@ -217,15 +223,11 @@ template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, 
 template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<u32, u64, Id>;
 template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
 
-template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<Id>;
+template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
+template<i64 Id> using barrett_modint_64but = internal::barrett_modint_impl<u64, u128, Id>;
 
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
-
-using modint32bit = montgomery_modint_32bit<-1>;
-using modint64bit = montgomery_modint_64bit<-1>;
-
-using modint = barrett_modint_32bit<-1>;
 
 template<const unsigned v, const unsigned mod = 998244353>
 const lib::static_modint_32bit<mod> MINT = v;
