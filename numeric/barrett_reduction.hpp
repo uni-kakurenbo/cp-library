@@ -8,6 +8,7 @@
 
 #include "snippet/aliases.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 #include "numeric/bit.hpp"
 
 
@@ -17,6 +18,7 @@ namespace internal {
 
 
 template<std::unsigned_integral Value, std::unsigned_integral Large>
+    requires has_double_digits_of<Large, Value>
 struct barrett_context {
     using value_type = Value;
     using large_type = Large;
@@ -41,13 +43,13 @@ struct barrett_context {
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 1;
-    static constexpr value_type max() noexcept { return (1 << barrett_32bit::digits) - 1; }
+    static constexpr value_type max() noexcept { return (1 << barrett_context::digits) - 1; }
 
     constexpr barrett_32bit() noexcept = default;
     constexpr explicit inline barrett_32bit(const value_type m)
       : _mod(m), _m(std::numeric_limits<large_type>::max() / m + 1)
     {
-        assert(0 < m && m <= barrett_32bit::max());
+        assert(0 < m && m <= barrett_context::max());
     }
 
     constexpr inline large_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
@@ -95,7 +97,8 @@ struct barrett_context {
 } // namespace internal
 
 
-using internal::barrett_context;
+using barrett_32bit = internal::barrett_context<u32, u64>;
+using barrett_64bit = internal::barrett_context<u64, u128>;
 
 
 } // namespace lib
