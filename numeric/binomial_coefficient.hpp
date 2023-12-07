@@ -11,7 +11,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
-#include "numeric/barrett_reduction.hpp"
+#include "numeric/internal/barrett.hpp"
 #include "numeric/internal/modint_interface.hpp"
 
 
