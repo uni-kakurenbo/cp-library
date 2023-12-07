@@ -38,7 +38,7 @@ struct binomial_coefficient_prime_power_mod {
     value_type _max;
     std::valarray<u32> _fact, _inv_fact, _inv;
     u32 _delta;
-    barrett_32bit<u64,u32> _barrett_m, _barrett_p;
+    barrett_32bit _barrett_m, _barrett_p;
 
     static constexpr std::pair<u32,u32> _factorize(u32 m) {
         for(u32 i=2; i*i<=m; ++i) {
@@ -54,8 +54,8 @@ struct binomial_coefficient_prime_power_mod {
     }
 
     void _init() {
-        this->_barrett_m = barrett_32bit<u64,u32>(this->_m);
-        this->_barrett_p = barrett_32bit<u64,u32>(this->_p);
+        this->_barrett_m = barrett_32bit(this->_m);
+        this->_barrett_p = barrett_32bit(this->_p);
 
         this->_delta = (this->_p == 2 and this->_q >= 3) ? 1 : this->_m - 1;
 
@@ -100,8 +100,8 @@ struct binomial_coefficient_prime_power_mod {
         constexpr std::pair<u32,u32> pq = self::_factorize(mod_type::mod());
         std::tie(this->_p, this->_q) = pq;
 
-        this->_barrett_m = barrett_32bit<u64,u32>(this->_m);
-        this->_barrett_p = barrett_32bit<u64,u32>(this->_p);
+        this->_barrett_m = barrett_32bit(this->_m);
+        this->_barrett_p = barrett_32bit(this->_p);
 
         this->_init();
     }
