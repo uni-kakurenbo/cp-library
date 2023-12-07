@@ -65,7 +65,6 @@ using lib::modint998244353;
 using lib::modint1000000007;
 using lib::modint_32;
 using lib::modint_64;
-using lib::modint;
 
 using lib::sorted;
 using lib::reversed;
