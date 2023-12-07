@@ -250,8 +250,8 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Id>, u32> {
     using signed_value_type = i32;
     using unsigned_value_type = u32;
 
-    static constexpr int digits = std::numeric_limits<u32>::digits - 1;
-    static constexpr u32 max() noexcept { return (unsigned_value_type{ 1 } << digits) - 1; }
+    static constexpr int digits = barrett_32bit::digits;
+    static constexpr u32 max() noexcept { return barrett_32bit::max(); }
 
   private:
     using mint = barrett_modint_impl;

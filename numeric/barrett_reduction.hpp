@@ -14,21 +14,24 @@ namespace lib {
 
 namespace internal {
 
-//Thanks to: https://nyaannyaan.github.io/library/modint/barrett-reduction.hpp
+
 struct barrett_32bit {
   private:
     u64 _mod = -1;
     u64 _m;
 
     constexpr inline std::pair<u64,u32> _reduce(const u64 v) const noexcept(NO_EXCEPT) {
-        const u64 x = static_cast<u64>((static_cast<u128>(v) * this->_m) >> 64);
+        const u64 x = static_cast<u64>((static_cast<u128>(v) * this->_m) >> std::numeric_limits<u64>::digits);
         return { x, static_cast<u32>(v - x * this->_mod) };
     }
 
   public:
+    static constexpr int digits = std::numeric_limits<u32>::max() - 1;
+    static constexpr u32 max() noexcept { return (1 << barrett_32bit::digits) - 1; }
+
     constexpr barrett_32bit() noexcept = default;
     constexpr explicit inline barrett_32bit(const u32 m) : _mod(m), _m(std::numeric_limits<u64>::max() / m + 1) {
-        assert(0 < m && m < std::numeric_limits<u32>::max());
+        assert(0 < m && m <= barrett_32bit::max());
     }
 
     constexpr inline u64 mod() const noexcept(NO_EXCEPT) { return this->_mod; }
