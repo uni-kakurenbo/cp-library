@@ -27,8 +27,9 @@ struct modint_interface {
         return static_cast<const Derived*>(this);
     }
 
+
   public:
-    modint_interface() = default;
+    modint_interface() noexcept = default;
 
     explicit inline operator Value() const noexcept(NO_EXCEPT)
         requires requires (Derived v) { v.val(); }
@@ -36,27 +37,27 @@ struct modint_interface {
         return this->_derived()->val();
     }
 
-    constexpr inline auto& operator++() noexcept(NO_EXCEPT)
+    inline constexpr auto& operator++() noexcept(NO_EXCEPT)
         requires requires (Derived v) { v += Derived::one; }
     {
         return *this->_derived() += Derived::one;
     }
 
-    constexpr inline auto& operator--() noexcept(NO_EXCEPT)
+    inline constexpr auto& operator--() noexcept(NO_EXCEPT)
         requires requires (Derived v) { v -= Derived::one; }
     {
         return *this->_derived() -= Derived::one;
     }
 
 
-    constexpr inline auto operator++(int) noexcept(NO_EXCEPT)
+    inline constexpr auto operator++(int) noexcept(NO_EXCEPT)
         requires requires (Derived v) { ++v; }
     {
         Derived res = *this->_derived();
         return ++*this->_derived(), res;
     }
 
-    constexpr inline auto operator--(int) noexcept(NO_EXCEPT)
+    inline constexpr auto operator--(int) noexcept(NO_EXCEPT)
         requires requires (Derived v) { --v; }
     {
         Derived res = *this->_derived();
@@ -64,15 +65,15 @@ struct modint_interface {
     }
 
 
-    constexpr inline auto operator+() const noexcept(NO_EXCEPT) { return *this->_derived(); }
+    inline constexpr auto operator+() const noexcept(NO_EXCEPT) { return *this->_derived(); }
 
-    constexpr inline auto operator-() const noexcept(NO_EXCEPT)
+    inline constexpr auto operator-() const noexcept(NO_EXCEPT)
         requires requires (const Derived v) { Derived::zero - v; }
     {
         return Derived::zero - *this->_derived();
     }
 
-    constexpr inline auto& operator/=(const Derived& rhs) noexcept(NO_EXCEPT)
+    inline constexpr auto& operator/=(const Derived& rhs) noexcept(NO_EXCEPT)
         requires requires (Derived v) { v *= v.inv(); }
     {
         return *this->_derived() *= rhs.inv();

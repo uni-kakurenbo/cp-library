@@ -1,7 +1,7 @@
 #pragma once
 
 #include "numeric/arithmetic.hpp"
-#include "numeric/barrett_reduction.hpp"
+#include "numeric/internal/barrett.hpp"
 #include "numeric/binomial_coefficient.hpp"
 #include "numeric/bit.hpp"
 #include "numeric/boundary_seeker.hpp"
