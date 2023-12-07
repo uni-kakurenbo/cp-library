@@ -52,9 +52,9 @@ struct circle {
       : _c(t.circum_center()), _r2(lib::squared_distance(this->_c, t.p0()))
     {}
 
-    constexpr inline point_type& center() noexcept(NO_EXCEPT) { return this->_c; }
+    inline constexpr point_type& center() noexcept(NO_EXCEPT) { return this->_c; }
     inline radius_type radius() noexcept(NO_EXCEPT) { return static_cast<value_type>(std::sqrt(this->_r2)); }
-    constexpr inline radius_type& squared_radius() noexcept(NO_EXCEPT) { return this->_r2; }
+    inline constexpr radius_type& squared_radius() noexcept(NO_EXCEPT) { return this->_r2; }
 
     inline constexpr const point_type& center() const noexcept(NO_EXCEPT) { return this->_c; }
     inline const radius_type radius() const noexcept(NO_EXCEPT) { return static_cast<value_type>(std::sqrt(this->_r2)); }
