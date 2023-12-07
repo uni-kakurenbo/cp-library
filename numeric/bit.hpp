@@ -19,6 +19,22 @@ namespace lib {
 
 
 template<std::unsigned_integral T>
+constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
+    constexpr int digits = std::numeric_limits<T>::digits / 2;
+    constexpr T mask = (T{ 1 } << digits) - 1;
+
+    const T xh = x >> digits, xl = x & mask;
+    const T yh = y >> digits, yl = y & mask;
+    const T p = xh * yl, ph, q = xl * yh;
+
+    return (
+            ((((xl * yl) >> digits) + (p & mask) + (q & mask)) >> digits) +
+            (p >> digits) + (q >> digits) + xh * yh
+        );
+}
+
+
+template<std::unsigned_integral T>
 inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
     return std::bit_width(v) - 1;
 }
