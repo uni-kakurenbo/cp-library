@@ -59,7 +59,7 @@ struct binomial_coefficient_prime_power_mod {
         this->_barrett_m = barrett_32bit(this->_m);
         this->_barrett_p = barrett_32bit(this->_p);
 
-        this->_delta = (this->_p == 2 and this->_q >= 3) ? 1 : this->_m - 1;
+        this->_delta = (this->_p == 2 && this->_q >= 3) ? 1 : this->_m - 1;
 
         const u32 size = std::min(this->_m, static_cast<u32>(this->_max) + 1);
         assert(size < self::MAX_BUFFER_SIZE);
@@ -72,7 +72,7 @@ struct binomial_coefficient_prime_power_mod {
         this->_fact[1] = this->_inv_fact[1] = this->_inv[1] = 1;
 
         REP(i, 2, size) {
-            if(i % this->_p == 0) {
+            if(this->_barrett(p) == 0) {
                 this->_fact[i] = this->_fact[i - 1];
                 this->_fact[i + 1] = this->_barrett_m.multiply(this->_fact[i - 1], i + 1);
                 ++i;
@@ -85,11 +85,12 @@ struct binomial_coefficient_prime_power_mod {
         this->_inv_fact[size - 1] = pow<u64>(
             this->_fact[size - 1],
             this->_m / this->_p * (this->_p - 1) - 1,
-            [&](u64 x, u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
+            [this](const u64 x, const u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
         );
+
         REPD(i, 2, size - 1) {
             this->_inv_fact[i] = this->_barrett_m.multiply(this->_inv_fact[i + 1], i + 1);
-            if(i % this->_p == 0) {
+            if(this->_barrett_p(i) == 0) {
                 this->_inv_fact[i - 1] = this->_inv_fact[i];
                 --i;
             }
@@ -168,11 +169,7 @@ struct binomial_coefficient_prime_power_mod {
         if(eq & 1) res = this->_barrett_m.multiply(res, this->_delta);
         res = this->_barrett_m.multiply(
             res,
-            pow<u64>(
-                this->_p,
-                e0,
-                [&](u64 x, u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
-            )
+            pow<u64>(this->_p, e0, [this](const u64 x, const u64 y) -> u64 { return this->_barrett_m.multiply(x, y); })
         );
 
         return static_cast<mod_type>(res);
