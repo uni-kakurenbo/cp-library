@@ -78,7 +78,7 @@ struct barrett_context {
         if constexpr(std::is_signed_v<T>) {
             if(v < 0) {
                 if(static_cast<common_type>(-v) >= mod) {
-                    v = this->_mod - this->remainder(-v);
+                    v = this->_mod - this->remainder(-v + 1) - 1;
                 }
             }
         }
