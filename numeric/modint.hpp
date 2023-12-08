@@ -292,7 +292,7 @@ struct binary_modint_impl : modint_interface<binary_modint_impl<Value, Id>, Valu
         mint::one._val = (m != 1);
     }
 
-    static inline constexpr mint raw(const unsigned_large_type v) noexcept(NO_EXCEPT)
+    static inline constexpr mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT)
     {
         mint res;
         res._val = v;
