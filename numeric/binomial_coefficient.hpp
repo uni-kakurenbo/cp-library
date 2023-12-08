@@ -72,7 +72,7 @@ struct binomial_coefficient_prime_power_mod {
         this->_fact[1] = this->_inv_fact[1] = this->_inv[1] = 1;
 
         REP(i, 2, size) {
-            if(this->_barrett_p(i) == 0) {
+            if(this->_barrett_p.remainder(i) == 0) {
                 this->_fact[i] = this->_fact[i - 1];
                 this->_fact[i + 1] = this->_barrett_m.multiply(this->_fact[i - 1], i + 1);
                 ++i;
@@ -90,7 +90,7 @@ struct binomial_coefficient_prime_power_mod {
 
         REPD(i, 2, size - 1) {
             this->_inv_fact[i] = this->_barrett_m.multiply(this->_inv_fact[i + 1], i + 1);
-            if(this->_barrett_p(i) == 0) {
+            if(this->_barrett_p.remainder(i) == 0) {
                 this->_inv_fact[i - 1] = this->_inv_fact[i];
                 --i;
             }
