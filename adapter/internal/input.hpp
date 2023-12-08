@@ -12,10 +12,15 @@
 #include <ranges>
 #include <concepts>
 
+
+#include "snippet/aliases.hpp"
+
 #include "internal/dev_env.hpp"
 #include "internal/resolving_rank.hpp"
 
 #include "utility/functional.hpp"
+
+#include "numeric/internal/modint_interface.hpp"
 
 #include "adapter/valarray.hpp"
 
@@ -31,7 +36,7 @@ struct input_adapter {
     template<class T>
         requires std::derived_from<T, std::valarray<typename T::value_type>>
     auto _set(lib::internal::resolving_rank<6>, T& val) noexcept(NO_EXCEPT) -> int {
-        this->operator()(std::begin(val), std::end(val));
+        this->operator()(ALL(val));
         return 0;
     }
 

@@ -83,22 +83,8 @@ struct modint_interface {
     constexpr auto pow(i64 n) const noexcept(NO_EXCEPT)
         requires multipliation_assignalbe<Derived> && requires { Derived::one; }
     {
-        assert(0 <= n);
-
         if(Derived::mod() == 1) return Derived::zero;
-        if(n == 0) return Derived::one;
-        if(n == 1 || *this->_derived() == 0 || *this->_derived() == 1) return *this->_derived();
-
-        Derived res = Derived::one, mul = *this->_derived();
-
-        while(true) {
-            if(n & 1) res *= mul;
-            n >>= 1;
-            if(n == 0) return res;
-            mul *= mul;
-        }
-
-        assert(false);
+        return lib::pow(*this->_derived(), n);
     }
 
 
@@ -192,6 +178,7 @@ using atcoder::internal::is_modint_t;
 
 template<class T> concept modint_family =
     numeric<T> &&
+    has_static_one<T> && has_static_zero<T> &&
     requires (T v, i64 p, typename T::unsigned_value_type x) {
         { v.pow(p) } -> std::same_as<T>;
         { v.inv() } -> std::same_as<T>;

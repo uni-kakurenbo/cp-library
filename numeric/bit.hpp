@@ -22,7 +22,10 @@ template<std::unsigned_integral T>
 constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
     constexpr int digits = std::numeric_limits<T>::digits;
 
-    if constexpr(digits <= 32) {
+    if constexpr(digits <= 16) {
+        return static_cast<T>((static_cast<u32>(x) * static_cast<u32>(y)) >> digits);
+    }
+    else if constexpr(digits <= 32) {
         return static_cast<T>((static_cast<u64>(x) * static_cast<u64>(y)) >> digits);
     }
     else if constexpr(digits <= 64) {

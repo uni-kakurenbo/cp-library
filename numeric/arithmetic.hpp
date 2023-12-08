@@ -18,9 +18,9 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 
 #include "numeric/internal/number_base.hpp"
-#include "numeric/internal/modint_interface.hpp"
 
 #include "iterable/operation.hpp"
 
@@ -96,17 +96,20 @@ inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
 }
 
 
-template<class T, class U>
-    requires lib::internal::modint_family<T>
-inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }
-
-template<class T, class U, class F = std::multiplies<T>>
-    requires (not lib::internal::modint_family<T>)
-inline constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
+template<class T, class U, std::invocable<T, T> F = std::multiplies<T>>
+constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
     if(n == 0) return 1;
-    if(n == 1 || x == 0 || x == 1) return x;
+    if(n == 1) return x;
 
-    T res = 1;
+    if constexpr(internal::has_static_zero<T>) { if(x == T::zero) return T::zero; }
+    else { if(x == 0) return 0; }
+
+    if constexpr(internal::has_static_one<T>) { if(x == T::one) return T::one; }
+    else { if(x == 1) return 1; }
+
+    T res;
+    if constexpr(internal::has_static_one<T>) res = T::one;
+    else res = 1;
 
     while(true) {
         if(n & 1) res = mul(res, x);
@@ -117,6 +120,7 @@ inline constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
 
     assert(false);
 }
+
 
 using atcoder::pow_mod;
 using atcoder::inv_mod;

@@ -7,9 +7,12 @@
 
 
 #include "snippet/aliases.hpp"
+
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
+
 #include "numeric/bit.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -23,7 +26,6 @@ struct barrett_context {
     using value_type = Value;
     using large_type = Large;
 
-
   private:
     large_type _mod = 0, _mi;
 
@@ -31,7 +33,6 @@ struct barrett_context {
         large_type x = multiply_high(v, this->_mi);
         return { x, static_cast<value_type>(v - x * this->_mod) };
     }
-
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 1;
@@ -66,6 +67,14 @@ struct barrett_context {
 
     inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
         return this->remainder(static_cast<large_type>(x) * static_cast<large_type>(y));
+    }
+
+    inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
+        if(this->_mod == 1) return 0;
+        return lib::pow(
+            this->remainder(v), p,
+            [&](value_type x, value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); }
+        );
     }
 
     template<std::integral T>

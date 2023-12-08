@@ -14,8 +14,22 @@ template<class T> concept arithmetic = std::is_arithmetic_v<T>;
 template<class T> concept pointer = std::is_pointer_v<T>;
 template<class T> concept structural = std::is_class_v<T>;
 
+
 template<class Large, class Small>
 concept has_double_digits_of = (std::numeric_limits<Large>::digits == 2 * std::numeric_limits<Small>::digits);
+
+
+template<class T>
+concept has_static_zero =
+    requires {
+        T::zero;
+    };
+
+template<class T>
+concept has_static_one =
+    requires {
+        T::one;
+    };
 
 
 template<class L, class R = L>

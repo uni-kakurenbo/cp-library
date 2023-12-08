@@ -8,6 +8,9 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/binomial_coefficient"
 
+
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include <iostream>
 
 #include "snippet/aliases.hpp"

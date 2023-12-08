@@ -14,8 +14,6 @@
 #include "numeric/internal/modint_interface.hpp"
 #include "numeric/internal/barrett.hpp"
 
-#include "numeric/arithmetic.hpp"
-
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp
@@ -82,11 +80,7 @@ struct binomial_coefficient_prime_power_mod {
             }
         }
 
-        this->_inv_fact[size - 1] = pow<u64>(
-            this->_fact[size - 1],
-            this->_m / this->_p * (this->_p - 1) - 1,
-            [this](const u64 x, const u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
-        );
+        this->_inv_fact[size - 1] = this->_barrett_m.pow(this->_fact[size - 1], this->_m / this->_p * (this->_p - 1) - 1);
 
         REPD(i, 2, size - 1) {
             this->_inv_fact[i] = this->_barrett_m.multiply(this->_inv_fact[i + 1], i + 1);
@@ -167,10 +161,7 @@ struct binomial_coefficient_prime_power_mod {
         }
 
         if(eq & 1) res = this->_barrett_m.multiply(res, this->_delta);
-        res = this->_barrett_m.multiply(
-            res,
-            pow<u64>(this->_p, e0, [this](const u64 x, const u64 y) -> u64 { return this->_barrett_m.multiply(x, y); })
-        );
+        res = this->_barrett_m.multiply(res, this->_barrett_m.pow(this->_p, e0));
 
         return static_cast<mod_type>(res);
     }

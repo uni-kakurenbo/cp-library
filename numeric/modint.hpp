@@ -139,7 +139,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, 
     static constexpr int digits = barrett::digits;
     static inline constexpr unsigned_value_type max() noexcept { return barrett::max(); }
 
-    static inline mint zero;
+    static constexpr mint zero = {};
     static inline mint one;
 
     static inline constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
@@ -210,7 +210,7 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     static inline constexpr unsigned_value_type max() noexcept { return mint::montgomery::max(); }
 
 
-    static inline mint zero;
+    static constexpr mint zero = {};
     static inline mint one;
 
 
@@ -280,7 +280,7 @@ struct binary_modint_impl : modint_interface<binary_modint_impl<Value, Id>, Valu
     static inline constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
 
 
-    static inline mint zero;
+    static constexpr mint zero = {};
     static inline mint one;
 
 
