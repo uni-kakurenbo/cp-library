@@ -181,6 +181,10 @@ template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
 struct barrett_modint_impl;
 
 
+template<std::unsigned_integral Value, i64 Id>
+struct binary_modint_impl;
+
+
 using atcoder::internal::is_modint;
 template<class T> constexpr bool is_modint_v = is_modint<T>::value;
 using atcoder::internal::is_modint_t;
@@ -227,6 +231,10 @@ template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64,
 
 template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<u32, u64, Id>;
 template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
+
+template<i64 Id> using binary_modint_32bit = internal::binary_modint_impl<u32, Id>;
+template<i64 Id> using binary_modint_64bit = internal::binary_modint_impl<u64, Id>;
+template<i64 Id> using binary_modint_128bit = internal::binary_modint_impl<u128, Id>;
 
 
 using modint998244353 = static_modint_32bit<998244353>;

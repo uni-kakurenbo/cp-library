@@ -140,13 +140,14 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, 
     static inline constexpr unsigned_value_type max() noexcept { return barrett::max(); }
 
     static inline mint zero;
-    static inline mint one = 1;
+    static inline mint one;
 
     static inline constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_barrett.mod(); }
 
     static inline constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         if(mint::mod() == m) return;
         mint::_barrett = mint::barrett(m);
+        mint::one._val = (m != 1);
     }
 
     static inline constexpr mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT)
@@ -256,6 +257,79 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
 
     friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) {
         return mint::_montgomery.equal(lhs._val, rhs._val);
+    }
+};
+
+
+template<std::unsigned_integral Value, i64 Id>
+struct binary_modint_impl : modint_interface<binary_modint_impl<Value, Id>, Value> {
+    using signed_value_type = std::make_signed_t<Value>;
+    using unsigned_value_type = Value;
+
+
+  private:
+    using mint = binary_modint_impl;
+
+    unsigned_value_type _val = 0;
+
+    static inline unsigned_value_type _mask;
+
+
+  public:
+    static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits;
+    static inline constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
+
+
+    static inline mint zero;
+    static inline mint one;
+
+
+    static inline constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_mask + 1U; }
+
+    static inline constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
+        assert(m == 0 || std::has_single_bit(m));
+        mint::_mask = m - 1U;
+        mint::one._val = (m != 1);
+    }
+
+    static inline constexpr mint raw(const unsigned_value_type v) noexcept(NO_EXCEPT)
+    {
+        mint res;
+        res._val = v;
+        return res;
+    };
+
+
+    constexpr binary_modint_impl() noexcept = default;
+
+    template<std::integral T>
+    constexpr binary_modint_impl(const T v) noexcept(NO_EXCEPT)
+      : _val(static_cast<unsigned_value_type>(v))
+    {}
+
+
+    inline constexpr unsigned_value_type val() const noexcept(NO_EXCEPT) {
+        return this->_val & mint::_mask;
+    }
+
+
+    inline constexpr mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
+        this->_val += rhs._val;
+        return *this;
+    }
+
+    inline constexpr mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
+        this->_val -= rhs._val;
+        return *this;
+    }
+
+    inline constexpr mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {
+        this->_val *= rhs._val;
+        return *this;
+    }
+
+    friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) {
+        return lhs.val() == rhs.val();
     }
 };
 
