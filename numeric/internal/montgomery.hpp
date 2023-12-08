@@ -98,7 +98,7 @@ struct montgomery_context {
         if constexpr(std::is_signed_v<T>) {
             if(v < 0) {
                 if(static_cast<common_type>(-v) >= mod2) v %= mod2;
-                v += mod2;
+                if(v != 0) v += mod2;
             }
         }
 
