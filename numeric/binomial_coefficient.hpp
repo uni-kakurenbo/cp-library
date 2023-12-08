@@ -165,7 +165,7 @@ struct binomial_coefficient_prime_power_mod {
         }
 
         if(eq & 1) res *= this->_delta;
-        res *= mint::raw(this->_p).pow(e0);
+        res *= mint(this->_p).pow(e0);
 
         return static_cast<mod_type>(res.val());
     }
