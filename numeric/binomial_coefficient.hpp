@@ -11,8 +11,10 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
-#include "numeric/barrett_reduction.hpp"
 #include "numeric/internal/modint_interface.hpp"
+
+#include "numeric/barrett_reduction.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 
@@ -72,17 +74,21 @@ struct binomial_coefficient_prime_power_mod {
         REP(i, 2, size) {
             if(i % this->_p == 0) {
                 this->_fact[i] = this->_fact[i - 1];
-                this->_fact[i + 1] = this->_barrett_m.remainder(static_cast<u64>(this->_fact[i - 1]) * (i + 1));
+                this->_fact[i + 1] = this->_barrett_m.multiply(this->_fact[i - 1], i + 1);
                 ++i;
             }
             else {
-                this->_fact[i] = this->_barrett_m.remainder(static_cast<u64>(this->_fact[i - 1]) * i);
+                this->_fact[i] = this->_barrett_m.multiply(this->_fact[i - 1], i);
             }
         }
 
-        this->_inv_fact[size - 1] = this->_barrett_m.pow(static_cast<u64>(this->_fact[size - 1]), this->_m / this->_p * (this->_p - 1) - 1);
+        this->_inv_fact[size - 1] = pow<u64>(
+            this->_fact[size - 1],
+            this->_m / this->_p * (this->_p - 1) - 1,
+            [&](u64 x, u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
+        );
         REPD(i, 2, size - 1) {
-            this->_inv_fact[i] = this->_barrett_m.remainder(static_cast<u64>(this->_inv_fact[i + 1]) * (i + 1));
+            this->_inv_fact[i] = this->_barrett_m.multiply(this->_inv_fact[i + 1], i + 1);
             if(i % this->_p == 0) {
                 this->_inv_fact[i - 1] = this->_inv_fact[i];
                 --i;
@@ -128,14 +134,12 @@ struct binomial_coefficient_prime_power_mod {
 
         while(n > 0) {
             u32 n0, k0;
-            std::tie(n, n0) = this->_barrett_p.divide(static_cast<u64>(n));
-            std::tie(k, k0) = this->_barrett_p.divide(static_cast<u64>(k));
+            std::tie(n, n0) = this->_barrett_p.divide(n);
+            std::tie(k, k0) = this->_barrett_p.divide(k);
             if(n0 < k0) return 0;
 
-            res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_fact[n0]);
-
-            const u32 tmp = this->_barrett_m.remainder(static_cast<u64>(this->_inv_fact[n0 - k0]) * this->_inv_fact[k0]);
-            res = this->_barrett_m.remainder(static_cast<u64>(res) * tmp);
+            res = this->_barrett_m.multiply(res, this->_fact[n0]);
+            res = this->_barrett_m.multiply(res, this->_barrett_m.multiply(this->_inv_fact[n0 - k0], this->_inv_fact[k0]));
         }
 
         return static_cast<mod_type>(res);
@@ -150,13 +154,13 @@ struct binomial_coefficient_prime_power_mod {
         u32 res = 1;
 
         while(n > 0) {
-            res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_fact[this->_barrett_m.remainder(static_cast<u64>(n))]);
-            res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_inv_fact[this->_barrett_m.remainder(static_cast<u64>(k))]);
-            res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_inv_fact[this->_barrett_m.remainder(static_cast<u64>(r))]);
+            res = this->_barrett_m.multiply(res, this->_fact[this->_barrett_m.remainder(n)]);
+            res = this->_barrett_m.multiply(res, this->_inv_fact[this->_barrett_m.remainder(k)]);
+            res = this->_barrett_m.multiply(res, this->_inv_fact[this->_barrett_m.remainder(r)]);
 
-            n = this->_barrett_p.quotient(static_cast<u64>(n));
-            k = this->_barrett_p.quotient(static_cast<u64>(k));
-            r = this->_barrett_p.quotient(static_cast<u64>(r));
+            n = this->_barrett_p.quotient(n);
+            k = this->_barrett_p.quotient(k);
+            r = this->_barrett_p.quotient(r);
 
             u32 eps = static_cast<u32>(n - k - r);
             e0 += eps;
@@ -164,8 +168,15 @@ struct binomial_coefficient_prime_power_mod {
             if(++i >= this->_q) eq += eps;
         }
 
-        if(eq & 1) res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_delta);
-        res = this->_barrett_m.remainder(static_cast<u64>(res) * this->_barrett_m.pow(static_cast<u64>(this->_p), static_cast<u64>(e0)));
+        if(eq & 1) res = this->_barrett_m.multiply(res, this->_delta);
+        res = this->_barrett_m.multiply(
+            res,
+            pow<u64>(
+                this->_p,
+                e0,
+                [&](u64 x, u64 y) -> u64 { return this->_barrett_m.multiply(x, y); }
+            )
+        );
 
         return static_cast<mod_type>(res);
     }
