@@ -150,7 +150,7 @@ struct binomial_coefficient_prime_power_mod {
         mint res = mint::one;
 
         while(n > 0) {
-            res * this->_fact[this->_barrett_m.remainder(static_cast<u64>(n))];
+            res *= this->_fact[this->_barrett_m.remainder(static_cast<u64>(n))];
             res *= this->_inv_fact[this->_barrett_m.remainder(static_cast<u64>(k))];
             res *= this->_inv_fact[this->_barrett_m.remainder(static_cast<u64>(r))];
 
