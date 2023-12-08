@@ -5,6 +5,7 @@
 #include <cstring>
 #include <type_traits>
 #include <string>
+#include <functional>
 #include <utility>
 #include <optional>
 #include <algorithm>
@@ -99,7 +100,7 @@ template<class T, class U>
     requires lib::internal::modint_family<T>
 inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }
 
-template<class T, class U, class F = multiplies<T>>
+template<class T, class U, class F = std::multiplies<T>>
     requires (not lib::internal::modint_family<T>)
 inline constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
     if(n == 0) return 1;
