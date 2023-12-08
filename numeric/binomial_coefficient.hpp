@@ -22,7 +22,7 @@ namespace internal {
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp
-template<class T, class R = T, Mint = barrett_modint_32bit<-(1L << 62) + 4>>
+template<class T, class R = T, dynamic_modint_family Mint = barrett_modint_32bit<-(1L << 62) + 4>>
     requires (std::numeric_limits<R>::digits > 30) || modint_family<R>
 struct binomial_coefficient_prime_power_mod {
     using value_type = T;
