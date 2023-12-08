@@ -99,14 +99,17 @@ template<class T, class U>
     requires lib::internal::modint_family<T>
 inline constexpr T pow(const T& x, U n) noexcept(NO_EXCEPT) { return x.pow(n); }
 
-template<class T, class U>
+template<class T, class U, class F = multiplies<T>>
     requires (not lib::internal::modint_family<T>)
-inline constexpr T pow(T x, U n) noexcept(NO_EXCEPT) {
+inline constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
+    if(n == 0) return 1;
+    if(n == 1 || x == 0 || x == 1) return x;
+
     T res = 1;
 
     while(true) {
-        if(n & 1) res *= x;
-        x *= x;
+        if(n & 1) res = mul(res, x);
+        x = mul(x, x);
         if(n == 0) return res;
         n >>= 1;
     }
