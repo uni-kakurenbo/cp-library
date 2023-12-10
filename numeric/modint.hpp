@@ -128,7 +128,7 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, 
 
   private:
     using mint = barrett_modint_impl;
-    using barrett = barrett_context<unsigned_value_type, unsigned_large_type>;
+    using barrett = barrett_reduction<unsigned_value_type, unsigned_large_type>;
 
     unsigned_value_type _val = 0;
 

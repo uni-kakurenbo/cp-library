@@ -20,7 +20,7 @@ namespace internal {
 
 template<std::unsigned_integral Value, std::unsigned_integral Large>
     requires has_double_digits_of<Large, Value>
-struct montgomery_context {
+struct montgomery_reduction {
     using value_type = Value;
     using large_type = Large;
 
@@ -35,19 +35,19 @@ struct montgomery_context {
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
-    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_context::digits) - 1; }
+    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_reduction::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
 
-    constexpr montgomery_context() noexcept = default;
+    constexpr montgomery_reduction() noexcept = default;
 
-    constexpr montgomery_context(const value_type m) noexcept(NO_EXCEPT) {
+    constexpr montgomery_reduction(const value_type m) noexcept(NO_EXCEPT) {
         assert((m & 1) == 1);
 
         if(this->_mod == m) return;
 
-        assert(m <= montgomery_context::max());
+        assert(m <= montgomery_reduction::max());
 
         this->_mod = m;
         this->_r2 = static_cast<value_type>(-static_cast<large_type>(m) % m);
@@ -241,8 +241,8 @@ struct arbitrary_montgomery_context {
 } // namespace internal
 
 
-using montgomery_32bit = internal::montgomery_context<u32, u64>;
-using montgomery_64bit = internal::montgomery_context<u64, u128>;
+using montgomery_reduction_32bit = internal::montgomery_reduction<u32, u64>;
+using montgomery_reduction_64bit = internal::montgomery_reduction<u64, u128>;
 
 using arbitrary_montgomery_32bit = internal::arbitrary_montgomery_context<u32, u64>;
 using arbitrary_montgomery_64bit = internal::arbitrary_montgomery_context<u64, u128>;

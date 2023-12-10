@@ -39,7 +39,7 @@ struct binomial_coefficient_prime_power_mod {
     value_type _max;
     std::valarray<u32> _fact, _inv_fact, _inv;
     u32 _delta;
-    barrett_32bit _barrett_m, _barrett_p;
+    barrett_reduction_32bit _barrett_m, _barrett_p;
     montgomery _montgomery_m;
     u32 _one;
 
@@ -60,8 +60,8 @@ struct binomial_coefficient_prime_power_mod {
         const u32 size = std::min(this->_m, static_cast<u32>(this->_max) + 1);
         assert(size < self::MAX_BUFFER_SIZE);
 
-        this->_barrett_m = barrett_32bit(this->_m);
-        this->_barrett_p = barrett_32bit(this->_p);
+        this->_barrett_m = barrett_reduction_32bit(this->_m);
+        this->_barrett_p = barrett_reduction_32bit(this->_p);
         this->_montgomery_m = self::montgomery(this->_m);
 
         this->_delta = this->_montgomery_m.convert_raw((this->_p == 2 && this->_q >= 3) ? 1 : this->_m - 1);
@@ -189,7 +189,7 @@ struct binomial_coefficient {
     using mod_type = R;
 
   private:
-    template<class montgomery = montgomery_32bit>
+    template<class montgomery = montgomery_reduction_32bit>
     using internal_binomial = internal::binomial_coefficient_prime_power_mod<value_type, long long, montgomery>;
 
     u32 _mod;

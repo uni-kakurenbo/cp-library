@@ -22,7 +22,7 @@ namespace internal {
 
 template<std::unsigned_integral Value, std::unsigned_integral Large>
     requires has_double_digits_of<Large, Value>
-struct barrett_context {
+struct barrett_reduction {
     using value_type = Value;
     using large_type = Large;
 
@@ -36,17 +36,17 @@ struct barrett_context {
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 1;
-    static constexpr value_type max() noexcept { return (value_type{ 1 } << barrett_context::digits) - 1; }
+    static constexpr value_type max() noexcept { return (value_type{ 1 } << barrett_reduction::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
 
-    constexpr barrett_context() noexcept = default;
+    constexpr barrett_reduction() noexcept = default;
 
-    constexpr explicit inline barrett_context(const value_type mod)
+    constexpr explicit inline barrett_reduction(const value_type mod)
       : _mod(mod), _mi(std::numeric_limits<large_type>::max() / mod + 1)
     {
-        assert(0 < mod && mod <= barrett_context::max());
+        assert(0 < mod && mod <= barrett_reduction::max());
     }
 
 
@@ -105,8 +105,8 @@ struct barrett_context {
 } // namespace internal
 
 
-using barrett_32bit = internal::barrett_context<u32, u64>;
-using barrett_64bit = internal::barrett_context<u64, u128>;
+using barrett_reduction_32bit = internal::barrett_reduction<u32, u64>;
+using barrett_reduction_64bit = internal::barrett_reduction<u64, u128>;
 
 
 } // namespace lib
