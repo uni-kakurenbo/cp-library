@@ -34,6 +34,8 @@ struct montgomery_reduction {
     }
 
   public:
+    value_type one;
+
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
     static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_reduction::digits) - 1; }
 
@@ -52,6 +54,7 @@ struct montgomery_reduction {
         this->_mod = m;
         this->_r2 = static_cast<value_type>(-static_cast<large_type>(m) % m);
         this->_mp = -this->_inv();
+        this->one = this->reduce(this->_r2);
     }
 
 
@@ -69,12 +72,12 @@ struct montgomery_reduction {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
-    inline constexpr value_type pow(const large_type v, i64 p, const large_type one = 0) const noexcept(NO_EXCEPT) {
+    inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
         return lib::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
-            one ? : this->reduce(this->_r2)
+            static_cast<large_type>(this->one)
         );
     }
 
@@ -111,18 +114,23 @@ struct montgomery_reduction {
 
         return this->multiply(v, this->_r2);
     }
+
+
+    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) {
+        return this->normalize(this->reduce(v));
+    }
 };
 
 
 // Thanks to: https://www.mathenachia.blog/even-mod-montgomery-impl/
 template<std::unsigned_integral Value, std::unsigned_integral Large>
     requires has_double_digits_of<Large, Value>
-struct arbitrary_montgomery_context {
+struct arbitrary_montgomery_reduction {
     using value_type = Value;
     using large_type = Large;
 
   private:
-    using context = arbitrary_montgomery_context;
+    using context = arbitrary_montgomery_reduction;
     static constexpr int width = std::numeric_limits<value_type>::digits;
 
     value_type _mod = 0;
@@ -146,15 +154,17 @@ struct arbitrary_montgomery_context {
     }
 
   public:
+    value_type one;
+
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
     static inline constexpr value_type max() noexcept { return (value_type{ 1 } << context::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
 
-    constexpr arbitrary_montgomery_context() noexcept = default;
+    constexpr arbitrary_montgomery_reduction() noexcept = default;
 
-    constexpr arbitrary_montgomery_context(value_type m) noexcept(NO_EXCEPT) {
+    constexpr arbitrary_montgomery_reduction(value_type m) noexcept(NO_EXCEPT) {
         assert(0 < m);
 
         if(this->_mod == m) return;
@@ -173,6 +183,8 @@ struct arbitrary_montgomery_context {
             this->_r2 = (x + ((value_type{ 1 } - x) * this->_m0ip() * this->_m0));
             this->_r2 = static_cast<large_type>(this->_r2) * this->_r2 % this->_mod;
         }
+
+        this->one = this->reduce(this->_r2);
     }
 
 
@@ -193,12 +205,12 @@ struct arbitrary_montgomery_context {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
-    inline constexpr value_type pow(const large_type v, i64 p, const large_type one = 0) const noexcept(NO_EXCEPT) {
+    inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
         return lib::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
-            one ? : this->reduce(this->_r2)
+            static_cast<large_type>(this->one)
         );
     }
 
@@ -214,11 +226,14 @@ struct arbitrary_montgomery_context {
 
 
     inline constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) {
+        if(v == 1) return this->one;
         return this->multiply(v, this->_r2);
     }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
+        if(v == 1) return this->one;
+
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);
 
@@ -235,6 +250,11 @@ struct arbitrary_montgomery_context {
 
         return this->multiply(v, this->_r2);
     }
+
+
+    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) {
+        return this->normalize(this->reduce(v));
+    }
 };
 
 
@@ -244,7 +264,7 @@ struct arbitrary_montgomery_context {
 using montgomery_reduction_32bit = internal::montgomery_reduction<u32, u64>;
 using montgomery_reduction_64bit = internal::montgomery_reduction<u64, u128>;
 
-using arbitrary_montgomery_32bit = internal::arbitrary_montgomery_context<u32, u64>;
-using arbitrary_montgomery_64bit = internal::arbitrary_montgomery_context<u64, u128>;
+using arbitrary_montgomery_reduction_32bit = internal::arbitrary_montgomery_reduction<u32, u64>;
+using arbitrary_montgomery_reduction_64bit = internal::arbitrary_montgomery_reduction<u64, u128>;
 
 } // namespace lib

@@ -220,8 +220,8 @@ template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64,
 template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<montgomery_reduction_32bit, Id>;
 template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<montgomery_reduction_64bit, Id>;
 
-template<i64 Id> using arbitrary_montgomery_modint_32bit = internal::montgomery_modint_impl<arbitrary_montgomery_32bit, Id>;
-template<i64 Id> using arbitrary_montgomery_modint_64bit = internal::montgomery_modint_impl<arbitrary_montgomery_64bit, Id>;
+template<i64 Id> using arbitrary_montgomery_modint_32bit = internal::montgomery_modint_impl<arbitrary_montgomery_reduction_32bit, Id>;
+template<i64 Id> using arbitrary_montgomery_modint_64bit = internal::montgomery_modint_impl<arbitrary_montgomery_reduction_64bit, Id>;
 
 template<i64 Id> using binary_modint_32bit = internal::binary_modint_impl<u32, Id>;
 template<i64 Id> using binary_modint_64bit = internal::binary_modint_impl<u64, Id>;
