@@ -17,7 +17,6 @@
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/primitive_root.hpp"
 #include "numeric/internal/barrett.hpp"
-#include "numeric/internal/montgomery.hpp"
 
 #include "template/debug.hpp"
 
@@ -31,10 +30,10 @@ namespace internal {
 template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
     requires has_double_digits_of<Large, Value> && (Mod > 0)
 struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mod>, Value> {
-    using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
-    using signed_large_type = std::make_signed_t<Large>;
+    using signed_value_type = std::make_signed_t<Value>;
     using unsigned_large_type = Large;
+    using signed_large_type = std::make_signed_t<Large>;
 
     static constexpr int digits = std::numeric_limits<unsigned_value_type>::digits;
     static inline constexpr unsigned_value_type max() noexcept { return std::numeric_limits<unsigned_value_type>::max(); }
@@ -122,10 +121,10 @@ struct static_modint_impl : modint_interface<static_modint_impl<Value, Large, Mo
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
     requires has_double_digits_of<Large, Value>
 struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, Id>, Value> {
-    using signed_value_type = std::make_signed_t<Value>;
     using unsigned_value_type = Value;
-    using signed_large_type = std::make_signed_t<Large>;
+    using signed_value_type = std::make_signed_t<Value>;
     using unsigned_large_type = Large;
+    using signed_large_type = std::make_signed_t<Large>;
 
   private:
     using mint = barrett_modint_impl;
@@ -187,44 +186,42 @@ struct barrett_modint_impl : modint_interface<barrett_modint_impl<Value, Large, 
 };
 
 
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-    requires has_double_digits_of<Large, Value>
-struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, Large, Id>, Value> {
-    using signed_value_type = std::make_signed_t<Value>;
-    using unsigned_value_type = Value;
-    using signed_large_type = std::make_signed_t<Large>;
-    using unsigned_large_type = Large;
-
+template<class Context, i64 Id>
+struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Context, Id>, typename Context::value_type> {
+    using unsigned_value_type = typename Context::value_type;
+    using signed_value_type = std::make_signed_t<unsigned_value_type>;
+    using unsigned_large_type = typename Context::large_type;
+    using signed_large_type = std::make_signed_t<unsigned_large_type>;
 
   private:
     using mint = montgomery_modint_impl;
-    using montgomery = montgomery_context<unsigned_value_type, unsigned_large_type>;
+    using context = Context;
 
     unsigned_value_type _val = 0;
 
-    static inline montgomery _montgomery;
+    static inline context _context;
 
 
   public:
-    static constexpr int digits = mint::montgomery::digits;
-    static inline constexpr unsigned_value_type max() noexcept { return mint::montgomery::max(); }
+    static constexpr int digits = mint::context::digits;
+    static inline constexpr unsigned_value_type max() noexcept { return mint::context::max(); }
 
 
     static constexpr mint zero = {};
     static inline mint one;
 
 
-    static inline constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_montgomery.mod(); }
+    static inline constexpr unsigned_value_type mod() noexcept(NO_EXCEPT) { return mint::_context.mod(); }
 
     static inline constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
-        mint::_montgomery = mint::montgomery(m);
-        mint::one._val = mint::_montgomery.reduce(mint::_montgomery.r2());
+        mint::_context = mint::context(m);
+        mint::one._val = mint::_context.convert(1);
     }
 
     static inline constexpr mint raw(const unsigned_large_type v) noexcept(NO_EXCEPT)
     {
         mint res;
-        res._val = mint::_montgomery.convert_raw(v);
+        res._val = mint::_context.convert_raw(v);
         return res;
     };
 
@@ -232,11 +229,11 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     constexpr montgomery_modint_impl() noexcept = default;
 
     template<std::integral T>
-    constexpr montgomery_modint_impl(const T v) noexcept(NO_EXCEPT) : _val(mint::_montgomery.convert(v)) {}
+    constexpr montgomery_modint_impl(const T v) noexcept(NO_EXCEPT) : _val(mint::_context.convert(v)) {}
 
 
     inline constexpr unsigned_value_type val() const noexcept(NO_EXCEPT) {
-        return mint::_montgomery.normalize(mint::_montgomery.reduce(this->_val));
+        return mint::_context.normalize(mint::_context.reduce(this->_val));
     }
 
 
@@ -251,12 +248,12 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Value, L
     }
 
     inline constexpr mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {
-        this->_val = mint::_montgomery.multiply(this->_val, rhs._val);
+        this->_val = mint::_context.multiply(this->_val, rhs._val);
         return *this;
     }
 
     friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) {
-        return mint::_montgomery.equal(lhs._val, rhs._val);
+        return mint::_context.equal(lhs._val, rhs._val);
     }
 };
 

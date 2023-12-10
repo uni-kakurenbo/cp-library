@@ -10,6 +10,7 @@
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
 #include "numeric/bit.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -37,8 +38,6 @@ struct montgomery_context {
     static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_context::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
-    inline constexpr value_type mp() const noexcept(NO_EXCEPT) { return this->_mp; }
-    inline constexpr value_type r2() const noexcept(NO_EXCEPT) { return this->_r2; }
 
 
     constexpr montgomery_context() noexcept = default;
@@ -70,6 +69,14 @@ struct montgomery_context {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
+    inline constexpr value_type pow(const large_type v, i64 p, const large_type one = 0) const noexcept(NO_EXCEPT) {
+        if(this->_mod == 1) return 0;
+        return lib::pow(
+            v, p,
+            [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
+            one ? : this->reduce(this->_r2)
+        );
+    }
 
     inline constexpr value_type normalize(const value_type v) const noexcept(NO_EXCEPT) {
         assert(0 <= v && v < (this->_mod << 1));
@@ -115,11 +122,14 @@ struct arbitrary_montgomery_context {
     using large_type = Large;
 
   private:
+    using context = arbitrary_montgomery_context;
+    static constexpr int width = std::numeric_limits<value_type>::digits;
+
     value_type _mod = 0;
     int _tz;
     value_type _m0;
     large_type _m0i, _mask;
-    value_type _r2p;
+    value_type _r2;
 
     constexpr large_type _inv() const noexcept(NO_EXCEPT) {
         large_type res = this->_m0;
@@ -127,15 +137,19 @@ struct arbitrary_montgomery_context {
         return res & this->_mask;
     }
 
+    constexpr value_type _m0ip() const noexcept(NO_EXCEPT) {
+        if(this->_tz == 0) return 0;
+        value_type res = this->_m0;
+        const value_type msk = (value_type{ 1 } << this->_tz) - 1;
+        while(((this->_m0 * res) & msk) != 1) res *= value_type{ 2 } - this->_m0 * res;
+        return res & msk;
+    }
+
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
-    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << arbitrary_montgomery_context::digits) - 1; }
+    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << context::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
-    inline constexpr value_type m0() const noexcept(NO_EXCEPT) { return this->_m0; }
-    inline constexpr value_type m0i() const noexcept(NO_EXCEPT) { return this->_m0i; }
-    inline constexpr value_type w() const noexcept(NO_EXCEPT) { return this->_mask + 1; }
-    inline constexpr value_type r2p() const noexcept(NO_EXCEPT) { return this->_r2p; }
 
 
     constexpr arbitrary_montgomery_context() noexcept = default;
@@ -149,24 +163,26 @@ struct arbitrary_montgomery_context {
         this->_tz = std::countr_zero(m);
         this->_m0 = m >> this->_tz;
 
-        assert(this->_mod < arbitrary_montgomery_context::max());
+        assert(this->_mod < context::max());
 
-        this->_mask = (large_type{ 1 } << (std::numeric_limits<value_type>::digits + this->_tz)) - 1;
-        this->_r2p = static_cast<value_type>((-static_cast<large_type>(this->_mod) + this->_m0) % this->_mod);
+        this->_mask = (large_type{ 1 } << (context::width + this->_tz)) - 1;
         this->_m0i = this->_inv();
 
-        debug(this->_mod, this->_tz, this->_m0, this->_mask, this->_r2p, this->_m0i);
+        {
+            const value_type x = (large_type{ 1 } << context::width) % this->_m0;
+            this->_r2 = (x + ((value_type{ 1 } - x) * this->_m0ip() * this->_m0));
+            this->_r2 = static_cast<large_type>(this->_r2) * this->_r2 % this->_mod;
+        }
     }
 
 
     constexpr value_type reduce(const large_type v) const noexcept(NO_EXCEPT) {
-        const large_type x = (v << std::numeric_limits<value_type>::digits) & this->_mask;
         const value_type res =
             static_cast<value_type>(
                 (
                     v +
                     this->_m0 *
-                    (((x - v) * this->_m0i) & this->_mask)
+                    ((((v << std::numeric_limits<value_type>::digits) - v) * this->_m0i) & this->_mask)
                 ) >> std::numeric_limits<value_type>::digits
             );
         return res;
@@ -177,6 +193,14 @@ struct arbitrary_montgomery_context {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
+    inline constexpr value_type pow(const large_type v, i64 p, const large_type one = 0) const noexcept(NO_EXCEPT) {
+        if(this->_mod == 1) return 0;
+        return lib::pow(
+            v, p,
+            [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
+            one ? : this->reduce(this->_r2)
+        );
+    }
 
     inline constexpr value_type normalize(const value_type v) const noexcept(NO_EXCEPT) {
         assert(0 <= v && v < (this->_mod << 1));
@@ -190,7 +214,7 @@ struct arbitrary_montgomery_context {
 
 
     inline constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) {
-        return this->multiply(v, this->_r2p);
+        return this->multiply(v, this->_r2);
     }
 
     template<std::integral T>
@@ -209,7 +233,7 @@ struct arbitrary_montgomery_context {
             }
         }
 
-        return this->multiply(v, this->_r2p);
+        return this->multiply(v, this->_r2);
     }
 };
 
@@ -220,5 +244,7 @@ struct arbitrary_montgomery_context {
 using montgomery_32bit = internal::montgomery_context<u32, u64>;
 using montgomery_64bit = internal::montgomery_context<u64, u128>;
 
+using arbitrary_montgomery_32bit = internal::arbitrary_montgomery_context<u32, u64>;
+using arbitrary_montgomery_64bit = internal::arbitrary_montgomery_context<u64, u128>;
 
 } // namespace lib

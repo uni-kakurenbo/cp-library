@@ -49,12 +49,13 @@ struct barrett_context {
         assert(0 < mod && mod <= barrett_context::max());
     }
 
+
     inline constexpr large_type quotient(const large_type v) const noexcept(NO_EXCEPT) {
         const auto [ x, r ] = this->_reduce(v);
         return static_cast<large_type>(this->_mod <= r ? x - 1 : x);
     }
 
-    inline constexpr value_type remainder(const large_type v) const noexcept(NO_EXCEPT) {
+    inline constexpr value_type reduce(const large_type v) const noexcept(NO_EXCEPT) {
         const auto [ x, r ] = this->_reduce(v);
         return static_cast<value_type>(this->_mod <= r ? r + this->_mod : r);
     }
@@ -66,28 +67,32 @@ struct barrett_context {
     }
 
     inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
-        return this->remainder(static_cast<large_type>(x) * static_cast<large_type>(y));
+        return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
     inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
         return lib::pow(
-            this->remainder(v), p,
-            [&](value_type x, value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); }
+            this->reduce(v), p,
+            [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); }
         );
     }
 
+    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) {
+        return this->reduce(v);
+    }
+
     template<std::integral T>
-    constexpr value_type convert(T v) noexcept(NO_EXCEPT) {
+    constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod = static_cast<common_type>(this->_mod);
 
-        if(static_cast<common_type>(v) >= mod) v = this->remainder(v);
+        if(static_cast<common_type>(v) >= mod) v = this->reduce(v);
 
         if constexpr(std::is_signed_v<T>) {
             if(v < 0) {
                 if(static_cast<common_type>(-v) >= mod) {
-                    v = this->_mod - this->remainder(-v + 1) - 1;
+                    v = this->_mod - this->reduce(-v + 1) - 1;
                 }
             }
         }

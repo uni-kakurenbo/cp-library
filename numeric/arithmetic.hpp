@@ -97,19 +97,11 @@ inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
 
 
 template<class T, class U, std::invocable<T, T> F = std::multiplies<T>>
-constexpr T pow(T x, U n, F mul = {}) noexcept(NO_EXCEPT) {
-    if(n == 0) return 1;
-    if(n == 1) return x;
+constexpr T pow(T x, U n, F mul = {}, T one = T{1}, T zero = T{0}) noexcept(NO_EXCEPT) {
+    if(n == 0) return one;
+    if(n == 1 || x == zero || x == one) return x;
 
-    if constexpr(internal::has_static_zero<T>) { if(x == T::zero) return T::zero; }
-    else { if(x == 0) return 0; }
-
-    if constexpr(internal::has_static_one<T>) { if(x == T::one) return T::one; }
-    else { if(x == 1) return 1; }
-
-    T res;
-    if constexpr(internal::has_static_one<T>) res = T::one;
-    else res = 1;
+    T res = one;
 
     while(true) {
         if(n & 1) res = mul(res, x);

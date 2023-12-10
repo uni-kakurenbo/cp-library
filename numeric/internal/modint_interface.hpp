@@ -10,6 +10,8 @@
 
 #include "internal/concepts.hpp"
 
+#include "numeric/internal/montgomery.hpp"
+
 
 namespace lib {
 
@@ -84,7 +86,7 @@ struct modint_interface {
         requires multipliation_assignalbe<Derived> && requires { Derived::one; }
     {
         if(Derived::mod() == 1) return Derived::zero;
-        return lib::pow(*this->_derived(), n);
+        return lib::pow(*this->_derived(), n, Derived::one, Derived::zero);
     }
 
 
@@ -159,12 +161,11 @@ struct static_modint_impl;
 
 template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
     requires has_double_digits_of<Large, Value>
-struct montgomery_modint_impl;
-
-
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-    requires has_double_digits_of<Large, Value>
 struct barrett_modint_impl;
+
+
+template<class Context, i64 Id>
+struct montgomery_modint_impl;
 
 
 template<std::unsigned_integral Value, i64 Id>
@@ -216,8 +217,11 @@ template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, 
 template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
 template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;
 
-template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<u32, u64, Id>;
-template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<u64, u128, Id>;
+template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<montgomery_32bit, Id>;
+template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<montgomery_64bit, Id>;
+
+template<i64 Id> using arbitrary_montgomery_modint_32bit = internal::montgomery_modint_impl<arbitrary_montgomery_32bit, Id>;
+template<i64 Id> using arbitrary_montgomery_modint_64bit = internal::montgomery_modint_impl<arbitrary_montgomery_64bit, Id>;
 
 template<i64 Id> using binary_modint_32bit = internal::binary_modint_impl<u32, Id>;
 template<i64 Id> using binary_modint_64bit = internal::binary_modint_impl<u64, Id>;
