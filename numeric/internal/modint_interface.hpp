@@ -86,7 +86,7 @@ struct modint_interface {
         requires multipliation_assignalbe<Derived> && requires { Derived::one; }
     {
         if(Derived::mod() == 1) return Derived::zero;
-        return lib::pow(*this->_derived(), n, Derived::one, Derived::zero);
+        return lib::pow(*this->_derived(), n, std::multiplies<Derived>{}, Derived::one, Derived::zero);
     }
 
 
