@@ -6,6 +6,8 @@
 #include <type_traits>
 
 
+#include "template/debug.hpp"
+
 #include "snippet/aliases.hpp"
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
@@ -93,12 +95,15 @@ struct montgomery_reduction {
 
 
     inline constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) {
+        if(v == 1) return this->one;
         return this->multiply(v, this->_r2);
     }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
-        using common_type = std::common_type_t<T, value_type>;
+        if(v == 1) return this->one;
+
+        using common_type = std::make_signed_t<std::common_type_t<T, value_type>>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);
 
         if(static_cast<common_type>(v) >= mod2) {
@@ -120,7 +125,6 @@ struct montgomery_reduction {
         return this->normalize(this->reduce(v));
     }
 };
-
 
 // Thanks to: https://www.mathenachia.blog/even-mod-montgomery-impl/
 template<std::unsigned_integral Value, std::unsigned_integral Large>
@@ -148,9 +152,18 @@ struct arbitrary_montgomery_reduction {
     constexpr value_type _m0ip() const noexcept(NO_EXCEPT) {
         if(this->_tz == 0) return 0;
         value_type res = this->_m0;
-        const value_type msk = (value_type{ 1 } << this->_tz) - 1;
-        while(((this->_m0 * res) & msk) != 1) res *= value_type{ 2 } - this->_m0 * res;
-        return res & msk;
+        const value_type mask = (value_type{ 1 } << this->_tz) - 1;
+        while(((this->_m0 * res) & mask) != 1) res *= value_type{ 2 } - this->_m0 * res;
+        return res & mask;
+    }
+
+    constexpr value_type _m0ip2() const noexcept(NO_EXCEPT) {
+        if(this->_tz == 0) return 0;
+        const value_type m0s = this->_m0 * this->_m0;
+        value_type res = m0s;
+        const value_type mask = (value_type{ 1 } << this->_tz) - 1;
+        while(((m0s * res) & mask) != 1) res *= value_type{ 2 } - m0s * res;
+        return res & mask;
     }
 
   public:
@@ -180,8 +193,11 @@ struct arbitrary_montgomery_reduction {
 
         {
             const value_type x = (large_type{ 1 } << context::width) % this->_m0;
-            this->_r2 = (x + ((value_type{ 1 } - x) * this->_m0ip() * this->_m0));
+            const value_type mask = (value_type{ 1 } << this->_tz) - 1;
+            this->_r2 = (x + ((((large_type{ 1 } - x) * this->_m0ip()) & mask) * this->_m0));
+            // debug(this->_m0ip2(), (this->_m0ip2() * this->_m0 * this->_m0) & mask);
             this->_r2 = static_cast<large_type>(this->_r2) * this->_r2 % this->_mod;
+            // debug(this->_r2, (x + ((((large_type{ 1 } - x) * this->_m0ip()) & mask) * this->_m0)));
         }
 
         this->one = this->reduce(this->_r2);
@@ -237,15 +253,15 @@ struct arbitrary_montgomery_reduction {
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);
 
-        if(static_cast<common_type>(v) >= mod2) {
+        if(v > 0 && static_cast<common_type>(v) >= mod2) {
             v %= mod2;
         }
 
-        if constexpr(std::is_signed_v<T>) {
-            if(v < 0) {
-                if(static_cast<common_type>(-v) >= mod2) v %= mod2;
-                if(v != 0) v += mod2;
+        if constexpr(std::signed_integral<T>) {
+            if(v < 0 && static_cast<common_type>(-v) >= mod2) {
+                v %= mod2;
             }
+            if(v != 0) v += mod2;
         }
 
         return this->multiply(v, this->_r2);

@@ -87,14 +87,17 @@ struct barrett_reduction {
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod = static_cast<common_type>(this->_mod);
 
-        if(static_cast<common_type>(v) >= mod) v = this->reduce(v);
+        if(v > 0 && static_cast<common_type>(v) >= mod) {
+            if(static_cast<common_type>(v) <= barrett_reduction::max()) v = this->reduce(v);
+            else v %= mod;
+        }
 
-        if constexpr(std::is_signed_v<T>) {
-            if(v < 0) {
-                if(static_cast<common_type>(-v) >= mod) {
-                    v = this->_mod - this->reduce(-v + 1) - 1;
-                }
+        if constexpr(std::signed_integral<T>) {
+            if(v < 0 && static_cast<common_type>(-v) >= mod) {
+                if(static_cast<common_type>(-v) <= barrett_reduction::max()) v = this->reduce(v);
+                else v %= mod;
             }
+            if(v != 0) v += mod;
         }
 
         return static_cast<value_type>(v);

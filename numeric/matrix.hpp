@@ -11,6 +11,9 @@
 #include "structure/grid.hpp"
 #include "adapter/valarray.hpp"
 
+#include "numeric/internal/modint_interface.hpp"
+
+
 
 namespace lib {
 
@@ -110,6 +113,36 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
             p >>= 1;
         }
         return res;
+    }
+
+    T determinant() const noexcept(NO_EXCEPT)
+        requires modint_family<T>
+    {
+        assert(this->rows() == this->cols());
+
+        auto a = *this;
+
+        T det = T::one;
+        REP(j, a.rows()) {
+            REP(i, j, a.rows()) {
+                if(a[i][j] == 0) continue;
+                if(i != j) std::swap(a[i], a[j]), det = -det;
+                break;
+            }
+
+            if(a[j][j] == 0) return 0;
+            REP(i, j+1, a.rows()) {
+                while(a[i][j] != 0) {
+                    const long long q = a[j][j].val() / a[i][j].val();
+                    const T c = -q;
+                    REP(k, j, a.rows()) a[j][k] += a[i][k] * c;
+                    std::swap(a[i], a[j]), det = -det;
+                }
+            }
+        }
+
+        REP(i, a.rows()) det *= a[i][i];
+        return det;
     }
 };
 
