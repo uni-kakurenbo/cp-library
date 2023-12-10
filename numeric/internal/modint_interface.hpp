@@ -10,7 +10,7 @@
 
 #include "internal/concepts.hpp"
 
-#include "numeric/internal/montgomery.hpp"
+#include "numeric/montgomery_reduction.hpp"
 
 
 namespace lib {

@@ -16,7 +16,7 @@
 #include "numeric/internal/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/primitive_root.hpp"
-#include "numeric/internal/barrett.hpp"
+#include "numeric/barrett_reduction.hpp"
 
 #include "template/debug.hpp"
 

@@ -12,8 +12,8 @@
 #include "snippet/iterations.hpp"
 
 #include "numeric/internal/modint_interface.hpp"
-#include "numeric/internal/barrett.hpp"
-#include "numeric/internal/montgomery.hpp"
+#include "numeric/barrett_reduction.hpp"
+#include "numeric/montgomery_reduction.hpp"
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp
