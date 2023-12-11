@@ -17,36 +17,44 @@ namespace divisor_transform {
 
 using size_type = internal::size_t;
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
-    const auto n = static_cast<size_type>(std::distance(first, last));
+
+template<std::ranges::sized_range R>
+auto zeta(R& v) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(v);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) first[k*p-1] += first[k-1];
+        for(size_type k=1; k*p <= n; ++k) v[k*p-1] += v[k-1];
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
-    const auto n = static_cast<size_type>(std::distance(first, last));
+template<std::ranges::sized_range R>
+auto mobius(R& v) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(v);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) first[k*p-1] -= first[k-1];
+        for(size_type k=n/p; k>0; --k) v[k*p-1] -= v[k-1];
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
-    for(auto itr1 = last; itr1-- != first; ) {
-        for(auto itr2 = first; itr2 != last; ++itr2) {
+
+template<std::ranges::range R>
+    requires requires () { typename R::mapped_type; }
+auto zeta(R& v) noexcept(NO_EXCEPT) {
+    const auto begin = std::ranges::begin(v);
+    const auto end = std::ranges::end(v);
+    for(auto itr1 = begin; itr1-- != begin; ) {
+        for(auto itr2 = begin; itr2 != end; ++itr2) {
             if(itr1->first == itr2->first) break;
             if(itr1->first % itr2->first == 0) itr1->second += itr2->second;
         }
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
-    for(auto itr2 = first; itr2 != last; ++itr2) {
-        for(auto itr1 = last; (itr1--) != first; ) {
+template<std::ranges::range R>
+    requires requires () { typename R::mapped_type; }
+auto mobius(R& v) noexcept(NO_EXCEPT) {
+    const auto begin = std::ranges::begin(v);
+    const auto end = std::ranges::end(v);
+    for(auto itr2 = begin; itr2 != end; ++itr2) {
+        for(auto itr1 = end; (itr1--) != v; ) {
             if(itr1->first == itr2->first) break;
             if(itr1->first % itr2->first == 0) itr1->second -= itr2->second;
         }
@@ -62,35 +70,43 @@ namespace multiple_transform  {
 
 using size_type = internal::size_t;
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
-    const auto n = static_cast<size_type>(std::distance(first, last));
+
+template<std::ranges::sized_range R>
+auto zeta(R& v) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(v);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) first[k-1] += first[k*p-1];
+        for(size_type k=n/p; k>0; --k) v[k-1] += v[k*p-1];
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype((*first) += (*first), void()) {
-    const auto n = static_cast<size_type>(std::distance(first, last));
+template<std::ranges::sized_range R>
+auto mobius(R& v) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(v);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) first[k-1] -= first[k*p-1];
+        for(size_type k=1; k*p <= n; ++k) v[k-1] -= v[k*p-1];
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto zeta(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
-    for(auto itr2 = first; itr2 != last; ++itr2) {
-        for(auto itr1 = last; --itr1 != itr2; ) {
+
+template<std::ranges::range R>
+    requires requires () { typename R::mapped_type; }
+auto zeta(R& v) noexcept(NO_EXCEPT) {
+    const auto begin = std::ranges::begin(v);
+    const auto end = std::ranges::end(v);
+    for(auto itr2 = begin; itr2 != end; ++itr2) {
+        for(auto itr1 = end; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second += itr1->second;
         }
     }
 }
 
-template<std::input_iterator I, std::sentinel_for<I> S>
-auto mobius(I first, S last) noexcept(NO_EXCEPT) -> decltype(first->first, first->second, void()) {
-    for(auto itr2 = last; itr2-- != first; ) {
-        for(auto itr1 = last; --itr1 != itr2; ) {
+template<std::ranges::range R>
+    requires requires () { typename R::mapped_type; }
+auto mobius(R& v) noexcept(NO_EXCEPT) {
+    const auto begin = std::ranges::begin(v);
+    const auto end = std::ranges::end(v);
+    for(auto itr2 = end; itr2-- != begin; ) {
+        for(auto itr1 = end; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second -= itr1->second;
         }
     }

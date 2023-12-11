@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/convolution_mod"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
@@ -20,5 +22,5 @@ using mint = lib::modint998244353;
 signed main() {
     int n, m; std::cin >> n >> m;
     lib::valarray<mint> a(n), b(m); input >> a >> b;
-    print(lib::convolution(ALL(a), ALL(b)));
+    print(lib::convolution(a, b));
 }

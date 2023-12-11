@@ -213,7 +213,7 @@ struct montgomery_modint_impl : modint_interface<montgomery_modint_impl<Context,
 
     static inline constexpr void set_mod(const unsigned_value_type m) noexcept(NO_EXCEPT) {
         mint::_context = mint::context(m);
-        mint::one._val = mint::_context.convert_raw(1);
+        mint::one._val = mint::_context.one;
     }
 
     static inline constexpr mint raw(const unsigned_large_type v) noexcept(NO_EXCEPT)

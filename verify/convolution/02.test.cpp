@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/lcm_convolution"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
@@ -21,5 +23,5 @@ using mint = lib::modint998244353;
 signed main() {
     int n; std::cin >> n;
     lib::valarray<mint> a(n), b(n); input >> a >> b;
-    print(lib::lcm_convolution(ALL(a), ALL(b)));
+    print(lib::lcm_convolution(a, b));
 }
