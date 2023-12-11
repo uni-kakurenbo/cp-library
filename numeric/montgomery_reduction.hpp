@@ -103,10 +103,10 @@ struct montgomery_reduction {
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
         if(v == 1) return this->one;
 
-        using common_type = std::make_signed_t<std::common_type_t<T, value_type>>;
+        using common_type = std::common_type_t<T, value_type>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);
 
-        if(static_cast<common_type>(v) >= mod2) {
+        if(v > 0 && static_cast<common_type>(v) >= mod2) {
             v %= mod2;
         }
 
