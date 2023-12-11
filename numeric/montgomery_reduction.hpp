@@ -157,15 +157,6 @@ struct arbitrary_montgomery_reduction {
         return res & mask;
     }
 
-    constexpr value_type _m0ip2() const noexcept(NO_EXCEPT) {
-        if(this->_tz == 0) return 0;
-        const value_type m0s = this->_m0 * this->_m0;
-        value_type res = m0s;
-        const value_type mask = (value_type{ 1 } << this->_tz) - 1;
-        while(((m0s * res) & mask) != 1) res *= value_type{ 2 } - m0s * res;
-        return res & mask;
-    }
-
   public:
     value_type one;
 
@@ -192,12 +183,9 @@ struct arbitrary_montgomery_reduction {
         this->_m0i = this->_inv();
 
         {
-            const value_type x = (large_type{ 1 } << context::width) % this->_m0;
+            const value_type x = (std::numeric_limits<large_type>::max() % this->_m0) + 1;
             const value_type mask = (value_type{ 1 } << this->_tz) - 1;
             this->_r2 = (x + ((((large_type{ 1 } - x) * this->_m0ip()) & mask) * this->_m0));
-            // debug(this->_m0ip2(), (this->_m0ip2() * this->_m0 * this->_m0) & mask);
-            this->_r2 = static_cast<large_type>(this->_r2) * this->_r2 % this->_mod;
-            // debug(this->_r2, (x + ((((large_type{ 1 } - x) * this->_m0ip()) & mask) * this->_m0)));
         }
 
         this->one = this->reduce(this->_r2);
