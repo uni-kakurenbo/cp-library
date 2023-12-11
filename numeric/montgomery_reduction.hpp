@@ -111,8 +111,8 @@ struct montgomery_reduction {
         }
 
         if constexpr(std::is_signed_v<T>) {
-            if(v < 0) {
-                if(static_cast<common_type>(-v) >= mod2) v %= mod2;
+            if(v < 0 && static_cast<common_type>(-v) >= mod2) {
+                v %= mod2;
                 if(v != 0) v += mod2;
             }
         }
@@ -260,8 +260,8 @@ struct arbitrary_montgomery_reduction {
         if constexpr(std::signed_integral<T>) {
             if(v < 0 && static_cast<common_type>(-v) >= mod2) {
                 v %= mod2;
+                if(v != 0) v += mod2;
             }
-            if(v != 0) v += mod2;
         }
 
         return this->multiply(v, this->_r2);
