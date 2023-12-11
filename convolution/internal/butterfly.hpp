@@ -6,9 +6,11 @@
 #include <cassert>
 #include <type_traits>
 #include <vector>
+#include <bit>
 
 
-#include "internal/modint_interface.hpp"
+#include "numeric/internal/modint_interface.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
@@ -21,9 +23,9 @@ template<
     lib::internal::modint_family Mint,
     int g = internal::primitive_root<Mint::mod()>,
 struct fft_info {
-    static constexpr int rank2 = countr_zero_constexpr(Mint::mod() - 1);
+    static constexpr int rank2 = std::countr_zero(Mint::mod() - 1);
     std::array<Mint, rank2 + 1> root;   // root[i]^(2^i) == 1
-    std::array<Mint, rank2 + 1> iroot;  // root[i] * iroot[i] == 1
+    std::array<Mint, rank2 + 1> iroot;  // root[i] * iroot[i] == 1\
 
     std::array<Mint, std::max(0, rank2 - 2 + 1)> rate2;
     std::array<Mint, std::max(0, rank2 - 2 + 1)> irate2;
@@ -60,7 +62,7 @@ struct fft_info {
     }
 };
 
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
+template <static_modint_family Mint>
 void butterfly(std::vector<Mint>& a) {
     int n = int(a.size());
     int h = internal::countr_zero((unsigned int)n);
@@ -81,7 +83,7 @@ void butterfly(std::vector<Mint>& a) {
                     a[i + offset + p] = l - r;
                 }
                 if (s + 1 != (1 << len))
-                    rot *= info.rate2[countr_zero(~(unsigned int)(s))];
+                    rot *= info.rate2[std::countr_zero(~(unsigned int)(s))];
             }
             len++;
         } else {
@@ -107,17 +109,17 @@ void butterfly(std::vector<Mint>& a) {
                     a[i + offset + 3 * p] = a0 + na2 + (mod2 - a1na3imag);
                 }
                 if (s + 1 != (1 << len))
-                    rot *= info.rate3[countr_zero(~(unsigned int)(s))];
+                    rot *= info.rate3[std::countr_zero(~(unsigned int)(s))];
             }
             len += 2;
         }
     }
 }
 
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
+template<static_modint_family Mint>
 void butterfly_inv(std::vector<Mint>& a) {
     int n = int(a.size());
-    int h = internal::countr_zero((unsigned int)n);
+    int h = std::countr_zero((unsigned int)n);
 
     static const fft_info<Mint> info;
 
@@ -138,7 +140,7 @@ void butterfly_inv(std::vector<Mint>& a) {
                     ;
                 }
                 if (s + 1 != (1 << (len - 1)))
-                    irot *= info.irate2[countr_zero(~(unsigned int)(s))];
+                    irot *= info.irate2[std::countr_zero(~(unsigned int)(s))];
             }
             len--;
         } else {
@@ -170,16 +172,18 @@ void butterfly_inv(std::vector<Mint>& a) {
                         irot3.val();
                 }
                 if (s + 1 != (1 << (len - 2)))
-                    irot *= info.irate3[countr_zero(~(unsigned int)(s))];
+                    irot *= info.irate3[std::countr_zero(~(unsigned int)(s))];
             }
             len -= 2;
         }
     }
 }
 
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
-std::vector<Mint> convolution_naive(const std::vector<Mint>& a,
-                                    const std::vector<Mint>& b) {
+template<static_modint_family Mint>
+std::vector<Mint> convolution_naive(
+    const std::vector<Mint>& a,
+    const std::vector<Mint>& b
+) {
     int n = int(a.size()), m = int(b.size());
     std::vector<Mint> ans(n + m - 1);
     if (n < m) {
@@ -198,7 +202,7 @@ std::vector<Mint> convolution_naive(const std::vector<Mint>& a,
     return ans;
 }
 
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
+template<static_modint_family Mint>
 std::vector<Mint> convolution_fft(std::vector<Mint> a, std::vector<Mint> b) {
     int n = int(a.size()), m = int(b.size());
     int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
@@ -218,7 +222,7 @@ std::vector<Mint> convolution_fft(std::vector<Mint> a, std::vector<Mint> b) {
 
 }  // namespace internal
 
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
+template<internal::static_modint_family Mint>
 std::vector<Mint> convolution(std::vector<Mint>&& a, std::vector<Mint>&& b) {
     int n = int(a.size()), m = int(b.size());
     if (!n || !m) return {};
@@ -229,9 +233,9 @@ std::vector<Mint> convolution(std::vector<Mint>&& a, std::vector<Mint>&& b) {
     if (std::min(n, m) <= 60) return convolution_naive(a, b);
     return internal::convolution_fft(a, b);
 }
-template <class Mint, internal::is_static_modint_t<Mint>* = nullptr>
-std::vector<Mint> convolution(const std::vector<Mint>& a,
-                              const std::vector<Mint>& b) {
+
+template<internal::static_modint_family Mint>
+std::vector<Mint> convolution(const std::vector<Mint>& a, const std::vector<Mint>& b) {
     int n = int(a.size()), m = int(b.size());
     if (!n || !m) return {};
 
@@ -242,35 +246,10 @@ std::vector<Mint> convolution(const std::vector<Mint>& a,
     return internal::convolution_fft(a, b);
 }
 
-template <unsigned int mod = 998244353,
-          class T,
-          std::enable_if_t<internal::is_integral<T>::value>* = nullptr>
-std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b) {
-    int n = int(a.size()), m = int(b.size());
-    if (!n || !m) return {};
-
-    using Mint = static_modint<mod>;
-
-    int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
-    assert((Mint::mod() - 1) % z == 0);
-
-    std::vector<Mint> a2(n), b2(m);
-    for (int i = 0; i < n; i++) {
-        a2[i] = Mint(a[i]);
-    }
-    for (int i = 0; i < m; i++) {
-        b2[i] = Mint(b[i]);
-    }
-    auto c2 = convolution(std::move(a2), std::move(b2));
-    std::vector<T> c(n + m - 1);
-    for (int i = 0; i < n + m - 1; i++) {
-        c[i] = c2[i].val();
-    }
-    return c;
-}
-
-std::vector<long long> convolution_ll(const std::vector<long long>& a,
-                                      const std::vector<long long>& b) {
+std::vector<long long> convolution_ll(
+    const std::vector<long long>& a,
+    const std::vector<long long>& b
+) {
     int n = int(a.size()), m = int(b.size());
     if (!n || !m) return {};
 
@@ -323,7 +302,7 @@ std::vector<long long> convolution_ll(const std::vector<long long>& a,
         //   ((2) mod MOD1) mod 5 = 3
         //   ((3) mod MOD1) mod 5 = 4
         long long diff =
-            c1[i] - internal::safe_mod((long long)(x), (long long)(MOD1));
+            c1[i] - mod((long long)(x), (long long)(MOD1));
         if (diff < 0) diff += MOD1;
         static constexpr unsigned long long offset[5] = {
             0, 0, M1M2M3, 2 * M1M2M3, 3 * M1M2M3};
@@ -334,4 +313,4 @@ std::vector<long long> convolution_ll(const std::vector<long long>& a,
     return c;
 }
 
-}  // namespace atcoder
+}  // namespace lib
