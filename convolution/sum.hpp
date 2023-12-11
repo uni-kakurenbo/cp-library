@@ -141,4 +141,13 @@ auto convolution(R0&& v0, R1&& v1) {
 }
 
 
+template<u32 Mod = 998244353, std::ranges::range R0, std::ranges::range R1>
+    requires
+        std::common_with<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>
+auto convolution(R0&& v0, R1&& v1) {
+    using common_type = std::common_type_t<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>;
+    return convolution<Mod, valarray<common_type>>(v0, v1);
+}
+
+
 } // namespace lib

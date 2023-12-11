@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/convolution_mod"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
