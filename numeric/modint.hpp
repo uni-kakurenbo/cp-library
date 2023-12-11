@@ -6,8 +6,6 @@
 #include <iostream>
 
 
-#include "macro/expand_tails.hpp"
-
 #include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
