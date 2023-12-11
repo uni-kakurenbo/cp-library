@@ -28,9 +28,11 @@ namespace internal {
 
 
 // Thanks to: atocder/convolution
-template<lib::internal::modint_family mint, int G = primitive_root<mint>(mint::mod())>
+template<lib::internal::modint_family mint>
 struct fft_info {
+    static constexpr mint g = primitive_root<mint>(mint::mod());
     static constexpr auto rank2 = std::countr_zero(mint::mod() - 1);
+
     std::array<mint, rank2 + 1> root;
     std::array<mint, rank2 + 1> iroot;
 
@@ -41,7 +43,7 @@ struct fft_info {
     std::array<mint, std::max(0, rank2 - 3 + 1)> irate3;
 
     constexpr fft_info() {
-        this->root[rank2] = mint{ G }.pow((mint::mod() - 1) >> this->rank2);
+        this->root[rank2] = g.pow((mint::mod() - 1) >> this->rank2);
         this->iroot[rank2] = this->root[this->rank2].inv();
 
         REPD(i, rank2) {
@@ -88,7 +90,7 @@ void butterfly(R& v1) {
             mint rot = mint::one;
 
             REP(s, 1 << len) {
-                const int offset = s << (h - len);
+                const size_t offset = s << (h - len);
                 REP(i, p) {
                     const auto l = v1[i + offset];
                     const auto r = v1[i + offset + p] * rot;
@@ -129,7 +131,7 @@ void butterfly(R& v1) {
                     v1[i + offset + 3 * p] = a0 + na2 + (mod2 - a1na3imag);
                 }
 
-                if(s + 1 != (1 << len)) rot *= info.rate3[std::countr_zero(~(unsigned int)(s))];
+                if(s + 1 != (1 << len)) rot *= info.rate3[std::countr_zero(~to_unsigned(s))];
             }
 
             len += 2;
@@ -175,8 +177,8 @@ void butterfly_inv(R& v1) {
             REP(s, 1 << (len - 2)) {
                 const mint irot2 = irot * irot;
                 const mint irot3 = irot2 * irot;
-                const int offset = s << (h - len + 2);
-                for(int i = 0; i < p; i++) {
+                const size_t offset = s << (h - len + 2);
+                REP(i, p) {
                     const auto a0 = 1ULL * v1[i + offset + 0 * p].val();
                     const auto a1 = 1ULL * v1[i + offset + 1 * p].val();
                     const auto a2 = 1ULL * v1[i + offset + 2 * p].val();
@@ -190,7 +192,7 @@ void butterfly_inv(R& v1) {
                     v1[i + offset + 3 * p] = (a0 + (mint::mod() - a1) + (mint::mod() - a2na3iimag)) * irot3.val();
                 }
 
-                if(s + 1 != (1 << (len - 2))) irot *= info.irate3[std::countr_zero(~(unsigned int)(s))];
+                if(s + 1 != (1 << (len - 2))) irot *= info.irate3[std::countr_zero(~to_unsigned(s))];
             }
 
             len -= 2;
