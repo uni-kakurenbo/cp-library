@@ -94,7 +94,8 @@ struct barrett_reduction {
 
         if constexpr(std::signed_integral<T>) {
             if(v < 0) {
-                if(static_cast<common_type>(-v) <= barrett_reduction::max()) {
+                if(static_cast<common_type>(-v) <= mod) v += mod;
+                else if(static_cast<common_type>(-v) <= barrett_reduction::max()) {
                     v = mod - this->reduce(static_cast<value_type>(-v - 1)) - 1;
                 }
                 else {
