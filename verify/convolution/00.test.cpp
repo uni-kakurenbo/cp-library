@@ -14,7 +14,7 @@
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
 #include "numeric/modint.hpp"
-#include "adapter/valarray.hpp"
+#include "adapter/vector.hpp"
 #include "convolution/sum.hpp"
 
 using mint = lib::modint998244353;

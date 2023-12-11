@@ -14,7 +14,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
-#include "adapter/valarray.hpp"
+#include "adapter/vector.hpp"
 #include "numeric/modint.hpp"
 #include "convolution/gcd.hpp"
 
@@ -22,6 +22,6 @@ using mint = lib::modint998244353;
 
 signed main() {
     int n; std::cin >> n;
-    lib::valarray<mint> a(n), b(n); input >> a >> b;
-    print(lib::gcd_convolution(a, b));
+    lib::vector<mint> a(n), b(n); input >> a >> b;
+    print(lib::gcd_convolution<lib::vector<mint>>(a, b));
 }
