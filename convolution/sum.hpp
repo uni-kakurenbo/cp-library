@@ -29,8 +29,8 @@ Res convolution(R0&& v0, R1&& v1) {
     const auto z = to_signed(std::bit_ceil(to_unsigned(n + m - 1)));
     assert((mint::mod() - 1) % z == 0);
 
-    if(lib::min(n, m) <= 60) return internal::convolution_naive<Res>(v0, v1);
-    return internal::convolution_fft<Res>(v0, v1);
+    if(lib::min(n, m) <= 60) return convolution_naive<Res>(v0, v1);
+    return convolution_fft<Res>(v0, v1);
 }
 
 

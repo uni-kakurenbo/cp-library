@@ -73,24 +73,28 @@ struct fft_info {
 };
 
 
+}  // namespace internal
+
+
+
 template<std::ranges::sized_range R>
-    requires static_modint_family<std::ranges::range_value_t<R>>
+    requires internal::static_modint_family<std::ranges::range_value_t<R>>
 void butterfly(R& v1) {
     using mint = std::ranges::range_value_t<R>;
 
     const auto n = std::ranges::ssize(v1);
-    const auto h = std::countr_zero(to_unsigned(n));
+    const auto h = to_signed(std::countr_zero(to_unsigned(n)));
 
-    static constexpr fft_info<mint> info;
+    static constexpr internal::fft_info<mint> info;
 
-    size_t len = 0;
+    internal::size_t len = 0;
     while(len < h) {
         if(h - len == 1) {
-            const size_t p = 1 << (h - len - 1);
+            const internal::size_t p = 1 << (h - len - 1);
             mint rot = mint::one;
 
             REP(s, 1 << len) {
-                const size_t offset = s << (h - len);
+                const internal::size_t offset = s << (h - len);
                 REP(i, p) {
                     const auto l = v1[i + offset];
                     const auto r = v1[i + offset + p] * rot;
@@ -105,14 +109,14 @@ void butterfly(R& v1) {
             ++len;
         }
         else {
-            const size_t p = 1 << (h - len - 2);
+            const internal::size_t p = 1 << (h - len - 2);
             const mint imag = info.root[2];
             mint rot = mint::one;
 
             REP(s, 1 << len) {
                 const mint rot2 = rot * rot;
                 const mint rot3 = rot2 * rot;
-                const size_t offset = s << (h - len);
+                const internal::size_t offset = s << (h - len);
 
                 REP(i, p) {
                     const auto mod2 = 1ULL * mint::mod() * mint::mod();
@@ -141,23 +145,23 @@ void butterfly(R& v1) {
 
 
 template<std::ranges::sized_range R>
-    requires static_modint_family<std::ranges::range_value_t<R>>
+    requires internal::static_modint_family<std::ranges::range_value_t<R>>
 void butterfly_inv(R& v1) {
     using mint = std::ranges::range_value_t<R>;
 
     const auto n = std::ranges::ssize(v1);
     const auto h = std::countr_zero(to_unsigned(n));
 
-    static constexpr fft_info<mint> info;
+    static constexpr internal::fft_info<mint> info;
 
-    size_t len = h;
+    internal::size_t len = h;
     while(len > 0) {
         if(len == 1) {
-            const size_t p = 1 << (h - len);
+            const internal::size_t p = 1 << (h - len);
             mint irot = mint::one;
 
             REP(s, 1 << (len - 1)) {
-                const size_t offset = s << (h - len + 1);
+                const internal::size_t offset = s << (h - len + 1);
                 REP(i, p) {
                     const auto l = v1[i + offset];
                     const auto r = v1[i + offset + p];
@@ -177,7 +181,7 @@ void butterfly_inv(R& v1) {
             REP(s, 1 << (len - 2)) {
                 const mint irot2 = irot * irot;
                 const mint irot3 = irot2 * irot;
-                const size_t offset = s << (h - len + 2);
+                const internal::size_t offset = s << (h - len + 2);
                 REP(i, p) {
                     const auto a0 = 1ULL * v1[i + offset + 0 * p].val();
                     const auto a1 = 1ULL * v1[i + offset + 1 * p].val();
@@ -204,7 +208,7 @@ void butterfly_inv(R& v1) {
 template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
-        static_modint_family<std::ranges::range_value_t<R0>>
+        internal::static_modint_family<std::ranges::range_value_t<R0>>
 Res convolution_naive(R0&& v0, R1&& v1) {
     const auto n = std::ranges::ssize(v0);
     const auto m = std::ranges::ssize(v1);
@@ -225,8 +229,8 @@ Res convolution_naive(R0&& v0, R1&& v1) {
 template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
-        static_modint_family<std::ranges::range_value_t<R0>> &&
-        resizable_range<R0> && resizable_range<R1>
+        internal::static_modint_family<std::ranges::range_value_t<R0>> &&
+        internal::resizable_range<R0> && internal::resizable_range<R1>
 Res convolution_fft(R0 v0, R1 v1) {
     using mint = std::ranges::range_value_t<R0>;
 
@@ -236,14 +240,14 @@ Res convolution_fft(R0 v0, R1 v1) {
     const auto z = to_signed(std::bit_ceil(to_unsigned(n + m - 1)));
 
     v0.resize(z);
-    internal::butterfly(v0);
+    butterfly(v0);
 
     v1.resize(z);
-    internal::butterfly(v1);
+    butterfly(v1);
 
     REP(i, z) v0[i] *= v1[i];
 
-    internal::butterfly_inv(v0);
+    butterfly_inv(v0);
     v0.resize(n + m - 1);
 
     const mint iz = mint{ z }.inv();
@@ -252,9 +256,6 @@ Res convolution_fft(R0 v0, R1 v1) {
     if constexpr(std::same_as<Res, R0>) return v0;
     else return Res(ALL(v0));
 }
-
-
-}  // namespace internal
 
 
 }  // namespace lib

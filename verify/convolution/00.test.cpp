@@ -21,6 +21,6 @@ using mint = lib::modint998244353;
 
 signed main() {
     int n, m; std::cin >> n >> m;
-    lib::valarray<mint> a(n), b(m); input >> a >> b;
-    print(lib::convolution(a, b));
+    lib::vector<mint> a(n), b(m); input >> a >> b;
+    print(lib::convolution<lib::vector<mint>>(a, b));
 }
