@@ -13,17 +13,19 @@
 
 #include <iostream>
 
+#include "template/debug.hpp"
+
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "snippet/aliases.hpp"
 #include "numeric/binomial_coefficient.hpp"
+#include "numeric/modint.hpp"
 
 signed main() {
     int t; std::cin >> t;
     lib::i32 m; std::cin >> m;
-
     lib::binomial_coefficient<lib::i64> binom(m);
 
     REP(t) {
