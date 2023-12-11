@@ -21,5 +21,5 @@ using mint = lib::modint998244353;
 signed main() {
     int n; std::cin >> n;
     lib::valarray<mint> a(n), b(n); input >> a >> b;
-    print(lib::lcm_convolution(ALL(a), ALL(b)));
+    print(lib::lcm_convolution(a, b));
 }

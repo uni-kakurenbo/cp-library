@@ -1,26 +1,38 @@
 #pragma once
 
 
-#include <cstddef>
-#include <vector>
+#include <ranges>
+#include <concepts>
+
+
+#include "snippet/aliases.hpp"
 
 #include "numeric/divisor_multiple_transform.hpp"
+
+#include "adapter/valarray.hpp"
 
 
 namespace lib {
 
 
-template<class I1, class I2>
-auto gcd_convolution(const I1 a_first, const I1 a_last, const I2 b_first, const I2 b_last) {
-    std::vector<typename std::iterator_traits<I1>::value_type> a(a_first, a_last);
-    std::vector<typename std::iterator_traits<I2>::value_type> b(b_first, b_last);
+template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
+Res gcd_convolution(R0 v0, R1 v1) {
+    assert(std::ranges::size(v0) == std::ranges::size(v1));
 
-    assert(a.size() == b.size());
+    multiple_transform::zeta(v0), multiple_transform::zeta(v1);
+    REP(i, std::ranges::size(v0)) v0[i] *= v1[i];
+    multiple_transform::mobius(v0);
 
-    multiple_transform::zeta(ALL(a)), multiple_transform::zeta(ALL(b));
-    for(std::size_t i=0; i<a.size(); ++i) a[i] *= b[i];
-    multiple_transform::mobius(ALL(a));
-    return a;
+    if constexpr(std::same_as<Res, R0>) return v0;
+    else return Res(ALL(v0));
+}
+
+
+template<std::ranges::sized_range R0, std::ranges::sized_range R1>
+    requires std::common_with<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>
+auto gcd_convolution(R0&& v0, R1&& v1) {
+    using common_type = std::common_type_t<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>;
+    return gcd_convolution<valarray<common_type>>(v0, v1);
 }
 
 
