@@ -82,7 +82,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         NODE_ID: ${{ matrix.id }}
       run: |
-        parallel=1
+        parallel=$(nproc)
         # if [ "${CACHE_HIT}" != 'true' ]; then
         #   parallel=1
         #   echo '{}' > .verify-helper/timestamps.remote.json
@@ -124,7 +124,8 @@ jobs:
       run: |
         cat ./timestamps.remote.json
         cat ./timestamps.remote.json timestamps/*
-        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./timestamps.remote.json
+        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
+        cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
 
     - name: Push merged timestamps
