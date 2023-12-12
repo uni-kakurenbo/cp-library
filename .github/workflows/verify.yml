@@ -93,7 +93,7 @@ jobs:
 
         chmod +x ./.github/workflows/run-test.sh
 
-        cat .verify-helper/targets.txt | \
+        cat .verify-helper/targets.txt | head -c -1 \
         xargs -t -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
     - name: Save timestamps
