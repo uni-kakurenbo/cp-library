@@ -54,7 +54,7 @@ jobs:
         NUMBER_OF_TESTS=$(printf "$CANDIDATES" | ws -l)
 
         TEST_FILES=$(
-          CANDIDATES | \
+          printf "$CANDIDATES" | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
