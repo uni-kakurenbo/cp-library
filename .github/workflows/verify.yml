@@ -50,13 +50,17 @@ jobs:
       run: |
         # oj-verify stats
 
+        CANDIDATES=$(find verify -type f -name *.test.cpp)
+        NUMBER_OF_TESTS=$(printf "$CANDIDATES" | ws -l)
+
         TEST_FILES=$(
-          find verify -type f -name *.test.cpp | \
+          CANDIDATES | \
           sort | \
-          awk -v n=${{ strategy.job-total }}  \
+          awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
+              -v t=$NUMBER_OF_TESTS \
               '{
-                if(int((NR - 1) / n) == i) {
+                if(int((NR - 1) * n / t) == i) {
                   print $0
                 }
               }' \
