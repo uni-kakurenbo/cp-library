@@ -51,7 +51,7 @@ jobs:
         # oj-verify stats
 
         CANDIDATES=$(find verify -type f -name *.test.cpp)
-        NUMBER_OF_TESTS=$(printf "$CANDIDATES" | ws -l)
+        NUMBER_OF_TESTS=$(printf "$CANDIDATES" | wc -l)
 
         TEST_FILES=$(
           printf "$CANDIDATES" | \
