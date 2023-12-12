@@ -4,7 +4,7 @@ BASE_DIR="$PWD"
 TARGET="$1"
 
 
-cd "/home/runner/.cache/online-judge-tools/library-checker-problems/" || exit 1
+cd "/home/runner/.cache/online-judge-tools/library-checker-problems/sample/" || exit 1
 ls
 
 cd "$BASE_DIR" || exit 1
