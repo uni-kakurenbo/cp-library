@@ -94,7 +94,7 @@ jobs:
         echo "Parallel execution: ${parallel}"
 
         head -c -1 .verify-helper/targets.txt | \
-        xargs -t -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
+        xargs -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
