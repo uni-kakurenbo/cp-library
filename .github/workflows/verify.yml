@@ -56,7 +56,7 @@ jobs:
           awk -v n=${{ strategy.job-total }}  \
               -v i=${{ strategy.job-index }} \
               '{
-                if((NR - 1) % n == i) {
+                if(int((NR - 1) / n) == i) {
                   print $0
                 }
               }' \
