@@ -20,7 +20,6 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     echo "::group::$TARGET [PID: $PID]"
     echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
     echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
-    echo
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "::notice file=$TARGET ::Already verified."
@@ -28,7 +27,6 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
         oj-verify run "$TARGET" --tle 5 || exit 1
     fi
 
-    echo
     echo "::endgroup::"
 } >> ".log-$PID.txt"
 
