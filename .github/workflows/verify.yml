@@ -125,6 +125,7 @@ jobs:
       working-directory: .verify-helper
       run: |
         cat ./timestamps.remote.json
+        cat ./timestamps.remote.json timestamps/*
         cat ./timestamps.remote.json timestamps/* | jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
