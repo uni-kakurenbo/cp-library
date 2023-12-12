@@ -20,6 +20,13 @@ fi
 
 cd .verify-helper || exit 1
 
-jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
-# echo "{}" > ./timestamps-"$NODE_ID".json
+# jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
+echo "{}" > ./timestamps-"$NODE_ID".json
 cat ./timestamps-"$NODE_ID".json
+
+cd .cache || exit 1
+ls
+
+echo /home/runner/.cache/online-judge-tools/library-checker-problems/
+ls
+cd "$BASE_DIR" || exit 1
