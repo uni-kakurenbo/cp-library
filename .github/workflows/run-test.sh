@@ -4,8 +4,7 @@ BASE_DIR="$PWD"
 TARGET="$1"
 
 
-cd "/home/runner/.cache/online-judge-tools/library-checker-problems/sample/" || exit 1
-ls
+cd "/home/runner/.cache/online-judge-tools/library-checker-problems/sample/many_aplusb_128bit" && ls
 
 cd "$BASE_DIR" || exit 1
 
