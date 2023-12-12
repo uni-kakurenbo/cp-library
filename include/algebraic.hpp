@@ -7,6 +7,8 @@
 #include "algebraic/addition.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
+#include "algebraic/bit_and.hpp"
+#include "algebraic/bit_or.hpp"
 #include "algebraic/bit_xor.hpp"
 #include "algebraic/gcd.hpp"
 #include "algebraic/maximum.hpp"
