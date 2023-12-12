@@ -4,8 +4,9 @@ BASE_DIR="$PWD"
 TARGET="$1"
 
 
-echo /home/runner/.cache/online-judge-tools/library-checker-problems/
+cd "/home/runner/.cache/online-judge-tools/library-checker-problems/" || exit 1
 ls
+
 cd "$BASE_DIR" || exit 1
 
 
