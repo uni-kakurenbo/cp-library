@@ -13,10 +13,9 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
 if [ "$LAST_COMMITTED_AT" -le "$LAST_VERIFIED_AT" ]; then
   echo "already verified."
-  exit 0
+else
+    oj-verify run "$TARGET" --tle 5 || exit 1
 fi
-
-oj-verify run "$TARGET" --tle 5 || exit 1
 
 cd .verify-helper || exit 1
 
