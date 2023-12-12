@@ -124,6 +124,7 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
+        cat ./timestamps.remote.json
         cat ./timestamps.remote.json timestamps/* | jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' > ./timestamps.remote.json
         cat ./timestamps.remote.json
 
@@ -141,7 +142,7 @@ jobs:
           git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
           git push origin HEAD:${GITHUB_REF}
         else
-          echo "No update."
+          echo "no update."
         fi
 
   finalize:
