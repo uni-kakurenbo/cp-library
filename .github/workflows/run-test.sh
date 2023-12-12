@@ -1,8 +1,8 @@
 BASE_DIR="$PWD"
 TARGET="$1"
 
-echo "$TARGET"
 echo "$BASE_DIR"
+echo "$TARGET"
 
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
 LAST_COMMIT_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
