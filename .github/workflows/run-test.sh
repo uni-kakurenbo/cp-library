@@ -20,7 +20,7 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     echo "::group::$TARGET [PID: $PID]"
     echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
     echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
-    echo .
+    echo
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "Already verified."
