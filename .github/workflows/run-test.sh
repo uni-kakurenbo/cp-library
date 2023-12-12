@@ -14,7 +14,7 @@ LAST_VERIFY_DATE="$(
 LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
-echo "$TARGET"
+echo "::endgroup::$TARGET"
 echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
 echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
 
@@ -23,6 +23,7 @@ if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
 else
     oj-verify run "$TARGET" --tle 5 || exit 1
 fi
+echo "::endgroup::"
 
 cd .verify-helper || exit 1
 jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
