@@ -91,6 +91,8 @@ jobs:
         # fi
         echo "Parallel execution: ${parallel}"
 
+        chmod +x ./.github/workflows/run-test.sh
+
         cat .verify-helper/targets.txt | \
         xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c './.github/workflows/run-test.sh {}'
 
