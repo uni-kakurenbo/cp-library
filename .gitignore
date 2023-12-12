@@ -1,3 +1,5 @@
+.test/
+
 # Prerequisites
 *.d
 
@@ -30,6 +32,3 @@
 *.exe
 *.out
 *.app
-
-# workflows
-*/workflows/docs.yml

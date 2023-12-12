@@ -94,7 +94,7 @@ jobs:
         chmod +x ./.github/workflows/run-test.sh
 
         cat .verify-helper/targets.txt | \
-        xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash -c './.github/workflows/run-test.sh {}'
+        xargs -t -P ${parallel} -n 1 -I {} -d ' ' bash ./.github/workflows/run-test.sh {}
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3

@@ -7,7 +7,7 @@ DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
-LAST_VERIFY_DATE="$(jq -r --arg target "$TARGET" --arg default @0 '.[$target] // $default' ./.verify-helper/timestamps.remote.json)"
+LAST_VERIFY_DATE="$(jq -r --arg target "$TARGET" '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json)"
 LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
