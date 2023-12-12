@@ -1,7 +1,8 @@
 #! /bin/bash
 
 TARGET="$1"
-DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$GITHUB_WORKSPACE" "$TARGET")
+echo "$GITHUB_WORKSPACE"
+DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$GITHUB_WORKSPACE/main" "$TARGET")
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
