@@ -124,6 +124,7 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
+        touch ./timestamps.remote.json
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
         cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
