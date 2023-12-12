@@ -23,11 +23,12 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     echo
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
-        echo "Already verified."
+        echo "::notice::Already verified."
     else
         oj-verify run "$TARGET" --tle 5 || exit 1
     fi
 
+    echo
     echo "::endgroup::"
 } >> ".log-$PID.txt"
 
