@@ -23,7 +23,7 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     echo
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
-        echo "::notice::Already verified."
+        echo "::notice file=$TARGET ::Already verified."
     else
         oj-verify run "$TARGET" --tle 5 || exit 1
     fi
