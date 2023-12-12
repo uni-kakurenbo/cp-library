@@ -14,7 +14,7 @@ LAST_VERIFY_DATE="$(
 LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
-echo "::endgroup::$TARGET"
+echo "::group::$TARGET"
 echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
 echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
 
