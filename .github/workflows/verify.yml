@@ -66,6 +66,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
+      id: cache-judge
       uses: actions/cache@v3
       with:
         path: |
@@ -76,11 +77,16 @@ jobs:
     - name: Run tests
       working-directory: main
       env:
+        CACHE_HIT: ${{ steps.cache-judge.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         NODE_ID: ${{ matrix.id }}
       run: |
         parallel=$(nproc)
+        if [ "${CACHE_HIT}" != 'true' ]; then
+          parallel=1
+          echo '{}' > .verify-helper/timestamps.remote.json
+        fi
         echo "Parallel execution: ${parallel}"
 
         head -c -1 .verify-helper/targets.txt | \
@@ -126,7 +132,6 @@ jobs:
 
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
-
         git add .verify-helper/timestamps.remote.json
 
         if (git diff --cached --shortstat | grep '[0-9]'); then
