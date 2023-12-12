@@ -3,6 +3,12 @@
 BASE_DIR="$PWD"
 TARGET="$1"
 
+
+echo /home/runner/.cache/online-judge-tools/library-checker-problems/
+ls
+cd "$BASE_DIR" || exit 1
+
+
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
 
 #shellcheck disable=SC2086
@@ -23,10 +29,3 @@ cd .verify-helper || exit 1
 # jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
 echo "{}" > ./timestamps-"$NODE_ID".json
 cat ./timestamps-"$NODE_ID".json
-
-cd .cache || exit 1
-ls
-
-echo /home/runner/.cache/online-judge-tools/library-checker-problems/
-ls
-cd "$BASE_DIR" || exit 1
