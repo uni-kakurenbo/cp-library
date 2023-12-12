@@ -57,7 +57,7 @@ jobs:
               -v i=${{ strategy.job-index }} \
               '{
                 if((NR - 1) % n == i) {
-                  print $0
+                  printf $0 " "
                 }
               }' \
           )
@@ -94,7 +94,7 @@ jobs:
         chmod +x ./.github/workflows/run-test.sh
 
         cat .verify-helper/targets.txt | \
-        xargs -t -P ${parallel} bash ./.github/workflows/run-test.sh "[%s]"
+        xargs -t -P ${parallel}	-I {} bash ./.github/workflows/run-test.sh {}
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
