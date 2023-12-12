@@ -19,5 +19,5 @@ fi
 
 cd .verify-helper || exit 1
 
-jq -n --arg target "$TARGET" date "$LAST_COMMIT_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
+jq -n --arg target "$TARGET" --arg date "$LAST_COMMIT_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
 cat ./timestamps-"$NODE_ID".json
