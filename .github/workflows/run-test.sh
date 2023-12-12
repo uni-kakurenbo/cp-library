@@ -1,13 +1,9 @@
 BASE_DIR="$PWD"
 TARGET="$1"
 
-echo "$BASE_DIR"
-echo "$TARGET"
-
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
 LAST_COMMIT_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
-cat ./.verify-helper/timestamps.remote.json
-LAST_VERIFY_DATE="$(jq --arg target "$TARGET" ".$target" ./.verify-helper/timestamps.remote.json)"
+LAST_VERIFY_DATE="$(jq --arg target "$TARGET" '.$target' ./.verify-helper/timestamps.remote.json)"
 LAST_COMMITTED_AT=$(date --date "$LAST_COMMIT_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
