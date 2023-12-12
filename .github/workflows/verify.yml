@@ -66,7 +66,6 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
-      id: cache-judge
       uses: actions/cache@v3
       with:
         path: |
@@ -77,19 +76,12 @@ jobs:
     - name: Run tests
       working-directory: main
       env:
-        CACHE_HIT: ${{ steps.cache-judge.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         NODE_ID: ${{ matrix.id }}
       run: |
         parallel=$(nproc)
-        # if [ "${CACHE_HIT}" != 'true' ]; then
-        #   parallel=1
-        #   echo '{}' > .verify-helper/timestamps.remote.json
-        # fi
         echo "Parallel execution: ${parallel}"
-
-        chmod +x ./.github/workflows/run-test.sh
 
         head -c -1 .verify-helper/targets.txt | \
         xargs -t -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
@@ -104,7 +96,7 @@ jobs:
   post-verify:
     runs-on: ubuntu-latest
     needs: verify
-    # if: ${{ !cancelled() && github.ref_name == 'main' }}
+    if: ${{ !cancelled() && github.ref_name == 'main' }}
 
     steps:
     - name: Git checkout
@@ -122,8 +114,6 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        cat ./timestamps.remote.json
-        cat ./timestamps.remote.json timestamps/*
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
         cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
@@ -136,13 +126,14 @@ jobs:
 
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
+
         git add .verify-helper/timestamps.remote.json
 
         if (git diff --cached --shortstat | grep '[0-9]'); then
           git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
           git push origin HEAD:${GITHUB_REF}
         else
-          echo "no update."
+          echo "No updated timestamps."
         fi
 
   finalize:
