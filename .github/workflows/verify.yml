@@ -66,32 +66,22 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
-      id: cache-judge
       uses: actions/cache@v3
       with:
         path: |
           main/.verify-helper/cache/
           ~/.cache/online-judge-tools/
         key: verify-${{ hashFiles('main/verify/**', 'main/.verify-helper/targets.txt') }}
-        restore-keys: |
-          verify-
 
     - name: Run tests
       working-directory: main
       env:
-        CACHE_HIT: ${{ steps.cache-judge.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         NODE_ID: ${{ matrix.id }}
       run: |
-        parallel=1
-        # if [ "${CACHE_HIT}" != 'true' ]; then
-        #   parallel=1
-        #   echo '{}' > .verify-helper/timestamps.remote.json
-        # fi
+        parallel=$(nproc)
         echo "Parallel execution: ${parallel}"
-
-        chmod +x ./.github/workflows/run-test.sh
 
         head -c -1 .verify-helper/targets.txt | \
         xargs -t -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
@@ -124,9 +114,8 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        cat ./timestamps.remote.json
-        cat ./timestamps.remote.json timestamps/*
-        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./timestamps.remote.json
+        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
+        cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
 
     - name: Push merged timestamps
@@ -137,13 +126,14 @@ jobs:
 
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
+
         git add .verify-helper/timestamps.remote.json
 
         if (git diff --cached --shortstat | grep '[0-9]'); then
           git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
           git push origin HEAD:${GITHUB_REF}
         else
-          echo "no update."
+          echo "No updated timestamps."
         fi
 
   finalize:

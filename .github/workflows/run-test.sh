@@ -1,32 +1,36 @@
 #! /bin/bash
 
-BASE_DIR="$PWD"
+WORKING_DIRECTORY="$PWD"
 TARGET="$1"
+PID="$$"
 
-DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
+DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY" "$TARGET")
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
-LAST_VERIFY_DATE="$(jq -r --arg target "$TARGET" '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json)"
+LAST_VERIFY_DATE="$(
+    jq -r --arg target "$TARGET" \
+    '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
+)"
+
 LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
-echo "$LAST_MODIFIED_AT $LAST_VERIFIED_AT"
-if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
-  echo "already verified."
-else
-    oj-verify run "$TARGET" --tle 5 || exit 1
-fi
+{
+    echo "::group::$TARGET [PID: $PID]"
+    echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
+    echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
 
-cd .verify-helper || exit 1
+    if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
+        echo "Already verified."
+    else
+        oj-verify run "$TARGET" --tle 5 || exit 1
+    fi
 
-# jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" '.[$target] = $date' >> ./timestamps-"$NODE_ID".json
-echo "{}" > ./timestamps-"$NODE_ID".json
-cat ./timestamps-"$NODE_ID".json
+    echo "::endgroup::"
+} >> ".log-$PID.txt"
 
-cd .cache || exit 1
-ls
+jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
+'.[$target] = $date' >> "./.verify-helper/timestamps-$NODE_ID.json"
 
-echo /home/runner/.cache/online-judge-tools/library-checker-problems/
-ls
-cd "$BASE_DIR" || exit 1
+cat ".log-$PID.txt"
