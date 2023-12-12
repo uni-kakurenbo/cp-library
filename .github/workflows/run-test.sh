@@ -6,6 +6,7 @@ echo "$TARGET"
 
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$BASE_DIR" "$TARGET")
 LAST_COMMIT_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
+cat ./.verify-helper/timestamps.remote.json
 LAST_VERIFY_DATE="$(cat ./.verify-helper/timestamps.remote.json | jq ".$TARGET")"
 LAST_COMMITTED_AT=$(date --date "$LAST_COMMIT_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
