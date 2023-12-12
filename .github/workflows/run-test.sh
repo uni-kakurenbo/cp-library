@@ -28,7 +28,7 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     fi
 
     echo "::endgroup::"
-} >> ".log-$PID.txt"
+} &>> ".log-$PID.txt" || exit 1
 
 jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
 '.[$target] = $date' >> "./.verify-helper/timestamps-$NODE_ID.json"
