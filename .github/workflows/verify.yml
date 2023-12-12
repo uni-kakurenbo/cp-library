@@ -48,8 +48,6 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
-        # oj-verify stats
-
         CANDIDATES=$(find verify -type f -name *.test.cpp)
         NUMBER_OF_TESTS=$(printf "$CANDIDATES" | wc -l)
 
@@ -89,8 +87,11 @@ jobs:
         parallel=$(nproc)
         if [ "${CACHE_HIT}" != 'true' ]; then
           parallel=1
-          echo '{}' > .verify-helper/timestamps.remote.json
+          echo '{}' > ./.verify-helper/timestamps.remote.json
+        else
+          echo '{}' >> ./.verify-helper/timestamps.remote.json
         fi
+
         echo "Parallel execution: ${parallel}"
 
         head -c -1 .verify-helper/targets.txt | \
