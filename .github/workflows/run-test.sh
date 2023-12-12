@@ -1,8 +1,10 @@
 #! /bin/bash
 
+WORKING_DIRECTORY="$PWD"
 TARGET="$1"
-echo "$GITHUB_WORKSPACE"
-DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$GITHUB_WORKSPACE/main" "$TARGET")
+PID="$$"
+
+DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY/main" "$TARGET")
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
@@ -15,7 +17,7 @@ LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" "+%s")
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
 
 {
-    echo "::group::$TARGET"
+    echo "::group::$TARGET [PID: $PID]"
     echo "Last modified: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
     echo "Last verified: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
     echo .
@@ -27,9 +29,9 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" "+%s")
     fi
 
     echo "::endgroup::"
-} >> ".log-$NODE_ID.txt"
+} >> ".log-$PID.txt"
 
 jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
 '.[$target] = $date' >> "./.verify-helper/timestamps-$NODE_ID.json"
 
-cat ".log-$NODE_ID.txt"
+cat ".log-$PID.txt"
