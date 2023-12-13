@@ -35,6 +35,8 @@ EXIT_STATUS=0
         echo "::endgroup::"
     fi
 
+    echo "test"
+
     echo "::endgroup::"
 
     jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
