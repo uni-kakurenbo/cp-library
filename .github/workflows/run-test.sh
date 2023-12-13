@@ -1,11 +1,11 @@
 #! /bin/bash
-set -u
+set -eu
 
 WORKING_DIRECTORY="$PWD"
 TARGET="$1"
 PID="$$"
 
-DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY" "$TARGET")
+DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY" "$TARGET") 
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
@@ -19,6 +19,7 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" '+%s')
 
 EXIT_STATUS=0
 
+set +e
 {
     echo "::group::$TARGET [PID: $PID]"
     echo "Last modify: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
@@ -37,10 +38,12 @@ EXIT_STATUS=0
     fi
 
     echo.
-
-    jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
-    '.[$target] = $date' >> "./.verify-helper/timestamps.json"
 } &>> ".log-$PID.txt"
+
+set -e
+
+jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
+'.[$target] = $date' >> "./.verify-helper/timestamps.json"
 
 cat ".log-$PID.txt"
 
