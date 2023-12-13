@@ -23,6 +23,7 @@ EXIT_STATUS=0
     echo "::group::$TARGET [PID: $PID]"
     echo "Last modify: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
     echo "Last verify: $LAST_VERIFY_DATE ($LAST_VERIFIED_AT)"
+    echo "::endgroup::"
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "Already verified."
@@ -35,9 +36,7 @@ EXIT_STATUS=0
         echo "::endgroup::"
     fi
 
-    echo "test"
-
-    echo "::endgroup::"
+    echo.
 
     jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
     '.[$target] = $date' >> "./.verify-helper/timestamps.json"
