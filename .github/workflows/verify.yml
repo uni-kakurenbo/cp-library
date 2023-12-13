@@ -85,6 +85,8 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
+        oj d https://judge.yosupo.jp/problem/aplusb
+
         parallel=$(nproc)
         if [ "${CACHE_HIT}" != 'true' ]; then
           parallel=1
