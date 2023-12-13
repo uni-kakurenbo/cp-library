@@ -98,6 +98,8 @@ jobs:
 
         head -c -1 ./.verify-helper/targets.txt | \
         xargs -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
+        
+        jq --slurp --sort "./.verify-helper/timestamps-$NODE_ID.json"
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
