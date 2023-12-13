@@ -1,5 +1,5 @@
 #! /bin/bash
-set -e
+set -eu
 
 WORKING_DIRECTORY="$PWD"
 TARGET="$1"
@@ -25,7 +25,9 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" '+%s')
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "Already verified."
     else
+        set +e
         oj-verify run "$TARGET" --tle 5
+        set -e
     fi
 
     echo "::endgroup::"
