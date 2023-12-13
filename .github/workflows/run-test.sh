@@ -27,8 +27,12 @@ EXIT_STATUS=0
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "Already verified."
     else
+        echo "::group::oj-verify run"
+
         oj-verify run "$TARGET" --tle 5
         EXIT_STATUS=$?
+
+        echo "::endgroup::"
     fi
 
     echo "::endgroup::"
