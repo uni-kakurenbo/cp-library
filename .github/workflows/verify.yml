@@ -96,8 +96,8 @@ jobs:
         head -c -1 ./.verify-helper/targets.txt | \
         xargs -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
-        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' | \
-        ./.verify-helper/timestamps.json >> "./.verify-helper/timestamps-${{ matrix.id }}.json"
+        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
+        ./.verify-helper/timestamps.json > "./.verify-helper/timestamps-${{ matrix.id }}.json"
         cat "./.verify-helper/timestamps-${{ matrix.id }}.json"
 
     - name: Save timestamps
