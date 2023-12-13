@@ -34,7 +34,7 @@ EXIT_STATUS=0
     echo "::endgroup::"
 
     jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
-    '.[$target] = $date' >> "./.verify-helper/timestamps-$NODE_ID.json"
+    '.[$target] = $date' >> "./.verify-helper/timestamps.json"
 } &>> ".log-$PID.txt"
 
 cat ".log-$PID.txt"
