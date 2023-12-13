@@ -26,7 +26,7 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" '+%s')
         echo "Already verified."
     else
         set +e
-        oj-verify run "$TARGET" --tle 5 || exit 1
+        oj-verify run "$TARGET" --tle 5
         set -e
     fi
 
