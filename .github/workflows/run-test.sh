@@ -47,4 +47,8 @@ jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
 
 cat ".log-$PID.txt"
 
+if [ $EXIT_STATUS -eq 0 ]; then
+    echo "::notice file=$TARGET::Skipped or passed tests successfully."
+fi
+
 exit $EXIT_STATUS
