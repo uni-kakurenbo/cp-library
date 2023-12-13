@@ -37,7 +37,7 @@ set +e
         echo "::endgroup::"
     fi
 
-    echo.
+    echo
 } &>> ".log-$PID.txt"
 
 set -e
