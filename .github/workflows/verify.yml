@@ -81,7 +81,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        if [ ! -f check_fil.sh ]; then
+        if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
