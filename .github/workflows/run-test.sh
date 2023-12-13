@@ -27,7 +27,7 @@ set +e
     echo "::endgroup::"
 
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
-        echo "Already verified."
+        echo "::notice file=$TARGET::Already verified. (Test was skipped.)"
     else
         echo "::group::oj-verify run"
 
@@ -35,6 +35,10 @@ set +e
         EXIT_STATUS=$?
 
         echo "::endgroup::"
+        
+        if [ $EXIT_STATUS -eq 0 ]; then
+            echo "::notice file=$TARGET::All tests passed successfully."
+        fi
     fi
 
     echo
@@ -46,9 +50,5 @@ jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
 '.[$target] = $date' >> "./.verify-helper/timestamps.json"
 
 cat ".log-$PID.txt"
-
-if [ $EXIT_STATUS -eq 0 ]; then
-    echo "::notice file=$TARGET::Skipped or passed all tests successfully."
-fi
 
 exit $EXIT_STATUS
