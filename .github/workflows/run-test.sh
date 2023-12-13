@@ -1,5 +1,5 @@
 #! /bin/bash
-set -eu
+set -u
 
 WORKING_DIRECTORY="$PWD"
 TARGET="$1"
@@ -17,6 +17,8 @@ LAST_VERIFY_DATE="$(
 LAST_MODIFIED_AT=$(date --date "$LAST_MODIFY_DATE" '+%s')
 LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" '+%s')
 
+EXIT_STATUS=0
+
 {
     echo "::group::$TARGET [PID: $PID]"
     echo "Last modify: $LAST_MODIFY_DATE ($LAST_MODIFIED_AT)"
@@ -25,15 +27,16 @@ LAST_VERIFIED_AT=$(date --date "$LAST_VERIFY_DATE" '+%s')
     if [ "$LAST_MODIFIED_AT" -le "$LAST_VERIFIED_AT" ]; then
         echo "Already verified."
     else
-        set +e
-        oj-verify run "$TARGET" --tle 5 || exit 1
-        set -e
+        oj-verify run "$TARGET" --tle 5
+        EXIT_STATUS=$?
     fi
 
     echo "::endgroup::"
-        
+
     jq -n --arg target "$TARGET" --arg date "$LAST_MODIFY_DATE" \
     '.[$target] = $date' >> "./.verify-helper/timestamps-$NODE_ID.json"
 } &>> ".log-$PID.txt"
 
 cat ".log-$PID.txt"
+
+exit $EXIT_STATUS
