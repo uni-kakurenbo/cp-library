@@ -49,16 +49,14 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         CANDIDATES=$(find verify -type f -name *.test.cpp)
-        NUMBER_OF_TESTS=$(printf "$CANDIDATES" | wc -l)
 
         TEST_FILES=$(
           printf "$CANDIDATES" | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
-              -v t=$NUMBER_OF_TESTS \
               '{
-                if(int((NR - 1) * n / t) == i) {
+                if((NR - 1) % n == i) {
                   print $0
                 }
               }' \
