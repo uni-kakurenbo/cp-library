@@ -78,9 +78,7 @@ struct barrett_reduction {
         );
     }
 
-    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) {
-        return this->reduce(v);
-    }
+    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) { return v; }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
