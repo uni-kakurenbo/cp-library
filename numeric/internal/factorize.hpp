@@ -48,7 +48,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
-        Mint x, y, ys, q = Mint::one;
+        Mint x, y, ys, q = Mint::one();
         rr = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
@@ -80,10 +80,10 @@ void factorize(const u64 n, R *const res) noexcept(NO_EXCEPT) {
     if(n <= 1) return;
 
     u64 p;
-    if constexpr(std::same_as<Small, Large>) p = find_factor<Small, typename Small::unsigned_value_type>(n);
+    if constexpr(std::same_as<Small, Large>) p = find_factor<Small, typename Small::value_type>(n);
     else {
-        if(n <= Small::max()) p = find_factor<Small, typename Small::unsigned_value_type>(n);
-        else p = find_factor<Large, typename Large::unsigned_value_type>(n);
+        if(n <= Small::max()) p = find_factor<Small, typename Small::value_type>(n);
+        else p = find_factor<Large, typename Large::value_type>(n);
     }
 
     if(p == static_cast<u64>(n)) {

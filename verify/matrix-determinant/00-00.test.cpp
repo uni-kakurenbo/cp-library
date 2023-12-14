@@ -16,7 +16,7 @@
 #include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 
-using mint = lib::barrett_modint_32bit<-1>;
+using mint = lib::dynamic_barrett_modint_32bit<-1>;
 
 signed main() {
     int n, m; input >> n >> m;

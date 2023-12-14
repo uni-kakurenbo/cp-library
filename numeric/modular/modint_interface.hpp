@@ -10,6 +10,9 @@
 
 #include "internal/concepts.hpp"
 
+#include "numeric/modular/builtin_reduction.hpp"
+#include "numeric/modular/binary_reduction.hpp"
+#include "numeric/modular/barrett_reduction.hpp"
 #include "numeric/modular/montgomery_reduction.hpp"
 
 
@@ -18,176 +21,18 @@ namespace lib {
 namespace internal {
 
 
-template<structural Derived, std::unsigned_integral Value>
-    requires std::same_as<std::remove_cv_t<Derived>, Derived>
-struct modint_interface {
-  private:
-    inline constexpr Derived* _derived() noexcept(NO_EXCEPT) {
-        return static_cast<Derived*>(this);
-    }
-    inline constexpr const Derived* _derived() const noexcept(NO_EXCEPT) {
-        return static_cast<const Derived*>(this);
-    }
-
-
-  public:
-    modint_interface() noexcept = default;
-
-    explicit inline operator Value() const noexcept(NO_EXCEPT)
-        requires requires (Derived v) { v.val(); }
-    {
-        return this->_derived()->val();
-    }
-
-    inline constexpr auto& operator++() noexcept(NO_EXCEPT)
-        requires requires (Derived v) { v += Derived::one; }
-    {
-        return *this->_derived() += Derived::one;
-    }
-
-    inline constexpr auto& operator--() noexcept(NO_EXCEPT)
-        requires requires (Derived v) { v -= Derived::one; }
-    {
-        return *this->_derived() -= Derived::one;
-    }
-
-
-    inline constexpr auto operator++(int) noexcept(NO_EXCEPT)
-        requires requires (Derived v) { ++v; }
-    {
-        Derived res = *this->_derived();
-        return ++*this->_derived(), res;
-    }
-
-    inline constexpr auto operator--(int) noexcept(NO_EXCEPT)
-        requires requires (Derived v) { --v; }
-    {
-        Derived res = *this->_derived();
-        return --*this->_derived(), res;
-    }
-
-
-    inline constexpr auto operator+() const noexcept(NO_EXCEPT) { return *this->_derived(); }
-
-    inline constexpr auto operator-() const noexcept(NO_EXCEPT)
-        requires requires (const Derived v) { Derived::zero - v; }
-    {
-        return Derived::zero - *this->_derived();
-    }
-
-    inline constexpr auto& operator/=(const Derived& rhs) noexcept(NO_EXCEPT)
-        requires requires (Derived v) { v *= v.inv(); }
-    {
-        return *this->_derived() *= rhs.inv();
-    }
-
-
-    constexpr auto pow(i64 n) const noexcept(NO_EXCEPT)
-        requires multipliation_assignalbe<Derived> && requires { Derived::one; }
-    {
-        if(Derived::mod() == 1) return Derived::zero;
-        return lib::pow(*this->_derived(), n, std::multiplies<Derived>{}, Derived::one, Derived::zero);
-    }
-
-
-    constexpr Derived inv() const noexcept(NO_EXCEPT)
-        requires
-            requires(Derived v, int n) {
-                v.val();
-                Derived::mod();
-                Derived::raw(n);
-            }
-    {
-        using signed_value_type = std::make_signed_t<Value>;
-
-        signed_value_type x = this->_derived()->val(), y = Derived::mod(), u = 1, v = 0;
-        while(y > 0) {
-            signed_value_type t = x / y;
-            std::swap(x -= t * y, y);
-            std::swap(u -= t * v, v);
-        }
-        assert(x == 1);
-
-        if(u < 0) u += v / x;
-        return Derived::raw(u);
-    }
-
-
-    friend inline constexpr bool operator!=(const Derived& lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-        requires requires(Derived v) { v == v; }
-    {
-        return !(lhs == rhs);
-    }
-
-    friend inline constexpr auto operator+(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-#if __GNUC__ < 13
-        requires addition_assignable<Derived>
-#endif
-    {
-        return lhs += rhs;
-    }
-
-    friend inline constexpr auto operator-(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-#if __GNUC__ < 13
-        requires subtraction_assignable<Derived>
-#endif
-    {
-        return lhs -= rhs;
-    }
-
-    friend inline constexpr auto operator*(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-#if __GNUC__ < 13
-        requires multipliation_assignalbe<Derived>
-#endif
-    {
-        return lhs *= rhs;
-    }
-
-    friend inline constexpr auto operator/(Derived lhs, const Derived& rhs) noexcept(NO_EXCEPT)
-#if __GNUC__ < 13
-        requires division_assignable<Derived>
-#endif
-    {
-        return lhs /= rhs;
-    }
-};
-
-
-
-template<std::unsigned_integral Value, std::unsigned_integral Large, Value Mod>
-    requires has_double_digits_of<Large, Value> && (Mod > 0)
-struct static_modint_impl;
-
-
-template<std::unsigned_integral Value, std::unsigned_integral Large, i64 Id>
-    requires has_double_digits_of<Large, Value>
-struct barrett_modint_impl;
-
-
-template<class Context, i64 Id>
-struct montgomery_modint_impl;
-
-
-template<std::unsigned_integral Value, i64 Id>
-struct binary_modint_impl;
-
-
-using atcoder::internal::is_modint;
-template<class T> constexpr bool is_modint_v = is_modint<T>::value;
-using atcoder::internal::is_modint_t;
-
-
-template<class T> concept modint_family =
+template<class T>
+concept modint_family =
     numeric<T> &&
     has_static_one<T> && has_static_zero<T> &&
-    requires (T v, i64 p, typename T::unsigned_value_type x) {
+    requires (T v, i64 p, typename T::value_type x) {
         { v.pow(p) } -> std::same_as<T>;
         { v.inv() } -> std::same_as<T>;
         { T::raw(x) } -> std::same_as<T>;
 
-        { v.val() } -> std::same_as<typename T::unsigned_value_type>;
-        { T::mod() } -> std::same_as<typename T::unsigned_value_type>;
-        { T::max() } -> std::same_as<typename T::unsigned_value_type>;
+        { v.val() } -> std::same_as<typename T::value_type>;
+        { T::mod() } -> std::same_as<typename T::value_type>;
+        { T::max() } -> std::same_as<typename T::value_type>;
         T::digits;
     };
 
@@ -195,44 +40,135 @@ template<class T> concept modint_family =
 template<class T>
 concept dynamic_modint_family =
     modint_family<T> &&
-    requires (typename T::unsigned_value_type v) {
+    requires (typename T::value_type v) {
         T::set_mod(v);
     };
 
 
 template<class T>
 concept static_modint_family =
-    modint_family<T> &&
-    requires {
-        T::is_prime;
-    };
+    modint_family<T>; //&&
+    // requires {
+    //     T::is_prime;
+    // };
 
 
 } // namespace internal
 
 
-template<u32 Mod> using static_modint_32bit = internal::static_modint_impl<u32, u64, Mod>;
-template<u64 Mod> using static_modint_64bit = internal::static_modint_impl<u64, u128, Mod>;
+template<class Reduction, typename Reduction::value_type Mod>
+struct static_modular_context {
+    using reduction = Reduction;
+    using value_type = typename reduction::value_type;
 
-template<i64 Id> using barrett_modint_32bit = internal::barrett_modint_impl<u32, u64, Id>;
-template<i64 Id> using barrett_modint_64bit = internal::barrett_modint_impl<u64, u128, Id>;
+  private:
+    using context = static_modular_context;
 
-template<i64 Id> using montgomery_modint_32bit = internal::montgomery_modint_impl<montgomery_reduction_32bit, Id>;
-template<i64 Id> using montgomery_modint_64bit = internal::montgomery_modint_impl<montgomery_reduction_64bit, Id>;
+    static inline constexpr reduction _reduction = reduction(Mod);
 
-template<i64 Id> using arbitrary_montgomery_modint_32bit = internal::montgomery_modint_impl<arbitrary_montgomery_reduction_32bit, Id>;
-template<i64 Id> using arbitrary_montgomery_modint_64bit = internal::montgomery_modint_impl<arbitrary_montgomery_reduction_64bit, Id>;
+  public:
+    static constexpr const reduction& get() noexcept(NO_EXCEPT) { return context::_reduction; }
+};
 
-template<i64 Id> using binary_modint_32bit = internal::binary_modint_impl<u32, Id>;
-template<i64 Id> using binary_modint_64bit = internal::binary_modint_impl<u64, Id>;
-template<i64 Id> using binary_modint_128bit = internal::binary_modint_impl<u128, Id>;
+
+template<class Reduction, i64 Id>
+struct dynamic_modular_context {
+    using reduction = Reduction;
+    using value_type = typename reduction::value_type;
+
+  private:
+    using context = dynamic_modular_context;
+
+    static inline reduction _reduction;
+
+  public:
+    static void set_mod(const value_type mod) noexcept(NO_EXCEPT) { context::_reduction = reduction(mod); }
+
+    static constexpr const reduction& get() noexcept(NO_EXCEPT) { return context::_reduction; }
+};
+
+
+template<class> struct modint;
+
+
+template<u32 Mod> using static_builtin_modular_context_32bit = static_modular_context<builtin_reduction_32bit, Mod>;
+template<u64 Mod> using static_builtin_modular_context_64bit = static_modular_context<builtin_reduction_64bit, Mod>;
+
+template<u32 Mod> using static_barrett_modular_context_32bit = static_modular_context<barrett_reduction_32bit, Mod>;
+template<u64 Mod> using static_barrett_modular_context_64bit = static_modular_context<barrett_reduction_64bit, Mod>;
+
+template<u32 Mod> using static_montgomery_modular_context_32bit = static_modular_context<montgomery_reduction_32bit, Mod>;
+template<u64 Mod> using static_montgomery_modular_context_64bit = static_modular_context<montgomery_reduction_64bit, Mod>;
+
+template<u32 Mod> using static_arbitrary_montgomery_modular_context_32bit = static_modular_context<arbitrary_montgomery_reduction_32bit, Mod>;
+template<u64 Mod> using static_arbitrary_montgomery_modular_context_64bit = static_modular_context<arbitrary_montgomery_reduction_64bit, Mod>;
+
+template<u32 Mod> using static_binary_modular_context_32bit = static_modular_context<binary_reduction_32bit, Mod>;
+template<u64 Mod> using static_binary_modular_context_64bit = static_modular_context<binary_reduction_64bit, Mod>;
+template<u128 Mod> using static_binary_modular_context_128bit = static_modular_context<binary_reduction_128bit, Mod>;
+
+
+template<u32 Mod> using static_builtin_modint_32bit = modint<static_builtin_modular_context_32bit<Mod>>;
+template<u64 Mod> using static_builtin_modint_64bit = modint<static_builtin_modular_context_64bit<Mod>>;
+
+template<u32 Mod> using static_barrett_modint_32bit = modint<static_barrett_modular_context_32bit<Mod>>;
+template<u64 Mod> using static_barrett_modint_64bit = modint<static_barrett_modular_context_64bit<Mod>>;
+
+template<u32 Mod> using static_montgomery_modint_32bit = modint<static_montgomery_modular_context_32bit<Mod>>;
+template<u64 Mod> using static_montgomery_modint_64bit = modint<static_montgomery_modular_context_64bit<Mod>>;
+
+template<u32 Mod> using static_arbitrary_montgomery_modint_32bit = modint<static_arbitrary_montgomery_modular_context_32bit<Mod>>;
+template<u64 Mod> using static_arbitrary_montgomery_modint_64bit = modint<static_arbitrary_montgomery_modular_context_64bit<Mod>>;
+
+template<u32 Mod> using static_binary_modint_32bit = modint<static_binary_modular_context_32bit<Mod>>;
+template<u64 Mod> using static_binary_modint_64bit = modint<static_binary_modular_context_64bit<Mod>>;
+template<u128 Mod> using static_binary_modint_128bit = modint<static_binary_modular_context_128bit<Mod>>;
+
+
+
+template<i64 Id> using dynamic_builtin_modular_context_32bit = dynamic_modular_context<builtin_reduction_32bit, Id>;
+template<i64 Id> using dynamic_builtin_modular_context_64bit = dynamic_modular_context<builtin_reduction_64bit, Id>;
+
+template<i64 Id> using dynamic_barrett_modular_context_32bit = dynamic_modular_context<barrett_reduction_32bit, Id>;
+template<i64 Id> using dynamic_barrett_modular_context_64bit = dynamic_modular_context<barrett_reduction_64bit, Id>;
+
+template<i64 Id> using dynamic_montgomery_modular_context_32bit = dynamic_modular_context<montgomery_reduction_32bit, Id>;
+template<i64 Id> using dynamic_montgomery_modular_context_64bit = dynamic_modular_context<montgomery_reduction_64bit, Id>;
+
+template<i64 Id> using dynamic_arbitrary_montgomery_modular_context_32bit = dynamic_modular_context<arbitrary_montgomery_reduction_32bit, Id>;
+template<i64 Id> using dynamic_arbitrary_montgomery_modular_context_64bit = dynamic_modular_context<arbitrary_montgomery_reduction_64bit, Id>;
+
+template<i64 Id> using dynamic_binary_modular_context_32bit = dynamic_modular_context<binary_reduction_32bit, Id>;
+template<i64 Id> using dynamic_binary_modular_context_64bit = dynamic_modular_context<binary_reduction_64bit, Id>;
+template<i64 Id> using dynamic_binary_modular_context_128bit = dynamic_modular_context<binary_reduction_128bit, Id>;
+
+
+template<i64 Id> using dynamic_builtin_modint_32bit = modint<dynamic_builtin_modular_context_32bit<Id>>;
+template<i64 Id> using dynamic_builtin_modint_64bit = modint<dynamic_builtin_modular_context_64bit<Id>>;
+
+template<i64 Id> using dynamic_barrett_modint_32bit = modint<dynamic_barrett_modular_context_32bit<Id>>;
+template<i64 Id> using dynamic_barrett_modint_64bit = modint<dynamic_barrett_modular_context_64bit<Id>>;
+
+template<i64 Id> using dynamic_montgomery_modint_32bit = modint<dynamic_montgomery_modular_context_32bit<Id>>;
+template<i64 Id> using dynamic_montgomery_modint_64bit = modint<dynamic_montgomery_modular_context_64bit<Id>>;
+
+template<i64 Id> using dynamic_arbitrary_montgomery_modint_32bit = modint<dynamic_arbitrary_montgomery_modular_context_32bit<Id>>;
+template<i64 Id> using dynamic_arbitrary_montgomery_modint_64bit = modint<dynamic_arbitrary_montgomery_modular_context_64bit<Id>>;
+
+template<i64 Id> using dynamic_binary_modint_32bit = modint<dynamic_binary_modular_context_32bit<Id>>;
+template<i64 Id> using dynamic_binary_modint_64bit = modint<dynamic_binary_modular_context_64bit<Id>>;
+template<i64 Id> using dynamic_binary_modint_128bit = modint<dynamic_binary_modular_context_128bit<Id>>;
+
+
+template<u32 Mod> using static_modint_32bit = static_builtin_modint_32bit<Mod>;
+template<u32 Mod> using static_modint_64bit = static_builtin_modint_64bit<Mod>;
 
 
 using modint998244353 = static_modint_32bit<998244353>;
 using modint1000000007 = static_modint_32bit<1000000007>;
 
-using modint_32 = barrett_modint_32bit<-1>;
-using modint_64 = barrett_modint_64bit<-1>;
+using modint_32 = dynamic_barrett_modint_32bit<-1>;
+using modint_64 = dynamic_barrett_modint_64bit<-1>;
 
 
 template<const unsigned Val, const unsigned Mod = 998244353>

@@ -111,7 +111,7 @@ struct binomial_coefficient_prime_power_mod {
     }
 
     explicit binomial_coefficient_prime_power_mod(const mod_type p, mod_type q = 1, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
-        requires (not internal::is_modint_v<mod_type>)
+        requires (not modint_family<mod_type>)
       : _p(static_cast<u32>(p)), _q(static_cast<u32>(q)), _max(max)
     {
         assert(1 < p and p < self::MOD_SUP);

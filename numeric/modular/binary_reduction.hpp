@@ -34,6 +34,10 @@ struct binary_reduction {
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mask + 1; }
 
 
+    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
+    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_mask != 0; }
+
+
     constexpr binary_reduction() noexcept = default;
 
     constexpr explicit inline binary_reduction(const value_type mod) : _mask(mod - 1) {
@@ -42,6 +46,16 @@ struct binary_reduction {
 
     inline constexpr value_type reduce(const value_type v) const noexcept(NO_EXCEPT) { return v; }
 
+
+    inline constexpr value_type add(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return x + y;
+    }
+
+    inline constexpr value_type subtract(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return x - y;
+    }
+
+
     inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
         return x * y;
     }
@@ -49,6 +63,11 @@ struct binary_reduction {
     inline constexpr value_type pow(const value_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mask == 0) return 0;
         return lib::pow(v, p);
+    }
+
+
+    inline constexpr bool equal(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return this->revert(x) == this->revert(y);
     }
 
 

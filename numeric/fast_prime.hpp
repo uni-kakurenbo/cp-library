@@ -9,7 +9,6 @@
 #include "adapter/set.hpp"
 #include "adapter/map.hpp"
 
-#include "numeric/modular/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/factorize.hpp"
 #include "numeric/internal/divisors.hpp"
@@ -27,27 +26,27 @@ constexpr i64 INTERNAL_MODINT_ID = -(1L << 62);
 
 inline constexpr bool is_prime(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
-    return is_prime<lib::montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n);
+    return is_prime<lib::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n);
 }
 
 inline auto factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     vector<i64> res;
-    factorize<lib::montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n, &res);
+    factorize<lib::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n, &res);
     return res;
 }
 
 inline auto divisors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     vector<i64> res;
-    divisors<lib::montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n, &res);
+    divisors<lib::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>>(n, &res);
     std::ranges::sort(res);
     return res;
 }
 
 inline auto primitive_root(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
-    return primitive_root<lib::montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::montgomery_modint_64bit<INTERNAL_MODINT_ID>, i64>(n);
+    return primitive_root<lib::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, lib::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>, i64>(n);
 }
 
 
