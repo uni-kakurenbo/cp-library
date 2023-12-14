@@ -19,8 +19,8 @@
 
 
 signed main() {
-    using mint = lib::modint<lib::montgomery_modint_context_64bit<-1>>;
-    lib::montgomery_modint_context_64bit<-1>::set_mod(998244353);
+    using mint = lib::dynamic_montgomery_modint_64bit<-1>;
+    mint::set_mod(998244353);
 
     int n, q; std::cin >> n >> q;
     std::vector<mint> a(n); input >> a;
