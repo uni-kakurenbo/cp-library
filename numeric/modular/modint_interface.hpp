@@ -125,7 +125,6 @@ template<u64 Mod> using static_binary_modint_64bit = modint<static_binary_modula
 template<u128 Mod> using static_binary_modint_128bit = modint<static_binary_modular_context_128bit<Mod>>;
 
 
-
 template<i64 Id> using dynamic_builtin_modular_context_32bit = dynamic_modular_context<builtin_reduction_32bit, Id>;
 template<i64 Id> using dynamic_builtin_modular_context_64bit = dynamic_modular_context<builtin_reduction_64bit, Id>;
 
