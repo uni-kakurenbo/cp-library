@@ -23,7 +23,7 @@ namespace lib {
 namespace internal {
 
 
-template<class T, class R = T, class Reduction = arbitrary_montgomery_reduction_32bit>
+template<class T, class R = T, class Reduction = barrett_reduction_32bit>
     requires (std::numeric_limits<R>::digits > 30) || modint_family<R>
 struct binomial_coefficient_prime_power_mod {
     using value_type = T;

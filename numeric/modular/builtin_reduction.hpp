@@ -8,6 +8,8 @@
 
 #include "internal/concepts.hpp"
 
+#include "numeric/arithmetic.hpp"
+
 
 namespace lib {
 
