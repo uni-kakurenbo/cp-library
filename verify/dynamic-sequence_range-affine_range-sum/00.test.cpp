@@ -13,7 +13,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "adapter/vector.hpp"
 #include "data_structure/implicit_treap.hpp"
 #include "action/range_affine_range_sum.hpp"

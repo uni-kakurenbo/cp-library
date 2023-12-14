@@ -8,7 +8,7 @@
 #include "snippet/internal/types.hpp"
 #include "internal/dev_env.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 #include "numeric/bit.hpp"
 
 

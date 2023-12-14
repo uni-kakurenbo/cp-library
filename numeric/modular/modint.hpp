@@ -11,10 +11,10 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/primitive_root.hpp"
-#include "numeric/barrett_reduction.hpp"
+#include "numeric/modular/barrett_reduction.hpp"
 
 #include "template/debug.hpp"
 

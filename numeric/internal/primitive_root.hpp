@@ -12,7 +12,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/internal/divisors.hpp"
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 
 #include "random/xorshift.hpp"
 

@@ -7,7 +7,7 @@
 
 #include "internal/types.hpp"
 
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 
 namespace lib {

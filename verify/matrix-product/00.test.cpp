@@ -11,7 +11,7 @@
 #include <iostream>
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 
 signed main() {

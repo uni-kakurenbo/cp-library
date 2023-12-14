@@ -1,7 +1,7 @@
 #pragma once
 
 #include "numeric/arithmetic.hpp"
-#include "numeric/barrett_reduction.hpp"
+#include "numeric/modular/barrett_reduction.hpp"
 #include "numeric/binomial_coefficient.hpp"
 #include "numeric/bit.hpp"
 #include "numeric/boundary_seeker.hpp"
@@ -17,8 +17,8 @@
 #include "numeric/leveler.hpp"
 #include "numeric/limits.hpp"
 #include "numeric/matrix.hpp"
-#include "numeric/modint.hpp"
-#include "numeric/montgomery_reduction.hpp"
+#include "numeric/modular/modint.hpp"
+#include "numeric/modular/montgomery_reduction.hpp"
 #include "numeric/numerical_sequence.hpp"
 #include "numeric/prime_counter.hpp"
 #include "numeric/prime_enumerator.hpp"

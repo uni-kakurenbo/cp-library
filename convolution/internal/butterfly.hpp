@@ -15,7 +15,7 @@
 #include "snippet/aliases.hpp"
 
 #include "numeric/internal/primitive_root.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 #include "utility/functional.hpp"
 

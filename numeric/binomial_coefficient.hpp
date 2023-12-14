@@ -11,10 +11,10 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
-#include "numeric/barrett_reduction.hpp"
-#include "numeric/montgomery_reduction.hpp"
-#include "numeric/binary_reduction.hpp"
+#include "numeric/modular/modint_interface.hpp"
+#include "numeric/modular/barrett_reduction.hpp"
+#include "numeric/modular/montgomery_reduction.hpp"
+#include "numeric/modular/binary_reduction.hpp"
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp

@@ -21,7 +21,7 @@
 #include "adapter/io.hpp"
 #include "snippet/aliases.hpp"
 #include "numeric/binomial_coefficient.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 signed main() {
     int t; std::cin >> t;

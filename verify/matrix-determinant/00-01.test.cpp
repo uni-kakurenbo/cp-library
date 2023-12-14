@@ -13,7 +13,7 @@
 #include <iostream>
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 
 using mint = lib::arbitrary_montgomery_modint_32bit<-1>;

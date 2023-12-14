@@ -15,7 +15,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "constants.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "snippet/aliases.hpp"
 #include "numeric/binomial_coefficient.hpp"
 

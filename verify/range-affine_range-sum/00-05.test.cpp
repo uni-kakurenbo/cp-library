@@ -12,7 +12,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "action/range_affine_range_sum.hpp"

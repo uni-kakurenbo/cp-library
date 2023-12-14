@@ -9,12 +9,12 @@
 #include "adapter/set.hpp"
 #include "adapter/map.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/factorize.hpp"
 #include "numeric/internal/divisors.hpp"
 #include "numeric/internal/primitive_root.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 
 namespace lib {
