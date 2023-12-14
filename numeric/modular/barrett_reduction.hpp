@@ -106,7 +106,7 @@ struct barrett_reduction {
         return static_cast<value_type>(v);
     }
 
-    constexpr value_type revert(value_type v) const noexcept(NO_EXCEPT) { return this->reduce(v); }
+    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) { return this->reduce(v); }
 };
 
 
