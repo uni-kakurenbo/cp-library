@@ -51,7 +51,7 @@ struct montgomery_reduction {
 
     constexpr montgomery_reduction(const value_type mod) noexcept(NO_EXCEPT)
       : _mod(mod), _r2(static_cast<value_type>(-static_cast<large_type>(mod) % mod)),
-        _mp(-this->_inv()), one(this->reduce(this->_r))
+        _mp(-this->_inv()), one(this->reduce(this->_r2))
     {
         assert((mod & 1) == 1);
         assert(mod <= montgomery_reduction::max());

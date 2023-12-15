@@ -42,7 +42,7 @@ struct modint {
     static constexpr mint _one() noexcept(NO_EXCEPT)
         requires internal::has_static_one<typename mint::context::reduction>
     {
-        return mint::context::one;
+        return mint::context::get().one;
     }
 
     static constexpr mint _one() noexcept(NO_EXCEPT)
