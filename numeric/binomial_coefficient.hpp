@@ -11,10 +11,10 @@
 #include "snippet/aliases.hpp"
 #include "snippet/iterations.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
-#include "numeric/barrett_reduction.hpp"
-#include "numeric/montgomery_reduction.hpp"
-#include "numeric/binary_reduction.hpp"
+#include "numeric/modular/modint_interface.hpp"
+#include "numeric/modular/barrett_reduction.hpp"
+#include "numeric/modular/montgomery_reduction.hpp"
+#include "numeric/modular/binary_reduction.hpp"
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp
@@ -23,7 +23,7 @@ namespace lib {
 namespace internal {
 
 
-template<class T, class R = T, class Reduction = arbitrary_montgomery_reduction_32bit>
+template<class T, class R = T, class Reduction = barrett_reduction_32bit>
     requires (std::numeric_limits<R>::digits > 30) || modint_family<R>
 struct binomial_coefficient_prime_power_mod {
     using value_type = T;
@@ -111,7 +111,7 @@ struct binomial_coefficient_prime_power_mod {
     }
 
     explicit binomial_coefficient_prime_power_mod(const mod_type p, mod_type q = 1, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
-        requires (not internal::is_modint_v<mod_type>)
+        requires (not modint_family<mod_type>)
       : _p(static_cast<u32>(p)), _q(static_cast<u32>(q)), _max(max)
     {
         assert(1 < p and p < self::MOD_SUP);

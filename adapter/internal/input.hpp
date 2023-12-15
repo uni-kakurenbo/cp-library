@@ -20,7 +20,7 @@
 
 #include "utility/functional.hpp"
 
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 
 #include "adapter/valarray.hpp"
 

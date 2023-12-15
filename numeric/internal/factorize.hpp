@@ -16,7 +16,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/internal/primality_test.hpp"
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 #include "numeric/bit.hpp"
 
 #include "random/xorshift.hpp"
@@ -80,10 +80,10 @@ void factorize(const u64 n, R *const res) noexcept(NO_EXCEPT) {
     if(n <= 1) return;
 
     u64 p;
-    if constexpr(std::same_as<Small, Large>) p = find_factor<Small, typename Small::unsigned_value_type>(n);
+    if constexpr(std::same_as<Small, Large>) p = find_factor<Small, typename Small::value_type>(n);
     else {
-        if(n <= Small::max()) p = find_factor<Small, typename Small::unsigned_value_type>(n);
-        else p = find_factor<Large, typename Large::unsigned_value_type>(n);
+        if(n <= Small::max()) p = find_factor<Small, typename Small::value_type>(n);
+        else p = find_factor<Large, typename Large::value_type>(n);
     }
 
     if(p == static_cast<u64>(n)) {

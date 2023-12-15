@@ -27,7 +27,7 @@ struct montgomery_reduction {
     using large_type = Large;
 
   private:
-    value_type _mod = 0, _mp, _r2;
+    value_type _mod = 0, _r2, _mp;
 
     constexpr value_type _inv() const noexcept(NO_EXCEPT) {
         value_type res = this->_mod;
@@ -36,7 +36,6 @@ struct montgomery_reduction {
     }
 
   public:
-    value_type one;
 
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
     static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_reduction::digits) - 1; }
@@ -44,19 +43,18 @@ struct montgomery_reduction {
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
 
+    value_type zero = 0;
+    value_type one;
+
+
     constexpr montgomery_reduction() noexcept = default;
 
-    constexpr montgomery_reduction(const value_type m) noexcept(NO_EXCEPT) {
-        assert((m & 1) == 1);
-
-        if(this->_mod == m) return;
-
-        assert(m <= montgomery_reduction::max());
-
-        this->_mod = m;
-        this->_r2 = static_cast<value_type>(-static_cast<large_type>(m) % m);
-        this->_mp = -this->_inv();
-        this->one = this->reduce(this->_r2);
+    constexpr montgomery_reduction(const value_type mod) noexcept(NO_EXCEPT)
+      : _mod(mod), _r2(static_cast<value_type>(-static_cast<large_type>(mod) % mod)),
+        _mp(-this->_inv()), one(this->reduce(this->_r2))
+    {
+        assert((mod & 1) == 1);
+        assert(mod <= montgomery_reduction::max());
     }
 
 
@@ -67,6 +65,19 @@ struct montgomery_reduction {
                     v + static_cast<large_type>(static_cast<value_type>(v) * this->_mp) * this->_mod
                 ) >> std::numeric_limits<value_type>::digits
             );
+    }
+
+
+    inline constexpr value_type add(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        x += y;
+        if(x >= (this->_mod << 1)) x -= (this->_mod << 1);
+        return x;
+    }
+
+    inline constexpr value_type subtract(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        if(x < y) x += (this->_mod << 1);
+        x -= y;
+        return x;
     }
 
 
@@ -83,13 +94,14 @@ struct montgomery_reduction {
         );
     }
 
+
     inline constexpr value_type normalize(const value_type v) const noexcept(NO_EXCEPT) {
         assert(0 <= v && v < (this->_mod << 1));
         if(v < this->_mod) return v;
         return v - this->_mod;
     }
 
-    inline constexpr bool equal(const large_type x, const large_type y) const noexcept(NO_EXCEPT) {
+    inline constexpr bool equal(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
         return this->normalize(x) == this->normalize(y);
     }
 
@@ -158,12 +170,12 @@ struct arbitrary_montgomery_reduction {
     }
 
   public:
-    value_type one;
-
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
     static inline constexpr value_type max() noexcept { return (value_type{ 1 } << context::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
+
+    value_type one;
 
 
     constexpr arbitrary_montgomery_reduction() noexcept = default;
@@ -203,6 +215,20 @@ struct arbitrary_montgomery_reduction {
             );
         return res;
     }
+
+
+    inline constexpr value_type add(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        x += y;
+        if(x >= (this->_mod << 1)) x -= (this->_mod << 1);
+        return x;
+    }
+
+    inline constexpr value_type subtract(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        if(x < y) x += (this->_mod << 1);
+        x -= y;
+        return x;
+    }
+
 
 
     inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {

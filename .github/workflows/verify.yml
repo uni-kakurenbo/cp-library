@@ -66,6 +66,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
+      if: ${{ !cancelled() && github.ref_name == 'main' }}
       id: cache-judge
       uses: actions/cache@v3
       with:
@@ -87,12 +88,11 @@ jobs:
 
         oj d https://judge.yosupo.jp/problem/aplusb &> /dev/null
 
-        parallel=$(nproc)
         if [ "${CACHE_HIT}" != 'true' ]; then
-          parallel=1
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
+        parallel=$(nproc)
         echo "Parallel execution: ${parallel}"
 
         head -c -1 ./.verify-helper/targets.txt | \

@@ -12,19 +12,20 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "action/range_affine_range_sum.hpp"
 
 
 signed main() {
-    lib::montgomery_modint_32bit<-1>::set_mod(998244353);
+    using mint = lib::dynamic_montgomery_modint_32bit<-1>;
+    mint::set_mod(998244353);
 
     int n, q; std::cin >> n >> q;
-    std::vector<lib::montgomery_modint_32bit<-1>> a(n); input >> a;
+    std::vector<mint> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::montgomery_modint_32bit<-1>>> data(ALL(a));
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<mint>> data(ALL(a));
 
     REP(q) {
         int t; std::cin >> t;

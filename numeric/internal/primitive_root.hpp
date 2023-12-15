@@ -12,7 +12,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/internal/divisors.hpp"
-#include "numeric/internal/modint_interface.hpp"
+#include "numeric/modular/modint_interface.hpp"
 
 #include "random/xorshift.hpp"
 
@@ -109,8 +109,8 @@ constexpr Res primitive_root(const u64 p) noexcept(NO_EXCEPT) {
         assert(false);
     }
     else {
-        if(p <= Small::max()) return primitive_root<Small, Large, Small, typename Small::unsigned_value_type>(p);
-        else return primitive_root<Small, Large, Large, typename Large::unsigned_value_type>(p);
+        if(p <= Small::max()) return primitive_root<Small, Large, Small, typename Small::value_type>(p);
+        else return primitive_root<Small, Large, Large, typename Large::value_type>(p);
     }
 }
 

@@ -25,7 +25,7 @@
 #include "numeric/int128.hpp"
 #include "numeric/arithmetic.hpp"
 #include "numeric/matrix.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "numeric/fast_prime.hpp"
 #include "numeric/prime_enumerator.hpp"
 #include "numeric/prime_sieve.hpp"

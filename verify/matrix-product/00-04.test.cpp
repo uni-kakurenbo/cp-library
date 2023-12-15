@@ -6,7 +6,7 @@
  */
 /* #language C++ 20 GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/matrix_det_arbitrary_mod"
+#define PROBLEM "https://judge.yosupo.jp/problem/matrix_product"
 
 #include "sneaky/enforce_int128_enable.hpp"
 
@@ -16,11 +16,9 @@
 #include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 
-using mint = lib::dynamic_barrett_modint_32bit<-1>;
-
 signed main() {
-    int n, m; input >> n >> m;
-    mint::set_mod(m);
-    lib::matrix<mint> a(n, n); input >> a;
-    print(a.determinant());
+    int n, m, k; std::cin >> n >> m >> k;
+    lib::matrix<lib::static_montgomery_modint_32bit<998244353>> a(n, m), b(m, k);
+    input >> a >> b;
+    print(a * b);
 }

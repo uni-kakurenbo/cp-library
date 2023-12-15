@@ -15,7 +15,7 @@
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
 #include "adapter/vector.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "convolution/lcm.hpp"
 
 using mint = lib::modint998244353;

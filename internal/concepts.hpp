@@ -20,16 +20,10 @@ concept has_double_digits_of = (std::numeric_limits<Large>::digits == 2 * std::n
 
 
 template<class T>
-concept has_static_zero =
-    requires {
-        T::zero;
-    };
+concept has_static_zero = requires { T::zero; };
 
 template<class T>
-concept has_static_one =
-    requires {
-        T::one;
-    };
+concept has_static_one = requires { T::one; };
 
 
 template<class L, class R = L>

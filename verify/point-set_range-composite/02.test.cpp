@@ -16,7 +16,7 @@
 #include "data_structure/implicit_treap.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 
 using lib::algebraic::affine;

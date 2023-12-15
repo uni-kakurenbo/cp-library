@@ -8,7 +8,7 @@
 
 #include "convolution/internal/butterfly.hpp"
 
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 
 
 namespace lib {

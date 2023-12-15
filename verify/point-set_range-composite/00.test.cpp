@@ -15,7 +15,7 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "adapter/vector.hpp"
-#include "numeric/modint.hpp"
+#include "numeric/modular/modint.hpp"
 #include "algebraic/affine.hpp"
 #include "data_structure/segment_tree.hpp"
 

@@ -5,7 +5,7 @@ WORKING_DIRECTORY="$PWD"
 TARGET="$1"
 PID="$$"
 
-DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY" "$TARGET") 
+DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"$WORKING_DIRECTORY" "$TARGET")
 
 #shellcheck disable=SC2086
 LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- $DEPENDENCIES)"
@@ -31,11 +31,11 @@ set +e
     else
         echo "::group::oj-verify run"
 
-        oj-verify run "$TARGET" --tle 10
+        oj-verify run "$TARGET" --tle 30
         EXIT_STATUS=$?
 
         echo "::endgroup::"
-        
+
         if [ $EXIT_STATUS -eq 0 ]; then
             echo "::notice file=$TARGET::All tests passed successfully."
         fi

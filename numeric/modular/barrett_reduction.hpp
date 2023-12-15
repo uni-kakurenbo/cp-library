@@ -13,7 +13,7 @@
 
 #include "numeric/bit.hpp"
 #include "numeric/arithmetic.hpp"
-
+#include "template/debug.hpp"
 
 namespace lib {
 
@@ -40,7 +40,6 @@ struct barrett_reduction {
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
-
     constexpr barrett_reduction() noexcept = default;
 
     constexpr explicit inline barrett_reduction(const value_type mod)
@@ -66,6 +65,20 @@ struct barrett_reduction {
         return { static_cast<large_type>(x), static_cast<value_type>(r) };
     }
 
+
+    inline constexpr value_type add(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        x += y;
+        if(x >= this->_mod) x -= this->_mod;
+        return x;
+    }
+
+    inline constexpr value_type subtract(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        if(x < y) x += this->_mod;
+        x -= y;
+        return x;
+    }
+
+
     inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
@@ -78,9 +91,13 @@ struct barrett_reduction {
         );
     }
 
-    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) {
-        return this->reduce(v);
+
+    inline constexpr bool equal(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return x == y;
     }
+
+
+    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) { return v; }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
@@ -108,7 +125,7 @@ struct barrett_reduction {
         return static_cast<value_type>(v);
     }
 
-    constexpr value_type revert(value_type v) const noexcept(NO_EXCEPT) { return this->reduce(v); }
+    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) { return this->reduce(v); }
 };
 
 
