@@ -33,7 +33,7 @@ constexpr bool primality_test(const u64 n, const std::vector<u64>& ws) noexcept(
     const Mint rev = n - 1;
     for(u64 w : ws) {
         Mint x = w;
-        if(x == Mint::zero()) continue;
+        if(x == Mint::zero) continue;
         x = x.pow(d);
         if(x == Mint::one || x == rev) continue;
         u64 t = d;

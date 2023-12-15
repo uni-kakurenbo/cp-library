@@ -21,13 +21,41 @@
 namespace lib {
 
 
+namespace internal {
+
+
+template<class, bool>
+struct modint_base {};
+
+
+template<class Mint>
+struct modint_base<Mint, false> {
+    static constexpr Mint zero = Mint::_raw(0);
+    static constexpr Mint one = Mint::_one();
+};
+
+
+template<class Mint>
+struct modint_base<Mint, true> {
+    static constexpr Mint zero = Mint::_raw(0);
+    static inline Mint one = Mint::_one();
+};
+
+
+} // internal
+
+
+
 template<internal::modular_context Context>
-struct modint {
+struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     using value_type = typename Context::value_type;
+    using context = Context;
 
   private:
     using mint = modint;
-    using context = Context;
+    using base = internal::modint_base<modint, context::dynamic>;
+
+    friend base;
 
     value_type _val = 0;
 
@@ -42,21 +70,18 @@ struct modint {
     static constexpr mint _one() noexcept(NO_EXCEPT)
         requires internal::has_static_one<typename mint::context::reduction>
     {
-        return mint::context::get().one;
+        return mint::_raw(mint::context::get().one);
     }
 
     static constexpr mint _one() noexcept(NO_EXCEPT)
         requires (!internal::has_static_one<typename mint::context::reduction>)
     {
-        return 1;
+        return mint::_raw(1);
     }
 
   public:
     static constexpr int digits = mint::context::reduction::digits;
     static inline constexpr value_type max() noexcept { return mint::context::reduction::max(); }
-
-    static constexpr mint zero = mint::_raw(0);
-    static inline mint one = mint::_one();
 
 
     static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT)

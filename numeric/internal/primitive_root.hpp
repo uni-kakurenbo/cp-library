@@ -41,7 +41,7 @@ T primitive_root(const T p) noexcept(NO_EXCEPT) {
     static xorshift64<-(1L << 62) + 3> rand;
     while(true) {
         const Mint x = rand();
-        if(x == Mint::zero()) continue;
+        if(x == Mint::zero) continue;
 
         bool ok = true;
         ITR(pow, pows) {

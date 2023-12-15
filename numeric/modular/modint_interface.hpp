@@ -34,12 +34,15 @@ concept modint_family =
         { T::mod() } -> std::same_as<typename T::value_type>;
         { T::max() } -> std::same_as<typename T::value_type>;
         T::digits;
+
+        T::context::dynamic;
     };
 
 
 template<class T>
 concept dynamic_modint_family =
     modint_family<T> &&
+    T::context::dynamic &&
     requires (typename T::value_type v) {
         T::set_mod(v);
     };
@@ -47,7 +50,8 @@ concept dynamic_modint_family =
 
 template<class T>
 concept static_modint_family =
-    modint_family<T>; //&&
+    modint_family<T> &&
+    (!T::context::dynamic); //&&
     // requires {
     //     T::is_prime;
     // };
@@ -97,6 +101,8 @@ struct static_modular_context {
     using reduction = Reduction;
     using value_type = typename reduction::value_type;
 
+    static constexpr bool dynamic = false;
+
   private:
     using context = static_modular_context;
 
@@ -111,6 +117,8 @@ template<internal::modular_reduction Reduction, i64 Id>
 struct dynamic_modular_context {
     using reduction = Reduction;
     using value_type = typename reduction::value_type;
+
+    static constexpr bool dynamic = true;
 
   private:
     using context = dynamic_modular_context;
