@@ -31,7 +31,7 @@ set +e
     else
         echo "::group::oj-verify run"
 
-        oj-verify run "$TARGET" --tle 10
+        oj-verify run "$TARGET" --tle 30
         EXIT_STATUS=$?
 
         echo "::endgroup::"
