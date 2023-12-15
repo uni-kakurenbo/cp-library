@@ -66,6 +66,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
+      if: ${{ !cancelled() && github.ref_name == 'main' }}
       id: cache-judge
       uses: actions/cache@v3
       with:
