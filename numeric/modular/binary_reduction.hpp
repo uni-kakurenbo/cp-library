@@ -33,14 +33,9 @@ struct binary_reduction {
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mask + 1; }
 
-
-    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
-    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_mask != 0; }
-
-
     constexpr binary_reduction() noexcept = default;
 
-    constexpr explicit inline binary_reduction(const value_type mod) : _mask(mod - 1) {
+    constexpr explicit inline binary_reduction(const value_type mod) noexcept(NO_EXCEPT) : _mask(mod - 1) {
         assert(std::has_single_bit(mod));
     }
 

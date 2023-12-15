@@ -53,10 +53,46 @@ concept static_modint_family =
     // };
 
 
+template<class T>
+concept modular_reduction =
+    std::default_initializable<T> &&
+    std::constructible_from<T, typename T::value_type> &&
+    requires (T v, typename T::value_type x, i64 p) {
+        typename T::value_type;
+
+        T::digits;
+        { T::max() } -> std::same_as<typename T::value_type>;
+        { v.mod() } -> std::same_as<typename T::value_type>;
+
+        { v.reduce(x) } -> std::same_as<typename T::value_type>;
+
+        { v.add(x, x) } -> std::same_as<typename T::value_type>;
+        { v.subtract(x, x) } -> std::same_as<typename T::value_type>;
+        { v.multiply(x, x) } -> std::same_as<typename T::value_type>;
+        { v.multiply(x, x) } -> std::same_as<typename T::value_type>;
+        { v.pow(x, p) } -> std::same_as<typename T::value_type>;
+
+        { v.convert_raw(x) } -> std::same_as<typename T::value_type>;
+        { v.convert(x) } -> std::same_as<typename T::value_type>;
+        { v.revert(x) } -> std::same_as<typename T::value_type>;
+
+        { v.equal(x, x) } -> std::same_as<bool>;
+    };
+
+
+template<class T>
+concept modular_context =
+    requires {
+        typename T::reduction;
+        typename T::value_type;
+        { T::get() } -> std::same_as<std::add_lvalue_reference_t<std::add_const_t<typename T::reduction>>>;
+    };
+
+
 } // namespace internal
 
 
-template<class Reduction, typename Reduction::value_type Mod>
+template<internal::modular_reduction Reduction, typename Reduction::value_type Mod>
 struct static_modular_context {
     using reduction = Reduction;
     using value_type = typename reduction::value_type;
@@ -71,7 +107,7 @@ struct static_modular_context {
 };
 
 
-template<class Reduction, i64 Id>
+template<internal::modular_reduction Reduction, i64 Id>
 struct dynamic_modular_context {
     using reduction = Reduction;
     using value_type = typename reduction::value_type;
@@ -82,13 +118,13 @@ struct dynamic_modular_context {
     static inline reduction _reduction;
 
   public:
-    static void set_mod(const value_type mod) noexcept(NO_EXCEPT) { context::_reduction = reduction(mod); }
+    static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT) { context::_reduction = reduction(mod); }
 
     static constexpr const reduction& get() noexcept(NO_EXCEPT) { return context::_reduction; }
 };
 
 
-template<class> struct modint;
+template<internal::modular_context> struct modint;
 
 
 template<u32 Mod> using static_builtin_modular_context_32bit = static_modular_context<builtin_reduction_32bit, Mod>;

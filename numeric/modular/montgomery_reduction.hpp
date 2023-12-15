@@ -27,8 +27,7 @@ struct montgomery_reduction {
     using large_type = Large;
 
   private:
-    value_type _mod = 0, _mp, _r2;
-    value_type _one;
+    value_type _mod = 0, _r2, _mp;
 
     constexpr value_type _inv() const noexcept(NO_EXCEPT) {
         value_type res = this->_mod;
@@ -44,23 +43,18 @@ struct montgomery_reduction {
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
 
-    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
-    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_one; }
+    value_type zero = 0;
+    value_type one;
 
 
     constexpr montgomery_reduction() noexcept = default;
 
-    constexpr montgomery_reduction(const value_type m) noexcept(NO_EXCEPT) {
-        assert((m & 1) == 1);
-
-        if(this->_mod == m) return;
-
-        assert(m <= montgomery_reduction::max());
-
-        this->_mod = m;
-        this->_r2 = static_cast<value_type>(-static_cast<large_type>(m) % m);
-        this->_mp = -this->_inv();
-        this->_one = this->reduce(this->_r2);
+    constexpr montgomery_reduction(const value_type mod) noexcept(NO_EXCEPT)
+      : _mod(mod), _r2(static_cast<value_type>(-static_cast<large_type>(mod) % mod)),
+        _mp(-this->_inv()), one(this->reduce(this->_r))
+    {
+        assert((mod & 1) == 1);
+        assert(mod <= montgomery_reduction::max());
     }
 
 
@@ -96,7 +90,7 @@ struct montgomery_reduction {
         return lib::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
-            static_cast<large_type>(this->_one)
+            static_cast<large_type>(this->one)
         );
     }
 
@@ -113,13 +107,13 @@ struct montgomery_reduction {
 
 
     inline constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) {
-        if(v == 1) return this->_one;
+        if(v == 1) return this->one;
         return this->multiply(v, this->_r2);
     }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
-        if(v == 1) return this->_one;
+        if(v == 1) return this->one;
 
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);
@@ -160,7 +154,6 @@ struct arbitrary_montgomery_reduction {
     value_type _m0;
     large_type _m0i, _mask;
     value_type _r2;
-    value_type _one;
 
     constexpr large_type _inv() const noexcept(NO_EXCEPT) {
         large_type res = this->_m0;
@@ -182,9 +175,7 @@ struct arbitrary_montgomery_reduction {
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
-
-    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
-    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_one; }
+    value_type one;
 
 
     constexpr arbitrary_montgomery_reduction() noexcept = default;
@@ -209,7 +200,7 @@ struct arbitrary_montgomery_reduction {
             this->_r2 = (x + ((((large_type{ 1 } - x) * this->_m0ip()) & mask) * this->_m0));
         }
 
-        this->_one = this->reduce(this->_r2);
+        this->one = this->reduce(this->_r2);
     }
 
 
@@ -249,7 +240,7 @@ struct arbitrary_montgomery_reduction {
         return lib::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
-            static_cast<large_type>(this->_one)
+            static_cast<large_type>(this->one)
         );
     }
 
@@ -265,13 +256,13 @@ struct arbitrary_montgomery_reduction {
 
 
     inline constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) {
-        if(v == 1) return this->_one;
+        if(v == 1) return this->one;
         return this->multiply(v, this->_r2);
     }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
-        if(v == 1) return this->_one;
+        if(v == 1) return this->one;
 
         using common_type = std::common_type_t<T, value_type>;
         const common_type mod2 = static_cast<common_type>(this->_mod << 1);

@@ -21,7 +21,7 @@
 namespace lib {
 
 
-template<class Context>
+template<internal::modular_context Context>
 struct modint {
     using value_type = typename Context::value_type;
 
@@ -31,24 +31,39 @@ struct modint {
 
     value_type _val = 0;
 
+
     static constexpr mint _raw(const value_type v) noexcept(NO_EXCEPT) {
         mint res;
         res._val = v;
         return res;
     }
 
+
+    static constexpr mint _one() noexcept(NO_EXCEPT)
+        requires internal::has_static_one<typename mint::context::reduction>
+    {
+        return mint::context::one;
+    }
+
+    static constexpr mint _one() noexcept(NO_EXCEPT)
+        requires (!internal::has_static_one<typename mint::context::reduction>)
+    {
+        return 1;
+    }
+
   public:
     static constexpr int digits = mint::context::reduction::digits;
     static inline constexpr value_type max() noexcept { return mint::context::reduction::max(); }
 
-    static constexpr mint zero() noexcept(NO_EXCEPT) { return mint::_raw(mint::context::get().zero()); };
-    static constexpr mint one() noexcept(NO_EXCEPT) { return mint::_raw(mint::context::get().one()); };
+    static constexpr mint zero = mint::_raw(0);
+    static inline mint one = mint::_one();
 
 
     static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT)
         requires requires(value_type mod) { mint::context::set_mod(mod); }
     {
         mint::context::set_mod(mod);
+        mint::one = mint::_one();
     }
 
 
@@ -123,14 +138,14 @@ struct modint {
     friend inline constexpr bool operator!=(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return !(lhs == rhs); }
 
 
-    inline constexpr mint& operator++() noexcept(NO_EXCEPT) { return *this += mint::one(); }
-    inline constexpr mint& operator--() noexcept(NO_EXCEPT) { return *this -= mint::one(); }
+    inline constexpr mint& operator++() noexcept(NO_EXCEPT) { return *this += mint::one; }
+    inline constexpr mint& operator--() noexcept(NO_EXCEPT) { return *this -= mint::one; }
 
     inline constexpr mint operator++(int) noexcept(NO_EXCEPT) { const mint res = *this; return ++*this, res; }
     inline constexpr mint operator--(int) noexcept(NO_EXCEPT) { const mint res = *this; return --*this, res; }
 
     inline constexpr auto operator+() const noexcept(NO_EXCEPT) { return *this; }
-    inline constexpr auto operator-() const noexcept(NO_EXCEPT) { return mint::zero() - *this; }
+    inline constexpr auto operator-() const noexcept(NO_EXCEPT) { return mint::zero - *this; }
 
     friend inline constexpr mint operator+(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
     friend inline constexpr mint operator-(mint lhs, const mint& rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }

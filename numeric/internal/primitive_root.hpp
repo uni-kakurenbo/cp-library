@@ -45,7 +45,7 @@ T primitive_root(const T p) noexcept(NO_EXCEPT) {
 
         bool ok = true;
         ITR(pow, pows) {
-            if(x.pow(pow) == Mint::one()) {
+            if(x.pow(pow) == Mint::one) {
                 ok = false;
                 break;
             }

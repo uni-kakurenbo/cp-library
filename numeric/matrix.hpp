@@ -122,7 +122,7 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
 
         auto a = *this;
 
-        T det = T::one();
+        T det = T::one;
         REP(j, a.rows()) {
             REP(i, j, a.rows()) {
                 if(a[i][j] == 0) continue;

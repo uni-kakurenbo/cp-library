@@ -31,13 +31,11 @@ struct builtin_reduction {
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
-    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
-    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_mod != 1; }
-
-
     constexpr builtin_reduction() noexcept = default;
 
-    constexpr builtin_reduction(const value_type mod) noexcept(NO_EXCEPT) : _mod(mod) {}
+    constexpr builtin_reduction(const value_type mod) noexcept(NO_EXCEPT) : _mod(mod) {
+        assert(0 < mod && mod < builtin_reduction::max());
+    }
 
 
     inline constexpr value_type reduce(const value_type v) const noexcept(NO_EXCEPT) { return v % this->_mod; }
@@ -101,7 +99,7 @@ struct builtin_reduction {
         return static_cast<value_type>(v);
     }
 
-    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) { return v; }
+    constexpr value_type revert(const value_type v) const noexcept(NO_EXCEPT) { return this->_mod == 1 ? 0 : v; }
 };
 
 

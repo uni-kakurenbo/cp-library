@@ -40,11 +40,6 @@ struct barrett_reduction {
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
-
-    inline constexpr value_type zero() const noexcept(NO_EXCEPT) { return 0; }
-    inline constexpr value_type one() const noexcept(NO_EXCEPT) { return this->_mod != 1; }
-
-
     constexpr barrett_reduction() noexcept = default;
 
     constexpr explicit inline barrett_reduction(const value_type mod)
