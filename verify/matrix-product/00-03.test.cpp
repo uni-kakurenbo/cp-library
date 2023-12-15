@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/matrix_product"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include <iostream>
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
