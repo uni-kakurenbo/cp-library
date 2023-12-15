@@ -38,7 +38,7 @@ struct builtin_reduction {
     }
 
 
-    inline constexpr value_type reduce(const value_type v) const noexcept(NO_EXCEPT) { return v % this->_mod; }
+    inline constexpr value_type reduce(const large_type v) const noexcept(NO_EXCEPT) { return v % this->_mod; }
 
 
     inline constexpr value_type add(value_type x, const value_type y) const noexcept(NO_EXCEPT) {
@@ -54,8 +54,8 @@ struct builtin_reduction {
     }
 
 
-    inline constexpr value_type multiply(const large_type x, const large_type y) const noexcept(NO_EXCEPT) {
-        return static_cast<value_type>((x * y) % this->_mod);
+    inline constexpr value_type multiply(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
     inline constexpr value_type pow(const value_type v, i64 p) const noexcept(NO_EXCEPT) {
@@ -69,7 +69,7 @@ struct builtin_reduction {
     }
 
 
-    constexpr value_type convert_raw(const large_type v) const noexcept(NO_EXCEPT) { return v; }
+    constexpr value_type convert_raw(const value_type v) const noexcept(NO_EXCEPT) { return v; }
 
     template<std::integral T>
     constexpr value_type convert(T v) const noexcept(NO_EXCEPT) {
