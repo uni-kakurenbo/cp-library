@@ -1,6 +1,10 @@
 name: library-verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
+env:
+  is-default-branch: ${{ github.ref_name == github.event.repository.default_branch }}
+  runner-image: ubuntu-22.04
+
 on:
   workflow_dispatch:
   push:
@@ -13,13 +17,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pre-verify:
+    runs-on: $${{ vars.RUNNER_IMAGE }}
+    steps:
+    - name: Prepare
+      id: preapre
+      run: |
+        PARALLEL=$(nproc)
+        echo "PARALLEL=$PARALLEL" >> "${GITHUB_ENV}"
+
+        TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
+        NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
+
+        IDS='['
+        for ((i=0; i < NODES; i++)); do
+            echo "$i"
+            IDS+=$(printf '"%02d"' "${i}")
+            if [ $i -lt $((NODES-1)) ]; then
+                IDS+=','
+            fi
+        done
+        IDS+=']'
+
+        echo "NODE_IDS=$(echo "${IDS}" | jq -c)"
+
+
   verify:
-    runs-on: ubuntu-latest
+    runs-on: $${{ vars.RUNNER_IMAGE }}
+    needs: pre-verify
 
     strategy:
       fail-fast: false
       matrix:
-        id: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
+        id: $${{ fromJson(env.NODE_IDS) }}
 
     steps:
     - name: Git checkout
@@ -48,7 +78,7 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
-        CANDIDATES=$(find verify -type f -name *.test.cpp)
+        CANDIDATES=$(find verify -type f -name '*.test.cpp')
 
         TEST_FILES=$(
           printf "$CANDIDATES" | \
@@ -66,7 +96,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
-      if: ${{ !cancelled() && github.ref_name == 'main' }}
+      if: ${{ !cancelled() && env.is-default-branch }}
       id: cache-judge
       uses: actions/cache@v3
       with:
@@ -92,11 +122,10 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
-        parallel=$(nproc)
-        echo "Parallel execution: ${parallel}"
+        echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ./.verify-helper/targets.txt | \
-        xargs -P ${parallel}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
+        xargs -P ${PARALLEL}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ./.verify-helper/timestamps.json > "./.verify-helper/timestamps-${{ matrix.id }}.json"
@@ -110,9 +139,9 @@ jobs:
         path: main/.verify-helper/timestamps-${{ matrix.id }}.json
 
   post-verify:
-    runs-on: ubuntu-latest
+    runs-on: $${{ vars.RUNNER_IMAGE }}
     needs: verify
-    if: ${{ !cancelled() && github.ref_name == 'main' }}
+    if: ${{ !cancelled() && env.is-default-branch }}
 
     steps:
     - name: Git checkout
@@ -157,6 +186,6 @@ jobs:
 
   finalize:
     needs: post-verify
-    if: ${{ !cancelled() && github.ref_name == 'main' }}
+    if: ${{ !cancelled() && env.is-default-branch }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
