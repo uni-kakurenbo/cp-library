@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pre:
+  pre-run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
@@ -51,7 +51,7 @@ jobs:
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: pre
+    needs: pre-run
 
     strategy:
       fail-fast: false
@@ -146,7 +146,7 @@ jobs:
         name: timestamps
         path: main/.verify-helper/timestamps-${{ matrix.id }}.json
 
-  post:
+  post-run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: run
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
