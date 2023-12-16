@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      node_ids: ${{ steps.preapre.outputs.value }}
+      node_ids: ${{ steps.preapre.outputs.node_ids }}
 
     steps:
     - name: Git checkout
@@ -48,7 +48,7 @@ jobs:
         IDS+=']'
 
         echo ${IDS}
-        echo "NODE_IDS=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
 
   verify:
