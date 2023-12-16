@@ -10,7 +10,6 @@
 #include <ranges>
 #include <bit>
 
-
 #include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
