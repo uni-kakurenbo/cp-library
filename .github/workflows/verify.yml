@@ -39,7 +39,7 @@ jobs:
         done
         IDS+=']'
 
-        echo "NODE_IDS=$(echo "${IDS}" | jq -c)" >> ${GITHUB_ENV}
+        echo "NODE_IDS=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
 
   verify:
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        id: $${{ fromJSON(env.NODE_IDS) }}
+        id: $${{ fromJSON(needs.pre-verify.outputs.NODE_IDS) }}
 
     steps:
     - name: Git checkout
