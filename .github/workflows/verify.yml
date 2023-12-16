@@ -96,7 +96,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
-      if: ${{ !cancelled() && env.is-default-branch }}
+      if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
       id: cache-judge
       uses: actions/cache@v3
       with:
@@ -141,7 +141,7 @@ jobs:
   post-verify:
     runs-on: $${{ vars.RUNNER_IMAGE }}
     needs: verify
-    if: ${{ !cancelled() && env.is-default-branch }}
+    if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
 
     steps:
     - name: Git checkout
@@ -186,6 +186,6 @@ jobs:
 
   finalize:
     needs: post-verify
-    if: ${{ !cancelled() && env.is-default-branch }}
+    if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
