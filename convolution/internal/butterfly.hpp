@@ -209,11 +209,11 @@ template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         internal::static_modint_family<std::ranges::range_value_t<R0>>
-Res convolution_naive(R0&& v0, R1&& v1) {
+std::remove_reference_t<Res> convolution_naive(R0&& v0, R1&& v1) {
     const auto n = std::ranges::ssize(v0);
     const auto m = std::ranges::ssize(v1);
 
-    Res ans(n + m - 1);
+    std::remove_reference_t<Res> ans(n + m - 1);
 
     if(n < m) {
         REP(j, m) REP(i, n) ans[i + j] += v0[i] * v1[j];
@@ -230,8 +230,9 @@ template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         internal::static_modint_family<std::ranges::range_value_t<R0>> &&
-        internal::resizable_range<R0> && internal::resizable_range<R1>
-Res convolution_fft(R0 v0, R1 v1) {
+        internal::resizable_range<R0> && internal::resizable_range<R1> &&
+        std::convertible_to<std::ranges::range_value_t<R0>, std::ranges::range_value_t<Res>>
+std::remove_reference_t<Res> convolution_fft(R0 v0, R1 v1) {
     using mint = std::ranges::range_value_t<R0>;
 
     const auto n = std::ranges::ssize(v0);
