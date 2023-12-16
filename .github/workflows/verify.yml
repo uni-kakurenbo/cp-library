@@ -19,6 +19,9 @@ jobs:
   pre-verify:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
+    outputs:
+      node_ids: ${{ steps.preapre.outputs.value }}
+
     steps:
     - name: Git checkout
       uses: actions/checkout@v3
@@ -33,11 +36,10 @@ jobs:
 
         TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
         NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
-        echo ${NODES}
+        echo "Nodes: ${NODES}"
 
         IDS='['
         for ((i=0; i < NODES; i++)); do
-            echo "$i"
             IDS+=$(printf '"%02d"' "${i}")
             if [ $i -lt $((NODES-1)) ]; then
                 IDS+=','
@@ -56,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.pre-verify.outputs.NODE_IDS) }}
+        id: ${{ fromJSON(needs.pre-verify.outputs.node_ids) }}
 
     steps:
     - name: Git checkout
