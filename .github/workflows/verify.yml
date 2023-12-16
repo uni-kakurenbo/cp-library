@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.pre-verify.outputs.node_ids) }}
+        id: ${{ fromJSON(needs.pre-run.outputs.node_ids) }}
 
     steps:
     - name: Git checkout
