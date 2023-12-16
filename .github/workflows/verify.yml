@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   pre-verify:
-    runs-on: $${{ vars.RUNNER_IMAGE }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
     - name: Prepare
       id: preapre
@@ -42,13 +42,13 @@ jobs:
 
 
   verify:
-    runs-on: $${{ vars.RUNNER_IMAGE }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: pre-verify
 
     strategy:
       fail-fast: false
       matrix:
-        id: $${{ fromJSON(needs.pre-verify.outputs.NODE_IDS) }}
+        id: ${{ fromJSON(needs.pre-verify.outputs.NODE_IDS) }}
 
     steps:
     - name: Git checkout
@@ -138,7 +138,7 @@ jobs:
         path: main/.verify-helper/timestamps-${{ matrix.id }}.json
 
   post-verify:
-    runs-on: $${{ vars.RUNNER_IMAGE }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: verify
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
 

@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   gen-docs:
-    runs-on: $${{ vars.RUNNER_IMAGE }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
     - name: Git checkout
