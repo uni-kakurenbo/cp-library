@@ -1,0 +1,25 @@
+name: library-update
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: update-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+    uses: ./.github/workflows/run-test.yml
+    secrets: inherit
+
+  finalize:
+    needs: verify
+    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+    uses: ./.github/workflows/gen-docs.yml
+    secrets: inherit

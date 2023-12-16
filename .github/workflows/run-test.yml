@@ -1,15 +1,14 @@
 name: library-verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
-env:
-  runner-image: ubuntu-22.04
-
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_call:
+    secrets:
+      YUKICODER_TOKEN:
+        required: true
+      GH_PAT:
+        required: true
 
 concurrency:
   group: verify-${{ github.ref }}
@@ -192,9 +191,3 @@ jobs:
         else
           echo "No updated timestamps."
         fi
-
-  finalize:
-    needs: post-verify
-    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-    uses: ./.github/workflows/gen-docs.yml
-    secrets: inherit
