@@ -17,6 +17,11 @@ concurrency:
 
 jobs:
   pre-verify:
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        sparse-checkout: verify
+
     runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
     - name: Prepare
@@ -27,6 +32,7 @@ jobs:
 
         TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
         NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
+        echo ${NODES}
 
         IDS='['
         for ((i=0; i < NODES; i++)); do
@@ -38,6 +44,7 @@ jobs:
         done
         IDS+=']'
 
+        echo ${IDS}
         echo "NODE_IDS=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
 
