@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pre-verify:
+  pre:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
@@ -49,7 +49,7 @@ jobs:
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
 
-  verify:
+  run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: pre-verify
 
@@ -146,7 +146,7 @@ jobs:
         name: timestamps
         path: main/.verify-helper/timestamps-${{ matrix.id }}.json
 
-  post-verify:
+  post:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: verify
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
