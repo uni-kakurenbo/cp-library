@@ -2,7 +2,6 @@ name: library-verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 env:
-  is-default-branch: ${{ github.ref_name == github.event.repository.default_branch }}
   runner-image: ubuntu-22.04
 
 on:
@@ -96,7 +95,7 @@ jobs:
         cat .verify-helper/targets.txt
 
     - name: Cache judge data
-      if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
+      if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
       id: cache-judge
       uses: actions/cache@v3
       with:
@@ -141,7 +140,7 @@ jobs:
   post-verify:
     runs-on: $${{ vars.RUNNER_IMAGE }}
     needs: verify
-    if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
+    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
 
     steps:
     - name: Git checkout
@@ -186,6 +185,6 @@ jobs:
 
   finalize:
     needs: post-verify
-    if: ${{ !cancelled() && fromJSON(env.is-default-branch) }}
+    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
