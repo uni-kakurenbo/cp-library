@@ -30,7 +30,7 @@ namespace lib {
 template<class T>
 inline constexpr T div_floor(const T& x, const T& d) noexcept(NO_EXCEPT) {
     if constexpr(std::is_integral_v<T>) {
-        return x / d;
+        return x / d - (x % d && ((x < 0) ^ (d < 0)));
     }
     else {
         return std::floor(x / d);
@@ -40,7 +40,7 @@ inline constexpr T div_floor(const T& x, const T& d) noexcept(NO_EXCEPT) {
 template<class T>
 inline constexpr T div_ceil(const T& x, const T& d) noexcept(NO_EXCEPT) {
     if constexpr(std::is_integral_v<T>) {
-        return x / d - static_cast<T>(x % d == 0) + 1;
+        return floor(x + d - 1, d);
     }
     else {
         return std::ceil(x / d);
