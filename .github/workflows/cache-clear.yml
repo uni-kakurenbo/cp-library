@@ -7,4 +7,4 @@ jobs:
   clear:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
-      - uses: snnaplab/delete-branch-cache-action@v1
+      - uses: snnaplab/delete-branch-cache-action@20f7992a7b8b51aa719420d11b32c9d34a5eb362  # @v1
