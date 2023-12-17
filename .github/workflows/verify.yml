@@ -112,6 +112,7 @@ jobs:
       with:
         path: |
           ~/.cache/online-judge-tools/library-checker-problems/
+          !~/.cache/online-judge-tools/library-checker-problems/.git
           main/.verify-helper/cache/
         key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
