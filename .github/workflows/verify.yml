@@ -85,10 +85,8 @@ jobs:
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
-        CANDIDATES=$(find verify -type f -name '*.test.cpp')
-
         TEST_FILES=$(
-          printf "$CANDIDATES" | \
+          find verify -type f -name '*.test.cpp' | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
