@@ -111,10 +111,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ~/.cache/online-judge-tools/**/gen/
-          ~/.cache/online-judge-tools/**/sol/
-          ~/.cache/online-judge-tools/**/in/
-          ~/.cache/online-judge-tools/**/out/
+          ~/.cache/online-judge-tools/library-checker-problems/
           main/.verify-helper/cache/
         key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
@@ -125,6 +122,8 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
+        set -eu
+
         echo '{}' > ./.verify-helper/timestamps.json
 
         if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
