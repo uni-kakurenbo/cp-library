@@ -106,10 +106,10 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ~/.cache/online-judge-tools/**/gen/**
-          ~/.cache/online-judge-tools/**/sol/**
-          ~/.cache/online-judge-tools/**/in/**
-          ~/.cache/online-judge-tools/**/out/**
+          ~/.cache/online-judge-tools/**/gen/
+          ~/.cache/online-judge-tools/**/sol/
+          ~/.cache/online-judge-tools/**/in/
+          ~/.cache/online-judge-tools/**/out/
           main/.verify-helper/cache/
         key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
