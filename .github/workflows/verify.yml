@@ -133,7 +133,7 @@ jobs:
         echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ./.verify-helper/targets.txt | \
-        xargs -P ${PARALLEL} -I {} bash ./.github/workflows/run-test.sh {}
+        xargs -P ${PARALLEL}	-d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ./.verify-helper/timestamps.json > "./.verify-helper/timestamps-${{ matrix.id }}.json"
