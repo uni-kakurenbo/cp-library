@@ -1,5 +1,5 @@
 #! /bin/bash
-set -eu
+# set -eu
 
 WORKING_DIRECTORY="${PWD}"
 TARGET="$1"
@@ -19,7 +19,7 @@ LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
 
 EXIT_STATUS=0
 
-set +e
+# set +e
 {
     echo "::group::${TARGET} [PID: ${PID}]"
     echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
@@ -44,7 +44,7 @@ set +e
     echo
 } &>> ".log-${PID}.txt"
 
-set -e
+# set -e
 
 jq -n --arg target "${TARGET}" --arg date "${LAST_MODIFY_DATE}" \
 '.[$target] = $date' >> "./.verify-helper/timestamps.json"
