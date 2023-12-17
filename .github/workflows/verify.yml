@@ -34,6 +34,11 @@ jobs:
 
         TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
         NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
+
+        if [ $NODES -lt 20 ]; then
+          NODES=20
+        fi
+
         echo "Nodes: ${NODES}"
 
         IDS='['
@@ -120,8 +125,6 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        set -eu
-
         echo '{}' > ./.verify-helper/timestamps.json
 
         if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
