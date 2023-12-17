@@ -106,7 +106,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: main/.verify-helper/cache/
-        key: verify-${{ hashFiles('main/verify/**', 'main/.verify-helper/targets.txt') }}
+        key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
     - name: Run tests
       working-directory: main
