@@ -6,7 +6,6 @@ on:
   workflow_call:
     secrets:
       YUKICODER_TOKEN:
-        required: true
       GH_PAT:
         required: true
 
