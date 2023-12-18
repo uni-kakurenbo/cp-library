@@ -183,8 +183,7 @@ jobs:
     - name: Load timestamps
       uses: actions/download-artifact@v3
       with:
-        name: timestamps
-        path: .verify-helper/timestamps/
+        path: .verify-helper/
 
     - name: Merge timestamps
       working-directory: .verify-helper
