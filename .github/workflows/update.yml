@@ -22,7 +22,9 @@ jobs:
     secrets: inherit
 
   finalize:
-    needs: verify
+    needs:
+      - analyze
+      - verify
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
