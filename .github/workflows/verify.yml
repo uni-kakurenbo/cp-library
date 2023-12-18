@@ -107,6 +107,7 @@ jobs:
         sparse-checkout: atcoder
 
     - name: Load allocation list
+      working-directory: main
       uses: actions/download-artifact@v4
       with:
         name: allocation
