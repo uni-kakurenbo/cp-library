@@ -23,7 +23,6 @@ PID="$$"
   echo '::group::dependencies'
   echo -e "Dependencies:\n${DEPENDENCIES}"
   echo '::endgroup::'
-  echo
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
     echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
@@ -31,6 +30,8 @@ PID="$$"
     jq --arg TARGET "${TARGET}" --arg date "${LAST_MODIFY_DATE}" -n \
     '.[$TARGET] = $date' >> ./.verify-helper/allocation.json
   fi
+
+  echo
 } &>> ".log-${PID}.txt"
 
 cat ".log-${PID}.txt"
