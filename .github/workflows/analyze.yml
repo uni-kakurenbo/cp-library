@@ -1,4 +1,4 @@
-name: lint
+name: code-analysis
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on: 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  cppcheck:
+  lint:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
