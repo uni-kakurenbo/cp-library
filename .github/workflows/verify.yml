@@ -54,7 +54,7 @@ jobs:
           N_NODES=18
         fi
 
-        echo "Run tests on ${N_NODES} nodes."
+        echo "Tests are run on ${N_NODES} nodes."
         echo
 
         IDS='['
