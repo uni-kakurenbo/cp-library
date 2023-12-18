@@ -34,37 +34,17 @@ jobs:
 
         # N_PROC=$(nproc)
 
+        if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+          echo '{}' > ./.verify-helper/timestamps.remote.json
+        fi
+
         echo '{}' > ./.verify-helper/allocation.json
 
-        for target in $(find verify -type f -name '*.test.cpp'); do
-          DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${{ github.workspace }}" "${target}")
-
-          LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
-          LAST_VERIFY_DATE="$(
-              jq -r --arg target "${target}" \
-              '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
-          )"
-
-          LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
-          LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
-
-          echo "::group::${target}"
-          echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
-          echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
-          echo
-          echo "Dependencies:\n${DEPENDENCIES}"
-          echo "::endgroup::"
-
-          if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
-            echo "::notice file=${target}::Already verified. (Test was skipped.)"
-          else
-            jq --arg target "${target}" --arg date "${LAST_MODIFY_DATE}" '.[$target] = $date' \
-            ./.verify-helper/allocation.json > ./.verify-helper/allocation.json
-          fi
-        done
+        find verify -type f -name '*.test.cpp' | sort | \
+        xargs -I {} bash ./.github/workflows/allocate.sh {}
 
         cat ./.verify-helper/allocation.json
-
+        
         NODES=18
 
         IDS='['
