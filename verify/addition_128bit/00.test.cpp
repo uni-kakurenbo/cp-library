@@ -9,10 +9,10 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/many_aplusb_128bit"
 
 #include <iostream>
-#include "snippet/aliases.hpp"
-#include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
-#include "numeric/int128.hpp"
+#include "../../snippet/aliases.hpp"
+#include "../../snippet/fast_io.hpp"
+#include "../../adapter/io.hpp"
+#include "../../numeric/int128.hpp"
 
 signed main() {
     int t; std::cin >> t;
