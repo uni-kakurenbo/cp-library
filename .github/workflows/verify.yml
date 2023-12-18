@@ -32,7 +32,7 @@ jobs:
       run: |
         set -eu
 
-        # N_PROC=$(nproc)
+        N_PROC=$(nproc)
 
         if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
@@ -41,7 +41,7 @@ jobs:
         echo '{}' > ./.verify-helper/allocation.json
 
         find verify -type f -name '*.test.cpp' | sort | \
-        xargs -I {} bash ./.github/workflows/allocate.sh {}
+        xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
         cat ./.verify-helper/allocation.json
         
