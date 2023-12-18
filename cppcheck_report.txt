@@ -19,6 +19,12 @@ test/draft/bit_field.cpp:26:15: style: Struct 'base < flag >' has a constructor 
 test/view.cpp:37:54: style: Consider using std::fill algorithm instead of a raw loop. [useStlAlgorithm]
         for(auto& x : lib::views::concat(a, b, c)) x = 1;
                                                      ^
+snippet/aliases.hpp:48:94: style:inconclusive: Boolean expression 'b' is used in bitwise operation. Did you mean '||'? [bitwiseOnBoolean]
+bit_reference operator |= (bit_reference a, const bool b) noexcept(NO_EXCEPT) { return a = a | b; }
+                                                                                             ^
+snippet/aliases.hpp:49:94: style:inconclusive: Boolean expression 'b' is used in bitwise operation. Did you mean '&&'? [bitwiseOnBoolean]
+bit_reference operator &= (bit_reference a, const bool b) noexcept(NO_EXCEPT) { return a = a & b; }
+                                                                                             ^
 verify/set/00.test.cpp:31:13: style: Local variable 't' shadows outer variable [shadowVariable]
         int t; std::cin >> t;
             ^
