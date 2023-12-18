@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      node_ids: ${{ steps.preapre.outputs.node_ids }}
+      node_ids: ${{ steps.collect.outputs.node_ids }}
 
     steps:
     - name: Git checkout
@@ -27,7 +27,7 @@ jobs:
       with:
         sparse-checkout: |
           verify
-          ./verify-helper
+          .verify-helper
 
     - name: Collect testfile information
       id: collect
@@ -36,10 +36,10 @@ jobs:
 
         # N_PROC=$(nproc)
 
-        echo '{}' > './.verify-helper/allocation.json'
+        echo '{}' > ./.verify-helper/allocation.json
 
         for file in $(find verify -type f -name '*.test.cpp'); do
-          DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
+          DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${{ github.workspace }}" "${TARGET}")
 
           LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
           LAST_VERIFY_DATE="$(
@@ -50,15 +50,22 @@ jobs:
           LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
           LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
 
+          echo "::group::${TARGET} [PID: ${PID}]"
+          echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
+          echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
+          echo
+          echo "Dependencies:\n${DEPENDENCIES}"
+          echo "::endgroup::"
+
           if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
             echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
           else
             jq --arg target "${TARGET}" --arg date "${LAST_MODIFY_DATE}" '.[$target] = $date' \
-            './.verify-helper/dependencies.json' > './.verify-helper/dependencies.json'
+            ./.verify-helper/allocation.json > ./.verify-helper/allocation.json
           fi
         done
 
-        cat './.verify-helper/dependencies.json'
+        cat ./.verify-helper/allocation.json
 
         NODES=18
 
