@@ -162,6 +162,8 @@ jobs:
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
 
+        echo ./.verify-helper/timestamps.remote.json
+
         head -c -1 ./.verify-helper/targets.txt | \
         xargs -P ${PARALLEL} -d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
