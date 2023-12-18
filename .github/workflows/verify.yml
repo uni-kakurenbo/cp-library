@@ -193,6 +193,7 @@ jobs:
         touch ./timestamps.remote.json
 
         if [ ! -e some_directory ]; then
+          echo "No timestamps found."
           exit 0
         fi
 
