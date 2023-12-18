@@ -38,7 +38,7 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
-        echo > ./.verify-helper/allocation.json
+        echo -n > ./.verify-helper/allocation.json
 
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
@@ -47,6 +47,7 @@ jobs:
 
         echo "::group::${N_NODES} test files allocated."
           cat ./.verify-helper/allocation.json
+        echo "::endgroup::"
         echo
 
         if [ ${N_NODES} -gt 18 ]; then
@@ -54,6 +55,7 @@ jobs:
         fi
 
         echo "Run tests on ${N_NODES} nodes."
+        echo
 
         IDS='['
         for ((i=0; i < N_NODES; i++)); do
