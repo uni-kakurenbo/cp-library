@@ -27,8 +27,7 @@ PID="$$"
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
     echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
   else
-    jq --arg TARGET "${TARGET}" --arg date "${LAST_MODIFY_DATE}" -n \
-    '.[$TARGET] = $date' >> ./.verify-helper/allocation.json
+    echo "${TARGET}" >> ./.verify-helper/allocation.json
   fi
 
   echo
