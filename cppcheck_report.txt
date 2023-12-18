@@ -16,10 +16,10 @@ test/fast_prime_sieve.cpp:20:9: error: syntax error [syntaxError]
 test/iteration.cpp:20:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
-test/stride_view.cpp:21:9: error: syntax error [syntaxError]
+test/sqrt.cpp:20:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
-test/sqrt.cpp:20:9: error: syntax error [syntaxError]
+test/stride_view.cpp:21:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
 data_structure/wavelet_matrix.hpp:545:0: error: Found a exit path from function with non-void return type that has missing return statement [missingReturn]
@@ -454,10 +454,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_barrett_modul
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -478,19 +478,19 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_mont
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_barrett_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
