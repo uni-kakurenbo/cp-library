@@ -38,7 +38,7 @@ jobs:
         # if [ $NODES -lt 20 ]; then
         #   NODES=20
         # fi
-        NODES=19
+        NODES=18
 
         echo "Nodes: ${NODES}"
 
