@@ -1,4 +1,6 @@
-name: cppcheck-action-test
+name: lint
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
 on: 
   workflow_call:
   workflow_dispatch:
