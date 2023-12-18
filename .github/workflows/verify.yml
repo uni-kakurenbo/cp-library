@@ -34,7 +34,7 @@ jobs:
 
         # N_PROC=$(nproc)
 
-        if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+        if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
