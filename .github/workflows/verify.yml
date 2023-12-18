@@ -50,12 +50,14 @@ jobs:
         fi
 
         IDS='['
+
         for ((i=0; i < NODES; i++)); do
             IDS+=$(printf '"%02d"' "${i}")
             if [ $i -lt $((NODES-1)) ]; then
                 IDS+=','
             fi
         done
+
         IDS+=']'
 
         echo ${IDS}
@@ -188,6 +190,7 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
+        mkdir -p ./timestamps
         touch ./timestamps.remote.json
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
