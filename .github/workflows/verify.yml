@@ -153,7 +153,8 @@ jobs:
 
         echo '{}' > ./.verify-helper/timestamps.json
 
-        if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+        echo '{}' >> ./.verify-helper/timestamps.remote.json
+        if [ "${CACHE_HIT}" != 'true' ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
