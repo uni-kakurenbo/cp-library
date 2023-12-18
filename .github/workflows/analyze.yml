@@ -19,7 +19,7 @@ jobs:
         uses: deep5050/cppcheck-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN}}
-          other_options: -Imain --check-config
+          other_options: -I .\main --check-config
 
       - name: Publish report
         if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
