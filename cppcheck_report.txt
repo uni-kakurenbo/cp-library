@@ -1,0 +1,56 @@
+debugger/test.cpp:44:20: style:inconclusive: Technically the member function 'MyString::begin' can be const. [functionConst]
+    Iterator<char> begin() { return { s }; }
+                   ^
+debugger/test.cpp:37:8: style:inconclusive: Technically the member function 'Iterator < char >::operator!=' can be const. [functionConst]
+  bool operator!=(const Iterator& v) { return p != v.p; }
+       ^
+debugger/test.cpp:38:13: style:inconclusive: Technically the member function 'Iterator < char >::operator-' can be const. [functionConst]
+  ptrdiff_t operator-(const Iterator& v) { return p - v.p; }
+            ^
+debugger/test.cpp:19:5: style: Struct 'prime_sieve' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    prime_sieve(size_t max) : is_prime(max+1, true) {
+    ^
+test/draft/bit_field.cpp:32:20: performance:inconclusive: Technically the member function 'base < flag >::has' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    constexpr bool has() { return true; }
+                   ^
+test/draft/bit_field.cpp:26:15: style: Struct 'base < flag >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    constexpr base(Flags... flags) : _bits(set(flags...)) {}
+              ^
+test/view.cpp:37:54: style: Consider using std::fill algorithm instead of a raw loop. [useStlAlgorithm]
+        for(auto& x : lib::views::concat(a, b, c)) x = 1;
+                                                     ^
+verify/set/00.test.cpp:31:13: style: Local variable 't' shadows outer variable [shadowVariable]
+        int t; std::cin >> t;
+            ^
+verify/set/00.test.cpp:22:25: note: Shadowed declaration
+    lib::valarray<bool> t(n);
+                        ^
+verify/set/00.test.cpp:31:13: note: Shadow variable
+        int t; std::cin >> t;
+            ^
+verify/set/01.test.cpp:34:13: style: Local variable 't' shadows outer variable [shadowVariable]
+        int t; std::cin >> t;
+            ^
+verify/set/01.test.cpp:23:25: note: Shadowed declaration
+    lib::valarray<bool> t(n);
+                        ^
+verify/set/01.test.cpp:34:13: note: Shadow variable
+        int t; std::cin >> t;
+            ^
+verify/point-set_range-composite/01.test.cpp:24:1: error: The one definition rule is violated, different classes/structs have the same name 'action' [ctuOneDefinitionRuleViolation]
+struct action {
+^
+verify/point-set_range-composite/02.test.cpp:26:1: note: The one definition rule is violated, different classes/structs have the same name 'action'
+struct action {
+^
+verify/point-set_range-composite/01.test.cpp:24:1: note: The one definition rule is violated, different classes/structs have the same name 'action'
+struct action {
+^
+debugger/test.cpp:50:0: style: The function '_debug' is never used. [unusedFunction]
+
+^
+verify/point-set_range-composite/01.test.cpp:28:0: style: The function 'map' is never used. [unusedFunction]
+
+^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
+
