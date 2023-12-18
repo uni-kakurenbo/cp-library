@@ -454,10 +454,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_barrett_modul
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -505,21 +505,18 @@ internal/range_reference.hpp:48:0: error: Found a exit path from function with n
 data_structure/fenwick_tree.hpp:142:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
     ^
-data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= l && l <= this->_n);
-                 ^
-data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= r && r <= this->_n);
-                 ^
-data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
-        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
-            ^
 data_structure/segment_tree.hpp:166:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
     ^
 data_structure/segment_tree.hpp:169:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
+data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= l && l <= this->_n);
+                 ^
+data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= r && r <= this->_n);
+                 ^
 data_structure/segment_tree.hpp:93:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= l && l <= this->_n);
                  ^
@@ -535,6 +532,9 @@ data_structure/segment_tree.hpp:184:19: note: Shadowed declaration
 data_structure/segment_tree.hpp:186:9: note: Shadow variable
         REPD(p, 1, this->_size) this->update(p);
         ^
+data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
+        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
+            ^
 adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     extended_container(const Base& base) : Base(base) {}
     ^
@@ -760,15 +760,6 @@ data_structure/adapter/set.hpp:215:18: style: Unsigned expression 'k' can't be n
 data_structure/adapter/set.hpp:224:18: style: Unsigned expression 'k' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= k && k < this->_data.size());
                  ^
-verify/set/00.test.cpp:31:13: style: Local variable 't' shadows outer variable [shadowVariable]
-        int t; std::cin >> t;
-            ^
-verify/set/00.test.cpp:22:25: note: Shadowed declaration
-    lib::valarray<bool> t(n);
-                        ^
-verify/set/00.test.cpp:31:13: note: Shadow variable
-        int t; std::cin >> t;
-            ^
 data_structure/adapter/set.hpp:127:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     set_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
     ^
@@ -784,6 +775,15 @@ data_structure/adapter/set.hpp:63:5: style: Struct 'set_adapter_impl < lib :: se
 algebraic/combined.hpp:24:5: style: Struct 'combined < algebraic :: addition < internal unsigned long > , algebraic :: minimum < internal unsigned long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     combined(const T& v) : combined(v, v) {};
     ^
+verify/set/00.test.cpp:31:13: style: Local variable 't' shadows outer variable [shadowVariable]
+        int t; std::cin >> t;
+            ^
+verify/set/00.test.cpp:22:25: note: Shadowed declaration
+    lib::valarray<bool> t(n);
+                        ^
+verify/set/00.test.cpp:31:13: note: Shadow variable
+        int t; std::cin >> t;
+            ^
 verify/set/01.test.cpp:34:13: style: Local variable 't' shadows outer variable [shadowVariable]
         int t; std::cin >> t;
             ^
