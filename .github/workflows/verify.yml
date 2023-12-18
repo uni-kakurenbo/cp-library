@@ -163,8 +163,6 @@ jobs:
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
 
-        cat ./.verify-helper/timestamps.remote.json
-
         head -c -1 ./.verify-helper/targets.txt | \
         xargs -P ${PARALLEL} -d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
@@ -177,7 +175,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: timestamps/${{ matrix.id }}/
+        name: timestamps-${{ matrix.id }}/
         path: main/.verify-helper/timestamps.json
 
   post-run:
@@ -202,13 +200,13 @@ jobs:
       run: |
         touch ./timestamps.remote.json
 
-        if [ ! -e ./timestamps/ ]; then
-          echo "No timestamps found."
-          exit 0
+        if ls ./timestamps-*/timestamps.log > /dev/null 2>&1; then
+        else
+            echo "No timestamps found."
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json timestamps/**/timestamp.json > ./merged-timestamps.json
+        ./timestamps.remote.json ./timestamps-*/timestamps.log > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
