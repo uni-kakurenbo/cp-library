@@ -15,7 +15,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install cppcheck
-      run: audo apt install cppcheck
+      run: sudo apt install cppcheck
 
     - name: Run lint
       run : cppcheck --max-ctu-depth=32 -j $(nproc) -I . --output-file=./cppcheck_report.txt --enable=all .
