@@ -40,7 +40,7 @@ jobs:
 
     - name: Git pull
       working-directory: main
-      run: git pull
+      run: git pull --rebase
 
     - name: Generate documentation
       working-directory: main
