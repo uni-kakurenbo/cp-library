@@ -203,12 +203,12 @@ jobs:
         if ! ls ./timestamps-*/timestamps.log > /dev/null 2>&1; then
           echo "No timestamps found."
           exit 0
-        else
+        fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ./timestamps.remote.json ./timestamps-*/timestamps.log > ./merged-timestamps.json
 
-        cp -f ./merged-timestamps.json ./timestamps.remote.json
+        cp -f ./merged-timestamps.json   ./timestamps.remote.json
         cat ./timestamps.remote.json
 
     - name: Push merged timestamps
