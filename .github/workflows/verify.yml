@@ -6,6 +6,7 @@ on:
   workflow_call:
     secrets:
       YUKICODER_TOKEN:
+        required: false
       GH_PAT:
         required: true
 
@@ -31,12 +32,13 @@ jobs:
       run: |
         PARALLEL=$(nproc)
 
-        TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
-        NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
+        # TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
+        # NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
 
-        if [ $NODES -lt 20 ]; then
-          NODES=20
-        fi
+        # if [ $NODES -lt 20 ]; then
+        #   NODES=20
+        # fi
+        NODES=20
 
         echo "Nodes: ${NODES}"
 
