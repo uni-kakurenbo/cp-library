@@ -29,11 +29,11 @@ jobs:
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
 
-        git pull --rebase
         git add ./cppcheck_report.txt
 
         if (git diff --cached --shortstat | grep '[0-9]'); then
           git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
+          git pull --rebase
           git push origin HEAD:${GITHUB_REF}
         else
           echo "No updated reports."
