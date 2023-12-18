@@ -110,7 +110,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: allocation
-        path: ./main/.verify-helper/
+        path: ./main/.verify-helper/tests/
 
     - name: Allocate test files
       working-directory: main
@@ -118,7 +118,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/allocation.json  | \
+          cat ./.verify-helper/tests/allocation.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -153,10 +153,17 @@ jobs:
 
         echo '{}' > ./.verify-helper/timestamps.json
 
-        echo '{}' >> ./.verify-helper/timestamps.remote.json
-        if [ "${CACHE_HIT}" != 'true' ]; then
-          echo '{}' > ./.verify-helper/timestamps.remote.json
-        fi
+        {
+          if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+            echo '{}' > ./.verify-helper/timestamps.remote.json
+          fi
+
+          sed -i '/^$/d' ./.verify-helper/timestamps.remote.json
+
+          if -s ./.verify-helper/timestamps.remote.json; then
+            echo '{}' >> ./.verify-helper/timestamps.remote.json
+          fi
+        }
 
         oj d https://judge.yosupo.jp/problem/aplusb &> /dev/null
 
@@ -175,7 +182,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: timestamps-${{ matrix.id }}
+        name: tests-${{ matrix.id }}
         path: main/.verify-helper/timestamps.json
 
   post-run:
@@ -200,13 +207,13 @@ jobs:
       run: |
         touch ./timestamps.remote.json
 
-        if ! ls ./timestamps-*/timestamps.json > /dev/null 2>&1; then
+        if ! ls ./tests-*/timestamps.json > /dev/null 2>&1; then
           echo "No timestamps found."
           exit 0
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json ./timestamps-*/timestamps.json > ./merged-timestamps.json
+        ./timestamps.remote.json ./tests-*/timestamps.json > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json   ./timestamps.remote.json
         cat ./timestamps.remote.json
