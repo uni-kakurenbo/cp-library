@@ -27,7 +27,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Collect testfile information
+    - name: Filter test files
       id: collect
       run: |
         set -eu
@@ -43,27 +43,27 @@ jobs:
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
-        cat ./.verify-helper/allocation.json
-        NODES=$(cat ./.verify-helper/allocation.json | wc -l)
+        N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
 
-        echo "$NODES"
+        echo "::group::${N_NODES} test files allocated."
+          cat ./.verify-helper/allocation.json
+        echo
 
-        if [ $NODES -gt 18 ]; then
-          NODES=18
+        if [ ${N_NODES} -gt 18 ]; then
+          N_NODES=18
         fi
 
-        IDS='['
+        echo "Run tests on ${N_NODES} nodes."
 
-        for ((i=0; i < NODES; i++)); do
+        IDS='['
+        for ((i=0; i < N_NODES; i++)); do
             IDS+=$(printf '"%02d"' "${i}")
-            if [ $i -lt $((NODES-1)) ]; then
+            if [ $i -lt $((N_NODES-1)) ]; then
                 IDS+=','
             fi
         done
-
         IDS+=']'
 
-        echo ${IDS}
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
     - name: Save allocation list
@@ -110,7 +110,7 @@ jobs:
         name: allocation
         path: ./.verify-helper/
 
-    - name: Assign test files
+    - name: Allocate test files
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
