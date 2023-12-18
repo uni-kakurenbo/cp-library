@@ -45,7 +45,7 @@ jobs:
 
         NODES=$(wc -l ./.verify-helper/allocation.json)
 
-        if [ NODES -gt 18 ]; then
+        if [ $NODES -gt 18 ]; then
           NODES=18
         fi
 
