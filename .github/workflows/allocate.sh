@@ -23,6 +23,7 @@ PID="$$"
   echo '::group::dependencies'
   echo -e "Dependencies:\n${DEPENDENCIES}"
   echo '::endgroup::'
+  echo
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
     echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
