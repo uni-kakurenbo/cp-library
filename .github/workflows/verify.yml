@@ -38,13 +38,13 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
-        echo '{}' > ./.verify-helper/allocation.json
+        echo > ./.verify-helper/allocation.json
 
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
         NODES=$(wc -l ./.verify-helper/allocation.json)
-        
+
         if [ NODES -gt 18 ]; then
           NODES=18
         fi
@@ -61,6 +61,11 @@ jobs:
         echo ${IDS}
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
+    - name: Save allocation list
+      uses: actions/upload-artifact@v3
+      with:
+        name: allocation
+        path: ./.verify-helper/allocation.json
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -93,13 +98,19 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
 
+    - name: Load allocation list
+      uses: actions/download-artifact@v3
+      with:
+        name: allocation
+        path: ./.verify-helper/
+
     - name: Assign test files
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
-          find verify -type f -name '*.test.cpp' | \
+          cat ./.verify-helper/allocation.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -173,7 +184,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: timestamps
-        path: .verify-helper/timestamps
+        path: .verify-helper/timestamps/
 
     - name: Merge timestamps
       working-directory: .verify-helper
