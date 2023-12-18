@@ -44,7 +44,7 @@ jobs:
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
         cat ./.verify-helper/allocation.json
-        NODES=$(wc -l ./.verify-helper/allocation.json)
+        NODES=$(cat ./.verify-helper/allocation.json | wc -l)
 
         echo "$NODES"
 
