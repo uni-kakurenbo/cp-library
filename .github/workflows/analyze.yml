@@ -18,6 +18,7 @@ jobs:
         uses: deep5050/cppcheck-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN}}
+          other_options: "-I ."
 
       - name: Publish report    
         uses: mikeal/publish-to-github-action@master
