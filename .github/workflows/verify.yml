@@ -200,13 +200,13 @@ jobs:
       run: |
         touch ./timestamps.remote.json
 
-        if ! ls ./timestamps-*/timestamps.log > /dev/null 2>&1; then
+        if ! ls ./timestamps-*/timestamps.json > /dev/null 2>&1; then
           echo "No timestamps found."
           exit 0
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json ./timestamps-*/timestamps.log > ./merged-timestamps.json
+        ./timestamps.remote.json ./timestamps-*/timestamps.json > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json   ./timestamps.remote.json
         cat ./timestamps.remote.json
@@ -227,5 +227,5 @@ jobs:
           git pull --rebase
           git push origin HEAD:${GITHUB_REF}
         else
-          echo "No updated timestamps."
+          echo "No timestamps updated."
         fi
