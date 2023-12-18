@@ -46,7 +46,7 @@ jobs:
           LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
           LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
 
-          echo "::group::${target} [PID: ${PID}]"
+          echo "::group::${target}"
           echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
           echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
           echo
