@@ -25,22 +25,42 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v3
       with:
-        sparse-checkout: verify
+        sparse-checkout: |
+          verify
+          ./verify-helper
 
-    - name: Prepare
-      id: preapre
+    - name: Collect testfile information
+      id: collect
       run: |
-        PARALLEL=$(nproc)
+        set -eu
 
-        # TARGETS=$(find verify -type f -name '*.test.cpp' | wc -l)
-        # NODES=$(((TARGETS + PARALLEL - 1) / PARALLEL))
+        # N_PROC=$(nproc)
 
-        # if [ $NODES -lt 20 ]; then
-        #   NODES=20
-        # fi
+        echo '{}' > './.verify-helper/allocation.json'
+
+        for file in $(find verify -type f -name '*.test.cpp'); do
+          DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
+
+          LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
+          LAST_VERIFY_DATE="$(
+              jq -r --arg target "${TARGET}" \
+              '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
+          )"
+
+          LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
+          LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
+
+          if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
+            echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
+          else
+            jq --arg target "${TARGET}" --arg date "${LAST_MODIFY_DATE}" '.[$target] = $date' \
+            './.verify-helper/dependencies.json' > './.verify-helper/dependencies.json'
+          fi
+        done
+
+        cat './.verify-helper/dependencies.json'
+
         NODES=18
-
-        echo "Nodes: ${NODES}"
 
         IDS='['
         for ((i=0; i < NODES; i++)); do
