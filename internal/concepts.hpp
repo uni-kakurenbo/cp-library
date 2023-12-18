@@ -54,59 +54,59 @@ concept weakly_division_assignable = requires (L lhs, R rhs) { lhs /= rhs; };
 template<class L, class R = L>
 concept addable =
     weakly_addable<L, R> &&
-    weakly_addable<std::invoke_result_t<std::plus<L, R>&, L, R>, R> &&
-    weakly_addable<L, std::invoke_result_t<std::plus<L, R>&, L, R>> &&
-    weakly_addable<std::invoke_result_t<std::plus<L, R>&, L, R>, std::invoke_result_t<std::plus<L, R>&, L, R>>;
+    weakly_addable<std::invoke_result_t<std::plus<>&, L, R>, R> &&
+    weakly_addable<L, std::invoke_result_t<std::plus<>&, L, R>> &&
+    weakly_addable<std::invoke_result_t<std::plus<>&, L, R>, std::invoke_result_t<std::plus<>&, L, R>>;
 
 template<class L, class R = L>
 concept subtractable =
     weakly_subtractable<L, R> &&
-    weakly_subtractable<std::invoke_result_t<std::minus<L, R>&, L, R>, R> &&
-    weakly_subtractable<L, std::invoke_result_t<std::minus<L, R>&, L, R>> &&
-    weakly_subtractable<std::invoke_result_t<std::minus<L, R>&, L, R>, std::invoke_result_t<std::minus<L, R>&, L, R>>;
+    weakly_subtractable<std::invoke_result_t<std::minus<>&, L, R>, R> &&
+    weakly_subtractable<L, std::invoke_result_t<std::minus<>&, L, R>> &&
+    weakly_subtractable<std::invoke_result_t<std::minus<>&, L, R>, std::invoke_result_t<std::minus<>&, L, R>>;
 
 template<class L, class R = L>
 concept multipliable =
     weakly_multipliable<L, R> &&
-    weakly_multipliable<std::invoke_result_t<std::multiplies<L, R>&, L, R>, R> &&
-    weakly_multipliable<L, std::invoke_result_t<std::multiplies<L, R>&, L, R>> &&
-    weakly_multipliable<std::invoke_result_t<std::multiplies<L, R>&, L, R>, std::invoke_result_t<std::multiplies<L, R>&, L, R>>;
+    weakly_multipliable<std::invoke_result_t<std::multiplies<>&, L, R>, R> &&
+    weakly_multipliable<L, std::invoke_result_t<std::multiplies<>&, L, R>> &&
+    weakly_multipliable<std::invoke_result_t<std::multiplies<>&, L, R>, std::invoke_result_t<std::multiplies<>&, L, R>>;
 
 template<class L, class R = L>
 concept divisable =
     weakly_divisable<L, R> &&
-    weakly_divisable<std::invoke_result_t<std::divides<L, R>&, L, R>, R> &&
-    weakly_divisable<L, std::invoke_result_t<std::divides<L, R>&, L, R>> &&
-    weakly_divisable<std::invoke_result_t<std::divides<L, R>&, L, R>, std::invoke_result_t<std::divides<L, R>&, L, R>>;
+    weakly_divisable<std::invoke_result_t<std::divides<>&, L, R>, R> &&
+    weakly_divisable<L, std::invoke_result_t<std::divides<>&, L, R>> &&
+    weakly_divisable<std::invoke_result_t<std::divides<>&, L, R>, std::invoke_result_t<std::divides<>&, L, R>>;
 
 
 template<class L, class R = L>
 concept addition_assignable =
     weakly_addition_assignable<L, R> &&
-    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<L, R>&, L, R>>, R> &&
-    weakly_addition_assignable<L, std::invoke_result_t<std::plus<L, R>&, L, R>> &&
-    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<L, R>&, L, R>>, std::invoke_result_t<std::plus<L, R>&, L, R>>;
+    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<>&, L, R>>, R> &&
+    weakly_addition_assignable<L, std::invoke_result_t<std::plus<>&, L, R>> &&
+    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<>&, L, R>>, std::invoke_result_t<std::plus<>&, L, R>>;
 
 template<class L, class R = L>
 concept subtraction_assignable =
     weakly_subtraction_assignable<L, R> &&
-    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<L, R>&, L, R>>, R> &&
-    weakly_subtraction_assignable<L, std::invoke_result_t<std::minus<L, R>&, L, R>> &&
-    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<L, R>&, L, R>>, std::invoke_result_t<std::minus<L, R>&, L, R>>;
+    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<>&, L, R>>, R> &&
+    weakly_subtraction_assignable<L, std::invoke_result_t<std::minus<>&, L, R>> &&
+    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<>&, L, R>>, std::invoke_result_t<std::minus<>&, L, R>>;
 
 template<class L, class R = L>
 concept multipliation_assignalbe =
     weakly_multipliation_assignalbe<L, R> &&
-    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<L, R>&, L, R>>, R> &&
-    weakly_multipliation_assignalbe<L, std::invoke_result_t<std::multiplies<L, R>&, L, R>> &&
-    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<L, R>&, L, R>>, std::invoke_result_t<std::multiplies<L, R>&, L, R>>;
+    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<>&, L, R>>, R> &&
+    weakly_multipliation_assignalbe<L, std::invoke_result_t<std::multiplies<>&, L, R>> &&
+    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<>&, L, R>>, std::invoke_result_t<std::multiplies<>&, L, R>>;
 
 template<class L, class R = L>
 concept division_assignable =
     weakly_division_assignable<L, R> &&
-    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<L, R>&, L, R>>, R> &&
-    weakly_division_assignable<L, std::invoke_result_t<std::divides<L, R>&, L, R>> &&
-    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<L, R>&, L, R>>, std::invoke_result_t<std::divides<L, R>&, L, R>>;
+    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, R> &&
+    weakly_division_assignable<L, std::invoke_result_t<std::divides<>&, L, R>> &&
+    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, std::invoke_result_t<std::divides<>&, L, R>>;
 
 
 template<class T>
