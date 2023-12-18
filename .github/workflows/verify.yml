@@ -187,6 +187,8 @@ jobs:
 
         git config --global user.name "GitHub"
         git config --global user.email "noreply@github.com"
+
+        git pull --rebase
         git add .verify-helper/timestamps.remote.json
 
         if (git diff --cached --shortstat | grep '[0-9]'); then
