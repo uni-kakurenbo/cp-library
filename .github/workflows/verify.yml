@@ -160,15 +160,16 @@ jobs:
         xargs -P ${PARALLEL} -d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./.verify-helper/timestamps.json > "./.verify-helper/timestamps-${{ matrix.id }}.json"
-        cat "./.verify-helper/timestamps-${{ matrix.id }}.json"
+        ./.verify-helper/timestamps.json > ./.verify-helper/temp.json
+
+        cp -f ./.verify-helper/temp.json ./.verify-helper/timestamps.json
 
     - name: Save timestamps
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: timestamps
-        path: main/.verify-helper/timestamps-${{ matrix.id }}.json
+        name: timestamps/${{ matrix.id }}/
+        path: main/.verify-helper/timestamps.json
 
   post-run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -192,13 +193,13 @@ jobs:
       run: |
         touch ./timestamps.remote.json
 
-        if [ ! -e some_directory ]; then
+        if [ ! -e ./timestamps/ ]; then
           echo "No timestamps found."
           exit 0
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
+        ./timestamps.remote.json timestamps/**/timestamp.json > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
