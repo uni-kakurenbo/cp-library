@@ -190,8 +190,11 @@ jobs:
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
-        mkdir -p ./timestamps
         touch ./timestamps.remote.json
+
+        if [ ! -e some_directory ]; then
+          exit 0
+        fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ./timestamps.remote.json timestamps/* > ./merged-timestamps.json
