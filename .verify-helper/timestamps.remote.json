@@ -7,6 +7,7 @@
   "verify/binomial-coefficient/01-03.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/convolution/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/convolution/01.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/convolution/02.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/convolution/04-00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/counting-primes/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/dynamic-sequence_range-affine_range-sum/00.test.cpp": "2023-12-18 10:18:57 +0900",
@@ -24,6 +25,7 @@
   "verify/longest-increasing-subsequence/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/lowest-common-ancestor/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/lowest-common-ancestor/01.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/manhattan-mst/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/matrix-determinant/00-00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/matrix-determinant/00-01.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/matrix-product/00-00.test.cpp": "2023-12-18 10:18:57 +0900",
@@ -41,6 +43,7 @@
   "verify/matrix-product/00-12.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/matrix-product/00-13.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/matrix-product/00-14.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/matrix-product/00-15.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/maximum-bipartite-matching/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/point-add_range-sum/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/point-add_range-sum/01.test.cpp": "2023-12-18 10:18:57 +0900",
@@ -58,6 +61,7 @@
   "verify/primitive-root/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-add_point-get/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-add_range-min/00.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/range-add_range-min/01.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-add_range-min/02.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-add_range-min/03.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-add_range-min/04.test.cpp": "2023-12-18 10:18:57 +0900",
@@ -75,6 +79,7 @@
   "verify/range-kth-smallest/00-02.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-kth-smallest/00-03.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-quantile_range-sum_range-frequency/00.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/range-reverse_range-sum/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-set_range-min/00.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-set_range-min/01.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/range-set_range-sum/00.test.cpp": "2023-12-18 10:18:57 +0900",
@@ -91,5 +96,6 @@
   "verify/static-range-sum/02.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/static-range-sum/03.test.cpp": "2023-12-18 10:18:57 +0900",
   "verify/static-range-sum/04.test.cpp": "2023-12-18 10:18:57 +0900",
-  "verify/static-range-sum/05.test.cpp": "2023-12-18 10:18:57 +0900"
+  "verify/static-range-sum/05.test.cpp": "2023-12-18 10:18:57 +0900",
+  "verify/static-range-sum/06.test.cpp": "2023-12-18 10:18:57 +0900"
 }
