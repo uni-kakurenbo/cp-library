@@ -7,7 +7,7 @@ PID="$$"
 {
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
 
-  echo "Problem: $(grep -Po '\#define\ PROBLEM\ (?<=")[^",]+(?=")' "${TARGET}")"
+  echo "Problem: $(grep -Po '(?<=")[^",]+(?=")' "${TARGET}")"
 
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
