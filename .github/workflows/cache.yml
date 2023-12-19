@@ -84,7 +84,7 @@ jobs:
           diff -q ./docs-cache.txt ./prev/docs-cache.txt
           UPDATED="$?"
           echo "Docs: ${UPDATED}"
-          echo 'docs=${UPDATED}' >> ${GITHUB_OUTPUT}
+          echo "docs=${UPDATED}" >> ${GITHUB_OUTPUT}
         }
 
         exit 0
