@@ -190,6 +190,9 @@ test/z_array.cpp:20:9: error: syntax error [syntaxError]
 adapter/valarray.hpp:63:25: style: Struct 'valarray' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
+test/zip_view.cpp:21:9: error: syntax error [syntaxError]
+        DEBUG("Case: #" + std::to_string(_));
+        ^
 numeric/modular/builtin_reduction.hpp:36:15: style: Struct 'builtin_reduction' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr builtin_reduction(const value_type mod) noexcept(NO_EXCEPT) : _mod(mod) {
               ^
@@ -217,9 +220,6 @@ numeric/modular/barrett_reduction.hpp:41:33: note: Shadowed declaration
 numeric/modular/barrett_reduction.hpp:105:27: note: Shadow variable
         const common_type mod = static_cast<common_type>(this->_mod);
                           ^
-test/zip_view.cpp:21:9: error: syntax error [syntaxError]
-        DEBUG("Case: #" + std::to_string(_));
-        ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
@@ -457,10 +457,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_mon
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -907,12 +907,12 @@ adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container 
 adapter/valarray.hpp:63:25: style: Struct 'valarray < long >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 iterable/accumulation.hpp:36:5: style: Struct 'accumulation' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
     ^
 iterable/accumulation.hpp:58:18: style: Unsigned expression 'left' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= left and left <= right and right < (size_type)std::size(*this));
                  ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
