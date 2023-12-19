@@ -109,7 +109,8 @@ jobs:
     - name: Load allocation list
       uses: actions/download-artifact@v4
       with:
-        path: ./main/.verify-helper/
+        name: tests
+        path: ./main/.verify-helper/tests/
 
     - name: Allocate test files
       working-directory: main
@@ -164,7 +165,9 @@ jobs:
           fi
         }
 
-        oj d https://judge.yosupo.jp/problem/aplusb &> /dev/null
+        echo '::group::oj download prepare'
+        oj download https://judge.yosupo.jp/problem/aplusb
+        echo '::endgroup::'
 
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
