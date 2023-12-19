@@ -106,12 +106,11 @@ jobs:
 
     - run: |
         oj download --system "${{ matrix.problem }}"
-        cd ./test/
-        ls
+        echo "${{ matrix.problem }}" > ./problem.txt
 
     - uses: actions/upload-artifact@v3
       with:
-        name: testcase-${{ matrix.problem }}
+        name: testcase-${{ hashFiles(./problem.txt) }}
         path: ./test/
         retention-days: 1
 
