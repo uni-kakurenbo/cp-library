@@ -13,7 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   cache:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
@@ -56,19 +55,30 @@ jobs:
         search_artifacts: true
         if_no_artifact_found: ignore
 
+    - name: Load previous docs hash
+      uses: dawidd6/action-download-artifact@v3
+      with:
+        name: docs-hash
+        path: ./prev-docs-hash.sh
+        workflow_conclusion: success
+        search_artifacts: true
+        if_no_artifact_found: ignore
+
     - name: Compare cached hash
       id: compare
       run: |
         diff -q ./source-files-cache.txt ./prev-source-files-cache.txt
-        echo "source-files=$?" >> ${GITHUB_OUTPUT}
+        UPDATED="$?"
+        echo "source-files=${UPDATED}" >> ${GITHUB_OUTPUT}
 
         diff -q ./docs-cache.txt ./prev-docs-cache.txt
-        echo 'docs=$?' >> ${GITHUB_OUTPUT}
+        UPDATED="$?"
+        echo 'docs=${UPDATED}' >> ${GITHUB_OUTPUT}
 
     - name: Upload sorce files hash
       uses: actions/upload-artifact@v3
       with:
-        name: source-code-hash
+        name: source-files-hash
         path: ./source-files-cache.txt
 
     - name: Upload sorce code hash
