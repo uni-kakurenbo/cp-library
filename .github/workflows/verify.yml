@@ -100,7 +100,9 @@ jobs:
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: gen-cases
+    needs:
+      - set-up
+      - gen-cases
     if: ${{ needs.set-up.outputs.node_ids != '[]' }}
 
     strategy:
