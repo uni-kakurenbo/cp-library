@@ -7,6 +7,10 @@ PID="$$"
 {
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
 
+    if [[ "$(cat "${TARGET}")" =~ \#define\s*PROBLEM\s*\"([\S\s]*)\" ]]; then
+        echo "Problem: ${BASH_REMATCH[1]}"
+    fi
+
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
   LAST_VERIFY_DATE="$(
       jq -r --arg target "${TARGET}" \
