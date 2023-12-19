@@ -61,7 +61,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: source-code-hash
-        path: ./source-code-cache.txt
+        path: ./source-files-cache.txt
 
     - name: Upload sorce code hash
       uses: actions/upload-artifact@v3
