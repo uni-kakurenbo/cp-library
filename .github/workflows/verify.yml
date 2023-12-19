@@ -38,12 +38,14 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
-        echo -n > ./.verify-helper/allocation.json
+        # echo -n > ./.verify-helper/allocation.json
 
-        find verify -type f -name '*.test.cpp' | sort | \
-        xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
+        # find verify -type f -name '*.test.cpp' | sort | \
+        # xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
-        N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
+        find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
+
+        # N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
 
         echo "::group::${N_NODES} test files allocated."
           cat ./.verify-helper/allocation.json
