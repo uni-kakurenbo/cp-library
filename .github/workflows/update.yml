@@ -3,6 +3,10 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
   workflow_dispatch:
+    inputs:
+      force:
+        type: boolean
+        required: false
   push:
     branches:
       - main
@@ -14,6 +18,7 @@ concurrency:
 
 jobs:
   cache:
+    if: ${{ ! github.event.inputs.force }}
     uses: ./.github/workflows/cache.yml
 
   analyze:
