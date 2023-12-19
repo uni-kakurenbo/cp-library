@@ -8,7 +8,7 @@ PID="$$"
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
 
   echo '::group::'
-  if [[ "$(cat "${TARGET}")" =~ \#define[^\S]*PROBLEM[^\S]*\"(\S*)\" ]]; then
+  if [[ "$(cat "${TARGET}")" =~ \#define\ PROBLEM\ \"(.*)\" ]]; then
     echo "Problem: ${BASH_REMATCH[1]}"
   fi
   cat "${TARGET}"
