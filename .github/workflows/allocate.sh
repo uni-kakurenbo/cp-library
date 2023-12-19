@@ -30,7 +30,7 @@ PID="$$"
   #   echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
   # else
     echo "${TARGET}" >> ./.verify-helper/allocation.json
-    echo "${PROBLEM}" >> ./.verify-helper/problems.json
+    echo "\"${PROBLEM}\"" >> ./.verify-helper/problems.json
   # fi
 
   echo
