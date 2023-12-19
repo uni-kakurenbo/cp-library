@@ -114,4 +114,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: docs-hash
-        path: ./source-docs-cache.txt
+        path: ./docs-cache.txt
