@@ -50,7 +50,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v3
       with:
         name: source-files-hash
-        path: ./prev-source-files-hash.sh
+        path: ./prev/
         workflow_conclusion: success
         search_artifacts: true
         if_no_artifact_found: ignore
@@ -59,7 +59,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v3
       with:
         name: docs-hash
-        path: ./prev-docs-hash.sh
+        path: ./prev/
         workflow_conclusion: success
         search_artifacts: true
         if_no_artifact_found: ignore
@@ -67,21 +67,26 @@ jobs:
     - name: Compare cached hash
       id: compare
       run: |
-        diff -q ./source-files-cache.txt ./prev-source-files-cache.txt
+        touch ./prev/source-files-cache.txt
+        touch ./prev/docs-cache.txt
+      
+        diff -q ./source-files-cache.txt ./prev/source-files-cache.txt
         UPDATED="$?"
         echo "source-files=${UPDATED}" >> ${GITHUB_OUTPUT}
 
-        diff -q ./docs-cache.txt ./prev-docs-cache.txt
+        diff -q ./docs-cache.txt ./prev/docs-cache.txt
         UPDATED="$?"
         echo 'docs=${UPDATED}' >> ${GITHUB_OUTPUT}
 
     - name: Upload sorce files hash
+      if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v3
       with:
         name: source-files-hash
         path: ./source-files-cache.txt
 
     - name: Upload sorce code hash
+      if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v3
       with:
         name: docs-hash
