@@ -7,9 +7,7 @@ PID="$$"
 {
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
 
-  if [[ "$(cat "${TARGET}")" =~ \#define\ PROBLEM\ \"([^\n]*)\"\n ]]; then
-    echo "Problem: ${BASH_REMATCH[1]}"
-  fi
+  echo "Problem: $(grep -Po '\#define\ PROBLEM\ (?<=")[^",]+(?=")' "${TARGET}")"
 
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
