@@ -59,8 +59,6 @@ jobs:
     - name: Compare cached hash
       id: compare
       run: |
-        set -eu
-
         diff -q ./source-files-cache.txt ./prev-source-files-cache.txt
         echo "source-files=$?" >> ${GITHUB_OUTPUT}
 
