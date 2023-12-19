@@ -45,7 +45,7 @@ jobs:
 
         find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
 
-        # N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
+        N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
 
         echo "::group::${N_NODES} test files allocated."
           cat ./.verify-helper/allocation.json
