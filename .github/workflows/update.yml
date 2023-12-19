@@ -41,13 +41,13 @@ jobs:
     - name: Compute hash
       run: |
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
-        cat ./file-list.hpp | xargs sha1sum > ./chach-list.txt
+        cat ./file-list.txt | xargs sha1sum > ./chach-list.txt
         sha1sum ./chach-list.txt | sed 's/\s\s*\/.*$//g' > ./source-code-cache.txt
 
         cat ./file-list.txt; cat ./cache-list.txt; cat ./source-code-cache.txt
 
         find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
-        cat ./file-list.hpp | xargs sha1sum > ./chach-list.txt
+        cat ./file-list.txt | xargs sha1sum > ./chach-list.txt
         sha1sum ./chach-list.txt | sed 's/\s\s*\/.*$//g' > ./docs-cache.txt
 
         cat ./file-list.txt; cat ./cache-list.txt; cat ./docs-cache.txt
