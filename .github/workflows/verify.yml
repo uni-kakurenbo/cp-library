@@ -111,7 +111,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: testcase-${{ matrix.id }}
+        name: testcase-${{ matrix.problem }}
         path: ./test/
         retention-days: 1
 
