@@ -38,10 +38,10 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
-        # echo -n > ./.verify-helper/allocation.json
+        echo -n > ./.verify-helper/allocation.json
 
-        # find verify -type f -name '*.test.cpp' | sort | \
-        # xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
+        find verify -type f -name '*.test.cpp' | sort | \
+        xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
         find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
 
@@ -76,6 +76,64 @@ jobs:
         name: allocation
         path: ./.verify-helper/allocation.json
         retention-days: 1
+
+  # gen-cases:
+  #   runs-on: ${{ vars.RUNNER_IMAGE }}
+  #   needs: pre-run
+  #   if: ${{ needs.pre-run.outputs.node_ids != '[]' }}
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       id: ${{ fromJSON(needs.pre-run.outputs.node_ids) }}
+
+  #   steps:
+  #   - name: Git checkout
+  #     uses: actions/checkout@v3
+  #     with:
+  #       path: main
+  #       fetch-depth: 0
+
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: 3.12.0
+
+  #   - name: Install oj-verify
+  #     run: pip3 install -U online-judge-verify-helper
+
+  #   - name: Clone AC-Library
+  #     uses: actions/checkout@v3
+  #     with:
+  #       repository: atcoder/ac-library
+  #       path: ac-library
+  #       sparse-checkout: atcoder
+
+  #   - name: Load allocation list
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: allocation
+  #       path: ./main/.verify-helper/
+
+  #   - name: Allocate test files
+  #     working-directory: main
+  #     env:
+  #       CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+  #     run: |
+  #       TEST_FILES=$(
+  #         cat ./.verify-helper/allocation.json  | \
+  #         sort | \
+  #         awk -v n=${{ strategy.job-total }} \
+  #             -v i=${{ strategy.job-index }} \
+  #             '{
+  #               if((NR - 1) % n == i) {
+  #                 print $0
+  #               }
+  #             }' \
+  #         )
+
+  #       echo ${TEST_FILES} > .verify-helper/targets.txt
+  #       cat .verify-helper/targets.txt
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
