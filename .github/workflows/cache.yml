@@ -4,13 +4,14 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
   workflow_call:
     outputs:
-      source-files-updated: ${{ jobs.cache.outputs.source-files-updated }}
-      docs-updated: ${{ jobs.cache.outputs.docs-updated }}
+      source-files-updated:
+        value: ${{ jobs.cache.outputs.source-files-updated }}
+      docs-updated:
+        value: ${{ jobs.cache.outputs.docs-updated }}
 
 concurrency:
   group: cache-${{ github.ref }}
   cancel-in-progress: true
-
 
 jobs:
   cache:
