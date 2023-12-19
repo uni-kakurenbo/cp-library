@@ -71,7 +71,7 @@ jobs:
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
     - name: Save allocation list
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: allocation
         path: ./.verify-helper/allocation.json
@@ -110,10 +110,10 @@ jobs:
         sparse-checkout: atcoder
 
     - name: Load allocation list
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v3
       with:
-        pattern: allocation
-        path: ./main/.verify-helper/tests/
+        name: allocation
+        path: ./main/.verify-helper/
 
     - name: Allocate test files
       working-directory: main
@@ -121,7 +121,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/tests/allocation/allocation.json  | \
+          cat ./.verify-helper/allocation.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -184,7 +184,7 @@ jobs:
         cp -f ./.verify-helper/temp.json ./.verify-helper/timestamps.json
 
     - name: Save timestamps
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       if: ${{ !cancelled() }}
       with:
         name: test-${{ matrix.id }}
@@ -204,23 +204,23 @@ jobs:
         sparse-checkout: .verify-helper
 
     - name: Load timestamps
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v3
       with:
-        pattern: test-*
-        path: .verify-helper/
+        # pattern: test-*
+        path: .verify-helper/tests/
 
     - name: Merge timestamps
       working-directory: .verify-helper
       run: |
         touch ./timestamps.remote.json
 
-        if ! ls ./test-*/timestamps.json > /dev/null 2>&1; then
+        if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
           echo "No timestamps found."
           exit 0
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json ./test-*/timestamps.json > ./merged-timestamps.json
+        ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json   ./timestamps.remote.json
         cat ./timestamps.remote.json
