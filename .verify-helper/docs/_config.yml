@@ -1,4 +1,3 @@
 title: "Uni's Library for Competitive Programming"
-source: action
 exclude: [ "test" ]
 theme: jekyll-theme-cayman
