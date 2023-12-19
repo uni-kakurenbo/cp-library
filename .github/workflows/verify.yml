@@ -110,7 +110,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: allocation
-        path: ./main/.verify-helper/tests/
+        path: ./main/.verify-helper/
 
     - name: Allocate test files
       working-directory: main
@@ -118,7 +118,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/tests/allocation.json  | \
+          cat ./.verify-helper/allocation.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
