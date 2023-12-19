@@ -103,7 +103,7 @@ jobs:
 
   verify:
     needs: cache
-    if: >
+    if: >-
       ${{ !cancelled() &&
         needs.cache.outputs.source-files-updated == '1' &&
         github.ref_name == github.event.repository.default_branch
@@ -116,7 +116,7 @@ jobs:
       - cache
       - analyze
       - verify
-    if: >
+    if: >-
       ${{ !cancelled() &&
         needs.cache.outputs.docs-updated == '1' &&
         github.ref_name == github.event.repository.default_branch
