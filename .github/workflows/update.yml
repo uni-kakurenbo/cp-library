@@ -35,7 +35,7 @@ jobs:
         (
           needs.cache.outputs.source-files-updated != '0' ||
           github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'source-files' ||
+          github.event.inputs.force == 'source-files'
         )
       }}
     uses: ./.github/workflows/analyze.yml
@@ -48,7 +48,7 @@ jobs:
         (
           needs.cache.outputs.source-files-updated != '0' ||
           github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'source-files' ||
+          github.event.inputs.force == 'source-files'
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
@@ -65,7 +65,7 @@ jobs:
         (
           needs.cache.outputs.docs-updated != '0' ||
           github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'docs' ||
+          github.event.inputs.force == 'docs'
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
