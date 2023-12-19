@@ -71,7 +71,7 @@ jobs:
     - name: Save allocation list
       uses: actions/upload-artifact@v4
       with:
-        name: test-allocation
+        name: allocation
         path: ./.verify-helper/allocation.json
         retention-days: 1
 
@@ -110,7 +110,7 @@ jobs:
     - name: Load allocation list
       uses: actions/download-artifact@v4
       with:
-        name: test-allocation
+        pattern: allocation
         path: ./main/.verify-helper/tests/
 
     - name: Allocate test files
@@ -119,7 +119,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/tests/allocation.json  | \
+          cat ./.verify-helper/tests/allocation/allocation.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
