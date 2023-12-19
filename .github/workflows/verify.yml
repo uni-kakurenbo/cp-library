@@ -104,12 +104,15 @@ jobs:
     - name: Install oj-verify
       run: pip3 install -U online-judge-verify-helper
 
-    - run: oj download --system "${{ matrix.problem }}"
+    - run: |
+        oj download --system "${{ matrix.problem }}"
+        cd ./test/
+        ls
 
     - uses: actions/upload-artifact@v3
       with:
         name: testcase-${{ matrix.id }}
-        path: ./.verify-helper/cache/
+        path: ./test/
         retention-days: 1
 
   run:
