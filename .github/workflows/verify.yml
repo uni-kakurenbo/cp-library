@@ -110,7 +110,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: testcase-${{ hashFiles(./problem.txt) }}
+        name: testcase-${{ hashFiles('./problem.txt') }}
         path: ./test/
         retention-days: 1
 
