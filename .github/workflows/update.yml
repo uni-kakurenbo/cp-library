@@ -13,13 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  cache:
+    uses: ./.github/workflows/cache.yml
+
   analyze:
-    #needs: cache
+    needs: cache
     if: ${{ !cancelled() && needs.cache.outputs.source-files-updated != '0' }}
     uses: ./.github/workflows/analyze.yml
 
   verify:
-    #needs: cache
+    needs: cache
     if: >-
       ${{ !cancelled() &&
         needs.cache.outputs.source-files-updated != '0' &&
@@ -30,7 +33,7 @@ jobs:
 
   documantaion:
     needs:
-    #  - cache
+      - cache
       - analyze
       - verify
     if: >-
