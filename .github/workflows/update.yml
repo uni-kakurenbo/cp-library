@@ -49,7 +49,7 @@ jobs:
         cat ./source-code-cache.txt > ./cache-list.txt
         find ./main/.verify-helper/docs/ -type f | sort > ./file-list.txt
         cat ./file-list.txt | xargs sha1sum >> ./cache-list.txt
-        sha1sum ./cache-list.txt | sed 's/\s\s*\/.*$//g' > ./docs-cache.txt
+        sha1sum ./cache-list.txt > ./docs-cache.txt
 
         cat ./file-list.txt; cat ./cache-list.txt; cat ./docs-cache.txt
 
