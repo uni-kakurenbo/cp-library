@@ -67,8 +67,7 @@ jobs:
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
-      source-files-updated: ${{ steps.compare.outputs.source-files }}
-      docs-updated: ${{ steps.compare.outputs.docs }}
+      updated: ${{ steps.compare.outputs.differed }}
 
     steps:
     - name: Git Checkout
