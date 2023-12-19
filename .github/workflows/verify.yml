@@ -20,6 +20,7 @@ jobs:
 
     outputs:
       node_ids: ${{ steps.collect.outputs.node_ids }}
+      problems: ${{ steps.collect.outputs.problems }}
 
     steps:
     - name: Git checkout
@@ -38,12 +39,13 @@ jobs:
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
 
+        echo -n > ./.verify-helper/problems.json
         echo -n > ./.verify-helper/allocation.json
 
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
-        find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
+        # find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
 
         N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
 
@@ -70,6 +72,12 @@ jobs:
 
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
+        PROBLEMS="(sort ./.verify-helper/problems.json | uniq | tr '\n' ',' | sed -e 's/,$/\n/g')"
+        echo "[${PROBLEMS}]"
+
+        echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "problems=$(echo "[${PROBLEMS}]" | jq -c)" >> ${GITHUB_OUTPUT}
+
     - name: Save allocation list
       uses: actions/upload-artifact@v3
       with:
@@ -77,17 +85,18 @@ jobs:
         path: ./.verify-helper/allocation.json
         retention-days: 1
 
-  # gen-cases:
-  #   runs-on: ${{ vars.RUNNER_IMAGE }}
-  #   needs: pre-run
-  #   if: ${{ needs.pre-run.outputs.node_ids != '[]' }}
+  gen-cases:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    needs: pre-run
+    if: ${{ needs.pre-run.outputs.node_ids != '[]' }}
 
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       id: ${{ fromJSON(needs.pre-run.outputs.node_ids) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        problem: ${{ fromJSON(needs.pre-run.outputs.problems) }}
 
-  #   steps:
+    steps:
+      - run: echo "${{ matrix.problem }}"
   #   - name: Git checkout
   #     uses: actions/checkout@v3
   #     with:

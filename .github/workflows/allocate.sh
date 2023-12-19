@@ -5,9 +5,8 @@ TARGET="$1"
 PID="$$"
 
 {
+  PROBLEM="$(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${TARGET}")"
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
-
-  echo "Problem: $(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${TARGET}")"
 
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
@@ -31,6 +30,7 @@ PID="$$"
   #   echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
   # else
     echo "${TARGET}" >> ./.verify-helper/allocation.json
+    echo "${PROBLEM}" >> ./.verify-helper/problems.json
   # fi
 
   echo
