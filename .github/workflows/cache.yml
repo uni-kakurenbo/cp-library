@@ -63,6 +63,7 @@ jobs:
       with:
         name: source-files-hash
         path: ./source-files-cache.txt
+        retention-days: 1
 
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -114,3 +115,4 @@ jobs:
       with:
         name: docs-hash
         path: ./docs-cache.txt
+        retention-days: 1
