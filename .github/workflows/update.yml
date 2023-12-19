@@ -6,7 +6,7 @@ on:
     inputs:
       force:
         type: boolean
-        required: false
+        default: true
   push:
     branches:
       - main
