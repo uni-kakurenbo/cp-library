@@ -67,6 +67,8 @@ jobs:
     - name: Compare cached hash
       id: compare
       run: |
+        set +e
+
         touch ./prev/source-files-cache.txt
         touch ./prev/docs-cache.txt
 
