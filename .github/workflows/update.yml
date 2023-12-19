@@ -36,8 +36,8 @@ jobs:
   verify:
     needs: cache
     if: >-
-      ${{ !cancelled() &&
-        needs.cache.outputs.source-files-updated != '0' &&
+      ${{
+        !cancelled() &&
         (
           needs.cache.outputs.source-files-updated != '0' ||
           github.event.inputs.force
