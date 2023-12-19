@@ -72,7 +72,7 @@ jobs:
 
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
-        PROBLEMS="\"$(sort ./.verify-helper/problems.json | uniq | tr '\n' '", "' | sed -e 's/,$/\n/g')\""
+        PROBLEMS="\"$(sort ./.verify-helper/problems.json | uniq | tr '\n' '\", \"' | sed -e 's/,$/\n/g')\""
         echo "[${PROBLEMS}]"
 
         echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
