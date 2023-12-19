@@ -21,10 +21,45 @@ jobs:
     uses: ./.github/workflows/verify.yml
     secrets: inherit
 
-  finalize:
+  documantaion:
     needs:
       - analyze
       - verify
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
+
+  finalize:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+
+    steps:
+    - name: Git Checkout
+      uses: actions/checkout@v3
+      with:
+        path: main
+    
+    - name: Compute hash
+      run: |
+        find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
+        cat ./file-list.hpp | xargs sha1sum > ./chach-list.txt
+        sha1sum ./chach-list.txt | sed 's/\s\s*\/.*$//g' > ./source-code-cache.txt
+
+        cat ./file-list.txt; cat ./cache-list.txt; cat ./source-code-cache.txt
+
+        find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
+        cat ./file-list.hpp | xargs sha1sum > ./chach-list.txt
+        sha1sum ./chach-list.txt | sed 's/\s\s*\/.*$//g' > ./docs-cache.txt
+
+        cat ./file-list.txt; cat ./cache-list.txt; cat ./docs-cache.txt
+
+    - name: Upload sorce code hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: source-code-hash
+        path: ./source-code-cache.txt
+
+    - name: Upload sorce code hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: docs-hash
+        path: ./docs-cache.txt
