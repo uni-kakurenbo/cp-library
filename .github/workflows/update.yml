@@ -98,7 +98,7 @@ jobs:
 
   analyze:
     needs: cache
-    if: ${{ needs.cache.outputs.source-files-updated == '1' }}
+    if: ${{ !cancelled() && needs.cache.outputs.source-files-updated == '1' }}
     uses: ./.github/workflows/analyze.yml
 
   verify:
