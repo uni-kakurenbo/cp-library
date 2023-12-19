@@ -108,7 +108,9 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        
+        name: testcase-${{ matrix.id }}
+        path: ./.verify-helper/cache/
+        retention-days: 1
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
