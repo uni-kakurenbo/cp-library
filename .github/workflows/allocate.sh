@@ -7,12 +7,9 @@ PID="$$"
 {
   DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
 
-  echo '::group::'
-  if [[ "$(cat "${TARGET}")" =~ ^\#define\ PROBLEM\ \"(.*)\"$ ]]; then
+  if [[ "$(cat "${TARGET}")" =~ \#define\ PROBLEM\ \"(.*)\"\n ]]; then
     echo "Problem: ${BASH_REMATCH[1]}"
   fi
-  cat "${TARGET}"
-  echo '::endgroup::'
 
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
