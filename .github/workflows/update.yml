@@ -13,33 +13,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
-    uses: ./.github/workflows/analyze.yml
 
-  verify:
-    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-    uses: ./.github/workflows/verify.yml
-    secrets: inherit
-
-  documantaion:
-    needs:
-      - analyze
-      - verify
-    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-    uses: ./.github/workflows/gen-docs.yml
-    secrets: inherit
-
-  finalize:
+  cache:
     runs-on: ${{ vars.RUNNER_IMAGE }}
+    outputs:
+      source-files-updated: ${{ steps.compare.outputs.source-files }}
+      docs-updated: ${{ steps.compare.outputs.docs }}
 
     steps:
     - name: Git Checkout
       uses: actions/checkout@v3
       with:
         path: main
-    
+
     - name: Compute hash
       run: |
+        set -eu
+
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
         cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
         sha1sum ./cache-list.txt | sed 's/\s\s*.*$//g' > ./source-files-cache.txt
@@ -57,7 +47,27 @@ jobs:
         cat ./cache-list.txt;
         echo '::endgroup'
 
-    - name: Upload sorce code hash
+    - name: Load previous source files hash
+      uses: dawidd6/action-download-artifact@v3
+      with:
+        name: source-files-hash
+        path: ./prev-source-files-hash.sh
+        workflow_conclusion: success
+        search_artifacts: true
+        if_no_artifact_found: ignore
+
+    - name: Compare cached hash
+      id: compare
+      run: |
+        set -eu
+
+        diff -q ./source-files-cache.txt ./prev-source-files-cache.txt
+        echo "source-files=$?" >> ${GITHUB_OUTPUT}
+
+        diff -q ./docs-cache.txt ./prev-docs-cache.txt
+        echo 'docs=$?' >> ${GITHUB_OUTPUT}
+
+    - name: Upload sorce files hash
       uses: actions/upload-artifact@v3
       with:
         name: source-code-hash
@@ -68,3 +78,31 @@ jobs:
       with:
         name: docs-hash
         path: ./docs-cache.txt
+
+  analyze:
+    needs: cache
+    if: ${{ needs.job1.outputs.output1 == '1' }}
+    uses: ./.github/workflows/analyze.yml
+
+  verify:
+    needs: cache
+    if: >
+      ${{ !cancelled() &&
+        needs.job1.outputs.output1 == '1' &&
+        github.ref_name == github.event.repository.default_branch
+      }}
+    uses: ./.github/workflows/verify.yml
+    secrets: inherit
+
+  documantaion:
+    needs:
+      - cache
+      - analyze
+      - verify
+    if: >
+      ${{ !cancelled() &&
+        needs.job1.outputs.output1 == '1' &&
+        github.ref_name == github.event.repository.default_branch
+      }}
+    uses: ./.github/workflows/gen-docs.yml
+    secrets: inherit
