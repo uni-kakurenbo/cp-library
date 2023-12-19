@@ -96,7 +96,19 @@ jobs:
         problem: ${{ fromJSON(needs.set-up.outputs.problems) }}
 
     steps:
-      - run: echo "${{ matrix.problem }}"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12.0
+
+    - name: Install oj-verify
+      run: pip3 install -U online-judge-tools
+
+    - run: oj download ${{ matrix.problem }}
+
+    - uses: actions/upload-artifact@v3
+      with:
+        
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
