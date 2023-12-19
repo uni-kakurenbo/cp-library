@@ -1,0 +1,101 @@
+name: library-update
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+  workflow_call:
+    outputs:
+      source-files-updated: ${{ jobs.cache.outputs.source-files-updated }}
+      docs-updated: ${{ jobs.cache.outputs.docs-updated }}
+
+concurrency:
+  group: cache-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  cache:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    outputs:
+      source-files-updated: ${{ steps.compare.outputs.source-files }}
+      docs-updated: ${{ steps.compare.outputs.docs }}
+
+    steps:
+    - name: Git Checkout
+      uses: actions/checkout@v3
+      with:
+        path: main
+
+    - name: Compute hash
+      run: |
+        set -eu
+
+        find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
+        cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
+        sha1sum ./cache-list.txt | sed 's/\s\s*.*$//g' > ./source-files-cache.txt
+
+        echo "::group::Source files [cache: $(cat ./source-files-cache.txt)]"
+        cat ./cache-list.txt;
+        echo '::endgroup'
+        
+        cat ./source-files-cache.txt > ./cache-list.txt
+        find ./main/.verify-helper/docs/ -type f | sort > ./file-list.txt
+        cat ./file-list.txt | xargs sha1sum >> ./cache-list.txt
+        sha1sum ./cache-list.txt | sed 's/\s\s*.*$//g' > ./docs-cache.txt
+
+        echo "::group::Docs [cache: $(cat ./docs-cache.txt)]"
+        cat ./cache-list.txt;
+        echo '::endgroup'
+
+    - name: Load previous source files hash
+      uses: dawidd6/action-download-artifact@v3
+      with:
+        name: source-files-hash
+        path: ./prev/
+        workflow_conclusion: success
+        search_artifacts: true
+        if_no_artifact_found: ignore
+
+    - name: Load previous docs hash
+      uses: dawidd6/action-download-artifact@v3
+      with:
+        name: docs-hash
+        path: ./prev/
+        workflow_conclusion: success
+        search_artifacts: true
+        if_no_artifact_found: ignore
+
+    - name: Compare cached hash
+      id: compare
+      run: |
+        set +e
+
+        touch ./prev/source-files-cache.txt
+        touch ./prev/docs-cache.txt
+
+        {
+          diff -q ./source-files-cache.txt ./prev/source-files-cache.txt
+          UPDATED="$?"
+          echo "Source files: ${UPDATED}"
+          echo "source-files=${UPDATED}" >> ${GITHUB_OUTPUT}
+        }
+
+        {
+          diff -q ./docs-cache.txt ./prev/docs-cache.txt
+          UPDATED="$?"
+          echo "Docs: ${UPDATED}"
+          echo 'docs=${UPDATED}' >> ${GITHUB_OUTPUT}
+        }
+
+        exit 0
+
+    - name: Upload sorce files hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: source-files-hash
+        path: ./source-files-cache.txt
+
+    - name: Upload sorce code hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: docs-hash
+        path: ./docs-cache.txt
