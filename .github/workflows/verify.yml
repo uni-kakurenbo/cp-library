@@ -151,7 +151,7 @@ jobs:
 
         echo ${PROBLEMS} | \
         xargs -d ' ' -I {} bash -c 'echo "${} (md5sum {} | cut -d" " -f)"\n' \
-        > .targets.txt
+        > ./targets.txt
         cat ./targets.txt
 
     - name: Check cached judge data
