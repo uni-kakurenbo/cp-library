@@ -58,6 +58,7 @@ jobs:
   documantaion:
     needs:
       - cache
+      - analyze
       - verify
     if: >-
       ${{ !cancelled() &&
@@ -73,6 +74,7 @@ jobs:
   save-status:
     needs:
       - cache
+      - analyze
       - verify
     uses: ./.github/workflows/cache--save-status.yml
     if: ${{ !cancelled() }}
