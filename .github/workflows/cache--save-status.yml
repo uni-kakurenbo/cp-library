@@ -13,6 +13,9 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
+    - name: Git chekcout
+      uses: actions/checkout@v3
+
     - name: Load previous source files hash
       uses: action/download-artifact@v3
       with:
@@ -20,7 +23,9 @@ jobs:
         path: ./
 
     - name: Save status
-      run: echo "${{ inputs.source-files-status }}" > ./status.txt
+      run: |
+        echo "Status: ${{ inputs.status }}"
+        echo "${{ inputs.status }}" > ./status.txt
 
     - name: Upload sorce files hash
       uses: actions/upload-artifact@v3
