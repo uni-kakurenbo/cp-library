@@ -25,7 +25,8 @@ jobs:
   quit:
     needs: cache
     if: eeds.cache.outputs.verify-status == 'failure'
-    run: exit 1
+    steps:
+      run: exit 1
 
   analyze:
     needs: cache
