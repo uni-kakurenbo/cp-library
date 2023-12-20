@@ -129,7 +129,7 @@ jobs:
     - name: Load meta data
       uses: actions/download-artifact@v3
       with:
-        name: meta data
+        name: meta-info
         path: ./main/.verify-helper/
 
     - name: Filter problems
@@ -166,7 +166,7 @@ jobs:
 
           const hash = crypto.createHash('md5');
 
-          fs.readdir('./test/', (err, dirs) => {
+          fs.readdir('${{ github.workspace }}/test/', (err, dirs) => {
               if(err) throw err;
 
               dirs.forEach((dir) => {
@@ -218,7 +218,7 @@ jobs:
     - name: Load meta data
       uses: actions/download-artifact@v3
       with:
-        name: meta data
+        name: meta-info
         path: ./main/.verify-helper/
 
     - name: Allocate test files
