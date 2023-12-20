@@ -190,11 +190,11 @@ jobs:
       with:
         node-version: '20.x'
 
-    - name: Install oj-verify
-      run: pip3 install -U online-judge-verify-helper
-
-    - name: Install action modules
-      run: npm install @actions/cache
+    - name: Install oj-verify and action modules
+      run: |
+        pip3 install -U online-judge-verify-helper &
+        npm install @actions/cache &
+        wait
 
     - name: Load meta data
       uses: actions/download-artifact@v3
