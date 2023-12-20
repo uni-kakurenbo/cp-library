@@ -6,8 +6,8 @@ on:
     outputs:
       source-files-status:
         value: ${{ jobs.source-files.outputs.status }}
-      docs-status:
-        value: ${{ jobs.docs.outputs.status }}
+      docs-updated:
+        value: ${{ jobs.docs.outputs.updated }}
 
 jobs:
   source-files:
@@ -71,7 +71,7 @@ jobs:
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
-      status: ${{ steps.compare.outputs.status }}
+      updated: ${{ steps.compare.outputs.differed }}
 
     steps:
     - name: Git Checkout
@@ -117,12 +117,10 @@ jobs:
         fi
 
         echo "Differed: ${DIFFERED}"
-        echo "Status: ${STATUS}"
-
-        echo "status=${STATUS}" >> ${GITHUB_OUTPUT}
+        echo "differed=${DIFFERED}" >> ${GITHUB_OUTPUT}
 
     - name: Upload docs hash
       uses: actions/upload-artifact@v3
       with:
-        name: --docs-hash
+        name: docs-hash
         path: ./hash.txt

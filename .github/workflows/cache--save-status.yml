@@ -4,11 +4,7 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
   workflow_call:
     inputs:
-      source-files-status:
-        type: string
-        required: true
-
-      docs-status:
+      status:
         type: string
         required: true
 
@@ -32,25 +28,4 @@ jobs:
         name: source-files-hash
         path: |
           ./source-files-cache.txt
-          ./status.txt
-
-  docs:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-
-    steps:
-    - name: Load previous source files hash
-      uses: action/download-artifact@v3
-      with:
-        name: --docs-hash
-        path: ./
-
-    - name: Save status
-      run: echo "${{ inputs.docs-status }}" > ./status.txt
-
-    - name: Upload sorce files hash
-      uses: actions/upload-artifact@v3
-      with:
-        name: docs-hash
-        path: |
-          ./docs.txt
           ./status.txt
