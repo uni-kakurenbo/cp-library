@@ -156,14 +156,17 @@ jobs:
       run: |
         mkdir -p ./test/
 
-        function gen() {      
+        function gen() {
           local problem="$1"
-          echo "::group::${problem}"
+          echo "${problem}" > name.txt;
+          hash=$(md5sum name.txt | sed 's/\s\s*.*$//g')
+          mkdir ${hash}; cd ${hash}
+          echo "::group::${problem} [hash: ${hash}]"
           oj download --system "${problem}"
           echo '::endgroup::'
         }
         export -f gen
-        
+
         head -c -1 ./targets.txt | \
         xargs -d ' ' -I {} bash -c 'gen {}'
 
@@ -186,7 +189,7 @@ jobs:
 
               dirs.forEach((dir) => {
                 console.log("Save: ", dir);
-                cache.saveCache([ dir ], `testcase-${ hash.update(dir).digest('hex') }`);
+                cache.saveCache([ dir ], `testcase-${ dir }`);
               });
           });
 
