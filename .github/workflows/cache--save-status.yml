@@ -16,6 +16,7 @@ jobs:
   source-files:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
+    steps:
     - name: Load previous source files hash
       uses: action/download-artifact@v3
       with:
@@ -36,6 +37,7 @@ jobs:
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
+    steps:
     - name: Load previous source files hash
       uses: action/download-artifact@v3
       with:
