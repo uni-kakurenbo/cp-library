@@ -64,8 +64,10 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
-  save-statis:
-    needs: verify
+  save-status:
+    needs:
+      - cache
+      - verify
     uses: ./.github/workflows/cache--save-status.yml
     if: ${{ always() }}
     with:
