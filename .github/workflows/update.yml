@@ -67,7 +67,10 @@ jobs:
   get-status:
     needs: verify
     if: ${{ always() && ! github.event.inputs.force }}
-    uses: technote-space/workflow-conclusion-action@v3
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    steps:
+      - name: Get status
+        uses: technote-space/workflow-conclusion-action@v3
 
   save-statis:
     uses: ./.github/workflows/cache--save-status.yml
