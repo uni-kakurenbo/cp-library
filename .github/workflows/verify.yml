@@ -173,7 +173,7 @@ jobs:
         }
         export -f gen
 
-        head -c -1 ./targets.txt | \
+        head -P $(nproc) -c -1 ./targets.txt | \
         xargs -d ' ' -I {} bash -c 'gen {}'
 
     - name: Cache judge data
@@ -215,7 +215,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.set-up.outputs.RUN_IDS) }}
+        id: ${{ fromJSON(needs.set-up.outputs.runner-ids) }}
 
     steps:
     - name: Git checkout
