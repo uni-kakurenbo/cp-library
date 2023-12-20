@@ -177,7 +177,7 @@ jobs:
             }
           );
 
-          cached_keys = new Set(saved_caches.data.map(({ key }) => key ));
+          cached_keys = new Set(saved_caches.data.actions_caches.map(({ key }) => key ));
           console.log(cached_keys);
 
           fs.readFileSync("${{ github.workspace }}/problems.txt")
