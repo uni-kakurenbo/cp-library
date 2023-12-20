@@ -172,7 +172,6 @@ jobs:
   gen-cases:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: set-up
-    if: ${{ needs.set-up.outputs.gen-ids != '[]' }}
 
     strategy:
       fail-fast: false
