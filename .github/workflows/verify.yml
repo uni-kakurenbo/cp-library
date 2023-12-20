@@ -103,7 +103,7 @@ jobs:
             .filter(({ name, hash }) => {
               return !!name && !cached_keys.has(`testcase-${ hash }`);
             })
-            .forEach(({ name, hash }) => {
+            .map(({ name, hash }) => {
               uncached+=`${ name } ${ hash }\n`;
             })
             .length;
