@@ -192,7 +192,7 @@ jobs:
             })
             .forEach(({ name, hash }) => {
               console.log({ name, hash });
-              fs.appendFile("${{ github.workspace }}/targets.txt", `${ name } ${ hash }\n`);
+              fs.appendFileSync("${{ github.workspace }}/targets.txt", `${ name } ${ hash }\n`);
             });
 
     - name: Generate testcases
