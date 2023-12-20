@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   cache:
-    if: ${{ ! github.event.inputs.force }}
+    if: ${{ !github.event.inputs.force }}
     uses: ./.github/workflows/load-prev-runs.yml
 
   quit:
