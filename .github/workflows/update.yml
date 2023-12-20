@@ -64,15 +64,12 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
-  post-cache:
+  get-status:
     needs: verify
     if: ${{ always() && ! github.event.inputs.force }}
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    steps:
-      - name: Get status
-        uses: technote-space/workflow-conclusion-action@v3
+    uses: technote-space/workflow-conclusion-action@v3
 
-      - name: Save statis
-        uses: ./.github/workflows/cache--save-status.yml
-        with:
-          status: ${{ env.WORKFLOW_CONCLUSION }}
+  save-statis:
+    uses: ./.github/workflows/cache--save-status.yml
+    with:
+      status: ${{ env.WORKFLOW_CONCLUSION }}
