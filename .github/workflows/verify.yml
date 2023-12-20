@@ -29,6 +29,7 @@ jobs:
         fetch-depth: 0
 
     - name: Filter test files
+      run: |
         set -eu
 
         N_PROC=$(nproc)
