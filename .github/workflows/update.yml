@@ -71,10 +71,9 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
-  save-status:
+  save-verify-status:
     needs:
       - cache
-      - analyze
       - verify
     uses: ./.github/workflows/cache--save-status.yml
     if: ${{ !cancelled() }}
