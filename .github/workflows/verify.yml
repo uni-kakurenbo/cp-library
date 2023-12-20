@@ -168,20 +168,23 @@ jobs:
             auth: '${{ github.token }}'
           });
 
-          saved_caches = await octokit.request('GET /repos/${{ github.repository }}/actions/caches', {
-            owner: '${{ github.repository_owner }}',
-            repo: '${{ github.repository }}',
-            headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-          });
+          saved_caches = await octokit.request(
+            'GET /repos/${{ github.repository }}/actions/caches',
+            {
+              owner: '${{ github.repository_owner }}',
+              repo: '${{ github.repository }}',
+              headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+            }
+          );
 
-          cached_keys = new Set(saved_caches.data.map(({ key }) => key; )));
+          cached_keys = new Set(saved_caches.data.map(({ key }) => key ));
           console.log(cached_keys);
 
           fs.readFileSync("${{ github.workspace }}/problems.txt")
             .split(' ')
             .map((name) => {
               const hash = crypto.createHash('md5').update(name).digest('hex');
-              return { name, hash }
+              return { name, hash };
             })
             .filter(({ hash }) => {
               return !cached_keys.has(hash);
