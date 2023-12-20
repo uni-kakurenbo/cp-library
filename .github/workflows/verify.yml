@@ -158,16 +158,16 @@ jobs:
       run: |
         mkdir ./testcases/
 
+        echo '::group::oj download prepare'
+        oj download --system https://judge.yosupo.jp/problem/aplusb
+        echo '::endgroup::'
+
         function gen() {        
           local problem="$1"
           local pid="$$"
 
           echo "${problem}" > name-${pid}.txt;
           hash=$(md5sum name-${pid}.txt | sed 's/\s\s*.*$//g')
-
-          echo '::group::oj download prepare'
-          oj download --system https://judge.yosupo.jp/problem/aplusb
-          echo '::endgroup::'
 
           mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
           {
