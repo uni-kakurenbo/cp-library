@@ -149,8 +149,9 @@ jobs:
               }' \
           )
 
-        echo ${PROBLEMS} > ./temp.txt
-        md5sum ./temp.txt > ./targets.txt
+        echo ${PROBLEMS} | \
+        xargs -d ' ' -I {} bash -c 'echo "${} (md5sum {} | cut -d" " -f)"\n' \
+        > .targets.txt
         cat ./targets.txt
 
     - name: Check cached judge data
@@ -172,7 +173,7 @@ jobs:
             repo: '${{ github.repository }}',
             headers: { 'X-GitHub-Api-Version': '2022-11-28' }
           });
-          console.log(saved_caches);
+          console.log(saved_caches.data);
 
     - name: Generate testcases
       env:
@@ -185,8 +186,8 @@ jobs:
         echo '::endgroup::'
 
         function gen() {
-          local hash="$1"
-          local problem="$2"
+          local problem="$1"
+          local hash="$2"
           local pid="$$"
 
           mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
