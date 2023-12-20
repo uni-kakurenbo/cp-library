@@ -72,6 +72,8 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
+          const problem_list = ${{ github.workspace }}/.verify-helper/problems.txt;
+
           const fs = require('fs');
           const crypto = require('crypto');
           const { Octokit } = require("@octokit/core");
@@ -86,17 +88,14 @@ jobs:
               owner: '${{ github.repository_owner }}',
               repo: '${{ github.repository }}',
               headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-            }
-          );
+            });
 
           cached_keys = new Set(saved_caches.data.actions_caches.map(({ key }) => key ));
           console.log(cached_keys);
 
           uncached = ""
 
-          fs.readFileSync("${{ github.workspace }}/problems.txt")
-            .toString()
-            .split('\n')
+          fs.readFileSync(problem_list).toString().split('\n')
             .map((name) => {
               const hash = crypto.createHash('md5').update(name).digest('hex');
               return { name, hash };
@@ -108,11 +107,11 @@ jobs:
               uncached+=`${ name } ${ hash }\n`;
             });
 
-            console.log("::group::Uncached problems");
-            console.log(uncached);
-            console.log("::endgroup::");
+          console.log("::group::Uncached problems");
+          console.log(uncached);
+          console.log("::endgroup::");
 
-            fs.writeFileSync("${{ github.workspace }}/problems.txt", uncached);
+          fs.writeFileSync(problem_list, uncached);
 
     - name: Generate matrix ids
       id: matrix-ids
