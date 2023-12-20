@@ -85,8 +85,10 @@ jobs:
           saved_caches = await octokit.request(
             'GET /repos/${{ github.repository }}/actions/caches',
             {
-              owner: '${{ github.repository_owner }}',
-              repo: '${{ github.repository }}',
+              per_page: 100,
+              ref: '${{ github.ref }}',
+              key: 'testcase-',
+              sort: 'last_accessed_at',
               headers: { 'X-GitHub-Api-Version': '2022-11-28' }
             });
 
