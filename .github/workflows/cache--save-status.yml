@@ -24,7 +24,7 @@ jobs:
         path: ./
 
     - name: Save status
-      runs: echo "${{ inputs.source-files-status }}" > ./status.txt
+      run: echo "${{ inputs.source-files-status }}" > ./status.txt
 
     - name: Upload sorce files hash
       uses: actions/upload-artifact@v3
@@ -45,7 +45,7 @@ jobs:
         path: ./
 
     - name: Save status
-      runs: echo "${{ inputs.docs-status }}" > ./status.txt
+      run: echo "${{ inputs.docs-status }}" > ./status.txt
 
     - name: Upload sorce files hash
       uses: actions/upload-artifact@v3
