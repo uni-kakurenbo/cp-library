@@ -154,8 +154,8 @@ jobs:
         done
         RUN_IDS+=']'
 
-        echo "${GEN_IDS}"
-        echo "${RUN_IDS}"
+        echo "$(echo "${GEN_IDS}" | jq -c)"
+        echo "${RUN_IDS}" | jq -c)"
 
         echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
         echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
@@ -172,6 +172,7 @@ jobs:
   gen-cases:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: set-up
+    if: ${{ needs.set-up.outputs.gen-ids != '[]' }}
 
     strategy:
       fail-fast: false
@@ -279,7 +280,7 @@ jobs:
     needs:
       - set-up
       - gen-cases
-    if: ${{ needs.set-up.outputs.runner-ids != '[]' }}
+    if: ${{ !cancelled() && needs.set-up.outputs.runner-ids != '[]' }}
 
     strategy:
       fail-fast: false
