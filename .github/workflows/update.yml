@@ -6,7 +6,7 @@ on:
     inputs:
       force:
         type: boolean
-        default: true
+        default: false
         required: true
   push:
     branches:
@@ -58,7 +58,6 @@ jobs:
   documantaion:
     needs:
       - cache
-      - analyze
       - verify
     if: >-
       ${{ !cancelled() &&
