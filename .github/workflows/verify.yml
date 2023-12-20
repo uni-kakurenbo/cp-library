@@ -150,7 +150,7 @@ jobs:
           )
 
         echo ${PROBLEMS} | \
-        xargs -d ' ' -I {} bash -c 'echo "${} (md5sum {} | cut -d" " -f)"\n' \
+        xargs -d ' ' -I {} bash -c 'echo "${} $(md5sum {} | cut -d" " -f)\n"' \
         > ./targets.txt
         cat ./targets.txt
 
@@ -168,7 +168,7 @@ jobs:
             auth: '${{ github.token }}'
           });
 
-          saved_caches = await octokit.request('GET /repos/${{ github.action_repository }}/actions/caches', {
+          saved_caches = await octokit.request('GET /repos/${{ github.repository }}/actions/caches', {
             owner: '${{ github.repository_owner }}',
             repo: '${{ github.repository }}',
             headers: { 'X-GitHub-Api-Version': '2022-11-28' }
