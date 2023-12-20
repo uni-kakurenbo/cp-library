@@ -4,7 +4,7 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
   workflow_call:
     outputs:
-      source-files-status:
+      verify-status:
         value: ${{ jobs.source-files.outputs.status }}
       docs-updated:
         value: ${{ jobs.docs.outputs.updated }}
