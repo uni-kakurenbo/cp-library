@@ -76,6 +76,6 @@ jobs:
       - cache
       - verify
     uses: ./.github/workflows/save-verify-status.yml
-    if: ${{ !cancelled() && needs.verify.result == 'success' }}
+    if: ${{ !cancelled() && needs.cache.result == 'success' }}
     with:
       status: ${{ needs.verify.result }}
