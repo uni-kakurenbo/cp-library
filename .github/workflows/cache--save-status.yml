@@ -13,11 +13,8 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
-    - name: Git chekcout
-      uses: actions/checkout@v3
-
     - name: Load previous source files hash
-      uses: action/download-artifact@v3
+      uses: actions/download-artifact@v3
       with:
         name: --source-files-hash
         path: ./
