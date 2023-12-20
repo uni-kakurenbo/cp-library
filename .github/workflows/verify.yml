@@ -154,6 +154,9 @@ jobs:
         done
         RUN_IDS+=']'
 
+        echo "${GEN_IDS}"
+        echo "${RUN_IDS}"
+
         echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
         echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
@@ -277,7 +280,7 @@ jobs:
     needs:
       - set-up
       - gen-cases
-    if: ${{ needs.set-up.outputs.RUN_IDS != '[]' }}
+    if: ${{ needs.set-up.outputs.runner-ids != '[]' }}
 
     strategy:
       fail-fast: false
