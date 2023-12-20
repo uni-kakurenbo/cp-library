@@ -1,0 +1,54 @@
+name: cash-update
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+  workflow_call:
+    inputs:
+      source-files-status:
+        type: string
+        required: true
+
+      docs-status:
+        type: string
+        required: true
+
+jobs:
+  source-files:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+
+    - name: Load previous source files hash
+      uses: action/download-artifact@v3
+      with:
+        name: --source-files-hash
+        path: ./
+
+    - name: Save status
+      runs: echo "${{ inputs.source-files-status }}" > ./status.txt
+
+    - name: Upload sorce files hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: source-files-hash
+        path: |
+          ./source-files-cache.txt
+          ./status.txt
+
+  docs:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+
+    - name: Load previous source files hash
+      uses: action/download-artifact@v3
+      with:
+        name: --docs-hash
+        path: ./
+
+    - name: Save status
+      runs: echo "${{ inputs.docs-status }}" > ./status.txt
+
+    - name: Upload sorce files hash
+      uses: actions/upload-artifact@v3
+      with:
+        name: docs-hash
+        path: |
+          ./docs.txt
+          ./status.txt

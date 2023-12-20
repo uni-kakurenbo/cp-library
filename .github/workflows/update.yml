@@ -20,7 +20,7 @@ concurrency:
 jobs:
   cache:
     if: ${{ ! github.event.inputs.force }}
-    uses: ./.github/workflows/cache.yml
+    uses: ./.github/workflows/cache--load-status.yml
 
   analyze:
     needs: cache
@@ -28,7 +28,7 @@ jobs:
       ${{
         !cancelled() &&
         (
-          needs.cache.outputs.source-files-updated != '0' ||
+          needs.cache.outputs.source-files-status != '' ||
           github.event.inputs.force
         )
       }}
@@ -40,7 +40,7 @@ jobs:
       ${{
         !cancelled() &&
         (
-          needs.cache.outputs.source-files-updated != '0' ||
+          needs.cache.outputs.source-files-status != '' ||
           github.event.inputs.force
         ) &&
         github.ref_name == github.event.repository.default_branch
@@ -56,10 +56,23 @@ jobs:
     if: >-
       ${{ !cancelled() &&
         (
-          needs.cache.outputs.docs-updated != '0' ||
+          needs.cache.outputs.docs-status != '' ||
           github.event.inputs.force
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
+
+  post-cache:
+    needs: verify
+    if: ${{ always() && ! github.event.inputs.force }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    steps:
+      - name: Get status
+        uses: technote-space/workflow-conclusion-action@v3
+
+      - name: Save statis
+        uses: ./.github/workflows/cache--save-status.yml
+        with:
+          status: ${{ env.WORKFLOW_CONCLUSION }}
