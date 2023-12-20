@@ -216,7 +216,7 @@ jobs:
               }' \
           )
 
-        echo -n ${PROBLEMS} > ./targets.txt
+        echo ${PROBLEMS} > ./targets.txt
         cat ./targets.txt
 
     - name: Generate testcases
@@ -373,7 +373,7 @@ jobs:
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
 
-        head -c -1 ./.verify-helper/targets.txt | \
+        head -c -1 ../targets.txt | \
         xargs -P ${PARALLEL} -d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
