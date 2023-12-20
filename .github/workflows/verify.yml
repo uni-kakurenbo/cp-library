@@ -19,8 +19,8 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      gen-ids: ${{ steps.matrix-ids.outputs.gen-ids }}
-      runner-ids: ${{ steps.matrix-ids.outputs.runner-ids }}
+      gen-ids: ${{ steps.node-ids.outputs.gen }}
+      runner-ids: ${{ steps.node-ids.outputs.runner }}
 
     steps:
     - name: Git checkout
@@ -58,12 +58,12 @@ jobs:
         N_PROBLEMS=$(cat ./.verify-helper/problems.txt | wc -l)
         N_TESTS=$(cat ./.verify-helper/allocation.txt | wc -l)
 
-        echo "::group::${N_PROBLEMS} problems appeared."
+        echo "::group::${N_PROBLEMS} problems appeared:"
           cat ./.verify-helper/problems.txt
         echo "::endgroup::"
         echo
 
-        echo "::group::${N_TESTS} test files allocated."
+        echo "::group::${N_TESTS} test files allocated:"
           cat ./.verify-helper/allocation.txt
         echo "::endgroup::"
         echo
@@ -95,7 +95,7 @@ jobs:
 
           uncached = ""
 
-          fs.readFileSync(problem_list).toString().split('\n')
+          const count = fs.readFileSync(problem_list).toString().split('\n')
             .map((name) => {
               const hash = crypto.createHash('md5').update(name).digest('hex');
               return { name, hash };
@@ -105,17 +105,24 @@ jobs:
             })
             .forEach(({ name, hash }) => {
               uncached+=`${ name } ${ hash }\n`;
-            });
+            })
+            .length;
 
-          console.log("::group::Uncached problems");
+          console.log(`::group::${ count } uncached problems filtered:`);
           console.log(uncached);
           console.log("::endgroup::");
 
           fs.writeFileSync(problem_list, uncached);
 
-    - name: Generate matrix ids
-      id: matrix-ids
+    - name: Generate node ids
+      working-directory: .verify-helper/
+      id: node-ids
       run: |
+        set -eu
+
+        N_PROBLEMS=$(cat ./problems.txt | wc -l)
+        N_TESTS=$(cat ./allocation.txt | wc -l)
+
         if [ ${N_PROBLEMS} -gt 18 ]; then
           N_PROBLEMS=18
         fi
@@ -145,8 +152,8 @@ jobs:
         done
         RUN_IDS+=']'
 
-        echo "gen-ids=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
-        echo "runner-ids=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
     - name: Save meta data
       uses: actions/upload-artifact@v3
