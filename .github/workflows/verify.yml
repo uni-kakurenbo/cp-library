@@ -155,7 +155,7 @@ jobs:
         RUN_IDS+=']'
 
         echo "$(echo "${GEN_IDS}" | jq -c)"
-        echo "${RUN_IDS}" | jq -c)"
+        echo "$(echo "${RUN_IDS}" | jq -c)"
 
         echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
         echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
