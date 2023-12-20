@@ -186,16 +186,16 @@ jobs:
           const crypto = require('crypto');
           const cache = require('@actions/cache');
 
-          const hash = crypto.createHash('md5');
-
-          fs.readdir('${{ github.workspace }}/testcases/', (err, dirs) => {
+          const basedir = `${ context.github.workspace }/testcases/`;
+          
+          fs.readdir(`${ basedir }`, (err, dirs) => {
               if(err) console.error(err);
 
               console.log(dirs);
 
               dirs.forEach((dir) => {
                 console.log("Save: ", dir);
-                cache.saveCache([ dir ], `testcase-${ dir }`);
+                cache.saveCache([ `${ basedir }${ dir }/` ], `testcase-${ dir }`);
               });
           });
 
