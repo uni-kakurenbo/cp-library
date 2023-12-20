@@ -130,12 +130,12 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: meta-info
-        path: ./main/.verify-helper/
+        path: ./
 
     - name: Filter problems
       run: |
         PROBLEMS=$(
-          cat ./.verify-helper/problems.json  | \
+          cat ./problems.json  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -146,10 +146,11 @@ jobs:
               }' \
           )
 
-        echo ${PROBLEMS} > .verify-helper/targets.txt
-        cat .verify-helper/targets.txt
+        echo ${PROBLEMS} > ./targets.txt
+        cat ./targets.txt
 
-    - run: |
+    - name: Generate testcases 
+      run: |
         echo "::group::${{ matrix.problem }}"
         oj download --system "${{ matrix.problem }}"
         echo '::endgroup::'
@@ -167,7 +168,7 @@ jobs:
           const hash = crypto.createHash('md5');
 
           fs.readdir('${{ github.workspace }}/test/', (err, dirs) => {
-              if(err) throw err;
+              if(err) console.error(err);
 
               dirs.forEach((dir) => {
                 console.log("Save: ", dir);
