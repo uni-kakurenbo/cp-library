@@ -186,7 +186,7 @@ jobs:
           const crypto = require('crypto');
           const cache = require('@actions/cache');
 
-          const basedir = `${ context.github.workspace }/testcases/`;
+          const basedir = `${{ github.workspace }}/testcases/`;
           
           fs.readdir(`${ basedir }`, (err, dirs) => {
               if(err) console.error(err);
