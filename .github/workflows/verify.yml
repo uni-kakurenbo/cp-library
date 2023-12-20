@@ -156,22 +156,20 @@ jobs:
       run: |
         mkdir ./testcases/
 
-        function gen() {
-          cd ./testcases/
-
+        function gen() {        
           local problem="$1"
           local pid="$$"
 
           echo "${problem}" > name.txt;
           hash=$(md5sum name.txt | sed 's/\s\s*.*$//g')
 
-          mkdir ${hash}; cd ${hash}
+          mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
           {
             echo "::group::${problem} [hash: ${hash}]"
             oj download --system "${problem}"
             echo '::endgroup::'
-          } &> "log-${pid}.txt"
-          cat "log-${pid}.txt"
+          } &> "../../log-${pid}.txt"
+          cat "../../log-${pid}.txt"
         }
         export -f gen
 
