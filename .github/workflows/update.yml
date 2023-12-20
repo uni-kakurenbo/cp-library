@@ -36,7 +36,7 @@ jobs:
         !cancelled() &&
         (
           needs.cache.outputs.verify-status == '' ||
-          github.event.inputs.force
+          inputs.force
         )
       }}
     uses: ./.github/workflows/analyze.yml
@@ -48,7 +48,7 @@ jobs:
         !cancelled() &&
         (
           needs.cache.outputs.verify-status == '' ||
-          github.event.inputs.force
+          inputs.force
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
@@ -64,7 +64,7 @@ jobs:
       ${{ !cancelled() &&
         (
           needs.cache.outputs.docs-updated != '0' ||
-          github.event.inputs.force
+          inputs.force
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
