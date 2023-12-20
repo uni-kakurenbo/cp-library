@@ -173,8 +173,8 @@ jobs:
         }
         export -f gen
 
-        head -P $(nproc) -c -1 ./targets.txt | \
-        xargs -d ' ' -I {} bash -c 'gen {}'
+        head -c -1 ./targets.txt | \
+        xargs -P $(nproc) -d ' ' -I {} bash -c 'gen {}'
 
     - name: Cache judge data
       if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
