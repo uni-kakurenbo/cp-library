@@ -165,6 +165,10 @@ jobs:
           echo "${problem}" > name-${pid}.txt;
           hash=$(md5sum name-${pid}.txt | sed 's/\s\s*.*$//g')
 
+          echo '::group::oj download prepare'
+          oj download --system https://judge.yosupo.jp/problem/aplusb
+          echo '::endgroup::'
+
           mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
           {
             echo "::group::${problem} [hash: ${hash}]"
@@ -200,12 +204,6 @@ jobs:
                 cache.saveCache([ `${ basedir }${ dir }/` ], `testcase-${ dir }`);
               });
           });
-
-    # - uses: actions/upload-artifact@v3
-      # with:
-        # name: testcase-${{ hashFiles('./problem.txt') }}
-        # path: ./test/
-        # retention-days: 1
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
