@@ -19,8 +19,8 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      RUN_IDS: ${{ steps.collect.outputs.RUN_IDS }}
-      problems: ${{ steps.collect.outputs.problems }}
+      gen-ids: ${{ steps.collect.outputs.gen-ids }}
+      runner-ids: ${{ steps.collect.outputs.runner-ids }}
 
     steps:
     - name: Git checkout
@@ -88,8 +88,8 @@ jobs:
         done
         RUN_IDS+=']'
 
-        echo "GEN_IDS=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
-        echo "RUN_IDS=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "gen-ids=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "runner-ids=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
     - name: Save meta data
       uses: actions/upload-artifact@v3
@@ -103,12 +103,12 @@ jobs:
   gen-cases:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: set-up
-    if: ${{ needs.set-up.outputs.RUN_IDS != '[]' }}
+    if: ${{ needs.set-up.outputs.gen-ids != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        problem: ${{ fromJSON(needs.set-up.outputs.gen-RUN_IDS) }}
+        problem: ${{ fromJSON(needs.set-up.outputs.gen-ids) }}
 
     steps:
     - name: Set up Python
