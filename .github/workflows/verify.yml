@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      node_ids: ${{ steps.collect.outputs.node_ids }}
+      RUN_IDS: ${{ steps.collect.outputs.RUN_IDS }}
       problems: ${{ steps.collect.outputs.problems }}
 
     steps:
@@ -45,55 +45,70 @@ jobs:
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
-        # find verify -type f -name '*.test.cpp' | sort > ./.verify-helper/allocation.json
+        N_PROBLEMS=$(cat ./.verify-helper/problems.json | wc -l)
+        N_TESTS=$(cat ./.verify-helper/allocation.json | wc -l)
 
-        N_NODES=$(cat ./.verify-helper/allocation.json | wc -l)
+        echo "::group::${N_PROBLEMS} problems appeared."
+          cat ./.verify-helper/problems.json
+        echo "::endgroup::"
+        echo
 
-        echo "::group::${N_NODES} test files allocated."
+        echo "::group::${N_TESTS} test files allocated."
           cat ./.verify-helper/allocation.json
         echo "::endgroup::"
         echo
 
-        if [ ${N_NODES} -gt 18 ]; then
-          N_NODES=18
+        if [ ${N_PROBLEMS} -gt 18 ]; then
+          N_PROBLEMS=18
         fi
 
-        echo "Tests are run on ${N_NODES} nodes."
+        if [ ${N_TESTS} -gt 18 ]; then
+          N_TESTS=18
+        fi
+
+        echo "Generate: ${N_TESTS} nodes."
+        echo "Run: ${N_TESTS} nodes."
         echo
 
-        IDS='['
-        for ((i=0; i < N_NODES; i++)); do
-            IDS+=$(printf '"%02d"' "${i}")
-            if [ $i -lt $((N_NODES-1)) ]; then
-                IDS+=','
+        GEN_IDS='['
+        for ((i=0; i < N_PROBLEMS; i++)); do
+            GEN_IDS+=$(printf '"%02d"' "${i}")
+            if [ $i -lt $((N_PROBLEMS-1)) ]; then
+                GEN_IDS+=','
             fi
         done
-        IDS+=']'
+        GEN_IDS+=']'
 
-        echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        RUN_IDS='['
+        for ((i=0; i < N_TESTS; i++)); do
+            RUN_IDS+=$(printf '"%02d"' "${i}")
+            if [ $i -lt $((N_TESTS-1)) ]; then
+                RUN_IDS+=','
+            fi
+        done
+        RUN_IDS+=']'
 
-        PROBLEMS="$(sort ./.verify-helper/problems.json | uniq | tr '\n' ',' | sed -e 's/,$/\n/g')"
-        echo "[${PROBLEMS}]"
+        echo "GEN_IDS=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+        echo "RUN_IDS=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
 
-        echo "node_ids=$(echo "${IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
-        echo "problems=$(echo "[${PROBLEMS}]" | jq -c)" >> ${GITHUB_OUTPUT}
-
-    - name: Save allocation list
+    - name: Save meta data
       uses: actions/upload-artifact@v3
       with:
-        name: allocation
-        path: ./.verify-helper/allocation.json
+        name: meta-info
+        path: |
+          ./.verify-helper/problems.json
+          ./.verify-helper/allocation.json
         retention-days: 1
 
   gen-cases:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: set-up
-    if: ${{ needs.set-up.outputs.node_ids != '[]' }}
+    if: ${{ needs.set-up.outputs.RUN_IDS != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        problem: ${{ fromJSON(needs.set-up.outputs.problems) }}
+        problem: ${{ fromJSON(needs.set-up.outputs.gen-RUN_IDS) }}
 
     steps:
     - name: Set up Python
@@ -104,27 +119,72 @@ jobs:
     - name: Install oj-verify
       run: pip3 install -U online-judge-verify-helper
 
-    - run: |
-        oj download --system "${{ matrix.problem }}"
-        echo "${{ matrix.problem }}" > ./problem.txt
-
-    - uses: actions/upload-artifact@v3
+    - name: Load meta data
+      uses: actions/download-artifact@v3
       with:
-        name: testcase-${{ hashFiles('./problem.txt') }}
-        path: ./test/
-        retention-days: 1
+        name: meta data
+        path: ./main/.verify-helper/
+
+    - name: Filter problems
+      run: |
+        PROBLEMS=$(
+          cat ./.verify-helper/problems.json  | \
+          sort | \
+          awk -v n=${{ strategy.job-total }} \
+              -v i=${{ strategy.job-index }} \
+              '{
+                if((NR - 1) % n == i) {
+                  print $0
+                }
+              }' \
+          )
+
+        echo ${PROBLEMS} > .verify-helper/targets.txt
+        cat .verify-helper/targets.txt
+
+    - run: |
+        echo "::group::${{ matrix.problem }}"
+        oj download --system "${{ matrix.problem }}"
+        echo '::endgroup::'
+
+    - name: Cache judge data
+      if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+      id: runnner-cache
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const cache = require('@actions/cache');
+
+          const hash = crypto.createHash('md5');
+
+          fs.readdir('./test/', (err, dirs) => {
+              if(err) throw err;
+
+              dirs.forEach((dir) => {
+                console.log("Save: ", dir);
+                cache.saveCache([ dir ], `testcase-${ hash.update(file).digest('hex') }`);
+              });
+          });
+
+    # - uses: actions/upload-artifact@v3
+      # with:
+        # name: testcase-${{ hashFiles('./problem.txt') }}
+        # path: ./test/
+        # retention-days: 1
 
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs:
       - set-up
       - gen-cases
-    if: ${{ needs.set-up.outputs.node_ids != '[]' }}
+    if: ${{ needs.set-up.outputs.RUN_IDS != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.set-up.outputs.node_ids) }}
+        id: ${{ fromJSON(needs.set-up.outputs.RUN_IDS) }}
 
     steps:
     - name: Git checkout
@@ -148,16 +208,14 @@ jobs:
         path: ac-library
         sparse-checkout: atcoder
 
-    - name: Load allocation list
+    - name: Load meta data
       uses: actions/download-artifact@v3
       with:
-        name: allocation
+        name: meta data
         path: ./main/.verify-helper/
 
     - name: Allocate test files
       working-directory: main
-      env:
-        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
       run: |
         TEST_FILES=$(
           cat ./.verify-helper/allocation.json  | \
@@ -174,20 +232,20 @@ jobs:
         echo ${TEST_FILES} > .verify-helper/targets.txt
         cat .verify-helper/targets.txt
 
-    - name: Cache judge data
-      if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-      id: cache-judge
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/online-judge-tools/library-checker-problems/
-          main/.verify-helper/cache/
-        key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
+    # - name: Cache judge data
+    #   if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+    #   id: runnner-cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       ~/.cache/online-judge-tools/library-checker-problems/
+    #       main/.verify-helper/cache/
+    #     key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
     - name: Run tests
       working-directory: main
       env:
-        CACHE_HIT: ${{ steps.cache-judge.outputs.cache-hit }}
+        # CACHE_HIT: ${{ steps.runnner-cache.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
@@ -196,7 +254,8 @@ jobs:
         echo '{}' > ./.verify-helper/timestamps.json
 
         {
-          if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+          # if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+          if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
             echo '{}' > ./.verify-helper/timestamps.remote.json
           fi
 
