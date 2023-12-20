@@ -6,7 +6,7 @@
  */
 /* #language C++ 20 GCC */
 
-#define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_I&lang=ja"
+#define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_I"
 
 
 #include <iostream>
