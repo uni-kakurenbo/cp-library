@@ -119,7 +119,7 @@ jobs:
       with:
         python-version: 3.12.0
 
-    - name: Set up node
+    - name: Set up Node
       uses: actions/setup-node@v3
       with:
         node-version: '20.x'
@@ -155,9 +155,10 @@ jobs:
     - name: Generate testcases 
       run: |
         mkdir ./testcases/
-        cd ./testcases/
 
         function gen() {
+          cd ./testcases/
+
           local problem="$1"
           local pid="$$"
 
