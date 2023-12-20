@@ -182,9 +182,11 @@ jobs:
           fs.readdir('${{ github.workspace }}/test/', (err, dirs) => {
               if(err) console.error(err);
 
+              console.log(dirs);
+
               dirs.forEach((dir) => {
                 console.log("Save: ", dir);
-                cache.saveCache([ dir ], `testcase-${ hash.update(file).digest('hex') }`);
+                cache.saveCache([ dir ], `testcase-${ hash.update(dir).digest('hex') }`);
               });
           });
 
