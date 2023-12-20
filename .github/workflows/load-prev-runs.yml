@@ -5,12 +5,12 @@ on:
   workflow_call:
     outputs:
       verify-status:
-        value: ${{ jobs.source-files.outputs.status }}
+        value: ${{ jobs.verify.outputs.status }}
       docs-updated:
         value: ${{ jobs.docs.outputs.updated }}
 
 jobs:
-  source-files:
+  verify:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
       status: ${{ steps.compare.outputs.status }}
@@ -95,7 +95,7 @@ jobs:
     - name: Load previous docs hash
       uses: dawidd6/action-download-artifact@v3
       with:
-        name: docs-hash
+        name: docs-files-hash
         path: ./prev/
         workflow_conclusion: ''
         search_artifacts: true
@@ -122,5 +122,5 @@ jobs:
     - name: Upload docs hash
       uses: actions/upload-artifact@v3
       with:
-        name: docs-hash
+        name: docs-files-hash
         path: ./hash.txt
