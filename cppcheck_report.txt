@@ -190,6 +190,9 @@ test/z_array.cpp:20:9: error: syntax error [syntaxError]
 adapter/valarray.hpp:63:25: style: Struct 'valarray' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
+test/zip_view.cpp:21:9: error: syntax error [syntaxError]
+        DEBUG("Case: #" + std::to_string(_));
+        ^
 numeric/modular/builtin_reduction.hpp:36:15: style: Struct 'builtin_reduction' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr builtin_reduction(const value_type mod) noexcept(NO_EXCEPT) : _mod(mod) {
               ^
@@ -223,9 +226,6 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint' has a constructor with
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int64_t , std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
-test/zip_view.cpp:21:9: error: syntax error [syntaxError]
-        DEBUG("Case: #" + std::to_string(_));
-        ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int32_t , std :: int32_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
@@ -535,12 +535,12 @@ data_structure/segment_tree.hpp:184:19: note: Shadowed declaration
 data_structure/segment_tree.hpp:186:9: note: Shadow variable
         REPD(p, 1, this->_size) this->update(p);
         ^
-adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    extended_container(const Base& base) : Base(base) {}
-    ^
 data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
 struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
 ^
+adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    extended_container(const Base& base) : Base(base) {}
+    ^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -829,12 +829,12 @@ iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarra
 adapter/valarray.hpp:63:25: style: Struct 'valarray < bool >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
-data_structure/disjoint_sparse_table.hpp:113:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    core(I first, S last) noexcept(NO_EXCEPT)
-    ^
 adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
+data_structure/disjoint_sparse_table.hpp:113:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    core(I first, S last) noexcept(NO_EXCEPT)
+    ^
 data_structure/disjoint_sparse_table.hpp:102:18: style: Checking if unsigned expression 'p' is less than zero. [unsignedLessThanZero]
         return p < 0 ? this->size() + p : p;
                  ^
