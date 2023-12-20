@@ -47,7 +47,7 @@ jobs:
         fi
 
         echo -n > ./.verify-helper/problems.txt
-        echo -n > ./.verify-helper/allocation.txt
+        echo -n > ./.verify-helper/tests.txt
 
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
@@ -56,7 +56,7 @@ jobs:
         cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
 
         N_PROBLEMS=$(cat ./.verify-helper/problems.txt | wc -l)
-        N_TESTS=$(cat ./.verify-helper/allocation.txt | wc -l)
+        N_TESTS=$(cat ./.verify-helper/tests.txt | wc -l)
 
         echo "::group::${N_PROBLEMS} problems appeared:"
           cat ./.verify-helper/problems.txt
@@ -64,7 +64,7 @@ jobs:
         echo
 
         echo "::group::${N_TESTS} test files allocated:"
-          cat ./.verify-helper/allocation.txt
+          cat ./.verify-helper/tests.txt
         echo "::endgroup::"
         echo
 
@@ -123,7 +123,7 @@ jobs:
         set -eu
 
         N_PROBLEMS=$(cat ./problems.txt | wc -l)
-        N_TESTS=$(cat ./allocation.txt | wc -l)
+        N_TESTS=$(cat ./tests.txt | wc -l)
 
         if [ ${N_PROBLEMS} -gt 18 ]; then
           N_PROBLEMS=18
@@ -166,7 +166,7 @@ jobs:
         name: meta-info
         path: |
           ./.verify-helper/problems.txt
-          ./.verify-helper/allocation.txt
+          ./.verify-helper/tests.txt
         retention-days: 1
 
   gen-cases:
@@ -313,13 +313,12 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: meta-info
-        path: ./main/.verify-helper/
+        path: ./
 
     - name: Allocate test files
-      working-directory: main
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/allocation.txt  | \
+          cat ./tests.txt  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -330,8 +329,8 @@ jobs:
               }' \
           )
 
-        echo ${TEST_FILES} > .verify-helper/targets.txt
-        cat .verify-helper/targets.txt
+        echo ${TEST_FILES} > ./targets.txt
+        cat ./targets.txt
 
     # - name: Cache judge data
     #   if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
@@ -352,7 +351,7 @@ jobs:
       run: |
         set -eu
 
-        echo '{}' > ./.verify-helper/timestamps.json
+        echo '{}' > ../timestamps.json
 
         {
           # if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
@@ -378,16 +377,16 @@ jobs:
         xargs -P ${PARALLEL} -d ' ' -I {} bash ./.github/workflows/run-test.sh {}
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./.verify-helper/timestamps.json > ./.verify-helper/temp.json
+        ../timestamps.json > ../temp.json
 
-        cp -f ./.verify-helper/temp.json ./.verify-helper/timestamps.json
+        cp -f ../temp.json ../timestamps.json
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
       if: ${{ !cancelled() }}
       with:
         name: test-${{ matrix.id }}
-        path: main/.verify-helper/timestamps.json
+        path: ./timestamps.json
         retention-days: 1
 
   post-run:

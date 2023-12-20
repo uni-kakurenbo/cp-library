@@ -29,8 +29,8 @@ PID="$$"
   # if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
   #   echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
   # else
-    echo "${TARGET}" >> ./.verify-helper/allocation.txt
     echo "${PROBLEM}" >> ./.verify-helper/problems.txt
+    echo "${TARGET} ${PROBLEM}" >> ./.verify-helper/tests.txt
   # fi
 
   echo

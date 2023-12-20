@@ -3,6 +3,7 @@ set -eu
 
 WORKING_DIRECTORY="${PWD}"
 TARGET="$1"
+PROBLEM="$2"
 PID="$$"
 
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
@@ -21,7 +22,7 @@ EXIT_STATUS=0
 
 set +e
 {
-    echo "::group::${TARGET} [PID: ${PID}]"
+    echo "::group::${TARGET} (${PROBLEM}) [PID: ${PID}]"
     echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
     echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
     echo "::endgroup::"
