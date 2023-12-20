@@ -131,7 +131,7 @@ jobs:
           N_TESTS=18
         fi
 
-        echo "Generator: ${N_TESTS} nodes."
+        echo "Generator: ${N_PROBLEMS} nodes."
         echo "Runner: ${N_TESTS} nodes."
 
         GEN_IDS='['
@@ -257,9 +257,16 @@ jobs:
 
               console.log(dirs);
 
-              dirs.forEach((dir) => {
-                console.log("Save: ", dir);
-                cache.saveCache([ `${ basedir }${ dir }/` ], `testcase-${ dir }`);
+              Promise.all(
+                dirs.map((dir) => {
+                  console.log("Save: ", dir);
+                  return cache.saveCache([ `${ basedir }${ dir }/` ], `testcase-${ dir }`);
+                })
+              ).then(() => {
+                process.exit(0);
+              }).catch((e) => {
+                console.error(e);
+                process.exit(0);
               });
           });
 
