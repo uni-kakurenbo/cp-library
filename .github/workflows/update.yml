@@ -5,13 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        type: choice
-        default: both
-        options:
-        - both
-        - source-files
-        - docs
-        - neigher
+        type: bool
+        default: true
         required: true
   push:
     branches:
@@ -34,8 +29,7 @@ jobs:
         !cancelled() &&
         (
           needs.cache.outputs.source-files-updated != '0' ||
-          github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'source-files'
+          github.event.inputs.force
         )
       }}
     uses: ./.github/workflows/analyze.yml
@@ -47,8 +41,7 @@ jobs:
         !cancelled() &&
         (
           needs.cache.outputs.source-files-updated != '0' ||
-          github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'source-files'
+          github.event.inputs.force'
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
@@ -64,8 +57,7 @@ jobs:
       ${{ !cancelled() &&
         (
           needs.cache.outputs.docs-updated != '0' ||
-          github.event.inputs.force == 'both' ||
-          github.event.inputs.force == 'docs'
+          github.event.inputs.force
         ) &&
         github.ref_name == github.event.repository.default_branch
       }}
