@@ -182,7 +182,7 @@ jobs:
 
           fs.readFileSync("${{ github.workspace }}/problems.txt")
             .toString()
-            .split(' ')
+            .split('\n')
             .map((name) => {
               const hash = crypto.createHash('md5').update(name).digest('hex');
               return { name, hash };
@@ -200,6 +200,7 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         mkdir ./testcases/
+        cat ./targets.txt
 
         echo '::group::oj download prepare'
         oj download --system https://judge.yosupo.jp/problem/aplusb
