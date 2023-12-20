@@ -152,7 +152,9 @@ jobs:
         echo ${PROBLEMS} > ./targets.txt
         cat ./targets.txt
 
-    - name: Generate testcases 
+    - name: Generate testcases
+      env:
+        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         mkdir ./testcases/
 
@@ -166,7 +168,7 @@ jobs:
           mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
           {
             echo "::group::${problem} [hash: ${hash}]"
-            oj download --system "${problem}"
+            oj download --system --silent "${problem}"
             echo '::endgroup::'
           } &> "../../log-${pid}.txt"
           cat "../../log-${pid}.txt"
