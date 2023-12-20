@@ -40,13 +40,16 @@ jobs:
         fi
 
         echo -n > ./.verify-helper/problems.json
-        echo -n > ./.verify-helper/allocation.json
+        echo -n > ./.verify-helper/allocation.txt
 
         find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
 
+        sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
+        cp ./.verify-helper/temp.txt ./.verify-helper/problems.json
+
         N_PROBLEMS=$(cat ./.verify-helper/problems.json | wc -l)
-        N_TESTS=$(cat ./.verify-helper/allocation.json | wc -l)
+        N_TESTS=$(cat ./.verify-helper/allocation.txt | wc -l)
 
         echo "::group::${N_PROBLEMS} problems appeared."
           cat ./.verify-helper/problems.json
@@ -54,7 +57,7 @@ jobs:
         echo
 
         echo "::group::${N_TESTS} test files allocated."
-          cat ./.verify-helper/allocation.json
+          cat ./.verify-helper/allocation.txt
         echo "::endgroup::"
         echo
 
@@ -97,7 +100,7 @@ jobs:
         name: meta-info
         path: |
           ./.verify-helper/problems.json
-          ./.verify-helper/allocation.json
+          ./.verify-helper/allocation.txt
         retention-days: 1
 
   gen-cases:
@@ -151,6 +154,8 @@ jobs:
 
     - name: Generate testcases 
       run: |
+        mkdir -p ./test/
+
         function gen() {      
           local problem="$1"
           echo "::group::${problem}"
@@ -233,7 +238,7 @@ jobs:
       working-directory: main
       run: |
         TEST_FILES=$(
-          cat ./.verify-helper/allocation.json  | \
+          cat ./.verify-helper/allocation.txt  | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
