@@ -25,6 +25,7 @@ jobs:
   quit:
     needs: cache
     if: eeds.cache.outputs.verify-status == 'failure'
+    runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
     - run: exit 1
 
