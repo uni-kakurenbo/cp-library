@@ -72,7 +72,7 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const problem_list = ${{ github.workspace }}/.verify-helper/problems.txt;
+          const problem_list = "${{ github.workspace }}/.verify-helper/problems.txt";
 
           const fs = require('fs');
           const crypto = require('crypto');
@@ -193,7 +193,7 @@ jobs:
     - name: Filter problems
       run: |
         PROBLEMS=$(
-          cat ./problems.txt  | \
+          cat ./problems.txt | \
           sort | \
           awk -v n=${{ strategy.job-total }} \
               -v i=${{ strategy.job-index }} \
@@ -204,9 +204,7 @@ jobs:
               }' \
           )
 
-        echo -n ${PROBLEMS} | \
-        xargs -d ' ' -I {} bash -c 'echo "{} $(echo -n "{}" | md5sum | cut -d" " -f1)"' \
-        > ./targets.txt
+        echo -n ${PROBLEMS} > ./targets.txt
         cat ./targets.txt
 
     - name: Generate testcases
