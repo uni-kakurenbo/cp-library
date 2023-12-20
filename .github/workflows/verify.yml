@@ -187,8 +187,8 @@ jobs:
               const hash = crypto.createHash('md5').update(name).digest('hex');
               return { name, hash };
             })
-            .filter(({ hash }) => {
-              return !cached_keys.has(`testcase-${ hash }`);
+            .filter(({ name, hash }) => {
+              return !!name && !cached_keys.has(`testcase-${ hash }`);
             })
             .forEach(({ name, hash }) => {
               console.log({ name, hash });
