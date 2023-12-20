@@ -29,5 +29,5 @@ jobs:
       with:
         name: source-files-hash
         path: |
-          ./source-files-cache.txt
+          ./hash.txt
           ./status.txt

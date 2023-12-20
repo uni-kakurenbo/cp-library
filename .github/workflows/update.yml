@@ -76,6 +76,6 @@ jobs:
       - cache
       - verify
     uses: ./.github/workflows/cache--save-status.yml
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     with:
       status: ${{ needs.verify.result }}
