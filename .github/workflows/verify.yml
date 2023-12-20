@@ -150,7 +150,7 @@ jobs:
           )
 
         echo ${PROBLEMS} | \
-        xargs -d ' ' -I {} bash -c 'echo "{} $(echo -n "{}" | md5sum | cut -d" " -f1)\n"' \
+        xargs -d ' ' -I {} bash -c 'echo "{} $(echo -n "{}" | md5sum | cut -d" " -f1)"' \
         > ./targets.txt
         cat ./targets.txt
 
