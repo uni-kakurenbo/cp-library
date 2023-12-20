@@ -217,15 +217,15 @@ numeric/modular/barrett_reduction.hpp:41:33: note: Shadowed declaration
 numeric/modular/barrett_reduction.hpp:105:27: note: Shadow variable
         const common_type mod = static_cast<common_type>(this->_mod);
                           ^
-test/zip_view.cpp:21:9: error: syntax error [syntaxError]
-        DEBUG("Case: #" + std::to_string(_));
-        ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int64_t , std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
+test/zip_view.cpp:21:9: error: syntax error [syntaxError]
+        DEBUG("Case: #" + std::to_string(_));
+        ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int32_t , std :: int32_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
@@ -385,9 +385,6 @@ structure/grid.hpp:69:18: note: Virtual function in base class
 structure/grid.hpp:175:17: note: Function in derived class
     inline void resize(const size_t h, const size_t w) noexcept(NO_EXCEPT) /*override*/ {
                 ^
-adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < int ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    extended_container(const Base& base) : Base(base) {}
-    ^
 structure/grid.hpp:54:18: style: Unsigned expression 'i' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= i and i < this->height());
                  ^
@@ -406,6 +403,9 @@ structure/grid.hpp:206:18: style: Unsigned expression 'i' can't be negative so i
 structure/grid.hpp:206:52: style: Unsigned expression 'j' can't be negative so it is unnecessary to test it. [unsignedPositive]
         return 0 <= i and i < this->height() and 0 <= j and j < this->width();
                                                    ^
+adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < int ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    extended_container(const Base& base) : Base(base) {}
+    ^
 data_structure/disjoint_set_union.hpp:28:5: warning: Member variable 'dsu::_group_count' is not initialized in the constructor. [uninitMemberVar]
     dsu() noexcept(NO_EXCEPT) : _n(0) {}
     ^
@@ -535,12 +535,12 @@ data_structure/segment_tree.hpp:184:19: note: Shadowed declaration
 data_structure/segment_tree.hpp:186:9: note: Shadow variable
         REPD(p, 1, this->_size) this->update(p);
         ^
-data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
-struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
-^
 adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     extended_container(const Base& base) : Base(base) {}
     ^
+data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
+struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
+^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -829,12 +829,12 @@ iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarra
 adapter/valarray.hpp:63:25: style: Struct 'valarray < bool >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 data_structure/disjoint_sparse_table.hpp:113:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 data_structure/disjoint_sparse_table.hpp:102:18: style: Checking if unsigned expression 'p' is less than zero. [unsignedLessThanZero]
         return p < 0 ? this->size() + p : p;
                  ^
