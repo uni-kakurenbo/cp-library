@@ -164,12 +164,12 @@ jobs:
           const { Octokit } = require("@octokit/core");
 
           const octokit = new Octokit({
-            auth: 'YOUR-TOKEN'
+            auth: '${{ github.token }}'
           });
 
           saved_caches = await octokit.request('GET /repos/${{ github.action_repository }}/actions/caches', {
-            owner: 'OWNER',
-            repo: 'REPO',
+            owner: '${{ github.repository_owner }}',
+            repo: '${{ github.repository }}',
             headers: { 'X-GitHub-Api-Version': '2022-11-28' }
           });
           console.log(saved_caches);
@@ -203,7 +203,6 @@ jobs:
         xargs -P $(nproc) -d '\n' -I {} bash -c 'gen {}'
 
     - name: Cache judge data
-      if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
       uses: actions/github-script@v7
       with:
         script: |
