@@ -71,7 +71,7 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
-  save-verify-status:
+  post-cache:
     needs:
       - cache
       - verify

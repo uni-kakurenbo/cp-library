@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  source-files:
+  save-status:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
