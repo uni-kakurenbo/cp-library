@@ -1,4 +1,4 @@
-name: _cash-update
+name: _cache
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
@@ -7,16 +7,19 @@ on:
       status:
         type: string
         required: true
+      key:
+        type: string
+        requires: true
 
 jobs:
   save-status:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
-    - name: Load previous source files hash
+    - name: Load previous hash
       uses: actions/download-artifact@v3
       with:
-        name: --source-files-hash
+        name: --${{ inputs.key }}
         path: ./
 
     - name: Save status
@@ -24,10 +27,10 @@ jobs:
         echo "Status: ${{ inputs.status }}"
         echo "${{ inputs.status }}" > ./status.txt
 
-    - name: Upload sorce files hash
+    - name: Upload hash and status
       uses: actions/upload-artifact@v3
       with:
-        name: source-files-hash
+        name: ${{ inputs.key }}
         path: |
           ./hash.txt
           ./status.txt
