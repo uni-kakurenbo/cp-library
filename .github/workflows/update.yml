@@ -33,9 +33,16 @@ jobs:
     needs: cache
     if: ${{ !cancelled() }}
     runs-on: ${{ vars.RUNNER_IMAGE }}
+
     outputs:
-      run-analyze: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
-      run-verify: >-
+      run-analysis: ${{ setps.set-vars.outputs.analysis }}
+      run-verify: ${{ setps.set-vars.outputs.verify }}
+      gen-docs: ${{ setps.set-vars.outputs.docs }}
+
+    env:
+      ANALYSIS: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
+
+      VERIFY: >-
         ${{
           github.ref_name == github.event.repository.default_branch &&
           (
@@ -44,17 +51,28 @@ jobs:
             needs.cache.outputs.verify-status == 'cancelled'
           )
         }}
-      gen-docs: >-
+
+      DOCS: >-
         ${{
           github.ref_name == github.event.repository.default_branch &&
           (inputs.force || needs.cache.outputs.docs-updated == true)
         }}
+
     steps:
-      - run: exit 0
+      - name: Set variables
+        id: set-vars
+        run: |
+        echo "Analysis: ${ANALYSIS}"
+        echo "Verify: ${VERIFY}"
+        echo "Docs: ${DOCS}"
+
+        echo "analysis=${ANALYSIS}" >> ${GITHUB_OUTPUT}
+        echo "verify=${VERIFY}" >> ${GITHUB_OUTPUT}
+        echo "docs=${DOCS}" >> ${GITHUB_OUTPUT}
 
   analyze:
     needs: config
-    if: ${{ !cancelled() && needs.config.outputs.run-analyze == 'true' }}
+    if: ${{ !cancelled() && needs.config.outputs.run-analysis == 'true' }}
     uses: ./.github/workflows/analyze.yml
 
   verify:
