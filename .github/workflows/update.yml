@@ -30,29 +30,23 @@ jobs:
     - run: exit 1
 
   config:
+    needs: cache
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
-      run-analyze: >-
-        ${{
-          needs.cache.outputs.verify-status == '' ||
-          inputs.force
-        }}
+      run-analyze: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
       run-verify: >-
         ${{
+          github.ref_name == github.event.repository.default_branch &&
           (
+            inputs.force ||
             needs.cache.outputs.verify-status == '' ||
-            needs.cache.outputs.verify-status == 'cancelled' ||
-            inputs.force
-          ) &&
-          github.ref_name == github.event.repository.default_branch
+            needs.cache.outputs.verify-status == 'cancelled'
+          )
         }}
       gen-docs: >-
         ${{
-          (
-            needs.cache.outputs.docs-updated == '0' ||
-            inputs.force
-          ) &&
-          github.ref_name == github.event.repository.default_branch
+          github.ref_name == github.event.repository.default_branch &&
+          (inputs.force || needs.cache.outputs.docs-updated == '0')
         }}
     steps:
       - run: exit 0
