@@ -27,7 +27,7 @@ jobs:
 
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
         cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
-        sha1sum ./cache-list.txt | sed 's/\s\s*.*$//g' > ./hash.txt
+        sha1sum ./cache-list.txt | cat -d ' ' -f 1 > ./hash.txt
 
         echo "::group::Source files [$(cat ./hash.txt)]"
         cat ./cache-list.txt;
@@ -86,7 +86,7 @@ jobs:
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
         find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
         cat ./file-list.txt | xargs sha1sum >> ./cache-list.txt
-        sha1sum ./cache-list.txt | sed 's/\s\s*.*$//g' > ./hash.txt
+        sha1sum ./cache-list.txt | cat -d ' ' -f 1 > ./hash.txt
 
         echo "::group::Docs [$(cat ./hash.txt)]"
         cat ./cache-list.txt;
