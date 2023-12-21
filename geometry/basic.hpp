@@ -4,6 +4,7 @@
 #include <optional>
 #include <type_traits>
 
+
 #include "numeric/float.hpp"
 
 #include "geometry/point.hpp"
