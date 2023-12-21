@@ -31,6 +31,7 @@ jobs:
 
   config:
     needs: cache
+    if: ${{ !cancelled() }}
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
       run-analyze: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
