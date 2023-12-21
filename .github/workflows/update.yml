@@ -107,7 +107,7 @@ jobs:
       - cache
       - documantaion
     uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.docs.result != 'skipped' }}
+    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.documantaion.result != 'skipped' }}
     with:
       key: docs-files-hash
       status: ${{ needs.verify.result }}
