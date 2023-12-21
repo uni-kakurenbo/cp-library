@@ -62,13 +62,13 @@ jobs:
       - name: Set variables
         id: set-vars
         run: |
-        echo "Analysis: ${ANALYSIS}"
-        echo "Verify: ${VERIFY}"
-        echo "Docs: ${DOCS}"
+          echo "Analysis: ${ANALYSIS}"
+          echo "Verify: ${VERIFY}"
+          echo "Docs: ${DOCS}"
 
-        echo "analysis=${ANALYSIS}" >> ${GITHUB_OUTPUT}
-        echo "verify=${VERIFY}" >> ${GITHUB_OUTPUT}
-        echo "docs=${DOCS}" >> ${GITHUB_OUTPUT}
+          echo "analysis=${ANALYSIS}" >> ${GITHUB_OUTPUT}
+          echo "verify=${VERIFY}" >> ${GITHUB_OUTPUT}
+          echo "docs=${DOCS}" >> ${GITHUB_OUTPUT}
 
   analyze:
     needs: config
