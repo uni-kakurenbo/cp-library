@@ -236,6 +236,7 @@ jobs:
           {
             echo "::group::${problem} [hash: ${hash}]"
             oj download --system --silent --directory "./${hash}/" "${problem}"
+            echo "::notice title=${problem}::Fetched and generated."
             echo '::endgroup::'
           } &> "../log-${pid}.txt"
           cat "../log-${pid}.txt"
