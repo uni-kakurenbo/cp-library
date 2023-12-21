@@ -20,7 +20,7 @@ concurrency:
 jobs:
   cache:
     if: ${{ !inputs.force }}
-    uses: ./.github/workflows/load-prev-runs.yml
+    uses: ./.github/workflows/internal/load-prev-runs.yml
 
   quit:
     needs: cache
@@ -75,7 +75,7 @@ jobs:
     needs:
       - cache
       - verify
-    uses: ./.github/workflows/save-verify-status.yml
+    uses: ./.github/workflows/internal/save-verify-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' }}
     with:
       status: ${{ needs.verify.result }}
