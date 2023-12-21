@@ -769,30 +769,6 @@ verify/set/00.test.cpp:22:25: note: Shadowed declaration
 verify/set/00.test.cpp:31:13: note: Shadow variable
         int t; std::cin >> t;
             ^
-adapter/valarray.hpp:49:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
-    ^
-adapter/valarray.hpp:52:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(I first, S last) noexcept(NO_EXCEPT) : base(std::ranges::distance(first, last)) { std::ranges::copy(first, last, std::ranges::begin(*this)); }
-    ^
-adapter/valarray.hpp:56:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::slice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
-    ^
-adapter/valarray.hpp:57:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::gslice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
-    ^
-adapter/valarray.hpp:58:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::mask_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
-    ^
-adapter/valarray.hpp:59:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::indirect_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
-    ^
-adapter/valarray.hpp:60:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    valarray(const std::initializer_list<T>& init) noexcept(NO_EXCEPT) : base(init) {}
-    ^
-adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < lib :: std :: valarray < unsigned int > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    extended_container(const Base& base) : Base(base) {}
-    ^
 data_structure/adapter/set.hpp:127:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     set_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
     ^
@@ -817,6 +793,30 @@ verify/set/01.test.cpp:23:25: note: Shadowed declaration
 verify/set/01.test.cpp:34:13: note: Shadow variable
         int t; std::cin >> t;
             ^
+adapter/valarray.hpp:49:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
+    ^
+adapter/valarray.hpp:52:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(I first, S last) noexcept(NO_EXCEPT) : base(std::ranges::distance(first, last)) { std::ranges::copy(first, last, std::ranges::begin(*this)); }
+    ^
+adapter/valarray.hpp:56:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::slice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    ^
+adapter/valarray.hpp:57:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::gslice_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    ^
+adapter/valarray.hpp:58:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::mask_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    ^
+adapter/valarray.hpp:59:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::indirect_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
+    ^
+adapter/valarray.hpp:60:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    valarray(const std::initializer_list<T>& init) noexcept(NO_EXCEPT) : base(init) {}
+    ^
+adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < lib :: std :: valarray < unsigned int > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    extended_container(const Base& base) : Base(base) {}
+    ^
 adapter/valarray.hpp:63:25: style: Struct 'valarray < bool >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
@@ -829,9 +829,6 @@ iterable/compressed.hpp:32:5: style: Struct 'compressed < unsigned int , valarra
 iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarray < u32 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
     ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 data_structure/disjoint_sparse_table.hpp:113:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
@@ -841,6 +838,9 @@ data_structure/disjoint_sparse_table.hpp:102:18: style: Checking if unsigned exp
 data_structure/disjoint_sparse_table.hpp:141:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= l && l <= r && r <= this->size());
                  ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 iterable/accumulation.hpp:36:5: style: Struct 'accumulation < long long , valarray < long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
     ^
