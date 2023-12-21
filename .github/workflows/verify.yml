@@ -1,4 +1,4 @@
-name: library-verification
+name: verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
