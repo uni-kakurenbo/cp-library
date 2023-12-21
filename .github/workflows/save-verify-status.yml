@@ -1,4 +1,4 @@
-name: cash-update
+name: _cash-update
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
