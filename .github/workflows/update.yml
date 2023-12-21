@@ -65,7 +65,7 @@ jobs:
 
   quit:
     needs: config
-    if: ${{ !cancelled() && needs.config.outputs.quit }}
+    if: ${{ !cancelled() && needs.config.outputs.quit == 'true' }}
     runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
     - run: exit 1
