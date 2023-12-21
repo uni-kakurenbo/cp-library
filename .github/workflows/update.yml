@@ -53,12 +53,12 @@ jobs:
 
   analyze:
     needs: config
-    if: ${{ !cancelled() && needs.config.outputs.run-analyze }}
+    if: ${{ !cancelled() && needs.config.outputs.run-analyze == 'true' }}
     uses: ./.github/workflows/analyze.yml
 
   verify:
     needs: config
-    if: ${{ !cancelled() && needs.config.outputs.run-verify }}
+    if: ${{ !cancelled() && needs.config.outputs.run-verify == 'true' }}
     uses: ./.github/workflows/verify.yml
     secrets: inherit
 
@@ -67,7 +67,7 @@ jobs:
       - config
       - analyze
       - verify
-    if: ${{ !cancelled() && needs.config.outputs.gen-docs }}
+    if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
