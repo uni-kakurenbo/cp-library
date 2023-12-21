@@ -374,7 +374,7 @@ jobs:
         echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ../targets.txt | \
-        xargs -P ${PARALLEL} -n2 bash -c 'bash ./.github/workflows/run-test.sh "$1" "$2"' bash
+        xargs -P ${PARALLEL} -n2 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ../timestamps.json > ../temp.json
