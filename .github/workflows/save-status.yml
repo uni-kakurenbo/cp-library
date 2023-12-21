@@ -9,7 +9,7 @@ on:
         required: true
       key:
         type: string
-        requires: true
+        required: true
 
 jobs:
   save-status:
