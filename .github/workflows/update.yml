@@ -35,9 +35,9 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      run-analysis: ${{ setps.set-vars.outputs.analysis }}
-      run-verify: ${{ setps.set-vars.outputs.verify }}
-      gen-docs: ${{ setps.set-vars.outputs.docs }}
+      run-analysis: ${{ steps.set-vars.outputs.analysis }}
+      run-verify: ${{ steps.set-vars.outputs.verify }}
+      gen-docs: ${{ steps.set-vars.outputs.docs }}
 
     env:
       ANALYSIS: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
