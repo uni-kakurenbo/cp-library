@@ -50,7 +50,7 @@ jobs:
         echo -n > ./.verify-helper/tests.txt
 
         find verify -type f -name '*.test.cpp' | sort | \
-        xargs -P ${N_PROC} -I {} bash ./.github/workflows/allocate.sh {}
+        xargs -P ${N_PROC} -I {} bash ./.github/workflows/internal/allocate.sh {}
 
         sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
         cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
