@@ -122,5 +122,5 @@ jobs:
     - name: Upload docs hash
       uses: actions/upload-artifact@v3
       with:
-        name: docs-files-hash
+        name: --docs-files-hash
         path: ./hash.txt

@@ -109,5 +109,5 @@ jobs:
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.docs.result != 'skipped' }}
     with:
-      key: docs-hash
+      key: docs-files-hash
       status: ${{ needs.verify.result }}
