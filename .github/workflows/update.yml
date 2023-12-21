@@ -105,7 +105,7 @@ jobs:
     name: post-cache
     needs:
       - cache
-      - docs
+      - documantaion
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.docs.result != 'skipped' }}
     with:
