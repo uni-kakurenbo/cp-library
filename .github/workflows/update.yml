@@ -22,24 +22,20 @@ jobs:
     if: ${{ !inputs.force }}
     uses: ./.github/workflows/load-prev-runs.yml
 
-  quit:
-    needs: cache
-    if: needs.cache.outputs.verify-status == 'failure'
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    steps:
-    - run: exit 1
-
   config:
     needs: cache
     if: ${{ !cancelled() }}
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
+      quit: ${{ env.QUIT }}
       run-analysis: ${{ env.ANALYSIS }}
       run-verify: ${{ env.VERIFY }}
       gen-docs: ${{ env.DOCS }}
 
     env:
+      QUIT: ${{ needs.cache.outputs.verify-status == 'failure' }}
+
       ANALYSIS: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
 
       VERIFY: >-
@@ -62,9 +58,17 @@ jobs:
       - name: Set variables
         id: set-vars
         run: |
+          echo "Quit: ${QUIT}"
           echo "Analysis: ${ANALYSIS}"
           echo "Verify: ${VERIFY}"
           echo "Docs: ${DOCS}"
+
+  quit:
+    needs: config
+    if: ${{ !cancelled() && needs.config.outputs.quit }}
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    steps:
+    - run: exit 1
 
   analyze:
     needs: config
