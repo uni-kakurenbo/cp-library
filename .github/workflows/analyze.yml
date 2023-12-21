@@ -1,4 +1,4 @@
-name: code-analysis
+name: analysis
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on: 
