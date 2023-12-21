@@ -10,10 +10,6 @@ on:
       GH_PAT:
         required: true
 
-concurrency:
-  group: verify-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   set-up:
     runs-on: ${{ vars.RUNNER_IMAGE }}
