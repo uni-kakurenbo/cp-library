@@ -223,25 +223,26 @@ jobs:
       env:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        mkdir ./testcases/
         cat ./targets.txt
 
         echo '::group::oj download prepare'
         oj download --system https://judge.yosupo.jp/problem/aplusb
         echo '::endgroup::'
 
+        mkdir ./testcases/; cd ./testcases/
+
         function gen() {
           local problem="$1"
           local hash="$2"
           local pid="$$"
 
-          mkdir -p "./testcases/${hash}"; cd "./testcases/${hash}"
+          mkdir -p "./${hash}/";
           {
             echo "::group::${problem} [hash: ${hash}]"
-            oj download --system --silent "${problem}"
+            oj download --system --silent --directory "./${hash}/" "${problem}"
             echo '::endgroup::'
-          } &> "../../log-${pid}.txt"
-          cat "../../log-${pid}.txt"
+          } &> "../log-${pid}.txt"
+          cat "../log-${pid}.txt"
         }
         export -f gen
 
