@@ -258,7 +258,7 @@ jobs:
           {
             echo "::group::${problem} [hash: ${hash}]"
 
-            oj download --system --silent --yukicoder-token "$${{ secrets.YUKICODER_TOKEN }}" \
+            oj download --system --silent --yukicoder-token "${{ secrets.YUKICODER_TOKEN }}" \
               --directory "./${hash}/" "${problem}" || \
             rm -r "./${hash}/"
 
