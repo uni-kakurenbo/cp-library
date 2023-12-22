@@ -109,22 +109,22 @@ jobs:
             })
             .length;
 
-          console.log(`::group::${ problemsCount } uncached problems filtered:`);
-          console.log(uncachedProblems);
-          console.log("::endgroup::");
-
           testsWithHash = ""
 
           const testCount = fs.readFileSync(testList).toString().split('\n')
+            .filter(Boolean)
             .map(fileAndProblem => fileAndProblem.split(' '))
             .map(([ file, problem ]) => {
-              console.log(file, ':', problem);
               const problemHash = crypto.createHash('md5').update(problem).digest('hex');
               return { file, problem, problemHash };
             })
             .map(({ file, problem, problemHash }) => {
               testsWithHash += `${ file } ${ problem } ${ problemHash }\n`;
             }).length;
+
+          console.log(`::group::${ problemsCount } uncached problems filtered:`);
+          console.log(uncachedProblems);
+          console.log("::endgroup::");
 
           console.log(`::group::${ testCount } hashes computed:`);
           console.log(testsWithHash);
