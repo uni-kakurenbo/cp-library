@@ -94,7 +94,7 @@ jobs:
             });
 
           cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
-          console.log(cached_keys);
+          console.log(cachedKeys);
 
           uncachedProblems = ""
 
