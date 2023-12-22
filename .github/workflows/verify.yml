@@ -118,12 +118,12 @@ jobs:
           const testCount = fs.readFileSync(testList).toString().split('\n')
             .map(fileAndProblem => fileAndProblem.split(' '))
             .map(([ file, problem ]) => {
-              console.log(file, problem);
+              console.log(file, ':', problem);
               const problemHash = crypto.createHash('md5').update('problem').digest('hex');
               return { file, problem, problemHash };
             })
             .map(({ file, problem, problemHash }) => {
-              testsWithHash += `${ file } ${ problem } ${ problemHash }`;
+              testsWithHash += `${ file } ${ problem } ${ problemHash }\n`;
             }).length;
 
           console.log(`::group::${ testCount } hashes computed:`);
