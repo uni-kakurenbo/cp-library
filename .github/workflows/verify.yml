@@ -259,9 +259,14 @@ jobs:
           mkdir -p "./${hash}/";
           {
             echo "::group::${problem} [hash: ${hash}]"
-            oj download --system --silent --directory "./${hash}/" "${problem}"
+
+            oj download --system --silent \
+              --directory "./${hash}/" "${problem}" || \
+            rm -r "./${hash}/"
+
             echo "::notice title=${problem}::Fetched and generated."
             echo '::endgroup::'
+
           } &> "../log-${pid}.txt"
           cat "../log-${pid}.txt"
         }
@@ -440,7 +445,7 @@ jobs:
         fi
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
+          ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
 
         cp -f ./merged-timestamps.json ./timestamps.remote.json
         cat ./timestamps.remote.json
