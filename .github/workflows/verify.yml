@@ -92,7 +92,10 @@ jobs:
             });
 
           cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
+
+          console.log('::group::Cached hashes:');
           console.log(cachedKeys);
+          console.log('::endgroup::')
 
           uncachedProblems = ""
 
@@ -130,8 +133,8 @@ jobs:
           console.log(testsWithHash);
           console.log("::endgroup::");
 
-          fs.writeFile(problemList, uncachedProblems, console.error);
-          fs.writeFile(testList, testsWithHash, console.error);
+          fs.writeFile(problemList, uncachedProblems, err => { if(err) console.error(err) });
+          fs.writeFile(testList, testsWithHash, err => { if(err) console.error(err) });
 
     - name: Generate node ids
       working-directory: .verify-helper/
