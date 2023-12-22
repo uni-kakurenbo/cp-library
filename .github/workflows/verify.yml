@@ -240,8 +240,6 @@ jobs:
         cat ./targets.txt
 
     - name: Generate testcases
-      env:
-        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         cat ./targets.txt
 
@@ -260,7 +258,7 @@ jobs:
           {
             echo "::group::${problem} [hash: ${hash}]"
 
-            oj download --system --silent \
+            oj download --system --silent --yukicoder-token $${{ secrets.YUKICODER_TOKEN }} \
               --directory "./${hash}/" "${problem}" || \
             rm -r "./${hash}/"
 
