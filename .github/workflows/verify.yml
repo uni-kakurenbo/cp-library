@@ -79,9 +79,7 @@ jobs:
           const crypto = require('crypto');
           const { Octokit } = require("@octokit/core");
 
-          const octokit = new Octokit({
-            auth: '${{ github.token }}'
-          });
+          const octokit = new Octokit({ auth: '${{ github.token }}' });
 
           savedCaches = await octokit.request(
             'GET /repos/${{ github.repository }}/actions/caches',
@@ -115,25 +113,25 @@ jobs:
           console.log(uncachedProblems);
           console.log("::endgroup::");
 
-          fs.writeFileSync(problemList, uncachedProblems);
-
           testsWithHash = ""
 
           const testCount = fs.readFileSync(testList).toString().split('\n')
             .map(fileAndProblem => fileAndProblem.split(' '))
             .map(([ file, problem ]) => {
-              const problemHash = crypto.createHash('md5').update(problem).digest('hex');
+              console.log(file, problem);
+              const problemHash = crypto.createHash('md5').update('problem').digest('hex');
               return { file, problem, problemHash };
             })
             .map(({ file, problem, problemHash }) => {
               testsWithHash += `${ file } ${ problem } ${ problemHash }`;
-            }).length
+            }).length;
 
           console.log(`::group::${ testCount } hashes computed:`);
           console.log(testsWithHash);
           console.log("::endgroup::");
 
-          fs.writeFileSync(testList, testsWithHash);
+          fs.writeFile(problemList, uncachedProblems);
+          fs.writeFile(testList, testsWithHash);
 
     - name: Generate node ids
       working-directory: .verify-helper/
