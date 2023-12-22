@@ -27,7 +27,8 @@ set +e
     echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
     echo "::endgroup::"
 
-    find ~/ -type d -name "${PROBLEM}"
+    basename "${PROBLEM}"
+    find ~/ -type d -name "$(basename "${PROBLEM}")"
 
     if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
         echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
