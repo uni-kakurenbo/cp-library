@@ -412,7 +412,7 @@ jobs:
       run: |
         set -eu
 
-        ls "${{ github.workspace }}/"
+        ls "${{ github.workspace }}/testcases/"
 
         echo '{}' > ../timestamps.json
 
