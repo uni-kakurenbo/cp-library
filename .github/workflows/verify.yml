@@ -80,7 +80,7 @@ jobs:
           const crypto = require('crypto');
           const { Octokit } = require("@octokit/core");
 
-          const octokit = new Octokit({ auth: '${{ github.token }}' });
+          const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
           savedCaches = await octokit.request(
             'GET /repos/${{ github.repository }}/actions/caches',
