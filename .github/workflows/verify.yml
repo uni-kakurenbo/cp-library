@@ -395,6 +395,7 @@ jobs:
           Promise.allSettled(
             fs.readFileSync(testList).toString().split(' ')
               .flatMap((_, i, seq) => i % 3 ? [] : [ seq.slice(i, i + 3) ])
+              .filter(Boolean)
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
                 console.log(`testcase-${ problemHash }`);
