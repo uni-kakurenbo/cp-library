@@ -387,6 +387,11 @@ jobs:
 
           const testList = "${{ github.workspace }}/targets.txt";
 
+          console.log(fs.readFileSync(testList).toString().split('\n'));
+          console.log(fs.readFileSync(testList).toString().split('\n').filter(Boolean));
+          console.log(fs.readFileSync(testList).toString().split('\n').filter(Boolean).map(fileAndProblem => fileAndProblem.split(' ')));
+          console.log(fs.readFileSync(testList).toString().split('\n').filter(Boolean).map(fileAndProblem => fileAndProblem.split(' ')).map((([ file, problem, problemHash ]) => ({ file, problem, problemHash }))));
+
           Promise.allSettled(
             fs.readFileSync(testList).toString().split('\n')
               .filter(Boolean)
