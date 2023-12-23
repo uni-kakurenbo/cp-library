@@ -265,7 +265,7 @@ jobs:
             find ~/ -type d -name "$(basename "${problem}")"
             local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")")"
             echo "cache_directory: ${cache_directory}"
-            local checker="$(find cache_directory -type f -name chceker)"
+            local checker="$(find "${cache_directory}" -type f -name chceker)"
             echo "checker: ${checker}"
             cp "${checker}/checker" "./${hash}/checker"
             echo "ls"
