@@ -388,7 +388,7 @@ jobs:
             fs.readFileSync(testList).toString().split('\n')
               .filter(Boolean)
               .map(fileAndProblem => fileAndProblem.split(' '))
-              .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
+              .map(([ file, problem, problemHash ]) => { return { file, problem, problemHash }; })
               .map(({ problemHash }) => {
                 return cache.restoreCache("${{ github.working_directory }}/tests/", `testcase-${ problemHash }`);
               });
