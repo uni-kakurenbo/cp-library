@@ -262,10 +262,10 @@ jobs:
               --directory "./${hash}/" "${problem}" || \
             rm -r "./${hash}/"
 
-            find ~/ -type d -name "$(basename "${PROBLEM}")"
-            CACHE_DIRECTORY="$(find ~/ -type d -name "$(basename "${PROBLEM}")" && find -type f -name checker)"
-            echo "${CACHE_DIRECTORY}"
-            cp "${CACHE_DIRECTORY}/cacher" "./${hash}/checker"
+            find ~/ -type d -name "$(basename "${problem}")"
+            local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")" && find -type f -name checker)"
+            echo "${cache_directory}"
+            cp "${cache_directory}/checker" "./${hash}/checker"
             ls "./${hash}"
 
             echo "::notice title=${problem}::Fetched and generated."
