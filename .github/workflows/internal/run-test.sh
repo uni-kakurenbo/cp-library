@@ -33,12 +33,15 @@ set +e
     else
         echo "::group::run test"
 
+        g++-12 -std=gnu++20 -O2 -I"${WORKING_DIRECTORY}" "${TARGET}" -o "${TARGET}.exe"
+
         TESTER_OPTION=''
         if [ -f "../testcases/${PROBLEM_HASH}/checker" ]; then
             TESTER_OPTION+="--judge-command ../testcases/${PROBLEM_HASH}/checker"
         fi
         #shellcheck disable=SC2086
-        oj test "${TARGET}" --directory "../testcases/${PROBLEM_HASH}/" --tle 30 ${TESTER_OPTION}
+        oj test --command "${TARGET}.exe" --directory "../testcases/${PROBLEM_HASH}/" \
+            --tle 30 ${TESTER_OPTION}
         EXIT_STATUS=$?
 
         echo "::endgroup::"
