@@ -217,15 +217,15 @@ numeric/modular/barrett_reduction.hpp:41:33: note: Shadowed declaration
 numeric/modular/barrett_reduction.hpp:105:27: note: Shadow variable
         const common_type mod = static_cast<common_type>(this->_mod);
                           ^
-test/zip_view.cpp:21:9: error: syntax error [syntaxError]
-        DEBUG("Case: #" + std::to_string(_));
-        ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int64_t , std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
+test/zip_view.cpp:21:9: error: syntax error [syntaxError]
+        DEBUG("Case: #" + std::to_string(_));
+        ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int32_t , std :: int32_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
@@ -385,6 +385,9 @@ structure/grid.hpp:70:18: note: Virtual function in base class
 structure/grid.hpp:176:17: note: Function in derived class
     inline void resize(const size_t h, const size_t w) noexcept(NO_EXCEPT) /*override*/ {
                 ^
+adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < int ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    extended_container(const Base& base) : Base(base) {}
+    ^
 structure/grid.hpp:55:18: style: Unsigned expression 'i' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= i and i < this->height());
                  ^
@@ -403,9 +406,6 @@ structure/grid.hpp:207:18: style: Unsigned expression 'i' can't be negative so i
 structure/grid.hpp:207:52: style: Unsigned expression 'j' can't be negative so it is unnecessary to test it. [unsignedPositive]
         return 0 <= i and i < this->height() and 0 <= j and j < this->width();
                                                    ^
-adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < int ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    extended_container(const Base& base) : Base(base) {}
-    ^
 data_structure/disjoint_set_union.hpp:28:5: warning: Member variable 'dsu::_group_count' is not initialized in the constructor. [uninitMemberVar]
     dsu() noexcept(NO_EXCEPT) : _n(0) {}
     ^
@@ -454,16 +454,16 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_barrett_modul
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
-              ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
+              ^
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -472,10 +472,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_mod
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -520,6 +520,9 @@ data_structure/segment_tree.hpp:166:5: style: Struct 'core' has a constructor wi
 data_structure/segment_tree.hpp:169:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
+adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    extended_container(const Base& base) : Base(base) {}
+    ^
 data_structure/segment_tree.hpp:93:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= l && l <= this->_n);
                  ^
@@ -538,9 +541,6 @@ data_structure/segment_tree.hpp:186:9: note: Shadow variable
 data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
 struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
 ^
-adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    extended_container(const Base& base) : Base(base) {}
-    ^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -769,30 +769,6 @@ verify/set/00.test.cpp:22:25: note: Shadowed declaration
 verify/set/00.test.cpp:31:13: note: Shadow variable
         int t; std::cin >> t;
             ^
-data_structure/adapter/set.hpp:127:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    set_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
-    ^
-data_structure/adapter/set.hpp:130:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    set_adapter(I first, S last) noexcept(NO_EXCEPT) : set_adapter(*std::ranges::max_element(first, last) + 1) {
-    ^
-data_structure/adapter/set.hpp:140:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    set_adapter(R&& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
-    ^
-data_structure/adapter/set.hpp:63:5: style: Struct 'set_adapter_impl < lib :: segment_tree , actions :: range_set_range_sum >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    set_adapter_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
-    ^
-algebraic/combined.hpp:24:5: style: Struct 'combined < algebraic :: addition < internal unsigned long > , algebraic :: minimum < internal unsigned long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    combined(const T& v) : combined(v, v) {};
-    ^
-verify/set/01.test.cpp:34:13: style: Local variable 't' shadows outer variable [shadowVariable]
-        int t; std::cin >> t;
-            ^
-verify/set/01.test.cpp:23:25: note: Shadowed declaration
-    lib::valarray<bool> t(n);
-                        ^
-verify/set/01.test.cpp:34:13: note: Shadow variable
-        int t; std::cin >> t;
-            ^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -817,9 +793,21 @@ adapter/valarray.hpp:60:5: style: Struct 'valarray < unsigned int >' has a const
 adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < lib :: std :: valarray < unsigned int > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     extended_container(const Base& base) : Base(base) {}
     ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < bool >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
+data_structure/adapter/set.hpp:127:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    set_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
+    ^
+data_structure/adapter/set.hpp:130:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    set_adapter(I first, S last) noexcept(NO_EXCEPT) : set_adapter(*std::ranges::max_element(first, last) + 1) {
+    ^
+data_structure/adapter/set.hpp:140:5: style: Struct 'set_adapter < lib :: segment_tree >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    set_adapter(R&& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
+    ^
+data_structure/adapter/set.hpp:63:5: style: Struct 'set_adapter_impl < lib :: segment_tree , actions :: range_set_range_sum >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    set_adapter_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
+    ^
+algebraic/combined.hpp:24:5: style: Struct 'combined < algebraic :: addition < internal unsigned long > , algebraic :: minimum < internal unsigned long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    combined(const T& v) : combined(v, v) {};
+    ^
 data_structure/wavelet_matrix.hpp:525:5: style: Struct 'compressed_wavelet_matrix < unsigned int , std :: unordered_map >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     compressed_wavelet_matrix(I first, S last) noexcept(NO_EXCEPT) { this->build(first, last); }
     ^
@@ -829,6 +817,18 @@ iterable/compressed.hpp:32:5: style: Struct 'compressed < unsigned int , valarra
 iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarray < u32 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
     ^
+verify/set/01.test.cpp:34:13: style: Local variable 't' shadows outer variable [shadowVariable]
+        int t; std::cin >> t;
+            ^
+verify/set/01.test.cpp:23:25: note: Shadowed declaration
+    lib::valarray<bool> t(n);
+                        ^
+verify/set/01.test.cpp:34:13: note: Shadow variable
+        int t; std::cin >> t;
+            ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < bool >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
@@ -880,9 +880,6 @@ iterable/accumulation.hpp:108:18: style: Unsigned expression 'c' can't be negati
 iterable/accumulation.hpp:28:18: style: Checking if unsigned expression 'x' is less than zero. [unsignedLessThanZero]
         return x < 0 ? std::size(*this) + x : x;
                  ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < long >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -913,6 +910,9 @@ iterable/accumulation.hpp:36:5: style: Struct 'accumulation' has a constructor w
 iterable/accumulation.hpp:58:18: style: Unsigned expression 'left' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= left and left <= right and right < (size_type)std::size(*this));
                  ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < long >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 adapter/valarray.hpp:63:25: style: Struct 'valarray < std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
