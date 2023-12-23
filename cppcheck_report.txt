@@ -502,25 +502,31 @@ adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container 
 internal/range_reference.hpp:49:0: error: Found a exit path from function with non-void return type that has missing return statement [missingReturn]
         if constexpr(rng == lib::interval_notation::closed) return this->sub_range(l, r+1);
 ^
+data_structure/fenwick_tree.hpp:142:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+    ^
+data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= l && l <= this->_n);
+                 ^
+data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= r && r <= this->_n);
+                 ^
+data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
+        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
+            ^
 data_structure/segment_tree.hpp:166:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
     ^
 data_structure/segment_tree.hpp:169:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
-data_structure/fenwick_tree.hpp:142:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
-    ^
+data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
+struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
+^
 data_structure/segment_tree.hpp:93:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= l && l <= this->_n);
                  ^
 data_structure/segment_tree.hpp:120:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= r && r <= this->_n);
-                 ^
-data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= l && l <= this->_n);
-                 ^
-data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= r && r <= this->_n);
                  ^
 data_structure/segment_tree.hpp:186:9: style: Local variable 'p' shadows outer variable [shadowVariable]
@@ -532,15 +538,9 @@ data_structure/segment_tree.hpp:184:19: note: Shadowed declaration
 data_structure/segment_tree.hpp:186:9: note: Shadow variable
         REPD(p, 1, this->_size) this->update(p);
         ^
-data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
-        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
-            ^
 adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     extended_container(const Base& base) : Base(base) {}
     ^
-data_structure/lazy_segment_tree.hpp:218:1: error: syntax error [syntaxError]
-struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
-^
 adapter/valarray.hpp:49:5: style: Struct 'valarray < int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
     ^
@@ -829,12 +829,12 @@ iterable/compressed.hpp:32:5: style: Struct 'compressed < unsigned int , valarra
 iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarray < u32 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
     ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 data_structure/disjoint_sparse_table.hpp:115:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 data_structure/disjoint_sparse_table.hpp:104:18: style: Checking if unsigned expression 'p' is less than zero. [unsignedLessThanZero]
         return p < 0 ? this->size() + p : p;
                  ^
