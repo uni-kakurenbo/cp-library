@@ -429,9 +429,9 @@ jobs:
           fi
         }
 
-        echo '::group::oj download prepare'
-        oj download --system https://judge.yosupo.jp/problem/aplusb
-        echo '::endgroup::'
+        # echo '::group::oj download prepare'
+        # oj download --system https://judge.yosupo.jp/problem/aplusb
+        # echo '::endgroup::'
 
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"

@@ -33,14 +33,12 @@ set +e
     else
         echo "::group::run test"
 
-        ls "../testcases/${PROBLEM_HASH}/"
-
         TESTER_OPTION=''
         if [ -f "../testcases/${PROBLEM_HASH}/checker" ]; then
             TESTER_OPTION+="--judge-command ../testcases/${PROBLEM_HASH}/checker"
         fi
         #shellcheck disable=SC2086
-        oj test "${TARGET}" --dirctory "../testcases/${PROBLEM_HASH}/" --tle 30 ${TESTER_OPTION}
+        oj test "${TARGET}" --directory "../testcases/${PROBLEM_HASH}/" --tle 30 ${TESTER_OPTION}
         EXIT_STATUS=$?
 
         echo "::endgroup::"
