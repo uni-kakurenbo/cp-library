@@ -375,6 +375,27 @@ jobs:
     #       main/.verify-helper/cache/
     #     key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
 
+    - name: Load testcases
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const cache = require('@actions/cache');
+
+          const testList = "${{ github.workspace }}/.verify-helper/tests.txt";
+
+          const fs = require('fs');
+
+          Promise.all(
+            fs.readFileSync(testList).toString().split('\n')
+              .filter(Boolean)
+              .map(fileAndProblem => fileAndProblem.split(' '))
+              .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
+              .map(({ problemHash }) => {
+                return cache.restoreCache("${{ github.working_directory }}/tests/", `testcase-${ problemHash }`);
+              });
+          );
+
     - name: Run tests
       working-directory: main
       env:
@@ -383,6 +404,8 @@ jobs:
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
         set -eu
+
+        ls ../tests/
 
         echo '{}' > ../timestamps.json
 
@@ -407,7 +430,7 @@ jobs:
         echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ../targets.txt | \
-        xargs -P ${PARALLEL} -n3 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2"' bash
+        xargs -P ${PARALLEL} -n3 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ../timestamps.json > ../temp.json

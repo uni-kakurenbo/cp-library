@@ -4,6 +4,7 @@ set -eu
 WORKING_DIRECTORY="${PWD}"
 TARGET="$1"
 PROBLEM="$2"
+PROBLEM_HASH="$3"
 PID="$$"
 
 DEPENDENCIES=$(g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}")
@@ -30,9 +31,19 @@ set +e
     if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
         echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
     else
-        echo "::group::oj-verify run"
+        echo "::group::run test"
 
-        oj-verify run "${TARGET}" --tle 30
+        ls "../tests/${PROBLEM_HASH}/"
+
+        g++-12 -std=gnu++20 -O2 -I"${WORKING_DIRECTORY}" "${TARGET}"
+        ls
+
+        TESTER_OPTION=''
+        if [ -f "../tests/${PROBLEM_HASH}/checker" ]; then
+            TESTER_OPTION+="--judge-command ../tests/${PROBLEM_HASH}/checker"
+        fi
+        #shellcheck disable=SC2086
+        oj test "${TARGET}" --dirctory "../tests/${PROBLEM_HASH}/" --tle 30 ${TESTER_OPTION}
         EXIT_STATUS=$?
 
         echo "::endgroup::"
