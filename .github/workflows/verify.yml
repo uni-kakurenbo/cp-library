@@ -263,9 +263,10 @@ jobs:
             rm -r "./${hash}/"
 
             find ~/ -type d -name "$(basename "${problem}")"
-            local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")" && find -type f -name checker)"
-            echo "${cache_directory}"
-            cp "${cache_directory}/checker" "./${hash}/checker"
+            local checker="$(find ~/ -type d -name "$(basename "${problem}")" && find -type f -name checker)"
+            echo "checker: ${checker}"
+            cp "${checker}/checker" "./${hash}/checker"
+            echo "ls"
             ls "./${hash}"
 
             echo "::notice title=${problem}::Fetched and generated."
