@@ -393,6 +393,7 @@ jobs:
               .map(fileAndProblem => fileAndProblem.split(' '))
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
+                consoel.log(problemHash);
                 return cache.restoreCache("${{ github.working_directory }}/tests/", `testcase-${ problemHash }`);
               })
           );
