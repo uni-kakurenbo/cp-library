@@ -398,7 +398,7 @@ jobs:
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
                 console.log(`testcase-${ problemHash }`);
-                return cache.restoreCache([ "testcases/${ problemHash }/" ], `testcase-${ problemHash }`);
+                return cache.restoreCache([ `/testcases/${ problemHash }/` ], `testcase-${ problemHash }`);
               })
           ).then(console.log).catch(console.error);
 
