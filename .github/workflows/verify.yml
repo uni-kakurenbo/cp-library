@@ -288,9 +288,9 @@ jobs:
           const fs = require('fs');
           const cache = require('@actions/cache');
 
-          const basedir = `${{ github.workspace }}/testcases/`;
+          const basedir = `${{ github.workspace }}/testcases`;
 
-          fs.readdir(`${ basedir }`, (err, dirs) => {
+          fs.readdir(`${ basedir }/`, (err, dirs) => {
               if(err) console.error(err);
 
               console.log(dirs);
@@ -298,7 +298,7 @@ jobs:
               Promise.all(
                 dirs.map((dir) => {
                   console.log("Save: ", dir);
-                  return cache.saveCache([ `${ basedir }${ dir }/` ], `testcase-${ dir }`);
+                  return cache.saveCache([ `${ basedir }/${ dir }/` ], `testcase-${ dir }`);
                 })
               ).then(() => {
                 process.exit(0);
@@ -393,7 +393,7 @@ jobs:
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
                 console.log(`testcase-${ problemHash }`);
-                return cache.restoreCache([ "${{ github.workspace }}/" ], `testcase-${ problemHash }`);
+                return cache.restoreCache([ "${{ github.workspace }}/testcases/${ problemHash }/" ], `testcase-${ problemHash }`);
               })
           ).then(console.log).catch(console.error);
 
