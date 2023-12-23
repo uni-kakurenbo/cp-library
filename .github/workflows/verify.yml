@@ -392,8 +392,8 @@ jobs:
               .flatMap((_, i, seq) => i % 3 ? [] : [ seq.slice(i, i + 3) ])
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
-                console.log(problemHash);
-                return cache.restoreCache([ "${{ github.workspace }}/${ problemHash }/" ], `testcase-${ problemHash }`);
+                console.log(`testcase-${ problemHash }`);
+                return cache.restoreCache([ "${{ github.workspace }}/" ], `testcase-${ problemHash }`);
               })
           ).then(console.log).catch(console.error);
 
