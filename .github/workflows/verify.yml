@@ -262,6 +262,9 @@ jobs:
               --directory "./${hash}/" "${problem}" || \
             rm -r "./${hash}/"
 
+            cp "$(find ~/ -type d -name "$(basename "${PROBLEM}")")/checker" "./${hash}/checker"
+            ls "./${hash}"
+
             echo "::notice title=${problem}::Fetched and generated."
             echo '::endgroup::'
 
