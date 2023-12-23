@@ -387,7 +387,7 @@ jobs:
 
           const testList = "${{ github.workspace }}/targets.txt";
 
-          console.log(await Promise.all(
+          Promise.all(
             fs.readFileSync(testList).toString().split('\n')
               .filter(Boolean)
               .map(fileAndProblem => fileAndProblem.split(' '))
@@ -396,7 +396,7 @@ jobs:
                 console.log(problemHash);
                 return cache.restoreCache([ "${{ github.workspace }}/${ problemHash }/" ], `testcase-${ problemHash }`);
               })
-          ));
+          ).then(console.log).catch(console.error);
 
     - name: Run tests
       working-directory: main
