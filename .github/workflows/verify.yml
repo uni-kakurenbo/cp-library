@@ -263,7 +263,7 @@ jobs:
             rm -r "./${hash}/"
 
             find ~/ -type d -name "$(basename "${problem}")"
-            local checker="$(find ~/ -type d -name "$(basename "${problem}")" && find -type f -name checker)"
+            local checker="$(find ~/ -type d -name "$(basename "${problem}")" | find -type f -name checker)"
             echo "checker: ${checker}"
             cp "${checker}/checker" "./${hash}/checker"
             echo "ls"
