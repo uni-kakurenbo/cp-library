@@ -433,6 +433,7 @@ jobs:
         # echo '::endgroup::'
 
         PARALLEL=$(nproc)
+        PARALLEL=1
         echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ../targets.txt | \
