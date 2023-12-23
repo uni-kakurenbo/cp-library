@@ -8,3 +8,5 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
       - uses: snnaplab/delete-branch-cache-action@v1
+        with:
+          github-token: ${{ secrets.GH_PAT }}
