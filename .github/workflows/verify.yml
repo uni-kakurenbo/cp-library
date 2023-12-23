@@ -387,7 +387,7 @@ jobs:
 
           const testList = "${{ github.workspace }}/targets.txt";
 
-          Promise.all(
+          Promise.allSettled(
             fs.readFileSync(testList).toString().split('\n')
               .filter(Boolean)
               .map(fileAndProblem => fileAndProblem.split(' '))
