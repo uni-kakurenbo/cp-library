@@ -385,7 +385,7 @@ jobs:
           const fs = require('fs');
           const cache = require('@actions/cache');
 
-          const testList = "${{ github.workspace }}/main/.verify-helper/targets.txt";
+          const testList = "${{ github.workspace }}/targets.txt";
 
           Promise.all(
             fs.readFileSync(testList).toString().split('\n')
