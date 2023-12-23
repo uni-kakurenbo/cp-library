@@ -27,6 +27,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
 
     - name: Set up Node
       uses: actions/setup-node@v3
@@ -326,6 +327,7 @@ jobs:
       with:
         path: main
         fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -344,6 +346,7 @@ jobs:
         repository: atcoder/ac-library
         path: ac-library
         sparse-checkout: atcoder
+        token: ${{ secrets.GH_PAT }}
 
     - name: Load meta data
       uses: actions/download-artifact@v3
@@ -457,6 +460,7 @@ jobs:
       with:
         fetch-depth: 0
         sparse-checkout: .verify-helper
+        token: ${{ secrets.GH_PAT }}
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
