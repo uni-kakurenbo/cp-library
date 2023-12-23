@@ -394,7 +394,7 @@ jobs:
               .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash })))
               .map(({ problemHash }) => {
                 console.log(problemHash);
-                return cache.restoreCache("${{ github.workspace }}/tests/", `testcase-${ problemHash }`);
+                return cache.restoreCache([ "${{ github.workspace }}/${ problemHash }/" ], `testcase-${ problemHash }`);
               })
           ));
 
