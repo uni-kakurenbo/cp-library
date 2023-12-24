@@ -90,8 +90,8 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
-  post-cache-analyze:
-    name: post-cache
+  cache-analyze:
+    name: cache
     needs:
       - cache
       - analyze
@@ -101,8 +101,8 @@ jobs:
       key: analysis
       status: ${{ needs.analyze.result }}
 
-  post-cache-verify:
-    name: post-cache
+  cache-verify:
+    name: cache
     needs:
       - cache
       - verify
@@ -112,8 +112,8 @@ jobs:
       key: verify
       status: ${{ needs.verify.result }}
 
-  post-cache-docs:
-    name: post-cache
+  cache-docs:
+    name: cache
     needs:
       - cache
       - documantaion
