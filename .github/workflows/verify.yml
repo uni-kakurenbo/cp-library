@@ -415,7 +415,7 @@ jobs:
 
           sed -i '/^$/d' ./.verify-helper/timestamps.remote.json
 
-          if -s ./.verify-helper/timestamps.remote.json; then
+          if [ -f ./.verify-helper/timestamps.remote.json ]; then
             echo '{}' >> ./.verify-helper/timestamps.remote.json
           fi
         }
