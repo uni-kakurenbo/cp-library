@@ -16,6 +16,8 @@ on:
 
 jobs:
   analysis:
+    name: load-status (analysis)
+
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
       status: ${{ steps.compare.outputs.status }}
@@ -61,6 +63,8 @@ jobs:
         path: ./hash.txt
 
   verify:
+    name: load-status (verify)
+
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
       status: ${{ steps.compare.outputs.status }}
@@ -111,6 +115,8 @@ jobs:
         path: ./hash.txt
 
   docs:
+    name: load-status (docs)
+
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
       status: ${{ steps.compare.outputs.status }}
