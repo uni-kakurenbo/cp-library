@@ -48,4 +48,7 @@ jobs:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: oj-verify docs --jobs $(nproc)
+      run: |
+        echo '::group::oj-verify docs'
+        timestamp oj-verify docs --jobs $(nproc)
+        echo '::endgroup::'
