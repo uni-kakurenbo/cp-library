@@ -46,7 +46,7 @@ set +e
 set -e
 
 jq -n --arg target "${TARGET}" --arg date "${LAST_MODIFY_DATE}" \
-'.[$target] = $date' >> "./.verify-helper/timestamps.json"
+'.[$target] = $date' >> "../timestamps.json"
 
 cat ".log-${PID}.txt"
 
