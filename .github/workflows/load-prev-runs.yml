@@ -8,6 +8,9 @@ on:
         value: ${{ jobs.verify.outputs.status }}
       docs-updated:
         value: ${{ jobs.docs.outputs.updated }}
+  secrets:
+    github_token:
+      requires: true
 
 jobs:
   analysis:
@@ -42,6 +45,7 @@ jobs:
         workflow_conclusion: ''
         search_artifacts: true
         if_no_artifact_found: ignore
+        github_token: ${{ secrets.GH_PAT }}
 
     - name: Compare cached hash
       id: compare
@@ -91,6 +95,7 @@ jobs:
         workflow_conclusion: ''
         search_artifacts: true
         if_no_artifact_found: ignore
+        github_token: ${{ secrets.GH_PAT }}
 
     - name: Compare cached hash
       id: compare
@@ -138,6 +143,7 @@ jobs:
         workflow_conclusion: ''
         search_artifacts: true
         if_no_artifact_found: ignore
+        github_token: ${{ secrets.GH_PAT }}
 
     - name: Compare cached hash
       id: compare

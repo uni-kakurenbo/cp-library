@@ -20,6 +20,7 @@ concurrency:
 jobs:
   cache:
     uses: ./.github/workflows/load-prev-runs.yml
+    secrets: inherit
 
   config:
     needs: cache
