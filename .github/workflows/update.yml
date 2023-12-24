@@ -19,7 +19,6 @@ concurrency:
 
 jobs:
   cache:
-    if: ${{ !inputs.force }}
     uses: ./.github/workflows/load-prev-runs.yml
 
   config:
