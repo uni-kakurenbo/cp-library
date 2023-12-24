@@ -13,13 +13,14 @@ on:
 
 jobs:
   save-status:
+    name: save-status (${{ inputs.key }})
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
     - name: Load previous hash
       uses: actions/download-artifact@v3
       with:
-        name: --${{ inputs.key }}
+        name: --${{ inputs.key }}-files-hash
         path: ./
 
     - name: Save status
@@ -30,7 +31,7 @@ jobs:
     - name: Upload hash and status
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ inputs.key }}
+        name: ${{ inputs.key }}-files-hash
         path: |
           ./hash.txt
           ./status.txt
