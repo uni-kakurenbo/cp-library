@@ -455,7 +455,6 @@ jobs:
       with:
         fetch-depth: 0
         sparse-checkout: .verify-helper
-        token: ${{ secrets.GH_PAT }}
 
     - name: Load timestamps
       uses: actions/download-artifact@v3
