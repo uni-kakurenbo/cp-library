@@ -26,12 +26,12 @@ PID="$$"
   echo -e "Dependencies:\n${DEPENDENCIES}"
   echo '::endgroup::'
 
-  # if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
-  #   echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
-  # else
+  if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
+    echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
+  else
     echo "${PROBLEM}" >> ./.verify-helper/problems.txt
     echo "${TARGET} ${PROBLEM} ${LAST_MODIFIED_AT}" >> ./.verify-helper/tests.txt
-  # fi
+  fi
 
   echo
 } &>> ".log-${PID}.txt"
