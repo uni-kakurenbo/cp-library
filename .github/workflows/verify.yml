@@ -528,11 +528,11 @@ jobs:
 
           for file in ./result-*/failed-tests.txt ; do
             sort -k1,1rn < "$file"
-          done >> ./temp.txt
+          done > ./temp.txt
 
           cat ./temp.txt
 
-          if -s ./temp.txt; then
+          if [ -s ./temp.txt ]; then
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
           fi
 
@@ -540,14 +540,14 @@ jobs:
 
           for file in ./result-*/passed-tests.txt ; do
             sort -k1,1rn < "$file"
-          done >> ./temp.txt
+          done > ./temp.txt
 
-          if -s ./temp.txt; then
+          if [ -s ./temp.txt ]; then
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
           fi
         fi
 
-        if -s ./skipped-tests/skipped-tests.txt; then
+        if [ -s ./skipped-tests/skipped-tests.txt ]; then
           echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
           cat ./skipped-tests/skipped-tests.txt >> "${GITHUB_STEP_SUMMARY}"
         fi
