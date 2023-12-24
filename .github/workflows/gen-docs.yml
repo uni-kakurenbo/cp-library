@@ -50,5 +50,5 @@ jobs:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         echo '::group::oj-verify docs'
-        timestamp oj-verify docs --jobs $(nproc)
+        time oj-verify docs --jobs $(nproc)
         echo '::endgroup::'
