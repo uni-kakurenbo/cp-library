@@ -35,7 +35,7 @@ set +e
         echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
     else
         echo "::group::build"
-        g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}" 2>&1
+        g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}" 1>&2
         echo "::endgroup::"
 
         TESTER_OPTION=''
