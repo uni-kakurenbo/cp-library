@@ -44,6 +44,7 @@ jobs:
         echo -n > ./.verify-helper/problems.txt
         echo -n > ./.verify-helper/tests.txt
 
+        echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
         time find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/internal/allocate.sh {}
 
