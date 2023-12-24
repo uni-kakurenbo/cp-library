@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  set-up:
+  setup:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
@@ -196,13 +196,13 @@ jobs:
 
   gen-cases:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: set-up
-    if: ${{ needs.set-up.outputs.gen-ids != '[]' }}
+    needs: setup
+    if: ${{ needs.setup.outputs.gen-ids != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.set-up.outputs.gen-ids) }}
+        id: ${{ fromJSON(needs.setup.outputs.gen-ids) }}
 
     steps:
     - name: Set up Python
@@ -310,14 +310,14 @@ jobs:
   run:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs:
-      - set-up
+      - setup
       - gen-cases
-    if: ${{ !cancelled() && needs.set-up.outputs.runner-ids != '[]' }}
+    if: ${{ !cancelled() && needs.setup.outputs.runner-ids != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        id: ${{ fromJSON(needs.set-up.outputs.runner-ids) }}
+        id: ${{ fromJSON(needs.setup.outputs.runner-ids) }}
 
     steps:
     - name: Git checkout
@@ -509,7 +509,7 @@ jobs:
   dump:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: |
-      pre-run
+      setup
       run
     if: ${{ !cancelled() }}
 
