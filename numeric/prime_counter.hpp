@@ -19,13 +19,15 @@ static inline i64 float_div(const i64 n, const i64 p) {
 // Thanks to: https://nyaannyaan.github.io/library/multiplicative-function/prime-counting-faster.hpp
 __attribute__((target("avx2"), optimize("O3", "unroll-loops")))
 i64 count_primes(const u64 n) noexcept(NO_EXCEPT) {
+    if(n == 0 || n == 1) return 0;
+
     const i64 sqrt_n = lib::sqrt_floor(n);
     const i64 m = float_div(n, sqrt_n);
 
-    std::valarray<i64> hl(m);
+    std::vector<i64> hl(m);
     REP(i, 1, m) hl[i] = float_div(n, i) - 1;
 
-    std::valarray<i32> hs(sqrt_n + 1);
+    std::vector<i32> hs(sqrt_n + 1);
     std::iota(ALL(hs), -1);
 
     for(i32 x=2, pi=0; x <= sqrt_n; ++x) {

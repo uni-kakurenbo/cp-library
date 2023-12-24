@@ -6,6 +6,8 @@
  */
 /* #language C++ 20 GCC */
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #define PROBLEM "https://judge.yosupo.jp/problem/bipartitematching"
 
 #include "snippet/fast_io.hpp"

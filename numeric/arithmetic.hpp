@@ -40,7 +40,7 @@ inline constexpr T div_floor(const T& x, const T& d) noexcept(NO_EXCEPT) {
 template<class T>
 inline constexpr T div_ceil(const T& x, const T& d) noexcept(NO_EXCEPT) {
     if constexpr(std::is_integral_v<T>) {
-        return floor(x + d - 1, d);
+        return div_floor(x + d - 1, d);
     }
     else {
         return std::ceil(x / d);

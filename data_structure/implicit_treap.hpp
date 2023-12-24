@@ -314,6 +314,15 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
             this->_super->apply(this->_pos, v);
             return *this;
         }
+
+        inline point_reference& set(const action_type& v) noexcept(NO_EXCEPT) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
+        inline point_reference& operator=(const action_type& v) noexcept(NO_EXCEPT) {
+            this->_super->set(this->_pos, v);
+            return *this;
+        }
     };
 
     struct range_reference : internal::range_reference<core> {
@@ -329,6 +338,10 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
         }
 
         inline range_reference& fill(const value_type& v) noexcept(NO_EXCEPT) {
+            this->_super->fill(this->_begin, this->_end, v);
+            return *this;
+        }
+        inline range_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->fill(this->_begin, this->_end, v);
             return *this;
         }
@@ -409,6 +422,11 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
     }
     inline auto& fill(const size_type l, const size_type r, const value_type& v) noexcept(NO_EXCEPT) {
         REP(p, l, r) this->erase(p), this->insert(p, v);
+        return *this;
+    }
+
+    inline auto& set(const size_type p, const value_type& v) noexcept(NO_EXCEPT) {
+        this->fill(p, p+1, v);
         return *this;
     }
 
