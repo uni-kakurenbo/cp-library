@@ -183,8 +183,8 @@ jobs:
       with:
         name: meta-info
         path: |
-          ./.verify-helper/problems.txt
-          ./.verify-helper/tests.txt
+          ./main/.verify-helper/problems.txt
+          ./main/.verify-helper/tests.txt
         retention-days: 1
 
     - name: Save summery
@@ -520,6 +520,9 @@ jobs:
 
     - name: Print summery
       run: |
+        ls
+        ls ./result-00
+
         echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
         for file in ./result-*/failed-tests.txt ; do
           sort -k1,1rn < "$file"
