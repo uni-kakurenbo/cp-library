@@ -14,11 +14,6 @@ source ./.github/workflows/internal/options.env
 
 set +e
 {
-    echo "::group::${TARGET} (${PROBLEM}) [PID: ${PID}]"
-    echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
-    echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
-    echo "::endgroup::"
-
     echo "::group::build"
     time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
     echo "::endgroup::"
