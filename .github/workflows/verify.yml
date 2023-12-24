@@ -208,12 +208,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.12.0
+        python-version: '3.11.x'
         token: ${{ secrets.GH_PAT }}
 
     - name: Install oj-verify and action modules
       run: |
-        pip3 install --user online-judge-tools &
+        pip3 install online-judge-tools &
         npm install @actions/cache &
         wait
 
@@ -330,12 +330,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.12.0
+        python-version: '3.11.x'
         token: ${{ secrets.GH_PAT }}
 
     - name: Install oj-verify and action modules
       run: |
-        pip3 install -U online-judge-verify-helper &
+        pip3 install online-judge-tools &
         npm install @actions/cache &
         wait
 
