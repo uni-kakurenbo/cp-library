@@ -33,7 +33,7 @@ jobs:
       gen-docs: ${{ env.DOCS }}
 
     env:
-      QUIT: ${{ needs.cache.outputs.verify-status == 'failure' }}
+      QUIT: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
 
       ANALYSIS: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
 
