@@ -57,6 +57,7 @@ jobs:
       - name: Set variables
         id: set-vars
         run: |
+          echo "Force: ${{ inputs.force }}"
           echo "Quit: ${QUIT}"
           echo "Analysis: ${ANALYSIS}"
           echo "Verify: ${VERIFY}"
