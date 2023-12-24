@@ -26,7 +26,12 @@ jobs:
         set -eu
 
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
+
         echo './main/.github/workflows/internal/options.env' >> ./file-list.txt
+        echo './main/.github/workflows/internal/allocate.sh' >> ./file-list.txt
+        echo './main/.github/workflows/internal/run-test.sh' >> ./file-list.txt
+        echo './main/.github/workflows/verify.yml' >> ./file-list.txt
+
         cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
         sha1sum ./cache-list.txt | cut -d ' ' -f 1 > ./hash.txt
 
@@ -85,7 +90,10 @@ jobs:
         set -eu
 
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
+
         find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
+        echo './main/.github/workflows/gen-docs.yml' >> ./file-list.txt
+
         cat ./file-list.txt | xargs sha1sum >> ./cache-list.txt
         sha1sum ./cache-list.txt | cut -d ' ' -f 1 > ./hash.txt
 
