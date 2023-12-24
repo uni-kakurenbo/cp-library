@@ -56,7 +56,11 @@ jobs:
       DOCS: >-
         ${{
           github.ref_name == github.event.repository.default_branch &&
-          (inputs.force || needs.cache.outputs.docs-updated == true)
+          (
+            inputs.force ||
+            needs.cache.outputs.docs-status == '' ||
+            needs.cache.outputs.docs-status == 'cancelled'
+          )
         }}
 
     steps:
@@ -126,4 +130,4 @@ jobs:
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.documantaion.result != 'skipped' }}
     with:
       key: docs
-      status: ${{ needs.verify.result }}
+      status: ${{ needs.documantaion.result }}

@@ -4,10 +4,12 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
   workflow_call:
     outputs:
+      analysis-status:
+        value: ${{ jobs.analysis.outputs.status }}
       verify-status:
         value: ${{ jobs.verify.outputs.status }}
-      docs-updated:
-        value: ${{ jobs.docs.outputs.updated }}
+      docs-status:
+        value: ${{ jobs.docs.outputs.status }}
     secrets:
       GH_PAT:
         required: true
@@ -111,7 +113,7 @@ jobs:
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
-      updated: ${{ steps.compare.outputs.differed != '0' }}
+      status: ${{ steps.compare.outputs.status }}
 
     steps:
     - name: Git Checkout
