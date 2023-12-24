@@ -27,7 +27,9 @@ PID="$$"
   echo '::endgroup::'
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
-    echo "- [\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_REF_NAME}/${TARGET}): [Problem](${PROBLEM})" >> "${GITHUB_STEP_SUMMARY}"
+    RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
+    RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
+    echo "- ${RICH_TARGET}: ${RICH_PROBLEM}" >> "${GITHUB_STEP_SUMMARY}"
   else
     echo "${PROBLEM}" >> ./.verify-helper/problems.txt
     echo "${TARGET} ${PROBLEM} ${LAST_MODIFIED_AT}" >> ./.verify-helper/tests.txt
