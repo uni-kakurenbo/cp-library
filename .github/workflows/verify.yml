@@ -51,7 +51,7 @@ jobs:
         echo -n > ./.verify-helper/problems.txt
         echo -n > ./.verify-helper/tests.txt
 
-        find verify -type f -name '*.test.cpp' | sort | \
+        time find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/internal/allocate.sh {}
 
         sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
@@ -373,16 +373,6 @@ jobs:
         echo ${TEST_FILES} > ./targets.txt
         cat ./targets.txt
 
-    # - name: Cache judge data
-    #   if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-    #   id: runnner-cache
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       ~/.cache/online-judge-tools/library-checker-problems/
-    #       main/.verify-helper/cache/
-    #     key: verify-${{ hashFiles('main/verify/**/*.test.cpp', 'main/.verify-helper/targets.txt') }}
-
     - name: Load testcases
       uses: actions/github-script@v7
       with:
@@ -408,7 +398,6 @@ jobs:
     - name: Run tests
       working-directory: main
       env:
-        # CACHE_HIT: ${{ steps.runnner-cache.outputs.cache-hit }}
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
@@ -438,7 +427,7 @@ jobs:
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
 
-        head -c -1 ../targets.txt | \
+        time head -c -1 ../targets.txt | \
         xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
