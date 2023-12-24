@@ -520,7 +520,6 @@ jobs:
 
     - name: Print summery
       run: |
-
         if ls ./result-*/ > /dev/null 2>&1; then
           echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
 
