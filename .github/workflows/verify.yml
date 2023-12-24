@@ -522,20 +522,29 @@ jobs:
 
     - name: Print summery
       run: |
-        if ls ./result-*/failed-tests.txt > /dev/null 2>&1; then
+        if ls ./result-*/ > /dev/null 2>&1; then
+
           echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
 
           for file in ./result-*/failed-tests.txt ; do
             sort -k1,1rn < "$file"
-          done >> "${GITHUB_STEP_SUMMARY}"
-        fi
+          done >> ./temp.txt
 
-        if ls ./result-*/passed-tests.txt > /dev/null 2>&1; then
+          cat ./temp.txt
+
+          if -s ./temp.txt; then
+            cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
           echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
 
           for file in ./result-*/passed-tests.txt ; do
             sort -k1,1rn < "$file"
-          done >> "${GITHUB_STEP_SUMMARY}"
+          done >> ./temp.txt
+
+          if -s ./temp.txt; then
+            cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+          fi
         fi
 
         if -s ./skipped-tests/skipped-tests.txt; then
