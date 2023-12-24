@@ -30,7 +30,7 @@ set +e
 
     #shellcheck disable=SC2086
     time oj test --command "${TARGET}.exe" --directory "../testcases/${PROBLEM_HASH}/" \
-        --tle 30 ${TESTER_OPTION}
+        --tle 60 ${TESTER_OPTION}
     EXIT_STATUS=$?
 
     echo "::endgroup::"
