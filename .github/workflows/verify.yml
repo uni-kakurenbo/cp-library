@@ -450,7 +450,7 @@ jobs:
         name: result-${{ matrix.id }}
         path: |
           ./passed-tests.txt
-          ./filed-tests.txt
+          ./failed-tests.txt
         retention-days: 1
 
   collect:
@@ -508,7 +508,9 @@ jobs:
 
   dump:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: run
+    needs: |
+      pre-run
+      run
     if: ${{ !cancelled() }}
 
     steps:
