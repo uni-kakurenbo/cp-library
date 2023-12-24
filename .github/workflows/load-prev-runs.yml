@@ -8,9 +8,9 @@ on:
         value: ${{ jobs.verify.outputs.status }}
       docs-updated:
         value: ${{ jobs.docs.outputs.updated }}
-  secrets:
-    github_token:
-      requires: true
+    secrets:
+      github_token:
+        requires: true
 
 jobs:
   analysis:
