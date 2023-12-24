@@ -89,6 +89,17 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
+  post-cache-analyze:
+    name: post-cache
+    needs:
+      - cache
+      - analyze
+    uses: ./.github/workflows/save-status.yml
+    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
+    with:
+      key: analysis-files-hash
+      status: ${{ needs.analyze.result }}
+
   post-cache-verify:
     name: post-cache
     needs:
@@ -97,7 +108,7 @@ jobs:
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
     with:
-      key: source-files-hash
+      key: verify-files-hash
       status: ${{ needs.verify.result }}
 
   post-cache-docs:
