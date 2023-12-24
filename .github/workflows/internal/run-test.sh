@@ -45,7 +45,7 @@ set +e
 
 set -e
 
-jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}")" \
+jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}" '+%Y/%m/%d %H:%M:%S')" \
 '.[$target] = $date' >> "../timestamps.json"
 
 cat ".log-${PID}.txt"
