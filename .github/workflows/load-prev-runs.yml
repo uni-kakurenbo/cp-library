@@ -111,7 +111,7 @@ jobs:
   docs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
-      updated: ${{ steps.compare.outputs.differed }}
+      updated: ${{ steps.compare.outputs.differed != '0' }}
 
     steps:
     - name: Git Checkout

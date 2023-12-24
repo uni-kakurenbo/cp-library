@@ -28,15 +28,20 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     outputs:
-      quit: ${{ env.QUIT }}
+      fail: ${{ env.FAIL }}
       run-analysis: ${{ env.ANALYSIS }}
       run-verify: ${{ env.VERIFY }}
       gen-docs: ${{ env.DOCS }}
 
     env:
-      QUIT: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
+      FAIL: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
 
-      ANALYSIS: ${{ inputs.force || needs.cache.outputs.verify-status == '' }}
+      ANALYSIS: >-
+        ${{
+          inputs.force ||
+          needs.cache.outputs.analysis-status == '' ||
+          needs.cache.outputs.analysis-status == 'cancelled'
+        }}
 
       VERIFY: >-
         ${{
@@ -59,14 +64,14 @@ jobs:
         id: set-vars
         run: |
           echo "Force: ${{ inputs.force }}"
-          echo "Quit: ${QUIT}"
+          echo "Quit: ${FAIL}"
           echo "Analysis: ${ANALYSIS}"
           echo "Verify: ${VERIFY}"
           echo "Docs: ${DOCS}"
 
-  quit:
+  fail:
     needs: config
-    if: ${{ !cancelled() && needs.config.outputs.quit == 'true' }}
+    if: ${{ !cancelled() && needs.config.outputs.fail == 'true' }}
     runs-on: ${{ vars.RUNNER_IMAGE }}
     steps:
     - run: exit 1

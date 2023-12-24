@@ -14,4 +14,5 @@ fi
 echo "Differed: ${DIFFERED}"
 echo "Status: ${STATUS}"
 
+echo "differred=${DIFFERED}" >> "${GITHUB_OUTPUT}"
 echo "status=${STATUS}" >> "${GITHUB_OUTPUT}"
