@@ -35,7 +35,7 @@ jobs:
 
         echo "::group::Source files [$(cat ./hash.txt)]"
         cat ./cache-list.txt;
-        echo '::endgroup'
+        echo '::endgroup::'
 
     - name: Load previous source files hash
       uses: dawidd6/action-download-artifact@v3
@@ -86,7 +86,7 @@ jobs:
 
         echo "::group::Source files [$(cat ./hash.txt)]"
         cat ./cache-list.txt;
-        echo '::endgroup'
+        echo '::endgroup::'
 
     - name: Load previous source files hash
       uses: dawidd6/action-download-artifact@v3
@@ -135,7 +135,7 @@ jobs:
 
         echo "::group::Docs [$(cat ./hash.txt)]"
         cat ./cache-list.txt;
-        echo '::endgroup'
+        echo '::endgroup::'
 
     - name: Load previous docs hash
       uses: dawidd6/action-download-artifact@v3
