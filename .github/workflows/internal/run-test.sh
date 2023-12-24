@@ -21,6 +21,9 @@ LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
 
 EXIT_STATUS=0
 
+# shellcheck source=/dev/null
+source ./.github/workflows/internal/options.env
+
 set +e
 {
     echo "::group::${TARGET} (${PROBLEM}) [PID: ${PID}]"
@@ -31,14 +34,17 @@ set +e
     if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
         echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
     else
-        echo "::group::run test"
-
-        g++-12 -std=gnu++20 -O2 -I"${WORKING_DIRECTORY}" "${TARGET}" -o "${TARGET}.exe"
+        echo "::group::build"
+        g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
+        echo "::endgroup::"
 
         TESTER_OPTION=''
         if [ -f "../testcases/${PROBLEM_HASH}/checker" ]; then
             TESTER_OPTION+="--judge-command ../testcases/${PROBLEM_HASH}/checker"
         fi
+
+        echo "::group::run test"
+
         #shellcheck disable=SC2086
         oj test --command "${TARGET}.exe" --directory "../testcases/${PROBLEM_HASH}/" \
             --tle 30 ${TESTER_OPTION}
