@@ -217,15 +217,15 @@ numeric/modular/barrett_reduction.hpp:41:33: note: Shadowed declaration
 numeric/modular/barrett_reduction.hpp:105:27: note: Shadow variable
         const common_type mod = static_cast<common_type>(this->_mod);
                           ^
-test/zip_view.cpp:21:9: error: syntax error [syntaxError]
-        DEBUG("Case: #" + std::to_string(_));
-        ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int64_t , std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
+test/zip_view.cpp:21:9: error: syntax error [syntaxError]
+        DEBUG("Case: #" + std::to_string(_));
+        ^
 numeric/binomial_coefficient.hpp:241:5: style: Struct 'binomial_coefficient < std :: int32_t , std :: int32_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     binomial_coefficient(const mod_type mod, const value_type max = 20'000'000) noexcept(NO_EXCEPT)
     ^
@@ -460,10 +460,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modula
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -472,10 +472,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_mod
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_arbitrary_montgomery_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -910,9 +910,9 @@ adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container 
 iterable/accumulation.hpp:36:5: style: Struct 'accumulation' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
     ^
-iterable/accumulation.hpp:58:18: style: Unsigned expression 'left' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= left and left <= right and right < (size_type)std::size(*this));
-                 ^
 adapter/valarray.hpp:63:25: style: Struct 'valarray < std :: int64_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
+iterable/accumulation.hpp:58:18: style: Unsigned expression 'left' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= left and left <= right and right < (size_type)std::size(*this));
+                 ^
