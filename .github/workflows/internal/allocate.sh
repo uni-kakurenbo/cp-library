@@ -27,7 +27,7 @@ PID="$$"
   echo '::endgroup::'
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
-    echo "- ${TARGET}" >> "${GITHUB_STEP_SUMMARY}"
+    echo "- \`${TARGET}\` (\`${PROBLEM}\`)" >> "${GITHUB_STEP_SUMMARY}"
   else
     echo "${PROBLEM}" >> ./.verify-helper/problems.txt
     echo "${TARGET} ${PROBLEM} ${LAST_MODIFIED_AT}" >> ./.verify-helper/tests.txt
