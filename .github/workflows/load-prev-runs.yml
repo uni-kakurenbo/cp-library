@@ -45,7 +45,8 @@ jobs:
 
     - name: Compare cached hash
       id: compare
-      run: ./.github/workflows/internal/hash-compare.sh
+      working-directory: ./main/.github/workflows/internal/
+      run: ./hash-compare.sh
 
     - name: Upload analysis files hash
       uses: actions/upload-artifact@v3
@@ -93,7 +94,8 @@ jobs:
 
     - name: Compare cached hash
       id: compare
-      run: ./.github/workflows/internal/hash-compare.sh
+      working-directory: ./main/.github/workflows/internal/
+      run: ./hash-compare.sh
 
     - name: Upload verify files hash
       uses: actions/upload-artifact@v3
@@ -139,7 +141,8 @@ jobs:
 
     - name: Compare cached hash
       id: compare
-      run: ./.github/workflows/internal/hash-compare.sh
+      working-directory: ./main/.github/workflows/internal/
+      run: ./hash-compare.sh
 
     - name: Upload docs hash
       uses: actions/upload-artifact@v3
