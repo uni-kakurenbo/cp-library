@@ -508,9 +508,9 @@ jobs:
 
   dump:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: |
-      setup
-      run
+    needs:
+      - setup
+      - run
     if: ${{ !cancelled() }}
 
     steps:
