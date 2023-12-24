@@ -5,6 +5,7 @@ WORKING_DIRECTORY="${PWD}"
 TARGET="$1"
 PROBLEM="$2"
 PROBLEM_HASH="$3"
+LAST_MODIFY_DATE="$4"
 PID="$$"
 
 EXIT_STATUS=0
@@ -14,6 +15,8 @@ source ./.github/workflows/internal/options.env
 
 set +e
 {
+    echo "${TARGET} (${PROBLEM} : ${PROBLEM_HASH}) [PID: ${PID}]"
+
     echo "::group::build"
     time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
     echo "::endgroup::"

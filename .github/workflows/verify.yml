@@ -119,12 +119,12 @@ jobs:
           const testCount = fs.readFileSync(testList).toString().split('\n')
             .filter(Boolean)
             .map(fileAndProblem => fileAndProblem.split(' '))
-            .map(([ file, problem ]) => {
+            .map(([ file, problem, lastModifiedAt ]) => {
               const problemHash = crypto.createHash('md5').update(problem).digest('hex');
-              return { file, problem, problemHash };
+              return { file, problem, problemHash, lastModifiedAt };
             })
-            .map(({ file, problem, problemHash }) => {
-              testsWithHash += `${ file } ${ problem } ${ problemHash }\n`;
+            .map(({ file, problem, problemHash, lastModifiedAt }) => {
+              testsWithHash += `${ file } ${ problem } ${ problemHash } ${ lastModifiedAt }\n`;
             }).length;
 
           console.log(`::group::${ problemsCount } uncached problems filtered:`);
@@ -395,7 +395,10 @@ jobs:
           Promise.allSettled(
             fs.readFileSync(testList).toString().split(' ')
               .flatMap((_, i, seq) => i % 3 ? [] : [ seq.slice(i, i + 3) ])
-              .map((([ file, problem, problemHash ]) => ({ file, problem, problemHash : problemHash.trim() })))
+              .map((
+                ([ file, problem, problemHash, lastModifiedAt ]) =>
+                  ({ file, problem, problemHash : problemHash.trim(), lastModifiedAt })
+              ))
               .map(({ problemHash }) => {
                 console.log(`testcase-${ problemHash }`);
                 return cache.restoreCache([ `testcases/${ problemHash }/` ], `testcase-${ problemHash }`);
@@ -436,7 +439,7 @@ jobs:
         echo "Parallel execution: ${PARALLEL}"
 
         head -c -1 ../targets.txt | \
-        xargs -P ${PARALLEL} -n3 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3"' bash
+        xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
         ../timestamps.json > ../temp.json
