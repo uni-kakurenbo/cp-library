@@ -431,9 +431,10 @@ jobs:
         xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-        ../timestamps.json > ../temp.json
+          ../timestamps.json > ../temp.json
 
         cp -f ../temp.json ../timestamps.json
+        cat ../timestamps.json
 
     - name: Save timestamps
       uses: actions/upload-artifact@v3
