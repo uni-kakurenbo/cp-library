@@ -37,12 +37,15 @@ set +e
     echo "::endgroup::"
 
     RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
-    RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM}):\`${PROBLEM_HASH}\`"
-
+    RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
+    
+    echo "- ${RICH_TARGET} (${RICH_PROBLEM})" > ../summary.txt
+    echo "  - Testcase hash: :\`${PROBLEM_HASH}\`" >> ../summary.txt
+        
     if [ ${EXIT_STATUS} -eq 0 ]; then
-        echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >> ../passed-tests.txt
+        cat ../summary.txt >> ../passed-tests.txt
     else
-        echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >> ../failed-tests.txt
+        cat ../summary.txt >> ../failed-tests.txt
     fi
 
     echo
