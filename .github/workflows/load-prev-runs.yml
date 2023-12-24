@@ -43,6 +43,7 @@ jobs:
         name: analysis-files-hash
         path: ./prev/
         workflow_conclusion: ''
+        branch: ${{ github.ref_name }}
         search_artifacts: true
         if_no_artifact_found: ignore
         github_token: ${{ secrets.GH_PAT }}
@@ -93,6 +94,7 @@ jobs:
         name: verify-files-hash
         path: ./prev/
         workflow_conclusion: ''
+        branch: ${{ github.ref_name }}
         search_artifacts: true
         if_no_artifact_found: ignore
         github_token: ${{ secrets.GH_PAT }}
@@ -141,6 +143,7 @@ jobs:
         name: docs-files-hash
         path: ./prev/
         workflow_conclusion: ''
+        branch: ${{ github.ref_name }}
         search_artifacts: true
         if_no_artifact_found: ignore
         github_token: ${{ secrets.GH_PAT }}
