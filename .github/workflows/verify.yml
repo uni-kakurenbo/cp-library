@@ -520,18 +520,14 @@ jobs:
 
     - name: Print summery
       run: |
-        ls
-        ls ./result-00
 
-        if ls ./result-*/failed-tests.txt > /dev/null 2>&1; then
+        if ls ./result-*/ > /dev/null 2>&1; then
           echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
 
           for file in ./result-*/failed-tests.txt ; do
             sort -k1,1rn < "$file"
           done >> "${GITHUB_STEP_SUMMARY}"
-        fi
 
-        if ls ./result-*/passed-tests.txt > /dev/null 2>&1; then
           echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
 
           for file in ./result-*/passed-tests.txt ; do
