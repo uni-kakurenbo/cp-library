@@ -105,7 +105,7 @@ jobs:
       - cache
       - analyze
     uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
+    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.analyze.result != 'skipped' }}
     with:
       key: analysis
       status: ${{ needs.analyze.result }}
