@@ -9,8 +9,8 @@ on:
       docs-updated:
         value: ${{ jobs.docs.outputs.updated }}
     secrets:
-      github_token:
-        requires: true
+      GH_PAT:
+        required: true
 
 jobs:
   analysis:
