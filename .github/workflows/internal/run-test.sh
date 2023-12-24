@@ -16,7 +16,7 @@ source ./.github/workflows/internal/options.env
 set +e
 {
     echo "${TARGET} (${PROBLEM})"
-    echo "[HASH: ${PROBLEM_HASH}] [PID: ${PID}]"
+    echo "[Hash: ${PROBLEM_HASH}] [PID: ${PID}]"
 
     echo "::group::build"
     time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"

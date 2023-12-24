@@ -460,7 +460,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         # pattern: test-*
-        path: .verify-helper/
+        path: .verify-helper/tests/
 
     - name: Merge timestamps
       working-directory: .verify-helper
