@@ -5,7 +5,7 @@ WORKING_DIRECTORY="${PWD}"
 TARGET="$1"
 PROBLEM="$2"
 PROBLEM_HASH="$3"
-LAST_MODIFY_DATE="$4"
+LAST_MODIFIED_AT="$4"
 PID="$$"
 
 EXIT_STATUS=0
@@ -45,7 +45,7 @@ set +e
 
 set -e
 
-jq -n --arg target "${TARGET}" --arg date "${LAST_MODIFY_DATE}" \
+jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}")" \
 '.[$target] = $date' >> "../timestamps.json"
 
 cat ".log-${PID}.txt"

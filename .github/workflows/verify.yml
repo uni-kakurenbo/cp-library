@@ -119,12 +119,12 @@ jobs:
           const testCount = fs.readFileSync(testList).toString().split('\n')
             .filter(Boolean)
             .map(fileAndProblem => fileAndProblem.split(' '))
-            .map(([ file, problem, lastModifyDate ]) => {
+            .map(([ file, problem, lastModifiedAt ]) => {
               const problemHash = crypto.createHash('md5').update(problem).digest('hex');
-              return { file, problem, problemHash, lastModifyDate };
+              return { file, problem, problemHash, lastModifiedAt };
             })
-            .map(({ file, problem, problemHash, lastModifyDate }) => {
-              testsWithHash += `${ file } ${ problem } ${ problemHash } ${ lastModifyDate }\n`;
+            .map(({ file, problem, problemHash, lastModifiedAt }) => {
+              testsWithHash += `${ file } ${ problem } ${ problemHash } ${ lastModifiedAt }\n`;
             }).length;
 
           console.log(`::group::${ problemsCount } uncached problems filtered:`);
@@ -386,8 +386,8 @@ jobs:
             fs.readFileSync(testList).toString().split(' ')
               .flatMap((_, i, seq) => i % 4 ? [] : [ seq.slice(i, i + 4) ])
               .map((
-                ([ file, problem, problemHash, lastModifyDate ]) =>
-                  ({ file, problem, problemHash : problemHash.trim(), lastModifyDate })
+                ([ file, problem, problemHash, lastModifiedAt ]) =>
+                  ({ file, problem, problemHash : problemHash.trim(), lastModifiedAt })
               ))
               .map(({ problemHash }) => {
                 console.log(`testcase-${ problemHash }`);

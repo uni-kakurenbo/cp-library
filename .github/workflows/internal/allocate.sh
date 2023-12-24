@@ -30,7 +30,7 @@ PID="$$"
   #   echo "::notice file=${TARGET}::Already verified. (Test was skipped.)"
   # else
     echo "${PROBLEM}" >> ./.verify-helper/problems.txt
-    echo "${TARGET} ${PROBLEM} ${LAST_MODIFY_DATE}" >> ./.verify-helper/tests.txt
+    echo "${TARGET} ${PROBLEM} ${LAST_MODIFIED_AT}" >> ./.verify-helper/tests.txt
   # fi
 
   echo
