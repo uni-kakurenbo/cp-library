@@ -36,8 +36,13 @@ set +e
 
     echo "::endgroup::"
 
+    RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
+    RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM}):\`${PROBLEM_HASH}\`"
+
     if [ ${EXIT_STATUS} -eq 0 ]; then
-        echo "::notice file=${TARGET}::All tests passed successfully."
+        echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >> ../passed-tests.txt
+    else
+        echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >> ../failed-tests.txt
     fi
 
     echo

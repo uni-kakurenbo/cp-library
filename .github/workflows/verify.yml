@@ -26,12 +26,14 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v3
       with:
+        path: main
         fetch-depth: 0
 
     - name: Install octokit
       run: npm install @octokit/core
 
     - name: Filter test files
+      working-rectory: main
       run: |
         set -eu
 
@@ -43,13 +45,10 @@ jobs:
 
         echo -n > ./.verify-helper/problems.txt
         echo -n > ./.verify-helper/tests.txt
-
-        echo "<details><summary>Skipped tests</summary>" >> "${GITHUB_STEP_SUMMARY}"
+        echo -n > ../skipped-tests.txt
 
         time find verify -type f -name '*.test.cpp' | sort | \
         xargs -P ${N_PROC} -I {} bash ./.github/workflows/internal/allocate.sh {}
-
-        echo "</details>"
 
         sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
         cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
@@ -71,8 +70,8 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const problemList = "${{ github.workspace }}/.verify-helper/problems.txt";
-          const testList = "${{ github.workspace }}/.verify-helper/tests.txt";
+          const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
+          const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
           const fs = require('fs');
           const crypto = require('crypto');
@@ -136,7 +135,7 @@ jobs:
           fs.writeFile(testList, testsWithHash, err => { if(err) console.error(err) });
 
     - name: Generate node ids
-      working-directory: .verify-helper/
+      working-directory: main/.verify-helper/
       id: node-ids
       run: |
         set -eu
@@ -186,6 +185,13 @@ jobs:
         path: |
           ./.verify-helper/problems.txt
           ./.verify-helper/tests.txt
+        retention-days: 1
+
+    - name: Save summery
+      uses: actions/upload-artifact@v3
+      with:
+        name: skipped-tests
+        path: ./skipped-tests.txt
         retention-days: 1
 
   gen-cases:
@@ -397,6 +403,8 @@ jobs:
         ls "${{ github.workspace }}/testcases/"
 
         echo '{}' > ../timestamps.json
+        echo -n '' > ../passed-tests.txt
+        echo -n '' > ../failed-tests.txt
 
         {
           # if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
@@ -435,7 +443,17 @@ jobs:
         path: ./timestamps.json
         retention-days: 1
 
-  post-run:
+    - name: Save summery
+      uses: actions/upload-artifact@v3
+      if: ${{ !cancelled() }}
+      with:
+        name: result-${{ matrix.id }}
+        path: |
+          ./passed-tests.txt
+          ./filed-tests.txt
+        retention-days: 1
+
+  collect:
     runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: run
     if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
@@ -487,3 +505,31 @@ jobs:
         else
           echo "No timestamps updated."
         fi
+
+  dump:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    needs: run
+    if: ${{ !cancelled() }}
+
+    steps:
+    - name: Load timestamps
+      uses: actions/download-artifact@v3
+      with:
+        # pattern: test-*
+        path: ./
+
+    - name: Print summery
+      run: |
+        echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
+        for file in ./result-*/failed-tests.txt ; do
+          sort -k1,1rn < "$file"
+        done >> "${GITHUB_STEP_SUMMARY}"
+
+        echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
+
+        for file in ./result-*/passed-tests.txt ; do
+          sort -k1,1rn < "$file"
+        done >> "${GITHUB_STEP_SUMMARY}"
+
+        echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
+        cat ./skipped-tests/skipped-tests.txt >> "${GITHUB_STEP_SUMMARY}"
