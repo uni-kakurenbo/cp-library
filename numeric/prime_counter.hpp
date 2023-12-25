@@ -1,6 +1,10 @@
 #pragma once
 
 
+#include <vector>
+#include <functional>
+
+
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
 
