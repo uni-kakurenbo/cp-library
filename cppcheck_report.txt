@@ -16,10 +16,10 @@ test/fast_prime_sieve.cpp:20:9: error: syntax error [syntaxError]
 test/iteration.cpp:20:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
-test/sqrt.cpp:20:9: error: syntax error [syntaxError]
+test/stride_view.cpp:21:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
-test/stride_view.cpp:21:9: error: syntax error [syntaxError]
+test/sqrt.cpp:20:9: error: syntax error [syntaxError]
         DEBUG("Case: #" + std::to_string(_));
         ^
 data_structure/wavelet_matrix.hpp:545:0: error: Found a exit path from function with non-void return type that has missing return statement [missingReturn]
@@ -457,10 +457,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_mon
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_32bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_builtin_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < static_barrett_modular_context_64bit < 998244353 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -487,10 +487,10 @@ numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_builtin_modul
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_barrett_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
-numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_montgomery_modular_context_32bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
               ^
 numeric/modular/modint.hpp:108:15: style: Struct 'modint < dynamic_arbitrary_montgomery_modular_context_64bit < -1 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -505,6 +505,15 @@ internal/range_reference.hpp:49:0: error: Found a exit path from function with n
 data_structure/fenwick_tree.hpp:142:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
     ^
+data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= l && l <= this->_n);
+                 ^
+data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
+        assert(0 <= r && r <= this->_n);
+                 ^
+data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
+        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
+            ^
 data_structure/segment_tree.hpp:166:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
     ^
@@ -517,12 +526,6 @@ data_structure/segment_tree.hpp:93:18: style: Unsigned expression 'l' can't be n
 data_structure/segment_tree.hpp:120:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= r && r <= this->_n);
                  ^
-data_structure/fenwick_tree.hpp:88:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= l && l <= this->_n);
-                 ^
-data_structure/fenwick_tree.hpp:102:18: style: Unsigned expression 'r' can't be negative so it is unnecessary to test it. [unsignedPositive]
-        assert(0 <= r && r <= this->_n);
-                 ^
 data_structure/segment_tree.hpp:186:9: style: Local variable 'p' shadows outer variable [shadowVariable]
         REPD(p, 1, this->_size) this->update(p);
         ^
@@ -532,9 +535,6 @@ data_structure/segment_tree.hpp:184:19: note: Shadowed declaration
 data_structure/segment_tree.hpp:186:9: note: Shadow variable
         REPD(p, 1, this->_size) this->update(p);
         ^
-data_structure/fenwick_tree.hpp:64:13: performance: Prefer prefix ++/-- operators for non-primitive types. [postfixOperator]
-        for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
-            ^
 adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container < std :: vector < lib :: std :: pair < int , int > ... > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     extended_container(const Base& base) : Base(base) {}
     ^
@@ -700,7 +700,7 @@ adapter/internal/container_extender.hpp:29:5: style: Struct 'extended_container 
 adapter/valarray.hpp:63:25: style: Struct 'valarray < std :: int32_t >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
                         ^
-algebraic/combined.hpp:24:5: style: Struct 'combined' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+algebraic/combined.hpp:27:5: style: Struct 'combined' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     combined(const T& v) : combined(v, v) {};
     ^
 data_structure/adapter/set.hpp:63:5: style: Struct 'set_adapter_impl' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
@@ -781,7 +781,7 @@ data_structure/adapter/set.hpp:140:5: style: Struct 'set_adapter < lib :: segmen
 data_structure/adapter/set.hpp:63:5: style: Struct 'set_adapter_impl < lib :: segment_tree , actions :: range_set_range_sum >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     set_adapter_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
     ^
-algebraic/combined.hpp:24:5: style: Struct 'combined < algebraic :: addition < internal unsigned long > , algebraic :: minimum < internal unsigned long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+algebraic/combined.hpp:27:5: style: Struct 'combined < algebraic :: addition < internal unsigned long > , algebraic :: minimum < internal unsigned long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     combined(const T& v) : combined(v, v) {};
     ^
 verify/set/01.test.cpp:34:13: style: Local variable 't' shadows outer variable [shadowVariable]
@@ -829,6 +829,9 @@ iterable/compressed.hpp:32:5: style: Struct 'compressed < unsigned int , valarra
 iterable/compressed.hpp:48:5: style: Struct 'compressed < unsigned int , valarray < u32 > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
     ^
+adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
+                        ^
 data_structure/disjoint_sparse_table.hpp:115:5: style: Struct 'core' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     core(I first, S last) noexcept(NO_EXCEPT)
     ^
@@ -838,9 +841,6 @@ data_structure/disjoint_sparse_table.hpp:104:18: style: Checking if unsigned exp
 data_structure/disjoint_sparse_table.hpp:143:18: style: Unsigned expression 'l' can't be negative so it is unnecessary to test it. [unsignedPositive]
         assert(0 <= l && l <= r && r <= this->size());
                  ^
-adapter/valarray.hpp:63:25: style: Struct 'valarray < unsigned int >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
-    template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
-                        ^
 iterable/accumulation.hpp:36:5: style: Struct 'accumulation < long long , valarray < long > >' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
     accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
     ^
