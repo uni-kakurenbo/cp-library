@@ -1,10 +1,13 @@
 #pragma once
 
+
 #include <concepts>
 #include <utility>
 
+
 #include "algebraic/base.hpp"
 #include "algebraic/internal/concepts.hpp"
+
 
 namespace lib {
 
