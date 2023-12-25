@@ -39,7 +39,7 @@ set +e
     RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
     RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
     
-    echo "- ${RICH_TARGET} (${RICH_PROBLEM})" > ../summary.txt
+    echo -n "- ${RICH_TARGET} (${RICH_PROBLEM})\r" > ../summary.txt
     echo "  - Testcase hash: :\`${PROBLEM_HASH}\`" >> ../summary.txt
         
     if [ ${EXIT_STATUS} -eq 0 ]; then
