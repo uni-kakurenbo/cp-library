@@ -526,8 +526,7 @@ jobs:
 
           echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
 
-          cat ./result-*/failed-tests.txt > ./temp.txt
-          sort ./temp.txt | tr '\r' '\n'
+          cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
 
           if [ -s ./temp.txt ]; then
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
@@ -535,8 +534,7 @@ jobs:
 
           echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
 
-          cat ./result-*/passed-tests.txt > ./temp.txt
-          sort ./temp.txt | tr '\r' '\n'
+          cat ./result-*/passed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
 
           if [ -s ./temp.txt ]; then
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
