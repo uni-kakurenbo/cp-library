@@ -219,13 +219,6 @@ jobs:
         cache: pip
         cache-dependency-path: '**/requirements.txt'
 
-    - name: Cache Python modules
-      uses: actions/cache@v3
-      id: python-cache
-      with:
-        path: '~/**/site-packages/'
-        key: python-modules
-
     - name: Cache Node modules
       uses: actions/cache@v3
       id: node-cache
@@ -241,13 +234,11 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        #if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
-          {
-            echo '::group::pip install'
-            pip3 install --user -r ./.github/workflows/internal/requirements.txt
-            echo '::endgroup::'
-          } &
-        #fi
+        {
+         echo '::group::pip install'
+          pip3 install --user -r ./.github/workflows/internal/requirements.txt
+          echo '::endgroup::'
+        } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
@@ -377,13 +368,6 @@ jobs:
         cache: pip
         cache-dependency-path: '**/requirements.txt'
 
-    - name: Cache Python modules
-      uses: actions/cache@v3
-      id: python-cache
-      with:
-        path: '~/**/site-packages/'
-        key: python-modules
-
     - name: Cache Node modules
       uses: actions/cache@v3
       id: node-cache
@@ -393,13 +377,11 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        #if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
-          {
-            echo '::group::pip install'
-            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-            echo '::endgroup::'
-          } &
-        #fi
+        {
+          echo '::group::pip install'
+          pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+          echo '::endgroup::'
+        } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
