@@ -5,18 +5,27 @@ on:
   workflow_call:
     outputs:
       analysis-status:
-        value: ${{ jobs.analysis.outputs.status }}
+        value: ${{ jobs.load-status.outputs.analysis }}
       verify-status:
-        value: ${{ jobs.verify.outputs.status }}
+        value: ${{ jobs.load-status.outputs.verify }}
       docs-status:
-        value: ${{ jobs.docs.outputs.status }}
+        value: ${{ jobs.load-status.outputs.docs }}
     secrets:
       GH_PAT:
         required: true
 
 jobs:
-  analysis:
-    name: load-status (analysis)
+  load-status:
+    strategy:
+      matrix:
+        target: [ "analysis", "verify", "docs" ]
+
+    outputs:
+      analysis: ${{ steps.compare.outputs.analysis }}
+      verify: ${{ steps.compare.outputs.verify }}
+      docs: ${{ steps.compare.outputs.docs }}
+
+    name: load-status (${{ matrix.target }})
 
     runs-on: ${{ vars.RUNNER_IMAGE }}
     outputs:
@@ -33,6 +42,18 @@ jobs:
         set -eu
 
         find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
+
+        if [ '${{ matrix.target }}' == 'verify' ]; then
+          echo './main/.github/workflows/internal/options.env' >> ./file-list.txt
+          echo './main/.github/workflows/internal/allocate.sh' >> ./file-list.txt
+          echo './main/.github/workflows/internal/run-test.sh' >> ./file-list.txt
+          echo './main/.github/workflows/verify.yml' >> ./file-list.txt
+        fi
+
+        if [ '${{ matrix.target }}' == 'docs' ]; then
+          find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
+          echo './main/.github/workflows/gen-docs.yml' >> ./file-list.txt
+        fi
 
         cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
         sha1sum ./cache-list.txt | cut -d ' ' -f 1 > ./hash.txt
@@ -54,112 +75,27 @@ jobs:
 
     - name: Compare cached hash
       id: compare
-      run: bash ./main/.github/workflows/internal/hash-compare.sh
+      run: |
+        set +e
+
+        touch ./prev/hash.txt
+
+        diff -q ./hash.txt ./prev/hash.txt
+        DIFFERED="$?"
+
+        STATUS=""
+        if [ "${DIFFERED}" == '0' ]; then
+            STATUS=$(cat ./prev/status.txt)
+        fi
+
+        echo "Differed: ${DIFFERED}"
+        echo "Status: ${STATUS}"
+
+        echo "${{ matrix.target }}=${STATUS}" >> "${GITHUB_OUTPUT}"
+
 
     - name: Upload analysis files hash
       uses: actions/upload-artifact@v3
       with:
         name: --analysis-files-hash
-        path: ./hash.txt
-
-  verify:
-    name: load-status (verify)
-
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    outputs:
-      status: ${{ steps.compare.outputs.status }}
-
-    steps:
-    - name: Git Checkout
-      uses: actions/checkout@v3
-      with:
-        path: main
-
-    - name: Compute hash
-      run: |
-        set -eu
-
-        find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
-
-        echo './main/.github/workflows/internal/options.env' >> ./file-list.txt
-        echo './main/.github/workflows/internal/allocate.sh' >> ./file-list.txt
-        echo './main/.github/workflows/internal/run-test.sh' >> ./file-list.txt
-        echo './main/.github/workflows/verify.yml' >> ./file-list.txt
-
-        cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
-        sha1sum ./cache-list.txt | cut -d ' ' -f 1 > ./hash.txt
-
-        echo "::group::Source files [$(cat ./hash.txt)]"
-        cat ./cache-list.txt;
-        echo '::endgroup::'
-
-    - name: Load previous source files hash
-      uses: dawidd6/action-download-artifact@v3
-      with:
-        name: verify-files-hash
-        path: ./prev/
-        workflow_conclusion: ''
-        branch: ${{ github.ref_name }}
-        search_artifacts: true
-        if_no_artifact_found: ignore
-        github_token: ${{ secrets.GH_PAT }}
-
-    - name: Compare cached hash
-      id: compare
-      run: bash ./main/.github/workflows/internal/hash-compare.sh
-
-    - name: Upload verify files hash
-      uses: actions/upload-artifact@v3
-      with:
-        name: --verify-files-hash
-        path: ./hash.txt
-
-  docs:
-    name: load-status (docs)
-
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    outputs:
-      status: ${{ steps.compare.outputs.status }}
-
-    steps:
-    - name: Git Checkout
-      uses: actions/checkout@v3
-      with:
-        path: main
-
-    - name: Compute hash
-      run: |
-        set -eu
-
-        find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
-
-        find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
-        echo './main/.github/workflows/gen-docs.yml' >> ./file-list.txt
-
-        cat ./file-list.txt | xargs sha1sum >> ./cache-list.txt
-        sha1sum ./cache-list.txt | cut -d ' ' -f 1 > ./hash.txt
-
-        echo "::group::Docs [$(cat ./hash.txt)]"
-        cat ./cache-list.txt;
-        echo '::endgroup::'
-
-    - name: Load previous docs hash
-      uses: dawidd6/action-download-artifact@v3
-      with:
-        name: docs-files-hash
-        path: ./prev/
-        workflow_conclusion: ''
-        branch: ${{ github.ref_name }}
-        search_artifacts: true
-        if_no_artifact_found: ignore
-        github_token: ${{ secrets.GH_PAT }}
-
-    - name: Compare cached hash
-      id: compare
-      run: bash ./main/.github/workflows/internal/hash-compare.sh
-
-    - name: Upload docs hash
-      uses: actions/upload-artifact@v3
-      with:
-        name: --docs-files-hash
         path: ./hash.txt
