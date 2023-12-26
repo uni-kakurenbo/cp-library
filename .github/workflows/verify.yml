@@ -210,11 +210,20 @@ jobs:
       with:
         python-version: '3.11.x'
         token: ${{ secrets.GH_PAT }}
+        cache: pip
+        cache-dependency-path: '**/requirements.txt'
+
+    - name: Cache Node modules
+      uses: actions/cache@v3
+      with:
+        path: '**/node_modules'
+        key: node-action-module
 
     - name: Install oj-verify and action modules
       run: |
-        pip3 install online-judge-tools &
+        pip3 install -r ./.github/workflows/internal/requirements.txt &
         npm install @actions/cache &
+
         wait
 
     - name: Load meta data
@@ -332,10 +341,18 @@ jobs:
       with:
         python-version: '3.11.x'
         token: ${{ secrets.GH_PAT }}
+        cache: pip
+        cache-dependency-path: '**/requirements.txt'
+
+    - name: Cache Node modules
+      uses: actions/cache@v3
+      with:
+        path: '**/node_modules'
+        key: node-action-module
 
     - name: Install oj-verify and action modules
       run: |
-        pip3 install online-judge-tools &
+        pip3 install -r ./.github/workflows/internal/requirements.txt &
         npm install @actions/cache &
         wait
 
