@@ -63,8 +63,10 @@ jobs:
     - name: Load previous source files hash
       uses: dawidd6/action-download-artifact@v3
       with:
-        name: ${{ matrix.matrix }}-files-hash
+        name: ${{ matrix.target }}-files-hash
+        name_is_regexp: false
         path: ./prev/
+        workflow: save-status.yml
         workflow_conclusion: ''
         branch: ${{ github.ref_name }}
         search_artifacts: true
@@ -89,11 +91,11 @@ jobs:
         echo "Differed: ${DIFFERED}"
         echo "Status: ${STATUS}"
 
-        echo "${{ matrix.matrix }}=${STATUS}" >> "${GITHUB_OUTPUT}"
+        echo "${{ matrix.target }}=${STATUS}" >> "${GITHUB_OUTPUT}"
 
 
     - name: Upload analysis files hash
       uses: actions/upload-artifact@v3
       with:
-        name: --${{ matrix.matrix }}-files-hash
+        name: --${{ matrix.target }}-files-hash
         path: ./hash.txt
