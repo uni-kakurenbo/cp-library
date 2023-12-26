@@ -205,6 +205,12 @@ jobs:
         id: ${{ fromJSON(needs.setup.outputs.gen-ids) }}
 
     steps:
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+        sparse-cechkout: ./.github/workflows/internal/
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
