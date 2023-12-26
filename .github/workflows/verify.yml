@@ -223,7 +223,7 @@ jobs:
       uses: actions/cache@v3
       id: python-cache
       with:
-        path: '~/**/site-packages/'
+        path: '${{ env.LD_LIBRARY_PATH }}'
         key: python-modules
 
     - name: Cache Node modules
@@ -381,7 +381,7 @@ jobs:
       uses: actions/cache@v3
       id: python-cache
       with:
-        path: '~/**/site-packages/'
+        path: '${{ env.LD_LIBRARY_PATH }}'
         key: python-modules
 
     - name: Cache Node modules
