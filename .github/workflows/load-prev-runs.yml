@@ -63,7 +63,7 @@ jobs:
     - name: Load previous source files hash
       uses: dawidd6/action-download-artifact@v3
       with:
-        name: analysis-files-hash
+        name: ${{ matrix.analysis }}-files-hash
         path: ./prev/
         workflow_conclusion: ''
         branch: ${{ github.ref_name }}
@@ -95,5 +95,5 @@ jobs:
     - name: Upload analysis files hash
       uses: actions/upload-artifact@v3
       with:
-        name: --analysis-files-hash
+        name: --${{ matrix.analysis }}-files-hash
         path: ./hash.txt
