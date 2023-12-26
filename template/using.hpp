@@ -50,6 +50,8 @@ using lib::SPC;
 
 using lib::DIRS4;
 using lib::DIRS8;
+using lib::DIRS4P;
+using lib::DIRS8P;
 
 using lib::input_adapter;
 using lib::output_adapter;
