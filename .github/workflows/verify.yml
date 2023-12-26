@@ -219,11 +219,17 @@ jobs:
         cache: pip
         cache-dependency-path: '**/requirements.txt'
 
+    - name: Cache Python modules
+      uses: actions/cache@v3
+      with:
+        path: '**/site-packages'
+        key: python-modules
+
     - name: Cache Node modules
       uses: actions/cache@v3
       with:
         path: '**/node_modules'
-        key: node-action-module
+        key: node-modules
 
     - name: Install oj-verify and action modules
       run: |
@@ -350,11 +356,17 @@ jobs:
         cache: pip
         cache-dependency-path: '**/requirements.txt'
 
+    - name: Cache Python modules
+      uses: actions/cache@v3
+      with:
+        path: '**/site-packages'
+        key: python-modules
+
     - name: Cache Node modules
       uses: actions/cache@v3
       with:
         path: '**/node_modules'
-        key: node-action-module
+        key: node-modules
 
     - name: Install oj-verify and action modules
       run: |

@@ -66,7 +66,6 @@ jobs:
         name: ${{ matrix.target }}-files-hash
         name_is_regexp: false
         path: ./prev/
-        workflow: save-status.yml
         workflow_conclusion: ''
         branch: ${{ github.ref_name }}
         search_artifacts: true
