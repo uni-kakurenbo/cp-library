@@ -244,7 +244,7 @@ jobs:
         if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
           {
             echo '::group::pip install'
-            pip3 install -r ./.github/workflows/internal/requirements.txt
+            pip3 install --user -r ./.github/workflows/internal/requirements.txt
             echo '::endgroup::'
           } &
         fi
@@ -396,7 +396,7 @@ jobs:
         if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
           {
             echo '::group::pip install'
-            pip3 install -r ./main/.github/workflows/internal/requirements.txt
+            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
             echo '::endgroup::'
           } &
         fi
