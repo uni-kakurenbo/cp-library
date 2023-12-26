@@ -231,6 +231,12 @@ jobs:
         path: '**/node_modules'
         key: node-modules
 
+    - name: Cache online-judge-tools
+      uses: actions/cache@v3
+      with:
+        path: '**/online-judge-tools'
+        key: online-judge-tools
+
     - name: Install oj-verify and action modules
       run: |
         pip3 install -r ./.github/workflows/internal/requirements.txt &
@@ -453,10 +459,6 @@ jobs:
             echo '{}' >> ./.verify-helper/timestamps.remote.json
           fi
         }
-
-        # echo '::group::oj download prepare'
-        # oj download --system https://judge.yosupo.jp/problem/aplusb
-        # echo '::endgroup::'
 
         PARALLEL=$(nproc)
         echo "Parallel execution: ${PARALLEL}"
