@@ -28,8 +28,6 @@ jobs:
     name: load-status (${{ matrix.target }})
 
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    outputs:
-      status: ${{ steps.compare.outputs.status }}
 
     steps:
     - name: Git Checkout
