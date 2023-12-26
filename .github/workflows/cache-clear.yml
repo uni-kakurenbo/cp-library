@@ -1,7 +1,13 @@
 name: cache-clear
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      prefix:
+        type: string
+        default: ''
+        required: false
 
 jobs:
   clear:
@@ -10,3 +16,4 @@ jobs:
       - uses: snnaplab/delete-branch-cache-action@v1
         with:
           github-token: ${{ secrets.GH_PAT }}
+          key: ${{ inputs.prefix }}
