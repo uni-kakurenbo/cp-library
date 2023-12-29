@@ -69,10 +69,10 @@ jobs:
       with:
         ruby-version: '3.1'
         bundler-cache: true
-        working-directory: ./.verify-helper/markdown
+        working-directory: ./main/.verify-helper/markdown
 
     - name: Build HTML
-      working-directory: ./.verify-helper/markdown
+      working-directory: ./main/.verify-helper/markdown
       run: |
         bundle install
         bundle exec jekyll build -I -d ../../_site --baseurl ./${{ github.repository_name }}/
