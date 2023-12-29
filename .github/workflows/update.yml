@@ -64,14 +64,14 @@ jobs:
         }}
 
     steps:
-      - name: Set variables
-        id: set-vars
-        run: |
-          echo "Force: ${{ inputs.force }}"
-          echo "Quit: ${FAIL}"
-          echo "Analysis: ${ANALYSIS}"
-          echo "Verify: ${VERIFY}"
-          echo "Docs: ${DOCS}"
+    - name: Set variables
+      id: set-vars
+      run: |
+        echo "Force: ${{ inputs.force }}"
+        echo "Quit: ${FAIL}"
+        echo "Analysis: ${ANALYSIS}"
+        echo "Verify: ${VERIFY}"
+        echo "Docs: ${DOCS}"
 
   fail:
     needs: config
@@ -93,8 +93,8 @@ jobs:
 
   documantaion:
     needs:
-      - config
-      - verify
+    - config
+    - verify
     if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
@@ -102,8 +102,8 @@ jobs:
   cache-analyze:
     name: cache
     needs:
-      - cache
-      - analyze
+    - cache
+    - analyze
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.analyze.result != 'skipped' }}
     with:
@@ -113,8 +113,8 @@ jobs:
   cache-verify:
     name: cache
     needs:
-      - cache
-      - verify
+    - cache
+    - verify
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
     with:
@@ -124,8 +124,8 @@ jobs:
   cache-docs:
     name: cache
     needs:
-      - cache
-      - documantaion
+    - cache
+    - documantaion
     uses: ./.github/workflows/save-status.yml
     if: ${{ !cancelled() && needs.cache.result == 'success' && needs.documantaion.result != 'skipped' }}
     with:
