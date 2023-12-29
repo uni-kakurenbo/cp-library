@@ -234,15 +234,13 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
+        {
           {
-            {
-              echo '::group::pip install'
-              pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-              echo '::endgroup::'
-            } &> ./.install-log-python.txt
-          } &
-        fi
+            echo '::group::pip install'
+            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+            echo '::endgroup::'
+          } &> ./.install-log-python.txt
+        } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
@@ -385,15 +383,13 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
+        {
           {
-            {
-              echo '::group::pip install'
-              pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-              echo '::endgroup::'
-            } &> ./.install-log-python.txt
-          } &
-        fi
+            echo '::group::pip install'
+            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+            echo '::endgroup::'
+          } &> ./.install-log-python.txt
+        } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
