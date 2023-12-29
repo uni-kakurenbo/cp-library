@@ -182,7 +182,13 @@ jobs:
         path: |
           ./main/.verify-helper/problems.txt
           ./main/.verify-helper/tests.txt
-          ./skipped-tests.txt
+        retention-days: 1
+
+    - name: Save summery
+      uses: actions/upload-artifact@v3
+      with:
+        name: skipped-tests
+        path: ./skipped-tests.txt
         retention-days: 1
 
   gen-cases:
@@ -416,8 +422,6 @@ jobs:
 
     - name: Allocate test files
       run: |
-        ls
-
         TEST_FILES=$(
           cat ./tests.txt  | \
           sort | \
