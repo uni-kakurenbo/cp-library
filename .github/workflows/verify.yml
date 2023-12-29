@@ -182,13 +182,7 @@ jobs:
         path: |
           ./main/.verify-helper/problems.txt
           ./main/.verify-helper/tests.txt
-        retention-days: 1
-
-    - name: Save summery
-      uses: actions/upload-artifact@v3
-      with:
-        name: skipped-tests
-        path: ./skipped-tests.txt
+          ./skipped-tests.txt
         retention-days: 1
 
   gen-cases:
@@ -316,8 +310,11 @@ jobs:
         }
         export -f gen
 
+        PARALLEL=$(nproc)
+        echo "Parallel execution: ${PARALLEL}"
+
         head -c -1 ../targets.txt | \
-        xargs -P0 -n2 bash -c 'gen "$1" "$2"' bash
+        xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' bash
 
     - name: Cache judge data
       uses: actions/github-script@v7
@@ -483,11 +480,11 @@ jobs:
           fi
         }
 
-        # PARALLEL=$(nproc)
-        # echo "Parallel execution: ${PARALLEL}"
+        PARALLEL=$(nproc)
+        echo "Parallel execution: ${PARALLEL}"
 
         time head -c -1 ../targets.txt | \
-        xargs -P0 -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
+        xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
 
         jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
           ../timestamps.json > ../temp.json
