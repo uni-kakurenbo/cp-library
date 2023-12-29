@@ -75,7 +75,7 @@ jobs:
       working-directory: ./main/.verify-helper/markdown
       run: |
         bundle install
-        bundle exec jekyll build -I -d ${{ github.workspace }}/_site/ --baseurl /${ github.event.repository.name }/
+        bundle exec jekyll build -I -d ${{ github.workspace }}/_site/ --baseurl /${{ github.event.repository.name }}/
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
