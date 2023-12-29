@@ -72,7 +72,7 @@ jobs:
 
   deploy:
     runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: generate
+    needs: build
 
     permissions:
       contents: write
