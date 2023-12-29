@@ -12,9 +12,6 @@ concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  pages: write
-
 jobs:
   generate:
     runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -84,8 +81,11 @@ jobs:
       uses: actions/upload-pages-artifact@v2
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_IMAGE }}
     needs: generate
+
+    permissions:
+      token-id: write
 
     environment:
       name: github-pages
