@@ -416,6 +416,8 @@ jobs:
 
     - name: Allocate test files
       run: |
+        ls
+
         TEST_FILES=$(
           cat ./tests.txt  | \
           sort | \
