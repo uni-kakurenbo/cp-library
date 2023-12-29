@@ -483,8 +483,8 @@ jobs:
           fi
         }
 
-        PARALLEL=$(nproc)
-        echo "Parallel execution: ${PARALLEL}"
+        # PARALLEL=$(nproc)
+        # echo "Parallel execution: ${PARALLEL}"
 
         time head -c -1 ../targets.txt | \
         xargs -P0 -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
