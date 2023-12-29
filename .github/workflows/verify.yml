@@ -317,7 +317,7 @@ jobs:
         export -f gen
 
         head -c -1 ../targets.txt | \
-        xargs -P $(nproc) -n2 bash -c 'gen "$1" "$2"' bash
+        xargs -P2 -n2 bash -c 'gen "$1" "$2"' bash
 
     - name: Cache judge data
       uses: actions/github-script@v7
