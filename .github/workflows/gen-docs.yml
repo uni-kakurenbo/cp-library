@@ -85,7 +85,9 @@ jobs:
     needs: generate
 
     permissions:
-      token-id: write
+      contents: write
+      pages: write
+      id-token: write
 
     environment:
       name: github-pages
