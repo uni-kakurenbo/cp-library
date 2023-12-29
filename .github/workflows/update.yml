@@ -91,7 +91,7 @@ jobs:
     uses: ./.github/workflows/verify.yml
     secrets: inherit
 
-  docs:
+  documantaion:
     needs:
     - config
     - verify
@@ -125,9 +125,9 @@ jobs:
     name: cache
     needs:
     - cache
-    - docs
+    - documantaion
     uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.docs.result != 'skipped' }}
+    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.documantaion.result != 'skipped' }}
     with:
       key: docs
-      status: ${{ needs.docs.result }}
+      status: ${{ needs.documantaion.result }}
