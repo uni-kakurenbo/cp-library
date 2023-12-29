@@ -1,6 +1,0 @@
-title: "Uni's Library for Competitive Programming"
-exclude:
-  - test/
-  - tmp/
-  - vendor/
-theme: jekyll-theme-cayman
