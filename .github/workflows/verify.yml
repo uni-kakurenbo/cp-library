@@ -37,8 +37,6 @@ jobs:
       run: |
         set -eu
 
-        N_PROC=$(nproc)
-
         if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
@@ -48,7 +46,7 @@ jobs:
         echo -n > ../skipped-tests.txt
 
         time find verify -type f -name '*.test.cpp' | sort | \
-        xargs -P ${N_PROC} -I {} bash ./.github/workflows/internal/allocate.sh {}
+        xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {}
 
         sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
         cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
