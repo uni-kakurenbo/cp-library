@@ -234,21 +234,30 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        {
-         echo '::group::pip install'
-          pip3 install --user -r ./.github/workflows/internal/requirements.txt
-          echo '::endgroup::'
-        } &
+        if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
+          {
+            {
+              echo '::group::pip install'
+              pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+              echo '::endgroup::'
+            } &> ./.install-log-python.txt
+          } &
+        fi
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
-            echo '::group::npm install'
-            npm install @actions/cache
-            echo '::endgroup::'
+            {
+              echo '::group::npm install'
+              npm install @actions/cache
+              echo '::endgroup::'
+            } &> ./.install-log-node.txt
           } &
         fi
 
         wait
+
+        echo ./.install-log-python.txt
+        echo ./.install-log-node.txt
 
     - name: Load meta data
       uses: actions/download-artifact@v3
@@ -376,21 +385,30 @@ jobs:
 
     - name: Install oj-verify and action modules
       run: |
-        {
-          echo '::group::pip install'
-          pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-          echo '::endgroup::'
-        } &
+        if [ '${{ steps.python-cache.outputs.cache-hit }}' != 'true' ]; then
+          {
+            {
+              echo '::group::pip install'
+              pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+              echo '::endgroup::'
+            } &> ./.install-log-python.txt
+          } &
+        fi
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
           {
-            echo '::group::npm install'
-            npm install @actions/cache
-            echo '::endgroup::'
+            {
+              echo '::group::npm install'
+              npm install @actions/cache
+              echo '::endgroup::'
+            } &> ./.install-log-node.txt
           } &
         fi
 
         wait
+
+        echo ./.install-log-python.txt
+        echo ./.install-log-node.txt
 
     - name: Clone AC-Library
       uses: actions/checkout@v3
