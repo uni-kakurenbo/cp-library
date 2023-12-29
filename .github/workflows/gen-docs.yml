@@ -81,11 +81,13 @@ jobs:
       uses: actions/upload-pages-artifact@v2
 
   deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: web-build
+
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
