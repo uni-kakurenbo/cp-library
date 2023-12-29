@@ -37,6 +37,9 @@ jobs:
       run: |
         set -eu
 
+        N_PARALLEL=$(nproc)
+        N_PARALLEL=$((N_PARALLEL * 4))
+
         if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
         fi
@@ -46,7 +49,7 @@ jobs:
         echo -n > ../skipped-tests.txt
 
         time find verify -type f -name '*.test.cpp' | sort | \
-        xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {}
+        xargs -P ${N_PARALLEL} -I {} bash ./.github/workflows/internal/allocate.sh {}
 
         sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
         cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
