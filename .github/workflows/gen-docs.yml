@@ -57,7 +57,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   needs: generate
 
-    steps:
+    # steps:
     - name: Git checkout
       uses: actions/checkout@v3
 
