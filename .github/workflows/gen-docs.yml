@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  generate:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
@@ -51,39 +51,8 @@ jobs:
         time oj-verify docs --jobs $(nproc)
         echo '::endgroup::'
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
+    - name: Upload raw data
+      uses: actions/upload-artifacts@v3
       with:
-        ruby-version: '3.1'
-        bundler-cache: true
-        working-directory: ./main/.verify-helper/markdown
-
-    - name: Build HTML
-      working-directory: ./main/.verify-helper/markdown
-      run: |
-        bundle install
-        bundle exec jekyll build -I -d ${{ github.workspace }}/_site/ --baseurl /${{ github.event.repository.name }}/
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-
-  deploy:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: build
-
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+        name: raw-pages
+        path: ./main/.verify-helper/markdown/

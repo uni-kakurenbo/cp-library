@@ -1,0 +1,60 @@
+name: documentation
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      artifact-name:
+        type: string
+        required: true
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    steps:
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+
+    - name: Download raw data
+      uses: actions/download-artifacts@v3
+      with:
+        name: raw-pages
+        path: ./_raw/
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+        working-directory: ./_raw/
+
+    - name: Build HTML
+      working-directory: ./_raw/
+      run: |
+        bundle install
+        bundle exec jekyll build -I -d ${{ github.workspace }}/_site/ --baseurl /${{ github.event.repository.name }}/docs/
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    runs-on: ${{ vars.RUNNER_IMAGE }}
+    needs: build
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
