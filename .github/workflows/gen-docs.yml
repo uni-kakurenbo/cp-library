@@ -12,6 +12,9 @@ concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  pages: write
+
 jobs:
   generate:
     runs-on: ${{ vars.RUNNER_IMAGE }}
