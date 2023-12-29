@@ -59,4 +59,4 @@ jobs:
 
   finalize:
     needs: generate
-    uses: ./.github/workflows/gh-pages.sh
+    uses: ./.github/workflows/gh-pages.yml
