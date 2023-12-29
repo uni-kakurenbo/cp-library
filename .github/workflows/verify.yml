@@ -38,7 +38,7 @@ jobs:
         set -eu
 
         N_PARALLEL=$(nproc)
-        N_PARALLEL=$((N_PARALLEL * 4))
+        N_PARALLEL=$((N_PARALLEL * 8))
 
         if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
           echo '{}' > ./.verify-helper/timestamps.remote.json
