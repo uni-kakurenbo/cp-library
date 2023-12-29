@@ -2,12 +2,7 @@ name: documentation
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_dispatch:
   workflow_call:
-    inputs:
-      artifact-name:
-        type: string
-        required: true
 
 concurrency:
   group: docs-${{ github.ref }}
@@ -18,14 +13,14 @@ jobs:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
     - name: Download raw data
       uses: actions/download-artifact@v3
       with:
         name: raw-pages
         path: ./_raw/
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
