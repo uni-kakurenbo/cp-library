@@ -20,7 +20,7 @@ jobs:
       uses: actions/configure-pages@v4
 
     - name: Download raw data
-      uses: actions/download-artifacts@v3
+      uses: actions/download-artifact@v3
       with:
         name: raw-pages
         path: ./_raw/

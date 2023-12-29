@@ -52,7 +52,7 @@ jobs:
         echo '::endgroup::'
 
     - name: Upload raw data
-      uses: actions/upload-artifacts@v3
+      uses: actions/upload-artifact@v3
       with:
         name: raw-pages
         path: ./main/.verify-helper/markdown/
