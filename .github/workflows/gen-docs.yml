@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  generate:
+  build:
     runs-on: ${{ vars.RUNNER_IMAGE }}
 
     steps:
@@ -46,23 +46,13 @@ jobs:
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
-        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         echo '::group::oj-verify docs'
         time oj-verify docs --jobs $(nproc)
         echo '::endgroup::'
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   needs: generate
-
-    # steps:
-    # - name: Git checkout
-    #   uses: actions/checkout@v3
-
     - name: Setup Pages
-      uses: actions/configure-pages@v3
+      uses: actions/configure-pages@v4
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
@@ -78,7 +68,7 @@ jobs:
         bundle exec jekyll build -I -d ${{ github.workspace }}/_site/ --baseurl /${{ github.event.repository.name }}/
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
 
   deploy:
     runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -96,4 +86,4 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4
