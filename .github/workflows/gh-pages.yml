@@ -1,4 +1,4 @@
-name: documentation
+name: _gh-pages
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
