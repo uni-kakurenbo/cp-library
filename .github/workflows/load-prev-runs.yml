@@ -51,6 +51,7 @@ jobs:
         if [ '${{ matrix.target }}' == 'docs' ]; then
           find ./main/.verify-helper/docs/ -type f | sort >> ./file-list.txt
           echo './main/.github/workflows/gen-docs.yml' >> ./file-list.txt
+          echo './main/.github/workflows/gh-pages.yml' >> ./file-list.txt
         fi
 
         cat ./file-list.txt | xargs sha1sum > ./cache-list.txt
