@@ -25,6 +25,7 @@ struct counter : container {
     explicit counter(R&& range) noexcept(NO_EXCEPT) : counter(ALL(range)) {}
 };
 
+
 template<std::input_iterator I, std::sentinel_for<I> S>
 explicit counter(I, S) -> counter<std::iter_value_t<I>>;
 
