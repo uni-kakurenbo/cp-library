@@ -56,7 +56,3 @@ jobs:
       with:
         name: raw-pages
         path: ./main/.verify-helper/markdown/
-
-  finalize:
-    needs: generate
-    uses: ./.github/workflows/gh-pages.yml

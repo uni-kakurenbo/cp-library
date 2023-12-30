@@ -99,6 +99,11 @@ jobs:
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
+  gh-pages:
+    needs:
+    - documantaion
+    uses: ./.github/workflows/gh-pages.yml
+
   cache-analyze:
     name: cache
     needs:
