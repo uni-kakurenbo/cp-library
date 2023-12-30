@@ -76,7 +76,6 @@ struct fft_info {
 }  // namespace internal
 
 
-
 template<std::ranges::sized_range R>
     requires internal::static_modint_family<std::ranges::range_value_t<R>>
 void butterfly(R& v1) {

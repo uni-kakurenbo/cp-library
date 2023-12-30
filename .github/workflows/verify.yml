@@ -589,21 +589,20 @@ jobs:
       run: |
         if ls ./result-*/ > /dev/null 2>&1; then
 
-          echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
-
           cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
-          /bin/sed -i '/^$/d' ./temp.txt
+          sed -i '/^$/d' ./temp.txt
 
           if [ -s ./temp.txt ]; then
+            echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
           fi
 
-          echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
 
           cat ./result-*/passed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
-          /bin/sed -i '/^$/d' ./temp.txt
+          sed -i '/^$/d' ./temp.txt
 
           if [ -s ./temp.txt ]; then
+            echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
             cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
           fi
         fi
