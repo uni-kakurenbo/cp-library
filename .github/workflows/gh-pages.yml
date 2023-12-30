@@ -17,7 +17,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download raw data
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: raw-pages
         path: ./_raw/
