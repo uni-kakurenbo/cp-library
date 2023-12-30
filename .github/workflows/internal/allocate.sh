@@ -10,6 +10,10 @@ PID="$$"
 
   DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
 
+  git log -1 --date=iso
+  git log -1 --date=iso -- "${FILE}"
+  git log -1 --date=iso -- "${DEPENDENCIES}"
+
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
   LAST_VERIFY_DATE="$(
