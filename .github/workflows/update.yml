@@ -95,7 +95,7 @@ jobs:
     needs:
     - config
     - verify
-    if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
+    if: ${{ !cancelled() && needs.verify.result == 'success' && needs.config.outputs.gen-docs == 'true' }}
     uses: ./.github/workflows/gen-docs.yml
     secrets: inherit
 
