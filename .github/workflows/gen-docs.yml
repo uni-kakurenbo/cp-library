@@ -42,7 +42,7 @@ jobs:
       working-directory: main
       run: git pull --rebase
 
-    - name: Generate documentation
+    - name: Generate raw data
       working-directory: main
       env:
         CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
@@ -51,7 +51,7 @@ jobs:
         time oj-verify docs --jobs $(nproc)
         echo '::endgroup::'
 
-    - name: Upload raw data
+    - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: raw-pages
