@@ -40,7 +40,7 @@ set +e
     RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
 
     echo -ne "- ${RICH_TARGET} (${RICH_PROBLEM})\r" > ../summary.txt
-    echo "  - Testcase hash: :\`${PROBLEM_HASH}\`" >> ../summary.txt
+    echo "  - Testcase hash: \`${PROBLEM_HASH}\`" >> ../summary.txt
 
     if [ ${EXIT_STATUS} -eq 0 ]; then
         cat ../summary.txt >> ../passed-tests.txt
