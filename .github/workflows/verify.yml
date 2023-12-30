@@ -239,6 +239,8 @@ jobs:
             pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
             echo '::endgroup::'
           } &> ./.install-log-python.txt
+
+           cat ./.install-log-python.txt
         } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
@@ -249,12 +251,11 @@ jobs:
               echo '::endgroup::'
             } &> ./.install-log-node.txt
           } &
+
+          cat ./.install-log-node.txt
         fi
 
         wait
-
-        cat ./.install-log-python.txt
-        cat ./.install-log-node.txt
 
     - name: Load meta data
       uses: actions/download-artifact@v3
@@ -391,6 +392,8 @@ jobs:
             pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
             echo '::endgroup::'
           } &> ./.install-log-python.txt
+
+           cat ./.install-log-python.txt
         } &
 
         if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
@@ -401,12 +404,11 @@ jobs:
               echo '::endgroup::'
             } &> ./.install-log-node.txt
           } &
+
+          cat ./.install-log-node.txt
         fi
 
         wait
-
-        echo ./.install-log-python.txt
-        echo ./.install-log-node.txt
 
     - name: Clone AC-Library
       uses: actions/checkout@v3
