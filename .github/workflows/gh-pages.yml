@@ -15,8 +15,6 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v4
-      with:
-        path: ./_lib/
 
     - name: Download raw data
       uses: actions/download-artifact@v4
