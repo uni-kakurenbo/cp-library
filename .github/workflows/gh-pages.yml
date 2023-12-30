@@ -20,23 +20,13 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: raw-pages
-        path: ./_raw/
+        path: ./
 
     - name: Configure pages
       uses: actions/configure-pages@v4
 
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.1'
-        bundler-cache: true
-        working-directory: ./_raw/
-
-    - name: Build HTML
-      working-directory: ./_raw/
-      run: |
-        bundle install
-        bundle exec jekyll build -I -d ${{ github.workspace }}/_site/
+    - name: Build with Jekyll
+    - uses: jekyll-build-pages@v1
 
     - name: Upload
       uses: actions/upload-pages-artifact@v3
