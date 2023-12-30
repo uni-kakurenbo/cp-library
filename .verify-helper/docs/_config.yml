@@ -8,5 +8,6 @@ plugins:
 
 exclude:
 - test/
+- vendor/
 
 theme: jekyll-theme-cayman
