@@ -11,7 +11,7 @@ PID="$$"
 DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}")"
 
   # shellcheck disable=SC2086
-  LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
+  LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES/\n/ })"
   LAST_VERIFY_DATE="$(
       jq -r --arg target "${FILE}" \
       '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
