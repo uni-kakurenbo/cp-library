@@ -8,10 +8,10 @@ PID="$$"
 {
   PROBLEM="$(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${FILE}")"
 
-  DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}")"
+  DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
 
   # shellcheck disable=SC2086
-  LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES/\n/ })"
+  LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
   LAST_VERIFY_DATE="$(
       jq -r --arg target "${FILE}" \
       '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
@@ -25,7 +25,7 @@ PID="$$"
   echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
   echo '::endgroup::'
   echo '::group::dependencies'
-  echo -e "Dependencies:\n${DEPENDENCIES/\n/ }"
+  echo -e "Dependencies:\n${DEPENDENCIES}"
   echo '::endgroup::'
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
