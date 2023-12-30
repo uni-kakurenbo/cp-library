@@ -8,7 +8,7 @@ PID="$$"
 {
   PROBLEM="$(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${FILE}")"
 
-DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}")"
+  DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}")"
 
   # shellcheck disable=SC2086
   LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES/\n/ })"
@@ -25,7 +25,7 @@ DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}")
   echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
   echo '::endgroup::'
   echo '::group::dependencies'
-  echo -e "Dependencies:\n${DEPENDENCIES}"
+  echo -e "Dependencies:\n${DEPENDENCIES/\n/ }"
   echo '::endgroup::'
 
   if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
