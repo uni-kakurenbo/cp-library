@@ -2,49 +2,46 @@ name: _gh-pages
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_call:
+    workflow_call:
 
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+    group: pages-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
+    build:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
 
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v4
+        steps:
+            - name: Download raw data
+              uses: actions/download-artifact@v4
+              with:
+                  name: raw-pages
+                  path: ./
 
-    - name: Download raw data
-      uses: actions/download-artifact@v4
-      with:
-        name: raw-pages
-        path: ./
+            - name: Configure pages
+              uses: actions/configure-pages@v4
 
-    - name: Configure pages
-      uses: actions/configure-pages@v4
+            - name: Build with Jekyll
+              uses: actions/jekyll-build-pages@v1
 
-    - name: Build with Jekyll
-      uses: actions/jekyll-build-pages@v1
+            - name: Upload
+              uses: actions/upload-pages-artifact@v3
 
-    - name: Upload
-      uses: actions/upload-pages-artifact@v3
+    deploy:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: build
 
-  deploy:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: build
+        permissions:
+            contents: write
+            pages: write
+            id-token: write
 
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
