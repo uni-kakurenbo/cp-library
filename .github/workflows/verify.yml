@@ -582,8 +582,9 @@ jobs:
             - name: Load timestamps
               uses: actions/download-artifact@v4
               with:
-                  pattern: result-*
-                      skipped-tests
+                  pattern:
+                      - result-*
+                      - skipped-tests
                   path: ./
 
             - name: Print summery
