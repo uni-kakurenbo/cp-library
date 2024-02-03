@@ -204,7 +204,7 @@ template<i64 Id> using dynamic_binary_modint_128bit = modint<dynamic_binary_modu
 
 
 template<u32 Mod> using static_modint_32bit = static_builtin_modint_32bit<Mod>;
-template<u32 Mod> using static_modint_64bit = static_builtin_modint_64bit<Mod>;
+template<u64 Mod> using static_modint_64bit = static_builtin_modint_64bit<Mod>;
 
 
 using modint998244353 = static_modint_32bit<998244353>;
