@@ -2,612 +2,612 @@ name: verification
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_dispatch:
-  workflow_call:
-    secrets:
-      YUKICODER_TOKEN:
-        required: false
-      GH_PAT:
-        required: true
+    workflow_dispatch:
+    workflow_call:
+        secrets:
+            YUKICODER_TOKEN:
+                required: false
+            GH_PAT:
+                required: true
 
 concurrency:
-  group: verify-${{ github.ref }}
-  cancel-in-progress: false
+    group: verify-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
-  setup:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-
-    outputs:
-      gen-ids: ${{ steps.node-ids.outputs.gen }}
-      runner-ids: ${{ steps.node-ids.outputs.runner }}
-
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        path: main
-        fetch-depth: 0  # for detect already verified tests
-
-    - name: Install octokit
-      run: npm install @octokit/core
-
-    - name: Filter test files
-      working-directory: main
-      run: |
-        set -eu
-
-        if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
-          echo '{}' > ./.verify-helper/timestamps.remote.json
-        fi
-
-        echo -n > ./.verify-helper/problems.txt
-        echo -n > ./.verify-helper/tests.txt
-        echo -n > ../skipped-tests.txt
-
-        time find verify -type f -name '*.test.cpp' | sort | \
-        xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {}
-
-        sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
-        cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
-
-        N_PROBLEMS=$(cat ./.verify-helper/problems.txt | wc -l)
-        N_TESTS=$(cat ./.verify-helper/tests.txt | wc -l)
-
-        echo "::group::${N_PROBLEMS} problems appeared:"
-          cat ./.verify-helper/problems.txt
-        echo "::endgroup::"
-        echo
-
-        echo "::group::${N_TESTS} test files allocated:"
-          cat ./.verify-helper/tests.txt
-        echo "::endgroup::"
-        echo
-
-    - name: Compute hash and filter uncached
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
-          const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
-
-          const fs = require('fs');
-          const crypto = require('crypto');
-          const { Octokit } = require("@octokit/core");
-
-          const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
-
-          savedCaches = await octokit.request(
-            'GET /repos/${{ github.repository }}/actions/caches',
-            {
-              per_page: 100,
-              ref: '${{ github.ref }}',
-              key: 'testcase-',
-              sort: 'last_accessed_at',
-              headers: { 'X-GitHub-Api-Version': '2022-11-28' }
-            });
-
-          cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
-
-          console.log('::group::Cached hashes:');
-          console.log(cachedKeys);
-          console.log('::endgroup::')
-
-          uncachedProblems = ""
-
-          const problemsCount = fs.readFileSync(problemList).toString().split('\n')
-            .map((name) => {
-              const hash = crypto.createHash('md5').update(name).digest('hex');
-              return { name, hash };
-            })
-            .filter(({ name, hash }) => {
-              return !!name && !cachedKeys.has(`testcase-${ hash }`);
-            })
-            .map(({ name, hash }) => {
-              uncachedProblems += `${ name } ${ hash }\n`;
-            })
-            .length;
-
-          testsWithHash = ""
-
-          const testCount = fs.readFileSync(testList).toString().split('\n')
-            .filter(Boolean)
-            .map(fileAndProblem => fileAndProblem.split(' '))
-            .map(([ file, problem, lastModifiedAt ]) => {
-              const problemHash = crypto.createHash('md5').update(problem).digest('hex');
-              return { file, problem, problemHash, lastModifiedAt };
-            })
-            .map(({ file, problem, problemHash, lastModifiedAt }) => {
-              testsWithHash += `${ file } ${ problem } ${ problemHash } ${ lastModifiedAt }\n`;
-            }).length;
-
-          console.log(`::group::${ problemsCount } uncached problems filtered:`);
-          console.log(uncachedProblems);
-          console.log("::endgroup::");
-
-          console.log(`::group::${ testCount } hashes computed:`);
-          console.log(testsWithHash);
-          console.log("::endgroup::");
-
-          fs.writeFile(problemList, uncachedProblems, err => { if(err) console.error(err) });
-          fs.writeFile(testList, testsWithHash, err => { if(err) console.error(err) });
-
-    - name: Generate node ids
-      working-directory: main/.verify-helper/
-      id: node-ids
-      run: |
-        set -eu
-
-        N_PROBLEMS=$(cat ./problems.txt | wc -l)
-        N_TESTS=$(cat ./tests.txt | wc -l)
-
-        if [ ${N_PROBLEMS} -gt 18 ]; then
-          N_PROBLEMS=18
-        fi
-
-        if [ ${N_TESTS} -gt 18 ]; then
-          N_TESTS=18
-        fi
-
-        echo "Generator: ${N_PROBLEMS} nodes."
-        echo "Runner: ${N_TESTS} nodes."
-
-        GEN_IDS='['
-        for ((i=0; i < N_PROBLEMS; i++)); do
-            GEN_IDS+=$(printf '"%02d"' "${i}")
-            if [ $i -lt $((N_PROBLEMS-1)) ]; then
-                GEN_IDS+=','
-            fi
-        done
-        GEN_IDS+=']'
-
-        RUN_IDS='['
-        for ((i=0; i < N_TESTS; i++)); do
-            RUN_IDS+=$(printf '"%02d"' "${i}")
-            if [ $i -lt $((N_TESTS-1)) ]; then
-                RUN_IDS+=','
-            fi
-        done
-        RUN_IDS+=']'
-
-        echo "$(echo "${GEN_IDS}" | jq -c)"
-        echo "$(echo "${RUN_IDS}" | jq -c)"
-
-        echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
-        echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
-
-    - name: Save meta data
-      uses: actions/upload-artifact@v3
-      with:
-        name: meta-info
-        path: |
-          ./main/.verify-helper/problems.txt
-          ./main/.verify-helper/tests.txt
-        retention-days: 1
-
-    - name: Save summery
-      uses: actions/upload-artifact@v3
-      with:
-        name: skipped-tests
-        path: ./skipped-tests.txt
-        retention-days: 1
-
-  gen-cases:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: setup
-    if: ${{ needs.setup.outputs.gen-ids != '[]' }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        id: ${{ fromJSON(needs.setup.outputs.gen-ids) }}
-
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GH_PAT }}
-        path: main
-        sparse-checkout: ./.github/workflows/internal/
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11.x'
-        token: ${{ secrets.GH_PAT }}
-        cache: pip
-        cache-dependency-path: '**/requirements.txt'
-
-    - name: Cache Node modules
-      uses: actions/cache@v3
-      id: node-cache
-      with:
-        path: '~/**/node_modules/'
-        key: node-modules
-
-    - name: Cache online-judge-tools
-      uses: actions/cache@v3
-      with:
-        path: '~/**/online-judge-tools/'
-        key: online-judge-tools
-
-    - name: Install oj-verify and action modules
-      run: |
-        {
-          {
-            echo '::group::pip install'
-            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-            echo '::endgroup::'
-          } &> ./.install-log-python.txt
-
-           cat ./.install-log-python.txt
-        } &
-
-        if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
-          {
-            {
-              echo '::group::npm install'
-              npm install @actions/cache
-              echo '::endgroup::'
-            } &> ./.install-log-node.txt
-          } &
-
-          cat ./.install-log-node.txt
-        fi
-
-        wait
-
-    - name: Load meta data
-      uses: actions/download-artifact@v3
-      with:
-        name: meta-info
-        path: ./
-
-    - name: Filter problems
-      run: |
-        PROBLEMS=$(
-          cat ./problems.txt | \
-          sort | \
-          awk -v n=${{ strategy.job-total }} \
-              -v i=${{ strategy.job-index }} \
-              '{
-                if((NR - 1) % n == i) {
-                  print $0
-                }
-              }' \
-          )
-
-        echo ${PROBLEMS} > ./targets.txt
-        cat ./targets.txt
-
-    - name: Generate testcases
-      run: |
-        cat ./targets.txt
-
-        echo '::group::oj download prepare'
-        oj download --system https://judge.yosupo.jp/problem/aplusb
-        echo '::endgroup::'
-
-        mkdir ./testcases/; cd ./testcases/
-
-        function gen() {
-          local problem="$1"
-          local hash="$2"
-          local pid="$$"
-
-          mkdir -p "./${hash}/";
-          {
-            echo "::group::${problem} [hash: ${hash}]"
-
-            oj download --system --silent --yukicoder-token "${{ secrets.YUKICODER_TOKEN }}" \
-              --directory "./${hash}/" "${problem}" || \
-            rm -r "./${hash}/"
-
-            find ~/ -type d -name "$(basename "${problem}")"
-            local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")")"
-
-            if [ -d "${cache_directory}" ]; then
-              local checker="$(find "${cache_directory}" -type f -name checker)"
-              cp "${checker}" "./${hash}/checker"
-            fi
-
-            echo "::notice title=${problem}::Fetched and generated."
-            echo '::endgroup::'
-
-          } &> "../log-${pid}.txt"
-          cat "../log-${pid}.txt"
-        }
-        export -f gen
-
-        PARALLEL=$(nproc)
-        echo "Parallel execution: ${PARALLEL}"
-
-        head -c -1 ../targets.txt | \
-        xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' bash
-
-    - name: Cache judge data
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          const cache = require('@actions/cache');
-
-          fs.readdir(`testcases/`, (err, dirs) => {
-              if(err) console.error(err);
-
-              console.log(dirs);
-
-              Promise.all(
-                dirs.map((dir) => {
-                  console.log("Save: ", dir);
-                  return cache.saveCache([ `testcases/${ dir }/` ], `testcase-${ dir }`);
-                })
-              ).then(() => {
-                process.exit(0);
-              }).catch((e) => {
-                console.error(e);
-                process.exit(0);
-              });
-          });
-
-  run:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs:
-      - setup
-      - gen-cases
-    if: ${{ !cancelled() && needs.setup.outputs.runner-ids != '[]' }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        id: ${{ fromJSON(needs.setup.outputs.runner-ids) }}
-
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        path: main
-        token: ${{ secrets.GH_PAT }}
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11.x'
-        token: ${{ secrets.GH_PAT }}
-        cache: pip
-        cache-dependency-path: '**/requirements.txt'
-
-    - name: Cache Node modules
-      uses: actions/cache@v3
-      id: node-cache
-      with:
-        path: '~/**/node_modules/'
-        key: node-modules
-
-    - name: Install oj-verify and action modules
-      run: |
-        {
-          {
-            echo '::group::pip install'
-            pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
-            echo '::endgroup::'
-          } &> ./.install-log-python.txt
-
-           cat ./.install-log-python.txt
-        } &
-
-        if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
-          {
-            {
-              echo '::group::npm install'
-              npm install @actions/cache
-              echo '::endgroup::'
-            } &> ./.install-log-node.txt
-          } &
-
-          cat ./.install-log-node.txt
-        fi
-
-        wait
-
-    - name: Clone AC-Library
-      uses: actions/checkout@v3
-      with:
-        repository: atcoder/ac-library
-        path: ac-library
-        sparse-checkout: atcoder
-        token: ${{ secrets.GH_PAT }}
-
-    - name: Load meta data
-      uses: actions/download-artifact@v3
-      with:
-        name: meta-info
-        path: ./
-
-    - name: Allocate test files
-      run: |
-        TEST_FILES=$(
-          cat ./tests.txt  | \
-          sort | \
-          awk -v n=${{ strategy.job-total }} \
-              -v i=${{ strategy.job-index }} \
-              '{
-                if((NR - 1) % n == i) {
-                  print $0
-                }
-              }' \
-          )
-
-        echo ${TEST_FILES} > ./targets.txt
-        cat ./targets.txt
-
-    - name: Load testcases
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          const cache = require('@actions/cache');
-
-          const testList = "${{ github.workspace }}/targets.txt";
-
-          Promise.allSettled(
-            fs.readFileSync(testList).toString().split(' ')
-              .flatMap((_, i, seq) => i % 4 ? [] : [ seq.slice(i, i + 4) ])
-              .map((
-                ([ file, problem, problemHash, lastModifiedAt ]) =>
-                  ({ file, problem, problemHash : problemHash.trim(), lastModifiedAt })
-              ))
-              .map(({ problemHash }) => {
-                console.log(`testcase-${ problemHash }`);
-                return cache.restoreCache([ `testcases/${ problemHash }/` ], `testcase-${ problemHash }`);
-              })
-          ).then(console.log).catch(console.error);
-
-    - name: Run tests
-      working-directory: main
-      env:
-        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
-        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-      run: |
-        set -eu
-
-        ls "${{ github.workspace }}/testcases/"
-
-        echo '{}' > ../timestamps.json
-        echo -n '' > ../passed-tests.txt
-        echo -n '' > ../failed-tests.txt
-
-        {
-          # if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
-          if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
-            echo '{}' > ./.verify-helper/timestamps.remote.json
-          fi
-
-          sed -i '/^$/d' ./.verify-helper/timestamps.remote.json
-
-          if [ -f ./.verify-helper/timestamps.remote.json ]; then
-            echo '{}' >> ./.verify-helper/timestamps.remote.json
-          fi
-        }
-
-        PARALLEL=$(nproc)
-        echo "Parallel execution: ${PARALLEL}"
-
-        time head -c -1 ../targets.txt | \
-        xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
-
-        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-          ../timestamps.json > ../temp.json
-
-        cp -f ../temp.json ../timestamps.json
-        cat ../timestamps.json
-
-    - name: Save timestamps
-      uses: actions/upload-artifact@v3
-      if: ${{ !cancelled() }}
-      with:
-        name: test-${{ matrix.id }}
-        path: ./timestamps.json
-        retention-days: 1
-
-    - name: Save summery
-      uses: actions/upload-artifact@v3
-      if: ${{ !cancelled() }}
-      with:
-        name: result-${{ matrix.id }}
-        path: |
-          ./passed-tests.txt
-          ./failed-tests.txt
-        retention-days: 1
-
-  collect:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: run
-    if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
-
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        sparse-checkout: .verify-helper
-
-    - name: Load timestamps
-      uses: actions/download-artifact@v3
-      with:
-        # pattern: test-*
-        path: .verify-helper/tests/
-
-    - name: Merge timestamps
-      working-directory: .verify-helper
-      run: |
-        touch ./timestamps.remote.json
-
-        if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
-          echo "No timestamps found."
-          exit 0
-        fi
-
-        jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
-          ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
-
-        cp -f ./merged-timestamps.json ./timestamps.remote.json
-        cat ./timestamps.remote.json
-
-    - name: Push merged timestamps
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-
-        git config --global user.name "GitHub"
-        git config --global user.email "noreply@github.com"
-
-        git add .verify-helper/timestamps.remote.json
-
-        if (git diff --cached --shortstat | grep '[0-9]'); then
-          git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
-          git pull --rebase
-          git push origin HEAD:${GITHUB_REF}
-        else
-          echo "No timestamps updated."
-        fi
-
-  dump:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    needs: run
-    if: ${{ !cancelled() }}
-
-    steps:
-    - name: Load timestamps
-      uses: actions/download-artifact@v3
-      with:
-        # pattern: test-*
-        path: ./
-
-    - name: Print summery
-      run: |
-        if ls ./result-*/ > /dev/null 2>&1; then
-
-          cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
-          sed -i '/^$/d' ./temp.txt
-
-          if [ -s ./temp.txt ]; then
-            echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
-            cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
-          fi
-
-
-          cat ./result-*/passed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
-          sed -i '/^$/d' ./temp.txt
-
-          if [ -s ./temp.txt ]; then
-            echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
-            cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
-          fi
-        fi
-
-        if [ -s ./skipped-tests/skipped-tests.txt ]; then
-          echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
-          cat ./skipped-tests/skipped-tests.txt >> "${GITHUB_STEP_SUMMARY}"
-        fi
+    setup:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        outputs:
+            gen-ids: ${{ steps.node-ids.outputs.gen }}
+            runner-ids: ${{ steps.node-ids.outputs.runner }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  path: main
+                  fetch-depth: 0 # for detect already verified tests
+
+            - name: Install octokit
+              run: npm install @octokit/core
+
+            - name: Filter test files
+              working-directory: main
+              run: |
+                  set -eu
+
+                  if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
+                    echo '{}' > ./.verify-helper/timestamps.remote.json
+                  fi
+
+                  echo -n > ./.verify-helper/problems.txt
+                  echo -n > ./.verify-helper/tests.txt
+                  echo -n > ../skipped-tests.txt
+
+                  time find verify -type f -name '*.test.cpp' | sort | \
+                  xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {}
+
+                  sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
+                  cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt
+
+                  N_PROBLEMS=$(cat ./.verify-helper/problems.txt | wc -l)
+                  N_TESTS=$(cat ./.verify-helper/tests.txt | wc -l)
+
+                  echo "::group::${N_PROBLEMS} problems appeared:"
+                    cat ./.verify-helper/problems.txt
+                  echo "::endgroup::"
+                  echo
+
+                  echo "::group::${N_TESTS} test files allocated:"
+                    cat ./.verify-helper/tests.txt
+                  echo "::endgroup::"
+                  echo
+
+            - name: Compute hash and filter uncached
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
+                      const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
+
+                      const fs = require('fs');
+                      const crypto = require('crypto');
+                      const { Octokit } = require("@octokit/core");
+
+                      const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
+
+                      savedCaches = await octokit.request(
+                        'GET /repos/${{ github.repository }}/actions/caches',
+                        {
+                          per_page: 100,
+                          ref: '${{ github.ref }}',
+                          key: 'testcase-',
+                          sort: 'last_accessed_at',
+                          headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+                        });
+
+                      cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
+
+                      console.log('::group::Cached hashes:');
+                      console.log(cachedKeys);
+                      console.log('::endgroup::')
+
+                      uncachedProblems = ""
+
+                      const problemsCount = fs.readFileSync(problemList).toString().split('\n')
+                        .map((name) => {
+                          const hash = crypto.createHash('md5').update(name).digest('hex');
+                          return { name, hash };
+                        })
+                        .filter(({ name, hash }) => {
+                          return !!name && !cachedKeys.has(`testcase-${ hash }`);
+                        })
+                        .map(({ name, hash }) => {
+                          uncachedProblems += `${ name } ${ hash }\n`;
+                        })
+                        .length;
+
+                      testsWithHash = ""
+
+                      const testCount = fs.readFileSync(testList).toString().split('\n')
+                        .filter(Boolean)
+                        .map(fileAndProblem => fileAndProblem.split(' '))
+                        .map(([ file, problem, lastModifiedAt ]) => {
+                          const problemHash = crypto.createHash('md5').update(problem).digest('hex');
+                          return { file, problem, problemHash, lastModifiedAt };
+                        })
+                        .map(({ file, problem, problemHash, lastModifiedAt }) => {
+                          testsWithHash += `${ file } ${ problem } ${ problemHash } ${ lastModifiedAt }\n`;
+                        }).length;
+
+                      console.log(`::group::${ problemsCount } uncached problems filtered:`);
+                      console.log(uncachedProblems);
+                      console.log("::endgroup::");
+
+                      console.log(`::group::${ testCount } hashes computed:`);
+                      console.log(testsWithHash);
+                      console.log("::endgroup::");
+
+                      fs.writeFile(problemList, uncachedProblems, err => { if(err) console.error(err) });
+                      fs.writeFile(testList, testsWithHash, err => { if(err) console.error(err) });
+
+            - name: Generate node ids
+              working-directory: main/.verify-helper/
+              id: node-ids
+              run: |
+                  set -eu
+
+                  N_PROBLEMS=$(cat ./problems.txt | wc -l)
+                  N_TESTS=$(cat ./tests.txt | wc -l)
+
+                  if [ ${N_PROBLEMS} -gt 18 ]; then
+                    N_PROBLEMS=18
+                  fi
+
+                  if [ ${N_TESTS} -gt 18 ]; then
+                    N_TESTS=18
+                  fi
+
+                  echo "Generator: ${N_PROBLEMS} nodes."
+                  echo "Runner: ${N_TESTS} nodes."
+
+                  GEN_IDS='['
+                  for ((i=0; i < N_PROBLEMS; i++)); do
+                      GEN_IDS+=$(printf '"%02d"' "${i}")
+                      if [ $i -lt $((N_PROBLEMS-1)) ]; then
+                          GEN_IDS+=','
+                      fi
+                  done
+                  GEN_IDS+=']'
+
+                  RUN_IDS='['
+                  for ((i=0; i < N_TESTS; i++)); do
+                      RUN_IDS+=$(printf '"%02d"' "${i}")
+                      if [ $i -lt $((N_TESTS-1)) ]; then
+                          RUN_IDS+=','
+                      fi
+                  done
+                  RUN_IDS+=']'
+
+                  echo "$(echo "${GEN_IDS}" | jq -c)"
+                  echo "$(echo "${RUN_IDS}" | jq -c)"
+
+                  echo "gen=$(echo "${GEN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+                  echo "runner=$(echo "${RUN_IDS}" | jq -c)" >> ${GITHUB_OUTPUT}
+
+            - name: Save meta data
+              uses: actions/upload-artifact@v4
+              with:
+                  name: meta-info
+                  path: |
+                      ./main/.verify-helper/problems.txt
+                      ./main/.verify-helper/tests.txt
+                  retention-days: 1
+
+            - name: Save summery
+              uses: actions/upload-artifact@v4
+              with:
+                  name: skipped-tests
+                  path: ./skipped-tests.txt
+                  retention-days: 1
+
+    gen-cases:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: setup
+        if: ${{ needs.setup.outputs.gen-ids != '[]' }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                id: ${{ fromJSON(needs.setup.outputs.gen-ids) }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GH_PAT }}
+                  path: main
+                  sparse-checkout: ./.github/workflows/internal/
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.11.x"
+                  token: ${{ secrets.GH_PAT }}
+                  cache: pip
+                  cache-dependency-path: "**/requirements.txt"
+
+            - name: Cache Node modules
+              uses: actions/cache@v3
+              id: node-cache
+              with:
+                  path: "~/**/node_modules/"
+                  key: node-modules
+
+            - name: Cache online-judge-tools
+              uses: actions/cache@v3
+              with:
+                  path: "~/**/online-judge-tools/"
+                  key: online-judge-tools
+
+            - name: Install oj-verify and action modules
+              run: |
+                  {
+                    {
+                      echo '::group::pip install'
+                      pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+                      echo '::endgroup::'
+                    } &> ./.install-log-python.txt
+
+                     cat ./.install-log-python.txt
+                  } &
+
+                  if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
+                    {
+                      {
+                        echo '::group::npm install'
+                        npm install @actions/cache
+                        echo '::endgroup::'
+                      } &> ./.install-log-node.txt
+                    } &
+
+                    cat ./.install-log-node.txt
+                  fi
+
+                  wait
+
+            - name: Load meta data
+              uses: actions/download-artifact@v4
+              with:
+                  name: meta-info
+                  path: ./
+
+            - name: Filter problems
+              run: |
+                  PROBLEMS=$(
+                    cat ./problems.txt | \
+                    sort | \
+                    awk -v n=${{ strategy.job-total }} \
+                        -v i=${{ strategy.job-index }} \
+                        '{
+                          if((NR - 1) % n == i) {
+                            print $0
+                          }
+                        }' \
+                    )
+
+                  echo ${PROBLEMS} > ./targets.txt
+                  cat ./targets.txt
+
+            - name: Generate testcases
+              run: |
+                  cat ./targets.txt
+
+                  echo '::group::oj download prepare'
+                  oj download --system https://judge.yosupo.jp/problem/aplusb
+                  echo '::endgroup::'
+
+                  mkdir ./testcases/; cd ./testcases/
+
+                  function gen() {
+                    local problem="$1"
+                    local hash="$2"
+                    local pid="$$"
+
+                    mkdir -p "./${hash}/";
+                    {
+                      echo "::group::${problem} [hash: ${hash}]"
+
+                      oj download --system --silent --yukicoder-token "${{ secrets.YUKICODER_TOKEN }}" \
+                        --directory "./${hash}/" "${problem}" || \
+                      rm -r "./${hash}/"
+
+                      find ~/ -type d -name "$(basename "${problem}")"
+                      local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")")"
+
+                      if [ -d "${cache_directory}" ]; then
+                        local checker="$(find "${cache_directory}" -type f -name checker)"
+                        cp "${checker}" "./${hash}/checker"
+                      fi
+
+                      echo "::notice title=${problem}::Fetched and generated."
+                      echo '::endgroup::'
+
+                    } &> "../log-${pid}.txt"
+                    cat "../log-${pid}.txt"
+                  }
+                  export -f gen
+
+                  PARALLEL=$(nproc)
+                  echo "Parallel execution: ${PARALLEL}"
+
+                  head -c -1 ../targets.txt | \
+                  xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' bash
+
+            - name: Cache judge data
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const cache = require('@actions/cache');
+
+                      fs.readdir(`testcases/`, (err, dirs) => {
+                          if(err) console.error(err);
+
+                          console.log(dirs);
+
+                          Promise.all(
+                            dirs.map((dir) => {
+                              console.log("Save: ", dir);
+                              return cache.saveCache([ `testcases/${ dir }/` ], `testcase-${ dir }`);
+                            })
+                          ).then(() => {
+                            process.exit(0);
+                          }).catch((e) => {
+                            console.error(e);
+                            process.exit(0);
+                          });
+                      });
+
+    run:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs:
+            - setup
+            - gen-cases
+        if: ${{ !cancelled() && needs.setup.outputs.runner-ids != '[]' }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                id: ${{ fromJSON(needs.setup.outputs.runner-ids) }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  path: main
+                  token: ${{ secrets.GH_PAT }}
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.11.x"
+                  token: ${{ secrets.GH_PAT }}
+                  cache: pip
+                  cache-dependency-path: "**/requirements.txt"
+
+            - name: Cache Node modules
+              uses: actions/cache@v3
+              id: node-cache
+              with:
+                  path: "~/**/node_modules/"
+                  key: node-modules
+
+            - name: Install oj-verify and action modules
+              run: |
+                  {
+                    {
+                      echo '::group::pip install'
+                      pip3 install --user -r ./main/.github/workflows/internal/requirements.txt
+                      echo '::endgroup::'
+                    } &> ./.install-log-python.txt
+
+                     cat ./.install-log-python.txt
+                  } &
+
+                  if [ '${{ steps.node-cache.outputs.cache-hit }}' != 'true' ]; then
+                    {
+                      {
+                        echo '::group::npm install'
+                        npm install @actions/cache
+                        echo '::endgroup::'
+                      } &> ./.install-log-node.txt
+                    } &
+
+                    cat ./.install-log-node.txt
+                  fi
+
+                  wait
+
+            - name: Clone AC-Library
+              uses: actions/checkout@v4
+              with:
+                  repository: atcoder/ac-library
+                  path: ac-library
+                  sparse-checkout: atcoder
+                  token: ${{ secrets.GH_PAT }}
+
+            - name: Load meta data
+              uses: actions/download-artifact@v4
+              with:
+                  name: meta-info
+                  path: ./
+
+            - name: Allocate test files
+              run: |
+                  TEST_FILES=$(
+                    cat ./tests.txt  | \
+                    sort | \
+                    awk -v n=${{ strategy.job-total }} \
+                        -v i=${{ strategy.job-index }} \
+                        '{
+                          if((NR - 1) % n == i) {
+                            print $0
+                          }
+                        }' \
+                    )
+
+                  echo ${TEST_FILES} > ./targets.txt
+                  cat ./targets.txt
+
+            - name: Load testcases
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const cache = require('@actions/cache');
+
+                      const testList = "${{ github.workspace }}/targets.txt";
+
+                      Promise.allSettled(
+                        fs.readFileSync(testList).toString().split(' ')
+                          .flatMap((_, i, seq) => i % 4 ? [] : [ seq.slice(i, i + 4) ])
+                          .map((
+                            ([ file, problem, problemHash, lastModifiedAt ]) =>
+                              ({ file, problem, problemHash : problemHash.trim(), lastModifiedAt })
+                          ))
+                          .map(({ problemHash }) => {
+                            console.log(`testcase-${ problemHash }`);
+                            return cache.restoreCache([ `testcases/${ problemHash }/` ], `testcase-${ problemHash }`);
+                          })
+                      ).then(console.log).catch(console.error);
+
+            - name: Run tests
+              working-directory: main
+              env:
+                  CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+                  YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+              run: |
+                  set -eu
+
+                  ls "${{ github.workspace }}/testcases/"
+
+                  echo '{}' > ../timestamps.json
+                  echo -n '' > ../passed-tests.txt
+                  echo -n '' > ../failed-tests.txt
+
+                  {
+                    # if [ ! -f ./.verify-helper/timestamps.remote.json ] || [ "${CACHE_HIT}" != 'true' ]; then
+                    if [ ! -f ./.verify-helper/timestamps.remote.json ]; then
+                      echo '{}' > ./.verify-helper/timestamps.remote.json
+                    fi
+
+                    sed -i '/^$/d' ./.verify-helper/timestamps.remote.json
+
+                    if [ -f ./.verify-helper/timestamps.remote.json ]; then
+                      echo '{}' >> ./.verify-helper/timestamps.remote.json
+                    fi
+                  }
+
+                  PARALLEL=$(nproc)
+                  echo "Parallel execution: ${PARALLEL}"
+
+                  time head -c -1 ../targets.txt | \
+                  xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
+
+                  jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
+                    ../timestamps.json > ../temp.json
+
+                  cp -f ../temp.json ../timestamps.json
+                  cat ../timestamps.json
+
+            - name: Save timestamps
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                  name: test-${{ matrix.id }}
+                  path: ./timestamps.json
+                  retention-days: 1
+
+            - name: Save summery
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                  name: result-${{ matrix.id }}
+                  path: |
+                      ./passed-tests.txt
+                      ./failed-tests.txt
+                  retention-days: 1
+
+    collect:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: run
+        if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  sparse-checkout: .verify-helper
+
+            - name: Load timestamps
+              uses: actions/download-artifact@v4
+              with:
+                  # pattern: test-*
+                  path: .verify-helper/tests/
+
+            - name: Merge timestamps
+              working-directory: .verify-helper
+              run: |
+                  touch ./timestamps.remote.json
+
+                  if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
+                    echo "No timestamps found."
+                    exit 0
+                  fi
+
+                  jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
+                    ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
+
+                  cp -f ./merged-timestamps.json ./timestamps.remote.json
+                  cat ./timestamps.remote.json
+
+            - name: Push merged timestamps
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+
+                  git config --global user.name "GitHub"
+                  git config --global user.email "noreply@github.com"
+
+                  git add .verify-helper/timestamps.remote.json
+
+                  if (git diff --cached --shortstat | grep '[0-9]'); then
+                    git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+                    git pull --rebase
+                    git push origin HEAD:${GITHUB_REF}
+                  else
+                    echo "No timestamps updated."
+                  fi
+
+    dump:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: run
+        if: ${{ !cancelled() }}
+
+        steps:
+            - name: Load timestamps
+              uses: actions/download-artifact@v4
+              with:
+                  # pattern: test-*
+                  path: ./
+
+            - name: Print summery
+              run: |
+                  if ls ./result-*/ > /dev/null 2>&1; then
+
+                    cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
+                    sed -i '/^$/d' ./temp.txt
+
+                    if [ -s ./temp.txt ]; then
+                      echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
+                      cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                    fi
+
+
+                    cat ./result-*/passed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
+                    sed -i '/^$/d' ./temp.txt
+
+                    if [ -s ./temp.txt ]; then
+                      echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
+                      cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                    fi
+                  fi
+
+                  if [ -s ./skipped-tests/skipped-tests.txt ]; then
+                    echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
+                    cat ./skipped-tests/skipped-tests.txt >> "${GITHUB_STEP_SUMMARY}"
+                  fi

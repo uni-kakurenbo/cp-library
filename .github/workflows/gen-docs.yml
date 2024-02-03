@@ -2,57 +2,57 @@ name: documentation
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_dispatch:
-  workflow_call:
-    secrets:
-      GH_PAT:
-        required: true
+    workflow_dispatch:
+    workflow_call:
+        secrets:
+            GH_PAT:
+                required: true
 
 concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: true
+    group: docs-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  generate:
-    runs-on: ${{ vars.RUNNER_IMAGE }}
+    generate:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
 
-    steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        path: main
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  path: main
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12.0
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12.0
 
-    - name: Install oj-verify
-      run: pip3 install -U online-judge-verify-helper
+            - name: Install oj-verify
+              run: pip3 install -U online-judge-verify-helper
 
-    - name: Clone AC-Library
-      uses: actions/checkout@v3
-      with:
-        repository: atcoder/ac-library
-        sparse-checkout: atcoder
-        path: ac-library
+            - name: Clone AC-Library
+              uses: actions/checkout@v4
+              with:
+                  repository: atcoder/ac-library
+                  sparse-checkout: atcoder
+                  path: ac-library
 
-    - name: Git pull
-      working-directory: main
-      run: git pull --rebase
+            - name: Git pull
+              working-directory: main
+              run: git pull --rebase
 
-    - name: Generate raw data
-      working-directory: main
-      env:
-        CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
-      run: |
-        echo '::group::oj-verify docs'
-        time oj-verify docs --jobs $(nproc)
-        echo '::endgroup::'
+            - name: Generate raw data
+              working-directory: main
+              env:
+                  CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+              run: |
+                  echo '::group::oj-verify docs'
+                  time oj-verify docs --jobs $(nproc)
+                  echo '::endgroup::'
 
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: raw-pages
-        path: ./main/.verify-helper/markdown/
+            - name: Upload
+              uses: actions/upload-artifact@v4
+              with:
+                  name: raw-pages
+                  path: ./main/.verify-helper/markdown/

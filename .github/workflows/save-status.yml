@@ -2,36 +2,36 @@ name: _post-cache
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_call:
-    inputs:
-      status:
-        type: string
-        required: true
-      key:
-        type: string
-        required: true
+    workflow_call:
+        inputs:
+            status:
+                type: string
+                required: true
+            key:
+                type: string
+                required: true
 
 jobs:
-  save-status:
-    name: save-status (${{ inputs.key }})
-    runs-on: ${{ vars.RUNNER_IMAGE }}
+    save-status:
+        name: save-status (${{ inputs.key }})
+        runs-on: ${{ vars.RUNNER_IMAGE }}
 
-    steps:
-    - name: Load previous hash
-      uses: actions/download-artifact@v3
-      with:
-        name: --${{ inputs.key }}-files-hash
-        path: ./
+        steps:
+            - name: Load previous hash
+              uses: actions/download-artifact@v4
+              with:
+                  name: --${{ inputs.key }}-files-hash
+                  path: ./
 
-    - name: Save status
-      run: |
-        echo "Status: ${{ inputs.status }}"
-        echo "${{ inputs.status }}" > ./status.txt
+            - name: Save status
+              run: |
+                  echo "Status: ${{ inputs.status }}"
+                  echo "${{ inputs.status }}" > ./status.txt
 
-    - name: Upload hash and status
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.key }}-files-hash
-        path: |
-          ./hash.txt
-          ./status.txt
+            - name: Upload hash and status
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ inputs.key }}-files-hash
+                  path: |
+                      ./hash.txt
+                      ./status.txt
