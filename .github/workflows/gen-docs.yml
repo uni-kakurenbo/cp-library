@@ -51,6 +51,8 @@ jobs:
                   time oj-verify docs --jobs $(nproc)
                   echo '::endgroup::'
 
+                  cp ./.verify-helper/docs/style.scss ./.verify-helper/markdown/assets/css/
+
             - name: Upload
               uses: actions/upload-artifact@v4
               with:
