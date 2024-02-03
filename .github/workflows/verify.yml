@@ -535,7 +535,7 @@ jobs:
             - name: Load timestamps
               uses: actions/download-artifact@v4
               with:
-                  # pattern: test-*
+                  pattern: test-*
                   path: .verify-helper/tests/
 
             - name: Merge timestamps
@@ -582,7 +582,7 @@ jobs:
             - name: Load timestamps
               uses: actions/download-artifact@v4
               with:
-                  # pattern: test-*
+                  pattern: test-*
                   path: ./
 
             - name: Print summery
