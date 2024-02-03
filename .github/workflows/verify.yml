@@ -211,7 +211,7 @@ jobs:
                   sparse-checkout: ./.github/workflows/internal/
 
             - name: Set up Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@v5
               with:
                   python-version: "3.11.x"
                   token: ${{ secrets.GH_PAT }}
@@ -219,14 +219,14 @@ jobs:
                   cache-dependency-path: "**/requirements.txt"
 
             - name: Cache Node modules
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               id: node-cache
               with:
                   path: "~/**/node_modules/"
                   key: node-modules
 
             - name: Cache online-judge-tools
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: "~/**/online-judge-tools/"
                   key: online-judge-tools
@@ -370,7 +370,7 @@ jobs:
                   token: ${{ secrets.GH_PAT }}
 
             - name: Set up Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@v5
               with:
                   python-version: "3.11.x"
                   token: ${{ secrets.GH_PAT }}
@@ -378,7 +378,7 @@ jobs:
                   cache-dependency-path: "**/requirements.txt"
 
             - name: Cache Node modules
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               id: node-cache
               with:
                   path: "~/**/node_modules/"
