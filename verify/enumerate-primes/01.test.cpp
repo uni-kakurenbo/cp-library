@@ -6,6 +6,8 @@
  */
 /* #language C++ GCC */
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #define PROBLEM "https://judge.yosupo.jp/problem/enumerate_primes"
 
 #include <cassert>

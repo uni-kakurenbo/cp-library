@@ -23,43 +23,6 @@
 
 namespace lib {
 
-namespace internal {
-
-namespace prime_enumerator_impl {
-
-
-using impl_type = std::uint32_t;
-using small_bit_type = std::uint8_t;
-using large_bit_type = std::uint64_t;
-
-
-inline static constexpr impl_type SEGMENT_SIZE = 1'000'000;
-
-inline static constexpr impl_type  MOD30[8] = { 1, 7, 11, 13, 17, 19, 23, 29 };
-
-inline static constexpr small_bit_type MASK[8][8] = {
-    { 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f },
-    { 0xfd, 0xdf, 0xef, 0xfe, 0x7f, 0xf7, 0xfb, 0xbf },
-    { 0xfb, 0xef, 0xfe, 0xbf, 0xfd, 0x7f, 0xf7, 0xdf },
-    { 0xf7, 0xfe, 0xbf, 0xdf, 0xfb, 0xfd, 0x7f, 0xef },
-    { 0xef, 0x7f, 0xfd, 0xfb, 0xdf, 0xbf, 0xfe, 0xf7 },
-    { 0xdf, 0xf7, 0x7f, 0xfd, 0xbf, 0xfe, 0xef, 0xfb },
-    { 0xbf, 0xfb, 0xf7, 0x7f, 0xfe, 0xef, 0xdf, 0xfd },
-    { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe },
-};
-
-inline static constexpr impl_type C1[8] = { 6, 4, 2, 4, 2, 4, 6, 2 };
-inline static constexpr impl_type C0[8][8] = {
-    { 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 1, 1, 0, 1, 1, 1, 1 },
-    { 2, 2, 0, 2, 0, 2, 2, 1 }, { 3, 1, 1, 2, 1, 1, 3, 1 },
-    { 3, 3, 1, 2, 1, 3, 3, 1 }, { 4, 2, 2, 2, 2, 2, 4, 1 },
-    { 5, 3, 1, 4, 1, 3, 5, 1 }, { 6, 4, 2, 4, 2, 4, 6, 1 },
-};
-
-} // namespace prime_enumerator_impl
-
-} // namespace internal
-
 
 // Thanks to: https://qiita.com/peria/items/e0ab38f95d16a5f7cc58
 
@@ -67,13 +30,37 @@ template<class T>
 struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
     using value_type = T;
     using size_type = internal::size_t;
-    using impl_type = internal::prime_enumerator_impl::impl_type;
-
-    impl_type n = 0;
 
   protected:
-    using small_bit_type = internal::prime_enumerator_impl::small_bit_type;
-    using large_bit_type = internal::prime_enumerator_impl::large_bit_type;
+    using impl_type = std::uint32_t;
+    impl_type _n = 0;
+
+    using small_bit_type = std::uint8_t;
+    using large_bit_type = std::uint64_t;
+
+
+    inline static constexpr impl_type SEGMENT_SIZE = 1'000'000;
+
+    inline static constexpr impl_type  MOD30[8] = { 1, 7, 11, 13, 17, 19, 23, 29 };
+
+    inline static constexpr small_bit_type MASK[8][8] = {
+        { 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f },
+        { 0xfd, 0xdf, 0xef, 0xfe, 0x7f, 0xf7, 0xfb, 0xbf },
+        { 0xfb, 0xef, 0xfe, 0xbf, 0xfd, 0x7f, 0xf7, 0xdf },
+        { 0xf7, 0xfe, 0xbf, 0xdf, 0xfb, 0xfd, 0x7f, 0xef },
+        { 0xef, 0x7f, 0xfd, 0xfb, 0xdf, 0xbf, 0xfe, 0xf7 },
+        { 0xdf, 0xf7, 0x7f, 0xfd, 0xbf, 0xfe, 0xef, 0xfb },
+        { 0xbf, 0xfb, 0xf7, 0x7f, 0xfe, 0xef, 0xdf, 0xfd },
+        { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe },
+    };
+
+    inline static constexpr impl_type C1[8] = { 6, 4, 2, 4, 2, 4, 6, 2 };
+    inline static constexpr impl_type C0[8][8] = {
+        { 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 1, 1, 0, 1, 1, 1, 1 },
+        { 2, 2, 0, 2, 0, 2, 2, 1 }, { 3, 1, 1, 2, 1, 1, 3, 1 },
+        { 3, 3, 1, 2, 1, 3, 3, 1 }, { 4, 2, 2, 2, 2, 2, 4, 1 },
+        { 5, 3, 1, 4, 1, 3, 5, 1 }, { 6, 4, 2, 4, 2, 4, 6, 1 },
+    };
 
     size_type _size;
 
@@ -120,14 +107,14 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         REP(i, quart_ni) {
             for(small_bit_type flags = this->_small[i]; flags; flags &= flags - 1) {
                 const int ibit = lowest_bit_pos(flags);
-                const impl_type m = internal::prime_enumerator_impl::MOD30[ibit];
+                const impl_type m = prime_enumerator::MOD30[ibit];
                 const impl_type pm = 30 * i + 2 * m;
                 for(
                     impl_type j = i * pm + (m * m) / 30, k = ibit;
                     j < this->_sqrt_ni;
-                    j += i * internal::prime_enumerator_impl::C1[k] + internal::prime_enumerator_impl::C0[ibit][k], k = (k + 1) & 7
+                    j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k], k = (k + 1) & 7
                 ) {
-                    this->_small[j] &= internal::prime_enumerator_impl::MASK[ibit][k];
+                    this->_small[j] &= prime_enumerator::MASK[ibit][k];
                 }
             }
         }
@@ -135,9 +122,9 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         REP(i, this->_sqrt_ni) {
             for(small_bit_type flags = this->_small[i]; flags; flags &= flags - 1) {
                 const int ibit = lowest_bit_pos(flags);
-                const impl_type m = internal::prime_enumerator_impl::MOD30[ibit];
+                const impl_type m = prime_enumerator::MOD30[ibit];
                 impl_type j = i * (30 * i + 2 * m) + (m * m) / 30;
-                this->_indecies.emplace_back(((j + internal::prime_enumerator_impl::SEGMENT_SIZE) << 3) | ibit);
+                this->_indecies.emplace_back(((j + prime_enumerator::SEGMENT_SIZE) << 3) | ibit);
             }
         }
     }
@@ -147,10 +134,10 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         REP(i, this->_sqrt_ni) {
             for(small_bit_type primes = this->_small[i]; primes; primes &= primes - 1) {
                 const int ibit = lowest_bit_pos(primes);
-                impl_type j = (*p_index >> 3) - internal::prime_enumerator_impl::SEGMENT_SIZE;
+                impl_type j = (*p_index >> 3) - prime_enumerator::SEGMENT_SIZE;
                 impl_type k = *p_index & 7;
-                for(; j < size; j += i * internal::prime_enumerator_impl::C1[k] + internal::prime_enumerator_impl::C0[ibit][k], k = (k + 1) & 7) {
-                    flags[j] &= internal::prime_enumerator_impl::MASK[ibit][k];
+                for(; j < size; j += i * prime_enumerator::C1[k] + prime_enumerator::C0[ibit][k], k = (k + 1) & 7) {
+                    flags[j] &= prime_enumerator::MASK[ibit][k];
                 }
                 *p_index = ((j << 3) | k);
                 ++p_index;
@@ -166,36 +153,36 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 
     prime_enumerator() noexcept {};
 
-    prime_enumerator(const value_type n) noexcept(NO_EXCEPT) : n(n) {
+    prime_enumerator(const value_type n) noexcept(NO_EXCEPT) : _n(n) {
         assert(n >= 0);
         assert(std::endian::native == std::endian::little);
 
-        this->_sqrt_n = static_cast<impl_type>(sqrt_ceil(this->n + 1));
+        this->_sqrt_n = static_cast<impl_type>(sqrt_ceil(this->_n + 1));
         this->_sqrt_ni = this->_sqrt_n / 30 + 1;
         this->_quart_n = static_cast<impl_type>(sqrt_ceil(this->_sqrt_n));
 
         this->_gen_small();
 
-        impl_type size = (this->n + 1) / 30 + 1;
-        this->_init(this->n + 1, size);
+        impl_type size = (this->_n + 1) / 30 + 1;
+        this->_init(this->_n + 1, size);
 
-        for(small_bit_type* seg = this->_flag; ; seg += internal::prime_enumerator_impl::SEGMENT_SIZE) {
-            if(size < internal::prime_enumerator_impl::SEGMENT_SIZE) {
+        for(small_bit_type* seg = this->_flag; ; seg += prime_enumerator::SEGMENT_SIZE) {
+            if(size < prime_enumerator::SEGMENT_SIZE) {
                 this->_gen_core(seg, size);
                 break;
             };
-            this->_gen_core(seg, internal::prime_enumerator_impl::SEGMENT_SIZE);
-            size -= internal::prime_enumerator_impl::SEGMENT_SIZE;
+            this->_gen_core(seg, prime_enumerator::SEGMENT_SIZE);
+            size -= prime_enumerator::SEGMENT_SIZE;
         }
 
-        this->_size = (this->n >= 2) + (this->n >= 3) + (this->n >= 5);
+        this->_size = (this->_n >= 2) + (this->_n >= 3) + (this->_n >= 5);
         for(const large_bit_type f : this->_large) this->_size += std::popcount(f);
     }
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_size; }
 
     inline size_type count(const T x) const noexcept(NO_EXCEPT) {
-        assert(0 <= x and x <= this->n);
+        assert(0 <= x and x <= this->_n);
 
         size_type res = (x >= 2) + (x >= 3) + (x >= 5);
         T count = 0;
@@ -206,7 +193,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         for(const large_bit_type f : this->_large) {
             if(count + large_bit_size > x) {
                 REP(i, large_bit_width) {
-                    if(count + internal::prime_enumerator_impl::MOD30[i & 7] > x) break;
+                    if(count + prime_enumerator::MOD30[i & 7] > x) break;
                     if((f >> i) & 1) res++;
                     if(((i + 1) & 7) == 0) count += 30;
                 }
@@ -225,14 +212,14 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
     }
 
     inline bool is_prime(const T v) const noexcept(NO_EXCEPT) {
-        assert(0 <= v and v <= this->n);
+        assert(0 <= v and v <= this->_n);
 
         if(v == 0 or v == 1) return false;
         if(v == 2 or v == 3 or v == 5) return true;
         if((v & 1) == 0 or v % 3 == 0 or v % 5 == 0) return false;
 
         REP(i, 8) {
-            if(internal::prime_enumerator_impl::MOD30[i] == v % 30) {
+            if(prime_enumerator::MOD30[i] == v % 30) {
                 return static_cast<bool>((this->_flag[v / 30] >> i) & 1);
             }
         }
@@ -248,7 +235,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 
     struct iterator : virtual iterator_interface {
       protected:
-        value_type n = 0;
+        value_type _n = 0;
         size_type _index = 0;
         const std::valarray<large_bit_type>* _flags = nullptr;
         size_type _block = -1, _flag_size;
@@ -263,14 +250,14 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
             }
             return (
                 value_type{30} * ((this->_block << 3) + (this->_bit >> 3)) +
-                internal::prime_enumerator_impl::MOD30[this->_bit & 7]
+                prime_enumerator::MOD30[this->_bit & 7]
             );
         }
 
       public:
         iterator() noexcept = default;
         iterator(const prime_enumerator *const super, const int bit) noexcept(NO_EXCEPT)
-          : n(super->n), _flags(&super->_large), _flag_size(static_cast<size_type>(super->_large.size())), _bit(bit) {
+          : _n(super->_n), _flags(&super->_large), _flag_size(static_cast<size_type>(super->_large.size())), _bit(bit) {
             if(bit < 0) {
                 this->_index = super->size();
                 this->_block = static_cast<size_type>(super->_large.size()) - 1;
@@ -281,11 +268,11 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 
         inline value_type operator*() const noexcept(NO_EXCEPT) {
             const value_type res = this->_value();
-            return (res > this->n ? -1 : res);
+            return (res > this->_n ? -1 : res);
         }
 
         inline iterator& operator++() noexcept(NO_EXCEPT) {
-            if(this->_value() > this->n) return *this;
+            if(this->_value() > this->_n) return *this;
             ++this->_index;
 
             if(this->_block < 0) {
@@ -325,7 +312,7 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
                 --this->_block;
                 this->_bit = 64;
                 if(this->_block < 0) {
-                    this->_bit = (this->n >= 3) + (this->n >= 5);
+                    this->_bit = (this->_n >= 3) + (this->_n >= 5);
                     return *this;
                 }
             }
