@@ -9,6 +9,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/type_traits.hpp"
 
+#include "utility/internal/functional_base.hpp"
+
 #include "numeric/arithmetic.hpp"
 
 #include "global/constants.hpp"
@@ -55,7 +57,6 @@ template<class T, class U> inline bool chmax(T &a, const U& b) noexcept(NO_EXCEP
 
 template<class T, class... Ts> inline bool chmin(T &a, Ts... b) noexcept(NO_EXCEPT) { return chmin(a, min(b...)); }
 template<class T, class... Ts> inline bool chmax(T &a, Ts... b) noexcept(NO_EXCEPT) { return chmax(a, max(b...)); }
-
 
 template<class... Ts>
 inline constexpr std::common_type_t<Ts...> tuple_sum(const std::tuple<Ts...>& tuple, const std::common_type_t<Ts...>& base = {}) noexcept(NO_EXCEPT) {

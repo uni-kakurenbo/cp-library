@@ -20,6 +20,8 @@
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
 
+#include "utility/internal/functional_base.hpp"
+
 #include "numeric/internal/number_base.hpp"
 
 #include "iterable/operation.hpp"
@@ -275,6 +277,55 @@ inline constexpr T kth_root_floor(T x, const i64 k) noexcept(NO_EXCEPT) {
 
     return res;
 }
+
+
+template<std::integral T>
+T inline constexpr extended_gcd(const T& a, const T& b, T& x, T& y) noexcept {
+    if(b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+
+    const T d = extended_gcd(b, a%b, y, x);
+
+    y -= a / b * x;
+    return d;
+};
+
+template<std::integral T>
+std::pair<T, spair<T>> inline constexpr extended_gcd(const T& a, const T& b) noexcept {
+    T x, y;
+    const T d = extended_gcd(a, b, x, y);
+    return { d, spair<T>{ x, y } };
+};
+
+
+template<std::integral T>
+std::optional<spair<T>> inline constexpr bezout_equation(const T& a, const T& b, const T& c) noexcept {
+    if(a == 0) {
+        if(b == 0) {
+            if(c == 0) return spair<T>{ 0, 0 };
+            else { };
+        }
+        if(c % b == 0) return spair<T>{ 0, c / b };
+        return {};
+    }
+
+    if(b == 0) {
+        const auto ans = bezout_equation(b, a, c);
+        if(ans.has_value()) return swapped(ans.value());
+        return {};
+    }
+
+    T x, y;
+    const T gcd = extended_gcd(a, b, x, y);
+
+    if(c % gcd != 0) return {};
+
+    const T p = c / gcd;
+    return spair<T>{ x * p, y * p };
+};
 
 
 } // namespace lib
