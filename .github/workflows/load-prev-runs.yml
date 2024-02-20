@@ -41,6 +41,10 @@ jobs:
 
                   find ./main/ -type f -name '*.cpp' -or -name '*.hpp' | sort > ./file-list.txt
 
+                  if [ '${{ matrix.target }}' == 'analysis' ]; then
+                    echo './main/.github/workflows/analyze.yml' >> ./file-list.txt
+                  fi
+
                   if [ '${{ matrix.target }}' == 'verify' ]; then
                     echo './main/.github/workflows/internal/options.env' >> ./file-list.txt
                     echo './main/.github/workflows/internal/allocate.sh' >> ./file-list.txt
