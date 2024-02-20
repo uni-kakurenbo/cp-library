@@ -149,7 +149,7 @@
         <label class="checkBtn"><input type="checkbox" onclick="toggleSeverity(this)" id="error"checked/>error</label>
         <label class="checkBtn disabled"><input type="checkbox" onclick="toggleSeverity(this)" id="warning"disabled/>warning</label>
         <label class="checkBtn disabled"><input type="checkbox" onclick="toggleSeverity(this)" id="portability"disabled/>portability</label>
-        <label class="checkBtn"><input type="checkbox" onclick="toggleSeverity(this)" id="performance"checked/>performance</label>
+        <label class="checkBtn disabled"><input type="checkbox" onclick="toggleSeverity(this)" id="performance"disabled/>performance</label>
         <label class="checkBtn"><input type="checkbox" onclick="toggleSeverity(this)" id="style"checked/>style</label>
         <label class="checkBtn disabled"><input type="checkbox" onclick="toggleSeverity(this)" id="information"disabled/>information</label>
         | 
@@ -169,11 +169,11 @@
        <table>
            <tr><th>Show</th><th>#</th><th>Defect ID</th></tr>
             <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="unknownMacro" name="unknownMacro" checked></td><td>11</td><td>unknownMacro</td></tr>
-            <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="noExplicitConstructor" name="noExplicitConstructor" checked></td><td>2</td><td>noExplicitConstructor</td></tr>
             <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="shadowVariable" name="shadowVariable" checked></td><td>2</td><td>shadowVariable</td></tr>
-            <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="passedByValue" name="passedByValue" checked></td><td>1</td><td>passedByValue</td></tr>
+            <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="noExplicitConstructor" name="noExplicitConstructor" checked></td><td>1</td><td>noExplicitConstructor</td></tr>
+            <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="syntaxError" name="syntaxError" checked></td><td>1</td><td>syntaxError</td></tr>
             <tr><td><input type="checkbox" class="idToggle" onclick="toggleDisplay(this)" id="useStlAlgorithm" name="useStlAlgorithm" checked></td><td>1</td><td>useStlAlgorithm</td></tr>
-           <tr><td></td><td>17</td><td>total</td></tr>
+           <tr><td></td><td>16</td><td>total</td></tr>
        </table>
        <p><a href="stats.html">Statistics</a></p>
     </div>
@@ -183,8 +183,7 @@
        <tr><th>Line</th><th>Id</th><th>CWE</th><th>Severity</th><th>Message</th></tr>
       <tbody class="fileEntry">
        <tr><td colspan="5"><a href="0.html">../library-for-competitive-programming/debugger/test.cpp</a></td></tr>
-         <tr class="noExplicitConstructor sev_style issue"><td><a href="0.html#line-19">19</a></td><td>noExplicitConstructor</td><td><a href="https://cwe.mitre.org/data/definitions/398.html">398</a></td><td>style</td><td>Struct &apos;prime_sieve&apos; has a constructor with 1 argument that is not explicit.</td></tr>
-         <tr class="passedByValue sev_performance issue"><td><a href="0.html#line-72">72</a></td><td>passedByValue</td><td><a href="https://cwe.mitre.org/data/definitions/398.html">398</a></td><td>performance</td><td>Function parameter &apos;bist&apos; should be passed by const reference.</td></tr>
+         <tr class="syntaxError sev_error issue"><td><a href="0.html#line-64">64</a></td><td>syntaxError</td><td></td><td>error</td><td class="error">syntax error: keyword &apos;while&apos; is not allowed in global scope</td></tr>
       <tbody class="fileEntry">
        <tr><td colspan="5"><a href="1.html">../library-for-competitive-programming/test/bit_vector.cpp</a></td></tr>
          <tr class="unknownMacro sev_error issue"><td><a href="1.html#line-12">12</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
@@ -204,11 +203,11 @@
        <tr><td colspan="5"><a href="6.html">../library-for-competitive-programming/test/maximum_bipartite_matching.cpp</a></td></tr>
          <tr class="unknownMacro sev_error issue"><td><a href="6.html#line-30">30</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
       <tbody class="fileEntry">
-       <tr><td colspan="5"><a href="7.html">../library-for-competitive-programming/test/minimum_paph_cover.cpp</a></td></tr>
-         <tr class="unknownMacro sev_error issue"><td><a href="7.html#line-31">31</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
+       <tr><td colspan="5"><a href="8.html">../library-for-competitive-programming/test/minimum_paph_cover.cpp</a></td></tr>
+         <tr class="unknownMacro sev_error issue"><td><a href="8.html#line-31">31</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
       <tbody class="fileEntry">
-       <tr><td colspan="5"><a href="8.html">../library-for-competitive-programming/test/multiset_hasher.cpp</a></td></tr>
-         <tr class="unknownMacro sev_error issue"><td><a href="8.html#line-34">34</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
+       <tr><td colspan="5"><a href="7.html">../library-for-competitive-programming/test/multiset_hasher.cpp</a></td></tr>
+         <tr class="unknownMacro sev_error issue"><td><a href="7.html#line-34">34</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
       <tbody class="fileEntry">
        <tr><td colspan="5"><a href="9.html">../library-for-competitive-programming/test/prime_enumerator.cpp</a></td></tr>
          <tr class="unknownMacro sev_error issue"><td><a href="9.html#line-8">8</a></td><td>unknownMacro</td><td></td><td>error</td><td class="error">There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</td></tr>
