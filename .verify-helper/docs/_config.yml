@@ -9,5 +9,6 @@ plugins:
 exclude:
     - test/
     - vendor/
+    - .lint/
 
 theme: jekyll-theme-cayman

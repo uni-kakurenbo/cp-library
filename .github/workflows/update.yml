@@ -94,7 +94,6 @@ jobs:
     documantaion:
         needs:
             - config
-            - analyze
             - verify
         if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
         uses: ./.github/workflows/gen-docs.yml
@@ -102,6 +101,7 @@ jobs:
 
     gh-pages:
         needs:
+            - analyze
             - documantaion
         if: ${{ !cancelled() && needs.documantaion.result == 'success' }}
         uses: ./.github/workflows/gh-pages.yml
