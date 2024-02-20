@@ -21,7 +21,7 @@ jobs:
               working-directory: ./.verify-helper/
               run: |
                   mkdir -p ./lint
-                  cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I .. --output-file=./cppcheck_report.xml --enable=all .
+                  cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I .. --output-file=./cppcheck_report.xml --enable=all ..
                   cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./lint
 
             - name: Push report
