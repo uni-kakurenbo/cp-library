@@ -18,9 +18,10 @@ jobs:
               run: sudo apt install cppcheck
 
             - name: Run lint
+              working-directory: ./.verify-helper/
               run: |
-                  mkdir ./lint
-                  cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I . --output-file=./cppcheck_report.xml --enable=all .
+                  mkdir -p ./lint
+                  cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I .. --output-file=./cppcheck_report.xml --enable=all .
                   cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./lint
 
             - name: Push report
