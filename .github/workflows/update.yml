@@ -2,138 +2,139 @@ name: library-update
 run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
-  workflow_dispatch:
-    inputs:
-      force:
-        type: boolean
-        default: false
-        required: true
-  push:
-    branches:
-      - main
-  pull_request:
+    workflow_dispatch:
+        inputs:
+            force:
+                type: boolean
+                default: false
+                required: true
+    push:
+        branches:
+            - main
+    pull_request:
 
 concurrency:
-  group: update-${{ github.ref }}
-  cancel-in-progress: true
+    group: update-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  cache:
-    uses: ./.github/workflows/load-prev-runs.yml
-    secrets: inherit
+    cache:
+        uses: ./.github/workflows/load-prev-runs.yml
+        secrets: inherit
 
-  config:
-    needs: cache
-    if: ${{ !cancelled() }}
-    runs-on: ${{ vars.RUNNER_IMAGE }}
+    config:
+        needs: cache
+        if: ${{ !cancelled() }}
+        runs-on: ${{ vars.RUNNER_IMAGE }}
 
-    outputs:
-      fail: ${{ env.FAIL }}
-      run-analysis: ${{ env.ANALYSIS }}
-      run-verify: ${{ env.VERIFY }}
-      gen-docs: ${{ env.DOCS }}
+        outputs:
+            fail: ${{ env.FAIL }}
+            run-analysis: ${{ env.ANALYSIS }}
+            run-verify: ${{ env.VERIFY }}
+            gen-docs: ${{ env.DOCS }}
 
-    env:
-      FAIL: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
+        env:
+            FAIL: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
 
-      ANALYSIS: >-
-        ${{
-          inputs.force ||
-          needs.cache.outputs.analysis-status == '' ||
-          needs.cache.outputs.analysis-status == 'cancelled'
-        }}
+            ANALYSIS: >-
+                ${{
+                  inputs.force ||
+                  needs.cache.outputs.analysis-status == '' ||
+                  needs.cache.outputs.analysis-status == 'cancelled'
+                }}
 
-      VERIFY: >-
-        ${{
-          github.ref_name == github.event.repository.default_branch &&
-          (
-            inputs.force ||
-            needs.cache.outputs.verify-status == '' ||
-            needs.cache.outputs.verify-status == 'cancelled'
-          )
-        }}
+            VERIFY: >-
+                ${{
+                  github.ref_name == github.event.repository.default_branch &&
+                  (
+                    inputs.force ||
+                    needs.cache.outputs.verify-status == '' ||
+                    needs.cache.outputs.verify-status == 'cancelled'
+                  )
+                }}
 
-      DOCS: >-
-        ${{
-          github.ref_name == github.event.repository.default_branch &&
-          (
-            inputs.force ||
-            needs.cache.outputs.docs-status == '' ||
-            needs.cache.outputs.docs-status == 'cancelled'
-          )
-        }}
+            DOCS: >-
+                ${{
+                  github.ref_name == github.event.repository.default_branch &&
+                  (
+                    inputs.force ||
+                    needs.cache.outputs.docs-status == '' ||
+                    needs.cache.outputs.docs-status == 'cancelled'
+                  )
+                }}
 
-    steps:
-    - name: Set variables
-      id: set-vars
-      run: |
-        echo "Force: ${{ inputs.force }}"
-        echo "Quit: ${FAIL}"
-        echo "Analysis: ${ANALYSIS}"
-        echo "Verify: ${VERIFY}"
-        echo "Docs: ${DOCS}"
+        steps:
+            - name: Set variables
+              id: set-vars
+              run: |
+                  echo "Force: ${{ inputs.force }}"
+                  echo "Quit: ${FAIL}"
+                  echo "Analysis: ${ANALYSIS}"
+                  echo "Verify: ${VERIFY}"
+                  echo "Docs: ${DOCS}"
 
-  fail:
-    needs: config
-    if: ${{ !cancelled() && needs.config.outputs.fail == 'true' }}
-    runs-on: ${{ vars.RUNNER_IMAGE }}
-    steps:
-    - run: exit 1
+    fail:
+        needs: config
+        if: ${{ !cancelled() && needs.config.outputs.fail == 'true' }}
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+        steps:
+            - run: exit 1
 
-  analyze:
-    needs: config
-    if: ${{ !cancelled() && needs.config.outputs.run-analysis == 'true' }}
-    uses: ./.github/workflows/analyze.yml
+    analyze:
+        needs: config
+        if: ${{ !cancelled() && needs.config.outputs.run-analysis == 'true' }}
+        uses: ./.github/workflows/analyze.yml
 
-  verify:
-    needs: config
-    if: ${{ !cancelled() && needs.config.outputs.run-verify == 'true' }}
-    uses: ./.github/workflows/verify.yml
-    secrets: inherit
+    verify:
+        needs: config
+        if: ${{ !cancelled() && needs.config.outputs.run-verify == 'true' }}
+        uses: ./.github/workflows/verify.yml
+        secrets: inherit
 
-  documantaion:
-    needs:
-    - config
-    - verify
-    if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
-    uses: ./.github/workflows/gen-docs.yml
-    secrets: inherit
+    documantaion:
+        needs:
+            - config
+            - analyze
+            - verify
+        if: ${{ !cancelled() && needs.config.outputs.gen-docs == 'true' }}
+        uses: ./.github/workflows/gen-docs.yml
+        secrets: inherit
 
-  gh-pages:
-    needs:
-    - documantaion
-    if: ${{ !cancelled() && needs.documantaion.result == 'success' }}
-    uses: ./.github/workflows/gh-pages.yml
+    gh-pages:
+        needs:
+            - documantaion
+        if: ${{ !cancelled() && needs.documantaion.result == 'success' }}
+        uses: ./.github/workflows/gh-pages.yml
 
-  cache-analyze:
-    name: cache
-    needs:
-    - cache
-    - analyze
-    uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.analyze.result != 'skipped' }}
-    with:
-      key: analysis
-      status: ${{ needs.analyze.result }}
+    cache-analyze:
+        name: cache
+        needs:
+            - cache
+            - analyze
+        uses: ./.github/workflows/save-status.yml
+        if: ${{ !cancelled() && needs.cache.result == 'success' && needs.analyze.result != 'skipped' }}
+        with:
+            key: analysis
+            status: ${{ needs.analyze.result }}
 
-  cache-verify:
-    name: cache
-    needs:
-    - cache
-    - verify
-    uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
-    with:
-      key: verify
-      status: ${{ needs.verify.result }}
+    cache-verify:
+        name: cache
+        needs:
+            - cache
+            - verify
+        uses: ./.github/workflows/save-status.yml
+        if: ${{ !cancelled() && needs.cache.result == 'success' && needs.verify.result != 'skipped' }}
+        with:
+            key: verify
+            status: ${{ needs.verify.result }}
 
-  cache-docs:
-    name: cache
-    needs:
-    - cache
-    - gh-pages
-    uses: ./.github/workflows/save-status.yml
-    if: ${{ !cancelled() && needs.cache.result == 'success' && needs.gh-pages.result != 'skipped' }}
-    with:
-      key: docs
-      status: ${{ needs.gh-pages.result }}
+    cache-docs:
+        name: cache
+        needs:
+            - cache
+            - gh-pages
+        uses: ./.github/workflows/save-status.yml
+        if: ${{ !cancelled() && needs.cache.result == 'success' && needs.gh-pages.result != 'skipped' }}
+        with:
+            key: docs
+            status: ${{ needs.gh-pages.result }}
