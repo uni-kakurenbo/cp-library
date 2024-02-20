@@ -28,8 +28,8 @@ jobs:
             - name: Clone lint report
               uses: actions/checkout@v4
               with:
-                  sparse-checkout: ./.lint
-                  path: lint/
+                  sparse-checkout: ./.lint/
+                  path: ./_site/lint/
 
             - name: Upload
               uses: actions/upload-pages-artifact@v3
