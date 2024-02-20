@@ -20,7 +20,7 @@ jobs:
             - name: Run lint
               working-directory: ./.verify-helper/
               run: |
-                  mkdir -p ./lint
+                  mkdir -p ./lint/
                   cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I .. --output-file=./cppcheck_report.xml --enable=all ..
                   cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./lint
 
@@ -33,8 +33,7 @@ jobs:
                   git config --global user.name "GitHub"
                   git config --global user.email "noreply@github.com"
 
-                  git add ./lint
-                  git add ./cppcheck_report.txt
+                  git add ./.verify-helper/lint/
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
