@@ -298,8 +298,8 @@ std::vector<std::string> split(const std::string& str) {
     return res;
 }
 
-template<class Arg> void DEBUG(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
-template<class... Args> void DEBUG(Args&&... args) { *cdebug << lit(std::forward<Args>(args)...) << std::flush; }
+template<class Arg> void raw(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
+template<class... Args> void raw//(Args&&... args) { *cdebug << lit(std::forward<Args>(args)...) << std::flush; }
 
 void debug(
     std::vector<std::string> __attribute__ ((unused)) args,
@@ -314,4 +314,4 @@ template<typename Head, typename... Tail> void debug(std::vector<std::string> ar
     debug(args, idx + 1, 0, std::forward<Tail>(T)...);
 }
 
-} // namespace debug
+} // namespace debugger

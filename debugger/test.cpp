@@ -7,7 +7,7 @@ using namespace atcoder;
 #include <debug>
 
 #define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-#define DEBUG(...) do { debugger::DEBUG(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::DEBUG(__VA_ARGS__); debugger::DEBUG(nullptr, "\033[m\n"); } while(0);
+#define _debug(...) do { debugger::_debug(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::_debug(__VA_ARGS__); debugger::_debug(nullptr, "\033[m\n"); } while(0);
 
 
 template<class T = int> struct matrix : vector<vector<T>> {
