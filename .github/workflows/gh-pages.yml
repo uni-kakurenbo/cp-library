@@ -19,17 +19,17 @@ jobs:
                   name: raw-pages
                   path: ./
 
-            - name: Clone lint report
-              uses: actions/checkout@v4
-              with:
-                  sparse-checkout: ./verify-helper/lint
-                  path: lint/
-
             - name: Configure pages
               uses: actions/configure-pages@v4
 
             - name: Build with Jekyll
               uses: actions/jekyll-build-pages@v1
+
+            - name: Clone lint report
+              uses: actions/checkout@v4
+              with:
+                  sparse-checkout: ./.lint
+                  path: lint/
 
             - name: Upload
               uses: actions/upload-pages-artifact@v3
