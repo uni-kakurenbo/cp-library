@@ -216,13 +216,13 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
   <body>
     <div id="wrapper">
     <div id="header" class="header">
-      <h1>Cppcheck report - Lint: ../library-for-competitive-programming/test/multiset_hasher.cpp</h1>
+      <h1>Cppcheck report - Lint: ../library-for-competitive-programming/test/minimum_paph_cover.cpp</h1>
 
     </div>
 
     <div id="menu">
-     <p><a href="index.html">Defects:</a> multiset_hasher.cpp</p>
-<a href="7.html#line-34"> unknownMacro 34</a>
+     <p><a href="index.html">Defects:</a> minimum_paph_cover.cpp</p>
+<a href="7.html#line-31"> unknownMacro 31</a>
     </div>
     <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
@@ -267,49 +267,69 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a id="line-1" name="line-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;template/standard.hpp&quot;</span><span class="cp"></span>
-<a id="line-2" name="line-2"></a>
-<a id="line-3" name="line-3"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span><span class="cp"></span>
-<a id="line-4" name="line-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;random&gt;</span><span class="cp"></span>
-<a id="line-5" name="line-5"></a>
-<a id="line-6" name="line-6"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hash/multiset_hasher.hpp&quot;</span><span class="cp"></span>
-<a id="line-7" name="line-7"></a>
-<a id="line-8" name="line-8"></a><span class="kt">signed</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="line-9" name="line-9"></a><span class="w">    </span><span class="n">lib</span><span class="o">::</span><span class="n">multiset_hasher</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="o">&gt;</span><span class="w"></span>
-<a id="line-10" name="line-10"></a><span class="w">        </span><span class="n">hash0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">},</span><span class="w"></span>
-<a id="line-11" name="line-11"></a><span class="w">        </span><span class="n">hash1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
-<a id="line-12" name="line-12"></a>
-<a id="line-13" name="line-13"></a><span class="w">    </span><span class="n">debug</span><span class="p">(</span><span class="n">hash0</span><span class="p">(),</span><span class="w"> </span><span class="n">hash1</span><span class="p">());</span><span class="w"></span>
-<a id="line-14" name="line-14"></a>
-<a id="line-15" name="line-15"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">mt19937</span><span class="w"> </span><span class="n">rnd</span><span class="p">;</span><span class="w"></span>
-<a id="line-16" name="line-16"></a>
-<a id="line-17" name="line-17"></a><span class="w">    </span><span class="n">REP</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="line-18" name="line-18"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
-<a id="line-19" name="line-19"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">();</span><span class="w"></span>
-<a id="line-20" name="line-20"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">();</span><span class="w"></span>
-<a id="line-21" name="line-21"></a><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">hash0</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">),</span><span class="w"> </span><span class="n">hash1</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span><span class="w"></span>
-<a id="line-22" name="line-22"></a><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">hash0</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">),</span><span class="w"> </span><span class="n">hash1</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span><span class="w"></span>
-<a id="line-23" name="line-23"></a><span class="w">        </span><span class="n">print</span><span class="p">(</span><span class="n">hash0</span><span class="p">(),</span><span class="w"> </span><span class="n">hash1</span><span class="p">());</span><span class="w"></span>
-<a id="line-24" name="line-24"></a><span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">hash0</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash1</span><span class="p">());</span><span class="w"></span>
-<a id="line-25" name="line-25"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<a id="line-26" name="line-26"></a>
-<a id="line-27" name="line-27"></a><span class="w">    </span><span class="n">REP</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="line-28" name="line-28"></a><span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
-<a id="line-29" name="line-29"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">();</span><span class="w"></span>
-<a id="line-30" name="line-30"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnd</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span><span class="w"></span>
-<a id="line-31" name="line-31"></a>
-<a id="line-32" name="line-32"></a><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="line-33" name="line-33"></a><span class="w">            </span><span class="n">hash0</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span><span class="w"></span>
-<a id="line-34" name="line-34"></a><span class="hll"><span class="w">            </span><span class="n">REP</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="n">hash1</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w"></span><span class="error2">&lt;--- There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</span>
-</span><a id="line-35" name="line-35"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="line-36" name="line-36"></a><span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<a id="line-37" name="line-37"></a><span class="w">            </span><span class="n">hash0</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span><span class="w"></span>
-<a id="line-38" name="line-38"></a><span class="w">            </span><span class="n">REP</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="n">hash1</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w"></span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><a id="line-1" name="line-1"></a><span class="cm">/*</span>
+<a id="line-2" name="line-2"></a><span class="cm"> * @uni_kakurenbo</span>
+<a id="line-3" name="line-3"></a><span class="cm"> * https://github.com/uni-kakurenbo/competitive-programming-workspace</span>
+<a id="line-4" name="line-4"></a><span class="cm"> *</span>
+<a id="line-5" name="line-5"></a><span class="cm"> * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja</span>
+<a id="line-6" name="line-6"></a><span class="cm"> */</span><span class="w"></span>
+<a id="line-7" name="line-7"></a><span class="cm">/* #language C++ GCC */</span><span class="w"></span>
+<a id="line-8" name="line-8"></a><span class="cm">/* #region template */</span><span class="w"></span>
+<a id="line-9" name="line-9"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bits/stdc++.h&gt;</span><span class="cp"></span>
+<a id="line-10" name="line-10"></a><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
+<a id="line-11" name="line-11"></a>
+<a id="line-12" name="line-12"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;template/standard.hpp&quot;</span><span class="cp"></span>
+<a id="line-13" name="line-13"></a>
+<a id="line-14" name="line-14"></a><span class="n">output_adapter</span><span class="w"> </span><span class="n">_print</span><span class="p">;</span><span class="w"></span>
+<a id="line-15" name="line-15"></a><span class="cp">#define print _print</span>
+<a id="line-16" name="line-16"></a><span class="cm">/* #endregion */</span><span class="w"></span>
+<a id="line-17" name="line-17"></a>
+<a id="line-18" name="line-18"></a><span class="c1">// https://codingcompetitions.withgoogle.com/codejam/round/0000000000432cc7/0000000000432a83#problem</span>
+<a id="line-19" name="line-19"></a>
+<a id="line-20" name="line-20"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;structure/graph.hpp&quot;</span><span class="cp"></span>
+<a id="line-21" name="line-21"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;graph/minimum_paph_cover.hpp&quot;</span><span class="cp"></span>
+<a id="line-22" name="line-22"></a><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">lib</span><span class="p">;</span><span class="w"></span>
+<a id="line-23" name="line-23"></a>
+<a id="line-24" name="line-24"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Solver</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-25" name="line-25"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"></span>
+<a id="line-26" name="line-26"></a><span class="w">    </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">;</span><span class="w"></span>
+<a id="line-27" name="line-27"></a>
+<a id="line-28" name="line-28"></a><span class="w">    </span><span class="n">Solver</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="n">k</span><span class="p">),</span><span class="w"> </span><span class="n">data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">))</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<a id="line-29" name="line-29"></a>
+<a id="line-30" name="line-30"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">read</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-31" name="line-31"></a><span class="hll"><span class="w">        </span><span class="n">REP</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">REP</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="n">cin</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span><span class="w"></span><span class="error2">&lt;--- There is an unknown macro here somewhere. Configuration is required. If REP is a macro then please configure it.</span>
+</span><a id="line-32" name="line-32"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<a id="line-33" name="line-33"></a>
+<a id="line-34" name="line-34"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">solve</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-35" name="line-35"></a><span class="w">        </span><span class="n">graph</span><span class="w"> </span><span class="nf">G</span><span class="p">(</span><span class="n">n</span><span class="p">);</span><span class="w"></span>
+<a id="line-36" name="line-36"></a><span class="w">        </span><span class="n">REP</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">REP</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-37" name="line-37"></a><span class="w">            </span><span class="n">valarray</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">less_i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">];</span><span class="w"></span>
+<a id="line-38" name="line-38"></a><span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="n">less_i</span><span class="p">.</span><span class="n">min</span><span class="p">())</span><span class="w"> </span><span class="n">G</span><span class="p">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span><span class="w"></span>
 <a id="line-39" name="line-39"></a><span class="w">        </span><span class="p">}</span><span class="w"></span>
-<a id="line-40" name="line-40"></a><span class="w">        </span><span class="n">print</span><span class="p">(</span><span class="n">hash0</span><span class="p">(),</span><span class="w"> </span><span class="n">hash1</span><span class="p">());</span><span class="w"></span>
-<a id="line-41" name="line-41"></a><span class="w">        </span><span class="n">assert</span><span class="p">(</span><span class="n">hash0</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash1</span><span class="p">());</span><span class="w"></span>
-<a id="line-42" name="line-42"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
-<a id="line-43" name="line-43"></a><span class="p">}</span><span class="w"></span>
+<a id="line-40" name="line-40"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">G</span><span class="p">.</span><span class="n">minimum_paph_cover_size_as_dag</span><span class="p">();</span><span class="w"></span>
+<a id="line-41" name="line-41"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<a id="line-42" name="line-42"></a><span class="p">};</span><span class="w"></span>
+<a id="line-43" name="line-43"></a>
+<a id="line-44" name="line-44"></a><span class="kt">signed</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-45" name="line-45"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w"> </span><span class="n">cin</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w"></span>
+<a id="line-46" name="line-46"></a><span class="w">    </span><span class="n">FOR</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="line-47" name="line-47"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">cin</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"></span>
+<a id="line-48" name="line-48"></a><span class="w">        </span><span class="n">Solver</span><span class="w"> </span><span class="n">solver</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">);</span><span class="w"></span>
+<a id="line-49" name="line-49"></a><span class="w">        </span><span class="n">solver</span><span class="p">.</span><span class="n">read</span><span class="p">();</span><span class="w"></span>
+<a id="line-50" name="line-50"></a><span class="w">        </span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Case #&quot;</span><span class="o">+</span><span class="n">to_string</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">solve</span><span class="p">());</span><span class="w"></span>
+<a id="line-51" name="line-51"></a><span class="w">    </span><span class="p">}</span><span class="w"></span>
+<a id="line-52" name="line-52"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<a id="line-53" name="line-53"></a><span class="p">}</span><span class="w"></span>
 </pre></div>
 </td></tr></table>
     </div>
