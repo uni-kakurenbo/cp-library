@@ -34,8 +34,6 @@ jobs:
                       cppcheck_report.xml
                   sparse-checkout-cone-mode: false
 
-            - run: ls
-
             - name: Build
               run: cppcheck-htmlreport --file=./cppcheck_report.xml --title=Lint --report-dir=./dist
 
@@ -98,8 +96,12 @@ jobs:
 
             - name: Merge data
               run: |
+                  mkdir -p ./_site/lint
+
                   mv ./docs/ ./_site/
                   mv ./lint/ ./_siie/lint
+
+                  ls ./_site/
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3
