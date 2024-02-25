@@ -29,10 +29,6 @@ jobs:
 
             - name: Clone raw data
               uses: actions/checkout@v4
-              with:
-                  sparse-checkout: |
-                      cppcheck_report.xml
-                  sparse-checkout-cone-mode: false
 
             - name: Build
               run: cppcheck-htmlreport --file=./cppcheck_report.xml --title=Lint --report-dir=./dist
