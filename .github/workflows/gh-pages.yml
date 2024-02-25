@@ -34,7 +34,7 @@ jobs:
                   sparse-checkout-cone-mode: false
 
             - name: Build
-              run: cppcheck-htmlreport --file=./cppcheck_report.xml --title=Lint --report-dir=./dist
+              run: cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./dist
 
             - name: Upload
               uses: actions/upload-artifact@v4
