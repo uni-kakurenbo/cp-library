@@ -21,6 +21,7 @@ jobs:
 
     lint:
         runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: configure
 
         steps:
             - name: Install cppcheck
@@ -43,6 +44,7 @@ jobs:
 
     docs:
         runs-on: ${{ vars.RUNNER_IMAGE }}
+        needs: configure
 
         steps:
             - name: Download raw doc data
@@ -65,7 +67,9 @@ jobs:
 
     deploy:
         runs-on: ${{ vars.RUNNER_IMAGE }}
-        needs: build
+        needs:
+            - lint
+            - docs
 
         permissions:
             contents: write
