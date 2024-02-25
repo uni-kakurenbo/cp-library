@@ -96,12 +96,15 @@ jobs:
 
             - name: Merge data
               run: |
+                  ls
+
                   mkdir -p ./_site/lint
 
                   mv ./docs/ ./_site/
-                  mv ./lint/ ./_siie/lint
 
-                  ls ./_site/
+                  ls ./_site
+
+                  mv ./lint/ ./_siie/lint
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3
