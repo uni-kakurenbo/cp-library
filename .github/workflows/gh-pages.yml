@@ -94,13 +94,12 @@ jobs:
                   name: docs-data
                   path: ./docs/
 
-            - name: Merge
+            - name: Merge data
               run: |
-                  mkdir -p ./_site/
-                  mv -f ./docs/* ./_site/
-
                   mkdir -p ./_site/lint/
-                  mv -f ./lint/* ./_siie/lint/
+
+                  mv -f ./docs/* ./_site/
+                  mv -f ./lint/* ./_site/lint/
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3
