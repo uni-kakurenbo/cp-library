@@ -33,6 +33,8 @@ jobs:
                   sparse-checkout: ./cppcheck_report.xml
                   sparse-checkout-cone-mode: false
 
+            - run: ls
+
             - name: Build
               run: cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./dist
 
