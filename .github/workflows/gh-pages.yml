@@ -22,10 +22,10 @@ jobs:
             - name: Configure pages
               uses: actions/configure-pages@v4
 
+            - run: mkdir ./_site/
+
             - name: Build with Jekyll
               uses: actions/jekyll-build-pages@v1
-
-            - run: chmod +w ./_site/
 
             - name: Clone lint report
               uses: actions/checkout@v4
