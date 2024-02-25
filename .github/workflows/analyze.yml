@@ -17,11 +17,8 @@ jobs:
             - name: Install cppcheck
               run: sudo apt install cppcheck
 
-            # - name: Run lint
-            #   run: |
-            #       mkdir -p ./.lint/
-            #       cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I .. --output-file=./cppcheck_report.xml --enable=all ..
-            #       cppcheck-htmlreport --file=cppcheck_report.xml --title=Lint --report-dir=./.lint
+            - name: Run lint
+              run: cppcheck --max-ctu-depth=32 -j $(nproc) --xml -I . --output-file=./cppcheck_report.xml --enable=all .
 
             - name: Push report
               env:
@@ -32,7 +29,7 @@ jobs:
                   git config --global user.name "GitHub"
                   git config --global user.email "noreply@github.com"
 
-                  git add ./.lint/
+                  git add ./cppcheck_report.xml
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"

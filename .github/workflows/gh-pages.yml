@@ -9,32 +9,59 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    build:
+    configure:
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
         steps:
-            - name: Download raw data
-              uses: actions/download-artifact@v4
-              with:
-                  name: raw-pages
-                  path: ./
-
             - name: Configure pages
               uses: actions/configure-pages@v4
 
-            - run: mkdir ./_site/
+            - name: Make directory
+              run: mkdir ./_site/
+
+    lint:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Install cppcheck
+              run: sudo apt install cppcheck
+
+            - name: Clone raw data
+              uses: actions/checkout@v4
+              with:
+                  - sparse-checkout: ./cppcheck_report.xml
+                  - sparse-checkout-cone-mode: false
+
+            - name: Build
+              run: cppcheck-htmlreport --file=./cppcheck_report.xml --title=Lint --report-dir=./dist
+
+            - name: Upload
+              uses: actions/upload-artifact@4
+              with:
+                  name: lint-report
+                  path: ./dist/
+
+    docs:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Download raw doc data
+              uses: actions/download-artifact@v4
+              with:
+                  name: raw-docs-data
+                  path: ./source/
 
             - name: Build with Jekyll
               uses: actions/jekyll-build-pages@v1
-
-            - name: Clone lint report
-              uses: actions/checkout@v4
               with:
-                  sparse-checkout: ./.lint/
-                  path: ./_site/lint/
+                  source: ./source/
+                  destination: ./dist/
 
             - name: Upload
-              uses: actions/upload-pages-artifact@v3
+              uses: actions/upload-artifact@4
+              with:
+                  name: docs-data
+                  path: ./dist/
 
     deploy:
         runs-on: ${{ vars.RUNNER_IMAGE }}
@@ -50,6 +77,26 @@ jobs:
             url: ${{ steps.deployment.outputs.page_url }}
 
         steps:
+            - name: Download lint report
+              uses: actions/download-artifact@v4
+              with:
+                  - name: lint-report
+                  - path: ./lint/
+
+            - name: Download docs data
+              uses: actions/download-artifact@v4
+              with:
+                  - name: docs-data
+                  - path: ./docs/
+
+            - name: Merge data
+              run: |
+                  mv ./docs/ ./_site/
+                  mv ./lint/ ./_siie/lint
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4
