@@ -80,14 +80,14 @@ jobs:
             - name: Download lint report
               uses: actions/download-artifact@v4
               with:
-                  - name: lint-report
-                  - path: ./lint/
+                  name: lint-report
+                  path: ./lint/
 
             - name: Download docs data
               uses: actions/download-artifact@v4
               with:
-                  - name: docs-data
-                  - path: ./docs/
+                  name: docs-data
+                  path: ./docs/
 
             - name: Merge data
               run: |
