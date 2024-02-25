@@ -94,8 +94,9 @@ jobs:
                   name: docs-data
                   path: ./docs/
 
-            - name: Merge data
+            - name: Merge
               run: |
+                  mkdir -p ./_site/
                   mv -f ./docs/* ./_site/
 
                   mkdir -p ./_site/lint/
