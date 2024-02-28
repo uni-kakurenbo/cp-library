@@ -99,6 +99,7 @@ constexpr Res primitive_root(const u64 p) noexcept(NO_EXCEPT) {
     if(p == 469762049) return 3;
     if(p == 754974721) return 11;
     if(p == 998244353) return 3;
+    if(p == (u64{ 1 } << 61) - 1) return 37;
 
 
     if(std::is_constant_evaluated()) {
