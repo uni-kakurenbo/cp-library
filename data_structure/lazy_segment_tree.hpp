@@ -62,13 +62,10 @@ struct base {
   protected:
     base() noexcept(NO_EXCEPT) {}
 
-    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n) {
-        this->_size = std::bit_ceil(lib::to_unsigned(n));
-        this->_depth = std::countr_zero(lib::to_unsigned(this->_size));
-        this->_lengths.resize(2 * this->_size);
-        this->_values.resize(2 * this->_size);
-        this->_lazy.resize(this->_size);
-    }
+    explicit base(const size_type n) noexcept(NO_EXCEPT)
+      : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
+        _lengths((this->_size << 1) - 1), _values((this->_size << 1) - 1), _lazy(this->_size)
+    {}
 
     inline void initialize() noexcept(NO_EXCEPT) {
         REPD(p, 1, this->_size) {
@@ -81,7 +78,7 @@ struct base {
 
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_size; }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_values.size(); }
     inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
     inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {

@@ -44,14 +44,16 @@ struct base {
 
   protected:
     base() noexcept(NO_EXCEPT) {}
-    explicit base(const size_type n) noexcept(NO_EXCEPT) : _n(n), _depth(std::bit_width<std::make_unsigned_t<size_type>>(n - 1)) {
-        this->_size = 1 << this->_depth;
-        this->_data.resize(this->_size << 1);
+    explicit base(const size_type n) noexcept(NO_EXCEPT)
+      : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
+        _data(this->_size << 1)
+    {
+        debug(n, _size, _depth);
     }
 
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_size; }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_data.size(); }
     inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
   protected:
@@ -84,61 +86,6 @@ struct base {
     }
 
     inline S fold_all() const noexcept(NO_EXCEPT) { return this->_data[1]; }
-
-  public:
-    template<bool (*f)(S)> inline size_type max_right(const size_type l) const noexcept(NO_EXCEPT) {
-        return this->max_right(l, [](S x) { return f(x); });
-    }
-    template<class F> inline size_type max_right(size_type l, const F& f) const noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= this->_n);
-        assert(f(S{}));
-        if(l == this->_n) return this->_n;
-        l += this->_size;
-        S sm;
-        do {
-            while(l%2 == 0) l >>= 1;
-            if(!f(sm + this->_data[l])) {
-                while(l < this->_size) {
-                    l <<= 1;
-                    if(f(sm + this->_data[l])) {
-                        sm = sm + this->_data[l];
-                        ++l;
-                    }
-                }
-                return l - this->_size;
-            }
-            sm = sm + this->_data[l];
-            ++l;
-        } while((l & -l) != l);
-        return this->_n;
-    }
-
-    template<bool (*f)(S)> inline size_type min_left(const size_type r) const noexcept(NO_EXCEPT) {
-        return this->min_left(r, [](S x) { return f(x); });
-    }
-    template<class F> inline size_type min_left(size_type r, const F& f) const noexcept(NO_EXCEPT) {
-        assert(0 <= r && r <= this->_n);
-        assert(f(S()));
-        if (r == 0) return 0;
-        r += this->_size;
-        S sm;
-        do {
-            --r;
-            while(r > 1 and (r%2)) r >>= 1;
-            if(!f(this->_data[r] + sm)) {
-                while(r < this->_size) {
-                    r = (r << 1 | 1);
-                    if(f(this->_data[r] + sm)) {
-                        sm = this->_data[r] + sm;
-                        --r;
-                    }
-                }
-                return r + 1 - this->_size;
-            }
-            sm = this->_data[r] + sm;
-        } while((r & -r) != r);
-        return 0;
-    }
 };
 
 
@@ -275,6 +222,84 @@ struct core<Monoid> : base<Monoid> {
     inline value_type fold() const noexcept(NO_EXCEPT) {
         return this->base::fold_all();
     }
+
+
+    template<bool (*f)(value_type)>
+    inline size_type max_right(const size_type l) const noexcept(NO_EXCEPT) {
+        return this->max_right(l, [](value_type x) { return f(x); });
+    }
+
+    template<class F>
+    inline size_type max_right(size_type l, F f) const noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= this->_n);
+        assert(f(value_type{}));
+
+        if(l == this->_n) return this->_n;
+
+        l += this->_size;
+        value_type sm;
+        do {
+            while((l & 1) == 0) l >>= 1;
+
+            if(!f(sm + this->_data[l])) {
+                while(l < this->_size) {
+                    l <<= 1;
+
+                    if(f(sm + this->_data[l])) {
+                        sm = sm + this->_data[l];
+                        ++l;
+                    }
+                }
+
+                return l - this->_size;
+            }
+
+            sm = sm + this->_data[l];
+            ++l;
+        } while((l & -l) != l);
+
+        return this->_n;
+    }
+
+
+    template<bool (*f)(value_type)>
+    inline size_type min_left(const size_type r) const noexcept(NO_EXCEPT) {
+        return this->min_left(r, [](value_type x) { return f(x); });
+    }
+
+    template<class F>
+    inline size_type min_left(size_type r, F f) const noexcept(NO_EXCEPT) {
+        assert(0 <= r && r <= this->_n);
+        assert(f(value_type{}));
+
+        if (r == 0) return 0;
+
+        r += this->_size;
+        value_type sm;
+
+        do {
+            --r;
+            while(r > 1 && (r & 1)) r >>= 1;
+
+            if(!f(this->_data[r] + sm)) {
+                while(r < this->_size) {
+
+                    r = (r << 1 | 1);
+                    if(f(this->_data[r] + sm)) {
+                        sm = this->_data[r] + sm;
+                        --r;
+                    }
+                }
+
+                return r + 1 - this->_size;
+            }
+
+            sm = this->_data[r] + sm;
+        } while((r & -r) != r);
+
+        return 0;
+    }
+
 
     struct iterator : internal::container_iterator_interface<value_type,core,iterator> {
         iterator() noexcept = default;
