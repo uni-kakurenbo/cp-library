@@ -30,7 +30,7 @@ jobs:
                   fetch-depth: 0 # for detect already verified tests
 
             - name: Install octokit
-              run: npm install @octokit/core
+              run: npm install @octokit/core@5.1.0
 
             - name: Filter test files
               working-directory: main
@@ -71,9 +71,9 @@ jobs:
                       const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
                       const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
-                      import fs from "fs";
-                      import crypto from "crypto";
-                      import { Octokit } from "@octokit/core";
+                      const fs = require('fs');
+                      const crypto = require('crypto');
+                      const { Octokit } = require("@octokit/core");
 
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
