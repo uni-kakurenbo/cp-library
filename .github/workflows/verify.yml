@@ -71,9 +71,9 @@ jobs:
                       const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
                       const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
-                      const fs = require('fs');
-                      const crypto = require('crypto');
-                      const { Octokit } = require("@octokit/core");
+                      import fs from "fs";
+                      import crypto from "crypto";
+                      import { Octokit } from "@octokit/core";
 
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
