@@ -170,14 +170,14 @@
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;debug_t&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;debug_t&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/addition_128bit/00.test.cpp">
             <location file="debugger/debug.hpp" line="82" column="5"/>
         </error>
+        <error id="passedByValue" severity="performance" msg="Function parameter &apos;args&apos; should be passed by const reference." verbose="Parameter &apos;args&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++." cwe="398" file0="verify/addition_128bit/00.test.cpp">
+            <location file="debugger/debug.hpp" line="348" column="55"/>
+        </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/binomial-coefficient/00-00.test.cpp">
             <location file="numeric/modular/modint.hpp" line="108" column="15"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;binomial_coefficient &lt; std :: int64_t , std :: int64_t &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;binomial_coefficient &lt; std :: int64_t , std :: int64_t &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/binomial-coefficient/00-00.test.cpp">
             <location file="numeric/binomial_coefficient.hpp" line="241" column="5"/>
-        </error>
-        <error id="passedByValue" severity="performance" msg="Function parameter &apos;args&apos; should be passed by const reference." verbose="Parameter &apos;args&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++." cwe="398" file0="verify/addition_128bit/00.test.cpp">
-            <location file="debugger/debug.hpp" line="348" column="55"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;binomial_coefficient &lt; std :: int32_t , std :: int32_t &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;binomial_coefficient &lt; std :: int32_t , std :: int32_t &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/binomial-coefficient/01-00.test.cpp">
             <location file="numeric/binomial_coefficient.hpp" line="241" column="5"/>
@@ -370,10 +370,10 @@
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_builtin_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_builtin_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-00.test.cpp">
             <location file="numeric/modular/modint.hpp" line="108" column="15"/>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_barrett_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_barrett_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-02.test.cpp">
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_builtin_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_builtin_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-01.test.cpp">
             <location file="numeric/modular/modint.hpp" line="108" column="15"/>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_builtin_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_builtin_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-01.test.cpp">
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_barrett_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_barrett_modular_context_32bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-02.test.cpp">
             <location file="numeric/modular/modint.hpp" line="108" column="15"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;modint &lt; static_barrett_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;modint &lt; static_barrett_modular_context_64bit &lt; 998244353 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/matrix-product/00-03.test.cpp">
@@ -418,24 +418,24 @@
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-add_range-sum/00.test.cpp">
             <location file="data_structure/fenwick_tree.hpp" line="142" column="5"/>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-add_range-sum/01.test.cpp">
-            <location file="data_structure/segment_tree.hpp" line="113" column="5"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-add_range-sum/01.test.cpp">
-            <location file="data_structure/segment_tree.hpp" line="116" column="5"/>
-        </error>
         <error id="unsignedPositive" severity="style" msg="Unsigned expression &apos;l&apos; can&apos;t be negative so it is unnecessary to test it." verbose="Unsigned expression &apos;l&apos; can&apos;t be negative so it is unnecessary to test it." cwe="570" file0="verify/point-add_range-sum/00.test.cpp">
             <location file="data_structure/fenwick_tree.hpp" line="88" column="18" info="Unsigned positive"/>
         </error>
         <error id="unsignedPositive" severity="style" msg="Unsigned expression &apos;r&apos; can&apos;t be negative so it is unnecessary to test it." verbose="Unsigned expression &apos;r&apos; can&apos;t be negative so it is unnecessary to test it." cwe="570" file0="verify/point-add_range-sum/00.test.cpp">
             <location file="data_structure/fenwick_tree.hpp" line="102" column="18" info="Unsigned positive"/>
         </error>
+        <error id="postfixOperator" severity="performance" msg="Prefer prefix ++/-- operators for non-primitive types." verbose="Prefix ++/-- operators should be preferred for non-primitive types. Pre-increment/decrement can be more efficient than post-increment/decrement. Post-increment/decrement usually involves keeping a copy of the previous value around and adds a little extra code." cwe="398" file0="verify/point-add_range-sum/00.test.cpp">
+            <location file="data_structure/fenwick_tree.hpp" line="64" column="13"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-add_range-sum/01.test.cpp">
+            <location file="data_structure/segment_tree.hpp" line="113" column="5"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-add_range-sum/01.test.cpp">
+            <location file="data_structure/segment_tree.hpp" line="116" column="5"/>
+        </error>
         <error id="shadowVariable" severity="style" msg="Local variable &apos;p&apos; shadows outer variable" verbose="Local variable &apos;p&apos; shadows outer variable" cwe="398" file0="verify/point-add_range-sum/01.test.cpp">
             <location file="data_structure/segment_tree.hpp" line="133" column="9" info="Shadow variable"/>
             <location file="data_structure/segment_tree.hpp" line="131" column="19" info="Shadowed declaration"/>
-        </error>
-        <error id="postfixOperator" severity="performance" msg="Prefer prefix ++/-- operators for non-primitive types." verbose="Prefix ++/-- operators should be preferred for non-primitive types. Pre-increment/decrement can be more efficient than post-increment/decrement. Post-increment/decrement usually involves keeping a copy of the previous value around and adds a little extra code." cwe="398" file0="verify/point-add_range-sum/00.test.cpp">
-            <location file="data_structure/fenwick_tree.hpp" line="64" column="13"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;extended_container &lt; std :: vector &lt; lib :: std :: pair &lt; int , int &gt; ... &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;extended_container &lt; std :: vector &lt; lib :: std :: pair &lt; int , int &gt; ... &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/point-set_range-composite/00.test.cpp">
             <location file="adapter/internal/container_extender.hpp" line="29" column="5"/>
@@ -590,8 +590,11 @@
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; std :: int32_t &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; std :: int32_t &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/range-quantile_range-sum_range-frequency/00.test.cpp">
             <location file="adapter/valarray.hpp" line="63" column="25"/>
         </error>
+        <error id="syntaxError" severity="error" msg="syntax error" verbose="syntax error" file0="verify/set/01.test.cpp">
+            <location file="algebraic/combined.hpp" line="27" column="1"/>
+        </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;combined&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;combined&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/00.test.cpp">
-            <location file="algebraic/combined.hpp" line="27" column="5"/>
+            <location file="algebraic/combined.hpp" line="38" column="5"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;set_adapter_impl&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;set_adapter_impl&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/00.test.cpp">
             <location file="data_structure/adapter/set.hpp" line="63" column="5"/>
@@ -651,25 +654,6 @@
             <location file="verify/set/00.test.cpp" line="31" column="13" info="Shadow variable"/>
             <location file="verify/set/00.test.cpp" line="22" column="25" info="Shadowed declaration"/>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/01.test.cpp">
-            <location file="data_structure/adapter/set.hpp" line="127" column="5"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/01.test.cpp">
-            <location file="data_structure/adapter/set.hpp" line="130" column="5"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;set_adapter &lt; lib :: segment_tree &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/01.test.cpp">
-            <location file="data_structure/adapter/set.hpp" line="140" column="5"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;set_adapter_impl &lt; lib :: segment_tree , actions :: range_set_range_sum &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;set_adapter_impl &lt; lib :: segment_tree , actions :: range_set_range_sum &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/01.test.cpp">
-            <location file="data_structure/adapter/set.hpp" line="63" column="5"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;combined &lt; algebraic :: addition &lt; internal unsigned long &gt; , algebraic :: minimum &lt; internal unsigned long &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;combined &lt; algebraic :: addition &lt; internal unsigned long &gt; , algebraic :: minimum &lt; internal unsigned long &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/01.test.cpp">
-            <location file="algebraic/combined.hpp" line="27" column="5"/>
-        </error>
-        <error id="shadowVariable" severity="style" msg="Local variable &apos;t&apos; shadows outer variable" verbose="Local variable &apos;t&apos; shadows outer variable" cwe="398" file0="verify/set/01.test.cpp">
-            <location file="verify/set/01.test.cpp" line="34" column="13" info="Shadow variable"/>
-            <location file="verify/set/01.test.cpp" line="23" column="25" info="Shadowed declaration"/>
-        </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-frequency/00-00.test.cpp">
             <location file="adapter/valarray.hpp" line="52" column="5"/>
         </error>
@@ -700,12 +684,6 @@
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;compressed &lt; unsigned int , valarray &lt; u32 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;compressed &lt; unsigned int , valarray &lt; u32 &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-frequency/00-01.test.cpp">
             <location file="iterable/compressed.hpp" line="48" column="5"/>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; bool &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; bool &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/00.test.cpp">
-            <location file="adapter/valarray.hpp" line="63" column="25"/>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-frequency/00-00.test.cpp">
-            <location file="adapter/valarray.hpp" line="63" column="25"/>
-        </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;core&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-min/00.test.cpp">
             <location file="data_structure/disjoint_sparse_table.hpp" line="115" column="5"/>
         </error>
@@ -714,6 +692,12 @@
         </error>
         <error id="unsignedPositive" severity="style" msg="Unsigned expression &apos;l&apos; can&apos;t be negative so it is unnecessary to test it." verbose="Unsigned expression &apos;l&apos; can&apos;t be negative so it is unnecessary to test it." cwe="570" file0="verify/static-range-min/00.test.cpp">
             <location file="data_structure/disjoint_sparse_table.hpp" line="143" column="18" info="Unsigned positive"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; bool &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; bool &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/set/00.test.cpp">
+            <location file="adapter/valarray.hpp" line="63" column="25"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;valarray &lt; unsigned int &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-frequency/00-00.test.cpp">
+            <location file="adapter/valarray.hpp" line="63" column="25"/>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;accumulation &lt; long long , valarray &lt; long &gt; &gt;&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;accumulation &lt; long long , valarray &lt; long &gt; &gt;&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398" file0="verify/static-range-sum/00.test.cpp">
             <location file="iterable/accumulation.hpp" line="36" column="5"/>
