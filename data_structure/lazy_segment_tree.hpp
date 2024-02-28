@@ -64,7 +64,7 @@ struct base {
 
     explicit base(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
-        _lengths((this->_size << 1) - 1), _values((this->_size << 1) - 1), _lazy(this->_size)
+        _lengths(this->_size << 1), _values(this->_size << 1), _lazy(this->_size)
     {}
 
     inline void initialize() noexcept(NO_EXCEPT) {
