@@ -13,11 +13,22 @@ namespace lib {
 
 namespace algebraic {
 
+namespace internal {
+
+struct dummy {};
+
+} // namespace internal
+
+
 template<
-    internal::monoid M0,
-    internal::monoid M1
+    internal::magma M0,
+    internal::magma M1
 >
-struct combined : base<std::pair<M0, M1>> {
+struct combined
+  : base<std::pair<M0, M1>>,
+    std::conditional_t<internal::associative<M0> && internal::associative<M1>, associative, internal::dummy>,
+    std::conditional_t<internal::commutative<M0> && internal::commutative<M1>, commutative, internal::dummy>
+{
     using base<std::pair<M0, M1>>::base;
 
     combined(const M0& v0, const M1& v1) : base<std::pair<M0, M1>>({ v0, v1 }) {};

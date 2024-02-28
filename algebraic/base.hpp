@@ -28,12 +28,9 @@ struct base {
     friend bool operator!=(const base& lhs, const base& rhs) noexcept(NO_EXCEPT) { return lhs._value != rhs._value; };
 };
 
-
 struct associative {};
 
 struct commutative {};
-
-struct invertible {};
 
 
 } // namespace algebraic

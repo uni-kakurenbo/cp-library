@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <cstddef>
+
+
 #include "internal/dev_env.hpp"
 #include "algebraic/base.hpp"
 
