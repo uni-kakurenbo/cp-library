@@ -16,6 +16,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "numeric/fast_prime.hpp"
+
 #include "random/xorshift.hpp"
 
 
@@ -34,12 +36,12 @@ struct sequence_hasher {
     using hash_type = uint64_t;
 
     static constexpr hash_type mod = MOD;
-    static hash_type base;
+    inline static hash_type base = BASE;
 
   private:
     size_type _n = 0, _front = 0;
     std::vector<hash_type> _hashed;
-    static std::vector<hash_type> _powers;
+    inline static std::vector<hash_type> _powers;
 
   protected:
     static inline hash_type power(const size_type p) noexcept(NO_EXCEPT) {
@@ -111,8 +113,13 @@ struct sequence_hasher {
 
     sequence_hasher(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         if(sequence_hasher::base <= 0) {
-            xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
-            sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
+            if constexpr(BASE == 0) {
+                xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
+                sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
+            }
+            else if constexpr(BASE < 0) {
+                sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
+            }
         }
     }
 
@@ -207,9 +214,6 @@ struct sequence_hasher {
         return low;
     }
 };
-
-template<std::uint64_t mod, std::uint64_t Base> std::uint64_t sequence_hasher<mod,Base>::base = Base;
-template<std::uint64_t mod, std::uint64_t base> std::vector<std::uint64_t> sequence_hasher<mod,base>::_powers;
 
 
 } // namespace lib
