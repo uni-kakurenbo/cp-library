@@ -52,11 +52,11 @@ struct rolling_hash_impl {
 
 
     friend inline bool operator==(const rolling_hash_impl& lhs, const rolling_hash_impl& rhs) noexcept(NO_EXCEPT) {
-        return lhs._value == rhs._value;
+        return lhs._power == rhs._power && lhs._value == rhs._value;
     }
 
     friend bool operator!=(const rolling_hash_impl& lhs, const rolling_hash_impl& rhs) noexcept(NO_EXCEPT) {
-        return lhs._value != rhs._value;
+        return lhs._power != rhs._power || lhs._value != rhs._value;
     }
 };
 
@@ -78,11 +78,9 @@ struct rolling_hash : base<rolling_hash_impl<T, BASE>>, associative {
         return rolling_hash({ lhs->val() + rhs->val() * lhs->power(), power });
     }
 
-    friend inline rolling_hash operator-(const rolling_hash& lhs, const rolling_hash& rhs) noexcept(NO_EXCEPT) {
-        const auto rhs_power_inv = rhs->power.inv();
-        const auto power = lhs->power() * rhs_power_inv;
-        if constexpr(REVERSE) return rolling_hash({ (lhs->val() - rhs->val()) * rhs_power_inv, power });
-        return rolling_hash({ lhs->val() - rhs->val() * lhs->power(), power });
+    inline rolling_hash operator-() noexcept(NO_EXCEPT) {
+        const auto power_inv = this->val().power().inv();
+        return rolling_hash({ -this->val().val() * power_inv, power_inv });
     }
 };
 
