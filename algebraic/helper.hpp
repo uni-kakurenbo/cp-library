@@ -12,7 +12,9 @@ template<class T, T (*op)(T, T), T (*e)(), class... Tags>
 struct helper : lib::algebraic::base<T>, Tags... {
     using base = lib::algebraic::base<T>;
     using base::base;
+
     helper() : base(e()) {}
+
     friend inline helper operator+(const helper& lhs, const helper& rhs) noexcept(NO_EXCEPT) {
         return op(lhs.val(), rhs.val());
     }
@@ -20,7 +22,7 @@ struct helper : lib::algebraic::base<T>, Tags... {
 
 
 template<class T, T (*op)(T, T), T (*e)()>
-using monoid_helper = helper<T,op,e,associative>;
+using monoid_helper = helper<T, op, e, associative>;
 
 
 } // namespace algebraic

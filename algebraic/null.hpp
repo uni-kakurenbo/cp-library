@@ -5,7 +5,9 @@
 
 
 #include "internal/dev_env.hpp"
+
 #include "algebraic/base.hpp"
+#include "algebraic/internal/concepts.hpp"
 
 
 namespace lib {
@@ -15,9 +17,16 @@ namespace algebraic {
 
 template<class T = std::nullptr_t> struct null : base<T>, associative, commutative {
     using base<T>::base;
-    inline null operator+(const null& x) const noexcept(NO_EXCEPT) {
-        if(x == null{}) return *this;
-        return x;
+
+    friend inline null operator+(const null& lhs, const null& rhs) const noexcept(NO_EXCEPT) {
+        if(lhs == null{}) return rhs;
+        return lhs;
+    }
+
+    inline null operator-() const noexcept(NO_EXCEPT)
+        requires internal::invertible<T>
+    {
+        return -*this;
     }
 };
 
