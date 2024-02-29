@@ -3,6 +3,7 @@
 #ifndef $DEV_ENV // for debuggers
 #define $DEV_ENV
 
+
 #ifdef LOCAL_JUDGE
     constexpr bool DEV_ENV = true;
     constexpr bool NO_EXCEPT = false;
