@@ -14,7 +14,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_min : base<> {
+template<class T>
+struct range_min : base<> {
     using operand = algebraic::minimum<T>;
 };
 

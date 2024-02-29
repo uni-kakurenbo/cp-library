@@ -14,7 +14,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_bitxor : base<> {
+template<class T>
+struct range_bitxor : base<> {
     using operand = algebraic::bit_xor<T>;
 };
 

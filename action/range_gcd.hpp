@@ -14,7 +14,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_gcd : base<> {
+template<class T>
+struct range_gcd : base<> {
     using operand = algebraic::gcd<T>;
 };
 

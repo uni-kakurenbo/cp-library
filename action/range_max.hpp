@@ -14,7 +14,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_max : base<> {
+template<class T>
+struct range_max : base<> {
     using operand = algebraic::maximum<T>;
 };
 

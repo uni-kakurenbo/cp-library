@@ -13,7 +13,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_sum : base<> {
+template<class T>
+struct range_sum : base<> {
     using operand = algebraic::addition<T>;
 };
 
