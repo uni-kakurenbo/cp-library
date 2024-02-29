@@ -51,20 +51,25 @@ struct base {
     template<bool FORCE = false>
     inline auto& build() noexcept(NO_EXCEPT) {
         if(!FORCE and this->_built) return *this;
-        for(size_type i=2; i<=this->_depth; ++i) {
+
+        FOR(i, 2, this->_depth) {
             const size_type len = 1 << i;
-            for(size_type l = 0, m = len/2; m < this->_n; l += len, m = l + len/2) {
-                this->_table[i-1][m - 1] = this->_table.front()[m - 1];
-                for(size_type j = m-2; j>=l; --j) {
-                    this->_table[i-1][j] = this->_table[i-1][j + 1] + this->_table.front()[j];
+
+            for(size_type l = 0, m = (len >> 1); m < this->_n; l += len, m = l + (len >> 1)) {
+                this->_table[i - 1][m - 1] = this->_table.front()[m - 1];
+                REPD(j, l, m-1) {
+                    this->_table[i - 1][j] = this->_table.front()[j] + this->_table[i - 1][j + 1];
                 }
-                this->_table[i-1][m] = this->_table.front()[m];
-                for(size_type j = m+1; j<std::min(l + len, this->_n); ++j) {
-                    this->_table[i-1][j] = this->_table[i-1][j - 1] +  this->_table.front()[j];
+
+                this->_table[i - 1][m] = this->_table.front()[m];
+                REP(j, m + 1, std::min(l + len, this->_n)) {
+                    this->_table[i - 1][j] = this->_table[i - 1][j - 1] + this->_table.front()[j];
                 }
             }
         }
+
         this->_built = true;
+
         return *this;
     }
 
