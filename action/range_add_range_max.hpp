@@ -15,11 +15,14 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_add_range_max : base<algebraic::addition<T>> {
+template<class T>
+struct range_add_range_max : base<algebraic::addition<T>> {
     using operand = algebraic::maximum<T>;
     using operation = algebraic::addition<T>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) { return x.val() + y.val(); }
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
+        return x.val() + y.val();
+    }
 };
 
 

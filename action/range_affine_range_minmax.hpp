@@ -16,7 +16,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_affine_range_minmax : base<algebraic::affine<T>> {
+template<class T>
+struct range_affine_range_minmax : base<algebraic::affine<T>> {
     using operand = algebraic::minmax<T>;
     using operation = algebraic::affine<T>;
 

@@ -14,11 +14,14 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_add_range_min : base<algebraic::addition<T>> {
+template<class T>
+struct range_add_range_min : base<algebraic::addition<T>> {
     using operand = algebraic::minimum<T>;
     using operation = algebraic::addition<T>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) { return x.val() + y.val(); }
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
+        return x.val() + y.val();
+    }
 };
 
 

@@ -15,7 +15,8 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct null : base<algebraic::null<T>> {
+template<class T>
+struct null : base<algebraic::null<T>> {
     using operand = algebraic::null<T>;
     using operation = algebraic::null<T>;
 

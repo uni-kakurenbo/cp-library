@@ -14,11 +14,14 @@ namespace lib {
 namespace actions {
 
 
-template<class T> struct range_set_range_max : base<algebraic::assignment<T>>  {
+template<class T>
+struct range_set_range_max : base<algebraic::assignment<T>>  {
     using operand = algebraic::maximum<T>;
     using operation = algebraic::assignment<T>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) { return y->value_or(x.val()); }
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
+        return y->value_or(x.val());
+    }
 };
 
 
