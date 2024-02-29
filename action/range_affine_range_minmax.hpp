@@ -16,10 +16,10 @@ namespace lib {
 namespace actions {
 
 
-template<class T>
-struct range_affine_range_minmax : base<algebraic::affine<T>> {
+template<class T, bool REVERSE = false>
+struct range_affine_range_minmax : base<algebraic::affine<T, REVERSE>> {
     using operand = algebraic::minmax<T>;
-    using operation = algebraic::affine<T>;
+    using operation = algebraic::affine<T, REVERSE>;
 
     static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
         auto res = operand({ x->first * y->first + y->second, x->second * y->first + y->second });
