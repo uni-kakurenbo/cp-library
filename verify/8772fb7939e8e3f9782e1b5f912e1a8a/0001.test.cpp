@@ -14,15 +14,16 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
-#include "iterable/accumulation.hpp"
+#include "data_structure/disjoint_sparse_table.hpp"
+#include "algebraic/addition.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); input >> a;
-    lib::accumulation<lib::ll> sum(ALL(a));
+    std::vector<int> a(n); REP(i, n) std::cin >> a[i];
+    lib::disjoint_sparse_table<lib::algebraic::addition<lib::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;
-        print(sum(l, r));
+        print(sum(l, r).fold());
     }
 }

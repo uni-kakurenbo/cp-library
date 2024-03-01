@@ -8,11 +8,6 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/lca"
 
-#include <iostream>
-
-#include "snippet/fast_io.hpp"
-#include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
 #include "structure/graph.hpp"
 #include "graph/lowest_common_ancestor.hpp"
 

@@ -4,26 +4,26 @@
  *
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
-/* #language C++ 20 GCC */
+/* #language C++ GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/range_kth_smallest"
+#define PROBLEM "https://judge.yosupo.jp/problem/static_range_frequency"
 
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/valarray.hpp"
 #include "adapter/io.hpp"
+#include "adapter/valarray.hpp"
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); input >> a;
+    lib::valarray<unsigned> a(n); input >> a;
 
-    lib::wavelet_matrix<lib::u32>::compressed data(a);
+    lib::wavelet_matrix data(a);
 
     REP(q) {
-        int l, r, k; std::cin >> l >> r >> k;
-        print(*data.range(l, r).kth_smallest_element(k));
+        int l, r, x; std::cin >> l >> r >> x;
+        print(data(l, r).count(x));
     }
 }

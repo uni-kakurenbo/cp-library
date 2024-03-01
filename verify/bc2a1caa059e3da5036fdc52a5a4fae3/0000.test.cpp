@@ -6,7 +6,7 @@
  */
 /* #language C++ GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/static_range_frequency"
+#define PROBLEM "https://judge.yosupo.jp/problem/staticrmq"
 
 #include <iostream>
 #include "snippet/aliases.hpp"
@@ -14,16 +14,17 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
-#include "data_structure/wavelet_matrix.hpp"
+#include "data_structure/disjoint_sparse_table.hpp"
+#include "algebraic/minimum.hpp"
+
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<unsigned> a(n); input >> a;
-
-    lib::wavelet_matrix<unsigned>::compressed data(a);
+    lib::valarray<int> a(n); input >> a;
+    lib::disjoint_sparse_table<lib::algebraic::minimum<int>> min(a);
 
     REP(q) {
-        int l, r, x; std::cin >> l >> r >> x;
-        print(data(l, r).count(x));
+        int l, r; std::cin >> l >> r;
+        print(min(l, r).fold());
     }
 }

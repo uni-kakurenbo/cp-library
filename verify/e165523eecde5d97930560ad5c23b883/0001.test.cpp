@@ -13,12 +13,13 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/lazy_segment_tree.hpp"
+#include "data_structure/implicit_treap.hpp"
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::lazy_segment_tree<lib::actions::range_add_range_sum<lib::ll>> data(n);
+    lib::implicit_treap<lib::actions::range_add_range_sum<long>> data(n);
+    // debug(data);
 
     for(;q--;) {
         int t; std::cin >> t;
@@ -28,7 +29,8 @@ signed main() {
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r; --l;
-            print(data(l, r).fold());
+            std::cout << data(l, r).fold().val() << "\n";
         }
+        // debug(data);
     }
 }

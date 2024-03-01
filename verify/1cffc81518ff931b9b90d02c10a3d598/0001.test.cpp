@@ -20,7 +20,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     lib::valarray<unsigned> a(n); input >> a;
 
-    lib::wavelet_matrix data(a);
+    lib::wavelet_matrix<unsigned>::compressed data(a);
 
     REP(q) {
         int l, r, x; std::cin >> l >> r >> x;

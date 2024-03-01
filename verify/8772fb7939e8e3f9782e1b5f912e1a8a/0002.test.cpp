@@ -14,13 +14,13 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
-#include "data_structure/disjoint_sparse_table.hpp"
+#include "data_structure/fenwick_tree.hpp"
 #include "algebraic/addition.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); REP(i, n) std::cin >> a[i];
-    lib::disjoint_sparse_table<lib::algebraic::addition<lib::i64>> sum(a);
+    lib::valarray<lib::i64> a(n); input >> a;
+    lib::fenwick_tree<lib::algebraic::addition<lib::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

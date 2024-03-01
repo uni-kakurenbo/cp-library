@@ -4,37 +4,35 @@
  *
  * CC0 1.0  http://creativecommons.org/publicdomain/zero/1.0/deed.ja
  */
-/* #language C++ GCC */
+/* #language C++ 20 GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/point_add_range_sum"
+#define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
 
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/vector.hpp"
+#include "numeric/modular/modint.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/segment_tree.hpp"
-#include "action/range_sum.hpp"
+#include "data_structure/lazy_segment_tree.hpp"
+#include "action/range_affine_range_sum.hpp"
 
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::ll> a(n); input >> a;
+    std::vector<lib::modint998244353> a(n); input >> a;
 
-    lib::segment_tree<lib::actions::range_sum<lib::ll>> data(a);
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint998244353>> data(ALL(a));
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
-            lib::ll p, x; std::cin >> p >> x;
-            data.set(p, data[p].val() + x);
+            int l, r, b, c; std::cin >> l >> r >> b >> c;
+            data(l, r) += { b, c };
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;
-            print(data.fold(l, r));
+            print(data(l, r).fold());
         }
     }
-
-    return 0;
 }

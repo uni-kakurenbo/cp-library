@@ -1,5 +1,7 @@
 #! /bin/bash
 
+cd "$(dirname "$0")" || exit 1
+
 function sort_out() {
     PROBLEM="$(grep -I -Po "(?<=\#define\ PROBLEM\ \")[^\",]+(?=\")" "$1")"
     HASH="$(echo -n "$PROBLEM" | md5sum | cut -d" " -f1)"
@@ -19,12 +21,12 @@ export -f sort_out
 
 function rename() {
     cd "$1" || exit 1
-    find ./**.cpp -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR }' | bash
+    find ./**.test.cpp -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR - 1 }' | bash
 }
 
 export -f rename
 
-find ./**/**.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
+find ./**/**.test.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
     xargs -I {} bash -c 'rename "{}"'
 
 find . -type d -empty -delete

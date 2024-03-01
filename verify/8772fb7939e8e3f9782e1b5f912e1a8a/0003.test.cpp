@@ -14,13 +14,14 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "adapter/valarray.hpp"
-#include "data_structure/fenwick_tree.hpp"
+#include "iterable/accumulation.hpp"
+#include "data_structure/segment_tree.hpp"
 #include "algebraic/addition.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::valarray<lib::i64> a(n); input >> a;
-    lib::fenwick_tree<lib::algebraic::addition<lib::i64>> sum(a);
+    lib::segment_tree<lib::algebraic::addition<lib::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

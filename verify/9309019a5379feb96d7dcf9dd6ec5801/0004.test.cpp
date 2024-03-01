@@ -19,12 +19,13 @@
 
 
 signed main() {
-    lib::modint_64::set_mod(998244353);
+    using mint = lib::dynamic_montgomery_modint_32bit<-1>;
+    mint::set_mod(998244353);
 
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint_64> a(n); input >> a;
+    std::vector<mint> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint_64>> data(ALL(a));
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<mint>> data(ALL(a));
 
     REP(q) {
         int t; std::cin >> t;

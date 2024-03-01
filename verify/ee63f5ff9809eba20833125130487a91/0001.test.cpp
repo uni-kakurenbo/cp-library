@@ -12,26 +12,27 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
 #include "adapter/vector.hpp"
-#include "data_structure/fenwick_tree.hpp"
+#include "adapter/io.hpp"
+#include "data_structure/segment_tree.hpp"
 #include "action/range_sum.hpp"
+
 
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<lib::ll> a(n); input >> a;
 
-    lib::fenwick_tree<lib::actions::range_sum<lib::ll>> data(a);
+    lib::segment_tree<lib::actions::range_sum<lib::ll>> data(a);
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
-            int p, x; std::cin >> p >> x;
-            data[p] += x;
+            lib::ll p, x; std::cin >> p >> x;
+            data.set(p, data[p].val() + x);
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;
-            print(data(l, r).fold());
+            print(data.fold(l, r));
         }
     }
 

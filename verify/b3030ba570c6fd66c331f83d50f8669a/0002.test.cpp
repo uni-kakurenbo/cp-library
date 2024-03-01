@@ -18,12 +18,12 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::u32> a(n); input >> a;
+    std::vector<lib::u32> a(n); input >> a;
 
-    lib::wavelet_matrix data(a);
+    lib::wavelet_matrix<lib::u32>::compressed data(a);
 
     REP(q) {
         int l, r, k; std::cin >> l >> r >> k;
-        print(*data.range(l, r).kth_smallest_element(k));
+        print(data.range(l, r).kth_smallest(k));
     }
 }

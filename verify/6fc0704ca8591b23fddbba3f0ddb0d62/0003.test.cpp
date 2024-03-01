@@ -19,7 +19,7 @@ signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n); ITRR(v, a) std::cin >> v;
 
-    lib::wavelet_matrix<lib::ll> data(a);
+    lib::wavelet_matrix<lib::ll>::compressed data(ALL(a));
     // debug(data);
 
     int q; std::cin >> q;
@@ -28,8 +28,8 @@ signed main() {
 
         auto prv = data(l, r).prev_element(x);
         auto nxt = data(l, r).next_element(x);
-        // if(prv != data(l, r).end()) assert(*prv == data(l, r).prev(x));
-        // if(nxt != data(l, r).end()) assert(*nxt == data(l, r).next(x));
+        if(prv != data(l, r).end()) assert(*prv == data(l, r).prev(x));
+        if(nxt != data(l, r).end()) assert(*nxt == data(l, r).next(x));
 
         std::cout << (
             std::min(

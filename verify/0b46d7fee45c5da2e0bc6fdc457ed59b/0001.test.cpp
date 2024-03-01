@@ -14,21 +14,21 @@
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
-#include "action/range_set_range_min.hpp"
+#include "action/range_set_range_max.hpp"
 
 signed main() {
     int n, q; input >> n >> q;
 
-    lib::lazy_segment_tree<lib::actions::range_set_range_min<int>> data(n);
+    lib::lazy_segment_tree<lib::actions::range_set_range_max<int>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;
         if(t == 0) {
             int x; input >> x;
-            data(l, r) += x;
+            data(l, r) += -x-1;
         }
         if(t == 1) {
-            print(data(l, r).fold());
+            print(-data(l, r).fold().val()-1);
         }
     }
 }

@@ -20,9 +20,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint998244353> a(n); input >> a;
+    std::vector<lib::static_modint_64bit<998244353>> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint998244353>> data(ALL(a));
+    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::static_modint_64bit<998244353>>> data(ALL(a));
 
     REP(q) {
         int t; std::cin >> t;

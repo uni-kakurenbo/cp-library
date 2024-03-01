@@ -20,7 +20,7 @@
 #include "data_structure/implicit_treap.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-using mint = lib::static_barrett_modint_32bit<998244353>;
+using mint = lib::static_montgomery_modint_32bit<998244353>;
 
 signed main() {
     int n, q; std::cin >> n >> q;
