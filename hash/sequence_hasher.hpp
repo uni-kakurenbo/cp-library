@@ -6,8 +6,8 @@
 #include <chrono>
 #include <algorithm>
 #include <functional>
-#include <iterator>
 #include <random>
+#include <iterator>
 
 
 #include "snippet/aliases.hpp"
@@ -18,7 +18,7 @@
 
 #include "numeric/fast_prime.hpp"
 
-#include "random/xorshift.hpp"
+#include "hash/integer_hasher.hpp"
 
 
 namespace lib {
@@ -114,11 +114,11 @@ struct sequence_hasher {
     sequence_hasher(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         if(sequence_hasher::base <= 0) {
             if constexpr(BASE == 0) {
-                xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
-                sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
+                sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
             }
             else if constexpr(BASE < 0) {
-                sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
+                xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
+                sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
             }
         }
     }
@@ -130,7 +130,7 @@ struct sequence_hasher {
 
         size_type i = 0;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
+            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
             if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
     }

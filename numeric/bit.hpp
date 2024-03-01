@@ -104,6 +104,12 @@ inline constexpr T bit(const T x, const int p) {
 }
 
 
+template<std::unsigned_integral T>
+inline constexpr T lower_bits(const T x, const int digits = (std::numeric_limits<T>::digits >> 1)) {
+    return x & (lib::shiftl(x, digits) - 1);
+}
+
+
 namespace internal {
 
 

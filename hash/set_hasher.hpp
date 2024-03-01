@@ -1,43 +1,34 @@
 #pragma once
 
 
-#include <random>
-#include <unordered_set>
-#include <unordered_map>
 #include <iterator>
+#include <cstdint>
 
 
 #include "internal/dev_env.hpp"
+
+#include "hash/integer_hasher.hpp"
 
 
 namespace lib {
 
 
-template<
-    class T,
-    int hasher_id = -1,
-    class random_engine = std::mt19937_64,
-    template<class...> class set = std::unordered_set,
-    template<class...> class map = std::unordered_map
->
+template<class T, int hasher_id = -1>
 struct set_hasher : protected set<T> {
   private:
     using base = set<T>;
 
   public:
-    using hash_type = typename random_engine::result_type;
+    using hash_type = std::uint64_t;
     using size_type = typename base::size_type;
 
   protected:
     static random_engine rand;
-    static map<T,hash_type> _ids;
 
     hash_type _hash = 0;
 
     static inline hash_type id(const T& v) noexcept(NO_EXCEPT) {
-        auto itr = set_hasher::_ids.find(v);
-        if(itr == std::end(set_hasher::_ids)) return set_hasher::_ids[v] = set_hasher::rand();
-        return itr->second;
+        return hash64(v);
     }
 
   public:
@@ -89,12 +80,6 @@ struct set_hasher : protected set<T> {
     inline bool operator==(const set_hasher& other) const noexcept(NO_EXCEPT) { return this->_hash == other._hash; }
     inline bool operator!=(const set_hasher& other) const noexcept(NO_EXCEPT) { return this->_hash != other._hash; }
 };
-
-template<class T, int id, class E, template<class...> class S, template<class...> class M>
-E set_hasher<T,id,E,S,M>::rand(std::random_device{}());
-
-template<class T, int id, class E, template<class...> class S, template<class...> class M>
-M<T,typename set_hasher<T,id,E,S,M>::hash_type> set_hasher<T,id,E,S,M>::_ids;
 
 
 } // namespace lib

@@ -1,9 +1,6 @@
 #pragma once
 
 
-#include <random>
-#include <unordered_set>
-#include <unordered_map>
 #include <iterator>
 
 
@@ -14,17 +11,13 @@
 
 #include "numeric/arithmetic.hpp"
 
+#include "hash/integer_hasher.hpp"
+
 
 namespace lib {
 
 
-template<
-    class T,
-    std::uint64_t MOD = 0x1fffffffffffffff,
-    int hasher_id = -1,
-    class random_engine = std::mt19937_64,
-    template<class...> class map = std::unordered_map
->
+template<class T, std::uint64_t MOD = 0x1fffffffffffffff, int hasher_id = -1>
     requires (MOD < std::numeric_limits<std::make_signed_t<std::uint64_t>>::max())
 struct multiset_hasher {
   private:
@@ -37,12 +30,8 @@ struct multiset_hasher {
     static constexpr hash_type mod = MOD;
 
   protected:
-    static random_engine rand;
-    static map<T,hash_type> _ids;
-
     static inline hash_type _id(const T& v) noexcept(NO_EXCEPT) {
-        if(multiset_hasher::_ids.count(v)) return multiset_hasher::_ids[v];
-        return multiset_hasher::_ids[v] = multiset_hasher::rand() % mod;
+        return lib::hash64(v);
     }
 
     static constexpr hash_type mask(const size_type a) noexcept(NO_EXCEPT) { return (1ULL << a) - 1; }
@@ -111,12 +100,6 @@ struct multiset_hasher {
     inline bool operator==(const multiset_hasher& other) const noexcept(NO_EXCEPT) { return this->_hash == other._hash; }
     inline bool operator!=(const multiset_hasher& other) const noexcept(NO_EXCEPT) { return this->_hash != other._hash; }
 };
-
-template<class T, std::uint64_t mod, int id, class E, template<class...> class M>
-E multiset_hasher<T,mod,id,E,M>::rand(std::random_device{}());
-
-template<class T, std::uint64_t mod, int id, class E, template<class...> class M>
-M<T,typename multiset_hasher<T,mod,id,E,M>::hash_type> multiset_hasher<T,mod,id,E,M>::_ids;
 
 
 } // namespace lib
