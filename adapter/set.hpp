@@ -136,39 +136,39 @@ struct set_wrapper : Set {
 
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator<=(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
+    friend inline bool operator<=(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
         return st.contains(val);
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator>=(const set_wrapper& st, const V&val) noexcept(NO_EXCEPT) {
+    friend inline bool operator>=(const set_wrapper& st, const V&val) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator<(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
+    friend inline bool operator<(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 
     template<std::equality_comparable_with<value_type> V>
-    friend inline set_wrapper operator>(const set_wrapper& st, const V& val) noexcept(NO_EXCEPT) {
+    friend inline bool operator>(const set_wrapper& st, const V& val) noexcept(NO_EXCEPT) {
         return val <= st;
     }
 
-    friend inline set_wrapper operator<=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    friend inline bool operator<=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
         if(s.size() > t.size()) return false;
         return std::ranges::all_of(s, [&](auto&& v) { return t.contains(v); });
     }
 
-    friend inline set_wrapper operator>=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    friend inline bool operator>=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
         return t <= s;
     }
 
-    friend inline set_wrapper operator<(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    friend inline bool operator<(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
         return s <= t;
     }
 
-    friend inline set_wrapper operator>(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    friend inline bool operator>(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
         return t <= s;
     }
 };
