@@ -15,7 +15,7 @@ namespace actions {
 
 
 template<class T>
-struct range_set_range_sum : base<> {
+struct range_set_range_sum {
     using operand = algebraic::addition<T>;
     using operation = algebraic::assignment<T>;
 

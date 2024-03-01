@@ -5,6 +5,9 @@
 #include "include/geometries.hpp"
 #include "include/adapters.hpp"
 
+#include "algebraic/helper.hpp"
+#include "action/helpers.hpp"
+
 #include "iterable/applied.hpp"
 #include "iterable/adjacent_difference.hpp"
 #include "iterable/accumulation.hpp"

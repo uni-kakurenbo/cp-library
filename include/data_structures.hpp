@@ -9,6 +9,8 @@
 #include "data_structure/implicit_treap.hpp"
 #include "data_structure/kth_element.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
+#include "data_structure/removable_priority_queue.hpp"
 #include "data_structure/restorable_stack.hpp"
 #include "data_structure/segment_tree.hpp"
+#include "data_structure/segment_tree_rooter.hpp"
 #include "data_structure/wavelet_matrix.hpp"

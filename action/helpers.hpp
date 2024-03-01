@@ -14,7 +14,7 @@ namespace actions {
 
 
 template<class S, S (*op)(S, S), S (*e)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)(), F (*folding)(F, int) = nullptr>
-struct helper : lib::actions::base<algebraic::monoid_helper<F,composition,id>> {
+struct helper {
     using operand = algebraic::monoid_helper<S,op,e>;
     using operation = algebraic::monoid_helper<F,composition,id>;
 
@@ -28,6 +28,25 @@ struct helper : lib::actions::base<algebraic::monoid_helper<F,composition,id>> {
 };
 
 
+template<algebraic::internal::magma Magma>
+struct make_operatable {
+    struct type {
+        using operand = Magma;
+    };
+
+    static_assert(internal::operatable_action<type>);
+};
+
+template<algebraic::internal::magma Magma>
+struct make_effective {
+    struct type : base<Magma> {
+        using operation = Magma;
+    };
+
+    static_assert(internal::effective_action<type>);
+};
+
+
 template<class T>
 struct make_full {
     using type = null<T>;
@@ -35,51 +54,49 @@ struct make_full {
     static_assert(internal::full_action<type>);
 };
 
-template<class Monoid>
-    requires algebraic::internal::monoid<Monoid>
-struct make_full<Monoid> {
-    using base = Monoid;
 
-    struct type {
-        using operand = base;
-        using operation = algebraic::null<typename operand::value_type>;
-        static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }
-        static operation fold(const operation& x, const lib::internal::size_t) noexcept(NO_EXCEPT) { return x; }
-    };
-
-    static_assert(internal::full_action<type>);
-};
-
-template<class Action>
-    requires internal::full_action<Action>
+template<internal::full_action Action>
 struct make_full<Action> {
     using type = Action;
 };
 
-template<class Action>
-    requires internal::operand_only_action<Action>
+template<internal::operand_only_action Action>
 struct make_full<Action> {
     using base = Action;
-    using type = typename make_full<typename base::operand>::type;
+    struct type : actions::base<algebraic::null<typename base::operand::value_type>> {
+        using operand = typename base::operand;
+        using operation = algebraic::null<typename base::operand::value_type>;
 
-    static_assert(internal::full_action<type>);
-};
+        using actions::base<algebraic::null<typename base::operand::value_type>>::base;
 
-template<class Action>
-    requires internal::effect_only_action<Action>
-struct make_full<Action> {
-    using base = Action;
-
-    struct type {
-        using operation = typename base::operation;
-        using operand = typename algebraic::null<typename operation::value_type>;
-        static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) { return base::map(x, y); }
-        static operation fold(const operation& x, const lib::internal::size_t len) noexcept(NO_EXCEPT) { return base::fold(x, len); }
+        static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }
     };
 
     static_assert(internal::full_action<type>);
 };
 
+template<internal::effect_only_action Action>
+struct make_full<Action> {
+    using base = Action;
+
+    struct type : base {
+        using operand = typename base::operation;
+        using operation = typename base::operation;
+
+        using base::base;
+
+        static operand map(const operand& x, const operation& f) noexcept(NO_EXCEPT) { return x + f; }
+    };
+
+    static_assert(internal::full_action<type>);
+};
+
+
+template<class T>
+using make_operatable_t = typename make_operatable<T>::type;
+
+template<class T>
+using make_effective_t = typename make_effective<T>::type;
 
 template<class T>
 using make_full_t = typename make_full<T>::type;

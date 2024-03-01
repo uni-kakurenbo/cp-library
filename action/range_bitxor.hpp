@@ -4,6 +4,7 @@
 #include "internal/dev_env.hpp"
 
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 #include "algebraic/bit_xor.hpp"
 
@@ -15,9 +16,8 @@ namespace actions {
 
 
 template<class T>
-struct range_bitxor : base<> {
-    using operand = algebraic::bit_xor<T>;
-};
+using range_bitxor = make_operatable_t<lib::algebraic::bit_xor<T>>;
+
 
 } // namespace actions
 

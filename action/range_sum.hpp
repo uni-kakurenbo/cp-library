@@ -1,9 +1,8 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 #include "algebraic/addition.hpp"
 
@@ -14,9 +13,7 @@ namespace actions {
 
 
 template<class T>
-struct range_sum : base<> {
-    using operand = algebraic::addition<T>;
-};
+using range_sum = make_operatable_t<lib::algebraic::addition<T>>;
 
 
 } // namespace actions

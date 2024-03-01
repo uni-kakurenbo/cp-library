@@ -13,6 +13,7 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 #include "internal/range_reference.hpp"
 #include "internal/unconstructible.hpp"
 
@@ -170,7 +171,9 @@ struct core<Action> : core<typename Action::operand> {
 } // namespace internal
 
 
-template<class SemigroupOrAction> struct disjoint_sparse_table : internal::disjoint_sparse_table_impl::core<SemigroupOrAction> {
+template<class SemigroupOrAction>
+    requires internal::available_with<internal::disjoint_sparse_table_impl::core, SemigroupOrAction>
+struct disjoint_sparse_table : internal::disjoint_sparse_table_impl::core<SemigroupOrAction> {
     using internal::disjoint_sparse_table_impl::core<SemigroupOrAction>::core;
 };
 

@@ -386,6 +386,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
 
 template<actions::internal::full_action Action>
+    requires internal::available_with<internal::lazy_segment_tree_impl::core, Action>
 struct lazy_segment_tree : internal::lazy_segment_tree_impl::core<Action> {
     using internal::lazy_segment_tree_impl::core<Action>::core;
 };

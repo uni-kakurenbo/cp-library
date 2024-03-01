@@ -1,9 +1,8 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 #include "algebraic/maximum.hpp"
 
@@ -15,9 +14,7 @@ namespace actions {
 
 
 template<class T>
-struct range_max : base<> {
-    using operand = algebraic::maximum<T>;
-};
+using range_max = make_operatable_t<lib::algebraic::maximum<T>>;
 
 
 } // namespace actions

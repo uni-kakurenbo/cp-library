@@ -551,6 +551,7 @@ struct core : base<typename Action::operand,typename Action::operation,Action::m
 
 
 template<actions::internal::full_action Action>
+    requires internal::available_with<internal::implicit_treap_impl::core, Action>
 struct implicit_treap : internal::implicit_treap_impl::core<Action> {
     using internal::implicit_treap_impl::core<Action>::core;
 };

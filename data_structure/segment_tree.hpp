@@ -325,6 +325,7 @@ struct core<Action> : core<typename Action::operand> {
 
 
 template<class ActionOrMonoid>
+    requires internal::available_with<internal::segment_tree_impl::core, ActionOrMonoid>
 struct segment_tree : internal::segment_tree_impl::core<ActionOrMonoid> {
     using internal::segment_tree_impl::core<ActionOrMonoid>::core;
 };

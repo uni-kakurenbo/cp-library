@@ -13,13 +13,20 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/fenwick_tree.hpp"
+#include "data_structure/lazy_segment_tree.hpp"
 #include "action/range_add.hpp"
+#include "action/helpers.hpp"
+#include "algebraic/addition.hpp"
+#include "template/debug.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::fenwick_tree<lib::actions::range_add<lib::ll>> data(n);
+    lib::lazy_segment_tree<
+        lib::actions::make_full_t<
+            lib::actions::range_add<lib::ll>
+        >
+    > data(n);
 
     REP(q) {
         int t; std::cin >> t;
@@ -31,6 +38,7 @@ signed main() {
             int p; std::cin >> p; --p;
             print(data[p]);
         }
+        debug(data);
     }
 
     return 0;

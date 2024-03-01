@@ -1,9 +1,8 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 #include "algebraic/gcd.hpp"
 
@@ -15,9 +14,7 @@ namespace actions {
 
 
 template<class T>
-struct range_gcd : base<> {
-    using operand = algebraic::gcd<T>;
-};
+using range_gcd = make_operatable_t<lib::algebraic::gcd<T>>;
 
 
 } // namespace actions

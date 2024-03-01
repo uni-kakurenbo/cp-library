@@ -16,7 +16,7 @@ namespace actions {
 
 
 template<class T, bool REVERSE = false>
-struct range_affine_range_sum : base<> {
+struct range_affine_range_sum {
     using operand = algebraic::addition<T>;
     using operation = algebraic::affine<T, REVERSE>;
 

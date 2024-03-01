@@ -1,9 +1,8 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 #include "algebraic/minimum.hpp"
 
@@ -15,9 +14,7 @@ namespace actions {
 
 
 template<class T>
-struct range_min : base<> {
-    using operand = algebraic::minimum<T>;
-};
+using range_max = make_operatable_t<lib::algebraic::minimum<T>>;
 
 
 } // namespace actions
