@@ -19,7 +19,7 @@ export -f sort_out
 
 function rename() {
     cd "$1" || exit 1
-    find ./**.cpp -type f | awk '{ printf "mv %s %04d.cpp\n", $0, NR }' | bash
+    find ./**.cpp -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR }' | bash
 }
 
 export -f rename
