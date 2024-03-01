@@ -14,7 +14,7 @@ namespace actions {
 
 
 template<class T>
-using range_max = make_operatable_t<lib::algebraic::minimum<T>>;
+using range_min = make_operatable_t<lib::algebraic::minimum<T>>;
 
 
 } // namespace actions
