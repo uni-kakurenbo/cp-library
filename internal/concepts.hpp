@@ -10,6 +10,13 @@ namespace lib {
 namespace internal {
 
 
+template<
+    template<class...> class Structure,
+    class... TemplateParameters
+>
+concept available_with = std::default_initializable<Structure<TemplateParameters...>>;
+
+
 template<class T> concept arithmetic = std::is_arithmetic_v<T>;
 template<class T> concept pointer = std::is_pointer_v<T>;
 template<class T> concept structural = std::is_class_v<T>;

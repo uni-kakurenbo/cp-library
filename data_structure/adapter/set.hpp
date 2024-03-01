@@ -11,10 +11,10 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 
 #include "global/constants.hpp"
 
-#include "data_structure/internal/concepts.hpp"
 #include "data_structure/segment_tree.hpp"
 #include "action/range_set_range_sum.hpp"
 #include "action/range_add_range_sum.hpp"
@@ -47,7 +47,7 @@ struct set_adapter_impl {
     using impl_tree =
         Tree<
             std::conditional_t<
-                internal::available_for<
+                internal::available_with<
                     Tree,
                     Action<impl_data_type>
                 >,

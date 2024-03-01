@@ -12,6 +12,7 @@
 
 
 #include "internal/dev_env.hpp"
+#include "internal/concepts.hpp"
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 #include "internal/point_reference.hpp"
@@ -302,6 +303,7 @@ struct core<Action> : core<typename Action::operand> {
 
 
 template<class ActionOrMonoid>
+    requires internal::available_with<internal::fenwick_tree_impl::core, ActionOrMonoid>
 struct fenwick_tree : internal::fenwick_tree_impl::core<ActionOrMonoid> {
     using internal::fenwick_tree_impl::core<ActionOrMonoid>::core;
 };
