@@ -9,8 +9,11 @@
 #include <utility>
 #include <optional>
 #include <algorithm>
-#include <atcoder/math>
 #include <concepts>
+#include <bit>
+
+
+#include <atcoder/math>
 
 
 #include "snippet/aliases.hpp"
@@ -28,6 +31,7 @@
 
 
 namespace lib {
+
 
 template<class T>
 inline constexpr T div_floor(const T& x, const T& d) noexcept(NO_EXCEPT) {
@@ -62,12 +66,12 @@ inline constexpr T div_round(const T& x, const T& d) noexcept(NO_EXCEPT) {
 
 template<class T>
 inline constexpr std::make_signed_t<T> to_signed(const T& x) noexcept(NO_EXCEPT) {
-    return static_cast<std::make_signed_t<T>>(x);
+    return std::bit_cast<std::make_signed_t<T>>(x);
 }
 
 template<class T>
 inline constexpr std::make_unsigned_t<T> to_unsigned(const T& x) noexcept(NO_EXCEPT) {
-    return static_cast<std::make_unsigned_t<T>>(x);
+    return std::bit_cast<std::make_unsigned_t<T>>(x);
 }
 
 
