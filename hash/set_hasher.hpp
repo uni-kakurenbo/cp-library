@@ -23,8 +23,6 @@ struct set_hasher : protected set<T> {
     using size_type = typename base::size_type;
 
   protected:
-    static random_engine rand;
-
     hash_type _hash = 0;
 
     static inline hash_type id(const T& v) noexcept(NO_EXCEPT) {
