@@ -39,22 +39,22 @@ set +e
     RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
     RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
 
-    echo -ne "- ${RICH_TARGET} (${RICH_PROBLEM})\r" > ../summary.txt
-    echo "  - Testcase hash: \`${PROBLEM_HASH}\`" >> ../summary.txt
+    echo -ne "- ${RICH_TARGET} (${RICH_PROBLEM})\r" >../summary.txt
+    echo "  - Testcase hash: \`${PROBLEM_HASH}\`" >>../summary.txt
 
     if [ ${EXIT_STATUS} -eq 0 ]; then
-        cat ../summary.txt >> ../passed-tests.txt
+        jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}" '+%Y-%m-%d %H:%M:%S %z')" \
+            '.[$target] = $date' >>"../timestamps.json"
+
+        cat ../summary.txt >>../passed-tests.txt
     else
-        cat ../summary.txt >> ../failed-tests.txt
+        cat ../summary.txt >>../failed-tests.txt
     fi
 
     echo
-} &>> ".log-${PID}.txt"
+} &>>".log-${PID}.txt"
 
 set -e
-
-jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}" '+%Y-%m-%d %H:%M:%S %z')" \
-'.[$target] = $date' >> "../timestamps.json"
 
 cat ".log-${PID}.txt"
 
