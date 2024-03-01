@@ -15,12 +15,12 @@
 #include "adapter/io.hpp"
 #include "adapter/string.hpp"
 #include "data_structure/disjoint_sparse_table.hpp"
-#include "action/range_hash.hpp"
+#include "action/range_sequence_hash.hpp"
 
 signed main() {
     lib::string s, p; input >> s >> p;
 
-    lib::disjoint_sparse_table<lib::actions::range_hash<>> hash(s + p);
+    lib::disjoint_sparse_table<lib::actions::range_sequence_hash<>> hash(s + p);
     debug(hash);
 
     auto p_hash = hash(s.size(), hash.size()).fold();

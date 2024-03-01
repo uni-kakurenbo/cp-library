@@ -19,7 +19,7 @@ template<
     lib::internal::modint_family T = lib::static_modint_64bit<(1UL << 61) - 1>,
     typename T::value_type BASE = 0
 >
-struct range_hash : base<> {
+struct range_sequence_hash : base<> {
     using operand = algebraic::rolling_hash<REVERSE, T, BASE>;
 };
 
