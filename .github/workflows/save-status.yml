@@ -25,6 +25,8 @@ jobs:
 
             - name: Save status
               run: |
+                  set -eu
+
                   echo "Status: ${{ inputs.status }}"
                   echo "${{ inputs.status }}" > ./status.txt
 

@@ -97,6 +97,8 @@ jobs:
 
             - name: Merge data
               run: |
+                  set -eu
+
                   mkdir -p ./_site/lint/
 
                   mv -f ./docs/* ./_site/

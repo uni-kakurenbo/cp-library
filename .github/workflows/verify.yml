@@ -274,6 +274,8 @@ jobs:
 
             - name: Install oj-verify and action modules
               run: |
+                  set -eu
+
                   {
                     {
                       echo '::group::pip install'
@@ -306,6 +308,8 @@ jobs:
 
             - name: Filter problems
               run: |
+                  set -eu
+
                   PROBLEMS=$(
                     cat ./problems.txt | \
                     sort | \
@@ -323,6 +327,8 @@ jobs:
 
             - name: Generate testcases
               run: |
+                  set -eu
+
                   cat ./targets.txt
 
                   echo '::group::oj download prepare'
@@ -427,6 +433,8 @@ jobs:
 
             - name: Install oj-verify and action modules
               run: |
+                  set -eu
+
                   {
                     {
                       echo '::group::pip install'
@@ -467,6 +475,8 @@ jobs:
 
             - name: Allocate test files
               run: |
+                  set -eu
+
                   TEST_FILES=$(
                     cat ./tests.txt  | \
                     sort | \
@@ -582,6 +592,8 @@ jobs:
             - name: Merge timestamps
               working-directory: .verify-helper
               run: |
+                  set -eu
+
                   touch ./timestamps.remote.json
 
                   if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
@@ -599,6 +611,8 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
+                  set -eu
+
                   git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
 
                   git config --global user.name "GitHub"
@@ -627,6 +641,8 @@ jobs:
 
             - name: Print summery
               run: |
+                  set -eu
+
                   if ls ./result-*/ > /dev/null 2>&1; then
 
                     cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt

@@ -67,6 +67,8 @@ jobs:
             - name: Set variables
               id: set-vars
               run: |
+                  set -eu
+
                   echo "Force: ${{ inputs.force }}"
                   echo "Quit: ${FAIL}"
                   echo "Analysis: ${ANALYSIS}"

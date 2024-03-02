@@ -47,6 +47,8 @@ jobs:
               env:
                   CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
               run: |
+                  set -eu
+
                   echo '::group::oj-verify docs'
                   time oj-verify docs --jobs $(nproc)
                   echo '::endgroup::'

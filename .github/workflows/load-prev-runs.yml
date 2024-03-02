@@ -80,6 +80,7 @@ jobs:
             - name: Compare cached hash
               id: compare
               run: |
+                  set -u
                   set +e
 
                   touch ./prev/hash.txt
