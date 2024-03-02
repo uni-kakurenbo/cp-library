@@ -223,8 +223,6 @@ jobs:
                       # shellcheck source=/dev/null
                       source ./.github/workflows/internal/options.env
 
-                      touch ./summary.txt
-
                       set +e
                       {
                         echo "::group::compile: ${TARGET}"
@@ -245,14 +243,14 @@ jobs:
                             # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
                             echo -e "</details>"
-                          } >> ./summary.txt
+                          } > ".summary-${PID}.txt"
                         fi
 
                         echo "::endgroup::"
                       } &>".log-${PID}.txt"
                       set -e
 
-                      cat ./summary.txt | sort | tr '\r' '\n' > ./temp.txt
+                      cat .summary-**.txt | sort | tr '\r' '\n' > ./temp.txt
                       sed -i '/^$/d' ./temp.txt
 
                       if [ -s ./temp.txt ]; then
