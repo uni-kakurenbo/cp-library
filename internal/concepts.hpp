@@ -3,6 +3,8 @@
 
 #include <type_traits>
 #include <concepts>
+#include <limits>
+#include <functional>
 
 
 namespace lib {
