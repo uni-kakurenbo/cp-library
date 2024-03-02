@@ -192,6 +192,47 @@ jobs:
                   path: ./skipped-tests.txt
                   retention-days: 1
 
+    compile:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GH_PAT }}
+
+            - name: Run compiling test
+              run: |
+                  set -eu
+
+                  PARALLEL=$(nproc)
+                  echo "Parallel execution: ${PARALLEL}"
+
+                  function compile() {
+                      WORKING_DIRECTORY="${PWD}"
+                      TARGET="$1"
+                      PID="$$"
+
+                      # shellcheck source=/dev/null
+                      source ./.github/workflows/internal/options.env
+
+                      set +e
+                      {
+                        echo "::group::compile: ${TARGET}"
+
+                        time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" "${TARGET}"
+
+                        echo
+                      } &>>".log-${PID}.txt"
+                      set -e
+
+                      cat ".log-${PID}.txt"
+                  }
+
+                  export -f compile
+
+                  find **/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
+
     gen-cases:
         runs-on: ${{ vars.RUNNER_IMAGE }}
         needs: setup
