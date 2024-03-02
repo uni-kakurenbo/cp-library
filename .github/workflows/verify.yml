@@ -228,9 +228,9 @@ jobs:
                         echo "::group::compile: ${TARGET}"
 
                         time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2> ".warn-${PID}.txt"
-                        LINES="$(cat .warn-${PID}.txt | wc -l)"
 
-                        if [ ${LINES} -gt 3 ]; then
+                        WARNING="$(cat ".warn-${PID}.txt")"
+                        if [ "${WARNING}" =~ "error:" ]; then
                           cat ".warn-${PID}.txt"
 
                           {
@@ -239,7 +239,7 @@ jobs:
                             echo -ne "<details>\r"
                             echo -ne "<summary>${RICH_TARGET}</summary>\r"
                             echo -ne "<pre>\r"
-                            cat ".warn-${PID}.txt" | head -n 11 | tail -n 8 | tr '\n' '\r'
+                            cat ".warn-${PID}.txt" | head -n 15 | tail -n 12 | tr '\n' '\r'
                             echo -ne "</pre>\r"
                             echo -e "</details>\r"
                           } >> ".summary-${PID}.txt"
