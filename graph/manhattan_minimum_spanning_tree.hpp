@@ -40,7 +40,7 @@ auto manhattan_mst_candidate_edges(
     std::vector<size_type> indices(xs.size());
     std::iota(ALL(indices), 0);
 
-    vector<std::tuple<size_type,size_type,cost_type>> res;
+    vector<std::tuple<size_type, size_type, cost_type>> res;
 
     REP(_0, 2) {
         REP(_1, 2) {
@@ -83,7 +83,7 @@ auto manhattan_mst_edges(
 
     if(cost_sum) *cost_sum = 0;
 
-    vector<std::tuple<size_type,size_type,cost_type>> res;
+    vector<std::tuple<size_type, size_type, cost_type>> res;
     atcoder::dsu uf(static_cast<int>(std::ranges::distance(x_first, x_last)));
 
     ITR(u, v, w, (manhattan_mst_candidate_edges<I0,I1>(x_first, x_last, y_first, y_last))) {
@@ -107,14 +107,11 @@ typename Graph::cost_type internal::graph_impl::mixin<Graph>::build_manhattan_ms
     I0 x_first, S0 x_last, I1 y_first, S1 y_last
 ) noexcept(NO_EXCEPT)
 {
-    using cost_type = typename Graph::cost_type;
-    using size_type = internal::size_t;
-
     assert(std::ranges::distance(x_first, x_last) == std::ranges::distance(y_first, y_last));
 
     cost_type res = 0;
 
-    ITR(u, v, w, (manhattan_mst_edges<I0,I1,S0,S1,cost_type,size_type>(x_first, x_last, y_first, y_last))) {
+    ITR(u, v, w, (manhattan_mst_edges<I0, I1, S0, S1, cost_type, size_type>(x_first, x_last, y_first, y_last))) {
         this->add_edge_bidirectionally(u, v, w);
     }
 

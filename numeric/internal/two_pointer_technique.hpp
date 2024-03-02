@@ -143,13 +143,13 @@ struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
     using intervals = internal::interval_scanner_impl::intervals<T>;
 
     inclusive_interval_scanner(
-        std::function<bool(T)> _validate,
-        std::function<void()> _init,
+        std::function<bool(T)> validate,
+        std::function<void()> init,
         std::function<bool()> valid,
-        std::function<void(T)> _expand,
-        std::function<void(T)> _contract,
-        std::function<void(T, T)> _apply
-    ) : internal::interval_scanner_impl::base<T>(_validate), _init(_init), valid(valid), _expand(_expand), _contract(_contract), _apply(_apply) {}
+        std::function<void(T)> expand,
+        std::function<void(T)> contract,
+        std::function<void(T, T)> apply
+    ) : internal::interval_scanner_impl::base<T>(validate), _init(init), valid(valid), _expand(expand), _contract(contract), _apply(apply) {}
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan(const T start, const T end) const {
