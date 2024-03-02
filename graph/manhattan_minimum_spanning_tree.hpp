@@ -42,8 +42,8 @@ auto manhattan_mst_candidate_edges(
 
     vector<std::tuple<size_type,size_type,cost_type>> res;
 
-    REP(2) {
-        REP(2) {
+    REP(_0, 2) {
+        REP(_1, 2) {
             std::sort(ALL(indices), [&](const auto i, const auto j) { return xs[i] + ys[i] < xs[j] + ys[j]; });
 
             std::map<cost_type,size_type> scan;

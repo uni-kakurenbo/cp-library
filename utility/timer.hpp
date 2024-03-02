@@ -10,18 +10,18 @@ namespace lib {
 
 
 struct timer {
-    using time = std::int32_t;
+    using time_point = std::chrono::milliseconds::rep;
     using progress_type = long double;
 
   private:
-    const time _time_limit = 0;
+    const time_point _time_limit = 0;
     const progress_type progress_duration = 0;
 
     std::chrono::system_clock::time_point clock_start, clock_end;
 
   public:
 
-    timer(const time time_limit = 0) noexcept : _time_limit(time_limit),
+    timer(const time_point time_limit = 0) noexcept : _time_limit(time_limit),
         progress_duration(
             static_cast<progress_type>(
                 std::chrono::duration_cast<std::chrono::system_clock::duration>(
@@ -33,7 +33,7 @@ struct timer {
         this->reset();
     }
 
-    inline time limit() noexcept { return this->_time_limit; }
+    inline time_point limit() noexcept { return this->_time_limit; }
 
     inline timer* reset() noexcept {
         this->clock_start = std::chrono::system_clock::now();
@@ -41,10 +41,10 @@ struct timer {
         return this;
     }
 
-    inline time elapsed() const noexcept {
+    inline time_point elapsed() const noexcept {
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - this->clock_start).count();
     }
-    inline time remaining() const noexcept {
+    inline time_point remaining() const noexcept {
         return _time_limit - this->elapsed();
     }
 

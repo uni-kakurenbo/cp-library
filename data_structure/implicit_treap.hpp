@@ -63,8 +63,8 @@ struct base : private uncopyable {
         bool rev = false;
         Tree left = nullptr, right = nullptr;
 
-        node(const operand& v, const base* super) noexcept(NO_EXCEPT)
-        : v(v), acc(operand{}), lazy(operation{}), priority(super->rand()) {}
+        node(const operand& _v, const base* super) noexcept(NO_EXCEPT)
+        : v(_v), acc(operand{}), lazy(operation{}), priority(super->rand()) {}
         ~node() {
             if(this->left) delete this->left;
             if(this->right) delete this->right;

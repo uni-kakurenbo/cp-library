@@ -11,19 +11,19 @@ namespace lib {
 
 
 // Thanks to: https://qiita.com/drken/items/4b4c3f1824339b090202
-template<class graph = graph<>>
+template<class Graph = graph<>>
 struct centroid_decomposition {
     using size_type = internal::size_t;
 
     std::vector<size_type> centroids;
 
   private:
-    const graph& graph;
+    const Graph& graph;
     std::vector<size_type> _size, _parent;
     std::vector<bool> _used;
 
   public:
-    centroid_decomposition(const graph& _graph) noexcept(NO_EXCEPT)
+    centroid_decomposition(const Graph& _graph) noexcept(NO_EXCEPT)
       : graph(_graph),
         _size(graph.vertices()), _parent(graph.vertices()), _used(graph.vertices())
     {}
