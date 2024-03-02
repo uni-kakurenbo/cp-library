@@ -231,9 +231,8 @@ jobs:
                       {
                         echo "::group::compile: ${TARGET}"
 
-                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -x c++-header "${TARGET}" 2> ".warn-${PID}.txt"
+                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" "${TARGET}" 2> ".warn-${PID}.txt"
 
-                        cat ".warn-${PID}.txt"
                         LINES="$(cat .warn-${PID}.txt | wc -l)"
                         echo "${LINES}"
 
