@@ -236,11 +236,13 @@ jobs:
                           {
                             RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
 
+                            echo -ne "${RICH_TARGET}\r"
+
                             echo -ne "<details>\r"
 
-                            echo -ne "<summary>${RICH_TARGET}</summary>\r"
+                            echo -ne "<summary>Output</summary>\r"
 
-                            # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
+                            cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
                             echo -e "</details>"
                           } >> .summary.txt
@@ -260,7 +262,7 @@ jobs:
 
                   find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
 
-                  cat .summary.txt | sort | tr '\r' '\n' > ./temp.txt
+                  cat .summary.txt | sort | tr '\r' '\n' | head -c 1M > ./temp.txt
                   sed -i '/^$/d' ./temp.txt
 
                   if [ -s ./temp.txt ]; then
