@@ -212,8 +212,6 @@ jobs:
 
             - name: Run compiling test
               working-directory: main
-              env:
-                  CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
               run: |
                   set -eu
 
@@ -231,7 +229,7 @@ jobs:
                       {
                         echo "::group::compile: ${TARGET}"
 
-                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" "${TARGET}" 2> ".warn-${PID}.txt"
+                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2> ".warn-${PID}.txt"
                         LINES="$(cat .warn-${PID}.txt | wc -l)"
 
                         if [ ${LINES} -gt 3 ]; then
@@ -242,7 +240,7 @@ jobs:
 
                             echo -ne "<summary>${RICH_TARGET}</summary>\r"
 
-                            cat ".warn-${PID}.txt" | tr '\n' '\r' head -c 10 K
+                            cat ".warn-${PID}.txt" | tr '\n' '\r' | head -c 10 K
 
                             echo -ne "</details>\r"
                           } >> ./summary.txt
