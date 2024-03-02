@@ -248,7 +248,7 @@ jobs:
 
                   export -f compile
 
-                  PARALLEL=$(($(nproc) * 2))
+                  PARALLEL=$(nproc)
                   echo "Parallel execution: ${PARALLEL}"
 
                   find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
