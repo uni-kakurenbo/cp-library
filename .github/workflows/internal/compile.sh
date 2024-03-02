@@ -14,8 +14,9 @@ set +e
 
     time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2>".warn-${PID}.txt"
 
-    WARNING="$(cat ".warn-${PID}.txt")"
-    if [[ ${WARNING} =~ error: ]]; then
+    LINES="$(wc -l ".warn-${PID}.txt")"
+
+    if [ "${LINES}" -gt 3 ]; then
         cat ".warn-${PID}.txt"
 
         {
