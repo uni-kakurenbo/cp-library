@@ -225,6 +225,8 @@ jobs:
                       # shellcheck source=/dev/null
                       source ./.github/workflows/internal/options.env
 
+                      touch ./summary.txt
+
                       set +e
                       {
                         echo "::group::compile: ${TARGET}"
@@ -235,13 +237,33 @@ jobs:
                         LINES="$(cat .warn-${PID}.txt | wc -l)"
                         echo "${LINES}"
 
-                        if [ ${LINES} -gt 2 ]; then
+                        if [ ${LINES} -gt 3 ]; then
+                          {
+                            RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
+
+                            echo -ne "<details>\r"
+
+                            echo -ne "<summary>${RICH_TARGET}</summary>\r"
+
+                            cat ".warn-${PID}.txt" | tr '\n' '\r'
+
+                            echo -ne "</details>\r"
+                          } >> ./summary.txt
+                          GITHUB_STEP_SUMMARY
                           echo "::warning file=${TARGET}::Failed to compile."
                         fi
 
                         echo "::endgroup::"
                       } &>".log-${PID}.txt"
                       set -e
+
+                      cat ./summary.txt | sort | tr '\r' '\n' > ./temp.txt
+                      sed -i '/^$/d' ./temp.txt
+
+                      if [ -s ./temp.txt ]; then
+                        echo "### Compiler warnings" >> "${GITHUB_STEP_SUMMARY}"
+                        cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                      fi
 
                       cat ".log-${PID}.txt"
                   }
