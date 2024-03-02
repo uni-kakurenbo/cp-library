@@ -230,7 +230,7 @@ jobs:
                         time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2> ".warn-${PID}.txt"
 
                         WARNING="$(cat ".warn-${PID}.txt")"
-                        if [ "${WARNING}" =~ "error:" ]; then
+                        if [[ ${WARNING} =~ error: ]]; then
                           cat ".warn-${PID}.txt"
 
                           {
