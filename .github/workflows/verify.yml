@@ -243,20 +243,12 @@ jobs:
                             # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
                             echo -e "</details>"
-                          } > ".summary-${PID}.txt"
+                          } >> .summary.txt
                         fi
 
                         echo "::endgroup::"
                       } &>".log-${PID}.txt"
                       set -e
-
-                      cat .summary-**.txt | sort | tr '\r' '\n' > ./temp.txt
-                      sed -i '/^$/d' ./temp.txt
-
-                      if [ -s ./temp.txt ]; then
-                        echo "### Compiler warnings" >> "${GITHUB_STEP_SUMMARY}"
-                        cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
-                      fi
 
                       cat ".log-${PID}.txt"
                   }
@@ -267,6 +259,14 @@ jobs:
                   echo "Parallel execution: ${PARALLEL}"
 
                   find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
+
+                  cat .summary.txt | sort | tr '\r' '\n' > ./temp.txt
+                  sed -i '/^$/d' ./temp.txt
+
+                  if [ -s ./temp.txt ]; then
+                    echo "### Compiler warnings" >> "${GITHUB_STEP_SUMMARY}"
+                    cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                  fi
 
     gen-cases:
         runs-on: ${{ vars.RUNNER_IMAGE }}
