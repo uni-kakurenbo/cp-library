@@ -239,7 +239,7 @@ jobs:
                             echo -ne "<details>\r"
                             echo -ne "<summary>${RICH_TARGET}</summary>\r"
                             echo -ne "<pre>\r"
-                            cat ".warn-${PID}.txt" | head -n 15 | tail -n 12 | tr '\n' '\r'
+                            cat ".warn-${PID}.txt" | head -n 25 | tail -n 22 | tr '\n' '\r'
                             echo -ne "</pre>\r"
                             echo -e "</details>\r"
                           } >> ".summary-${PID}.txt"
