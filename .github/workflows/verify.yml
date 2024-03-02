@@ -212,8 +212,8 @@ jobs:
 
             - name: Run compiling test
               working-directory: main
-              env:
-                  # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+              # env:
+              # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
               run: |
                   set -eu
 
