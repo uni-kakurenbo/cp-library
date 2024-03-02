@@ -38,22 +38,22 @@ struct base {
     }
 
     void split(const T first, const T last, intervals<T> *intervals) const {
-        std::valarray<bool> valid(false, last - first);
-        for(auto itr=first,index=0; itr!=last; ++itr, ++index) valid[index] = _validate(itr);
+        std::valarray<bool> _valid(false, last - first);
+        for(auto itr=first,index=0; itr!=last; ++itr, ++index) _valid[index] = _validate(itr);
 
         auto can_begin = [&](const T itr) {
             const auto index = itr - first;
-            if(itr == first) return valid[index];
+            if(itr == first) return _valid[index];
             if(itr == last) return false;
-            if(not valid[index-1] and valid[index]) return true;
+            if(not _valid[index-1] and _valid[index]) return true;
             return false;
         };
 
         auto is_end = [&](const T itr) {
             const  auto index = itr - first;
             if(itr == first) return false;
-            if(itr == last) return valid[index-1];
-            if(valid[index-1] and not valid[index]) return true;
+            if(itr == last) return _valid[index-1];
+            if(_valid[index-1] and not _valid[index]) return true;
             return false;
         };
 
@@ -134,7 +134,7 @@ template<class T>
 struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
   protected:
     std::function<void()> _init;
-    std::function<bool()> valid;
+    std::function<bool()> _valid;
     std::function<void(T)> _expand, _contract;
     std::function<void(T, T)> _apply;
 
@@ -149,7 +149,7 @@ struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : internal::interval_scanner_impl::base<T>(validate), _init(init), valid(valid), _expand(expand), _contract(contract), _apply(apply) {}
+    ) : internal::interval_scanner_impl::base<T>(validate), _init(init), _valid(valid), _expand(expand), _contract(contract), _apply(apply) {}
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan(const T start, const T end) const {
@@ -160,13 +160,13 @@ struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
                 r_itr = l_itr;
                 _init();
             }
-            if(r_itr < end and (INVERSE ^ valid())) {
+            if(r_itr < end and (INVERSE ^ _valid())) {
                 _expand(r_itr++);
             }
             else {
                 _contract(l_itr++);
             }
-            if(!CONFIRMATION or valid()) _apply(l_itr, r_itr);
+            if(!CONFIRMATION or _valid()) _apply(l_itr, r_itr);
         }
     }
 
