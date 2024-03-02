@@ -29,6 +29,8 @@ jobs:
 
             - name: Clone raw data
               uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GH_PAT }}
 
             - name: Build
               run: cppcheck-htmlreport --file=./cppcheck_report.xml --title=Lint --report-dir=./dist
