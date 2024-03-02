@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <cassert>
 #include <iterator>
 #include <utility>
 #include <tuple>
@@ -300,8 +301,6 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
             std::equality_comparable<std::ranges::iterator_t<B0>> &&
             std::equality_comparable<std::ranges::iterator_t<B1>>
     {
-        // debug(lhs._block, rhs._block);
-        // debug(lhs._c0 == rhs._c0, lhs._c1 == rhs._c1);
         if(lhs._block != rhs._block) return false;
         return lhs._block == 0 ? lhs._c0 == rhs._c0 : lhs._c1 == rhs._c1;
     }

@@ -25,20 +25,21 @@ template<class T> using interval = std::pair<T, T>;
 template<class T> using intervals = std::vector<std::pair<T, T>>;
 
 
-template<class T> struct base {
+template<class T>
+struct base {
   protected:
-    std::function<bool(T)> validate;
+    std::function<bool(T)> _validate;
 
   public:
-    base(std::function<bool(T)> validate) : validate(validate) {}
+    base(std::function<bool(T)> validate) : _validate(validate) {}
 
-    void scan(T,T,T) {
+    void scan(T, T, T) {
         static_assert(internal::EXCEPTION<T>, "not implemented: scan()");
     }
 
     void split(const T first, const T last, intervals<T> *intervals) const {
         std::valarray<bool> valid(false, last - first);
-        for(auto itr=first,index=0; itr!=last; ++itr, ++index) valid[index] = validate(itr);
+        for(auto itr=first,index=0; itr!=last; ++itr, ++index) valid[index] = _validate(itr);
 
         auto can_begin = [&](const T itr) {
             const auto index = itr - first;
@@ -82,11 +83,11 @@ template<class T> struct base {
 
 template<class T>
 struct exclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
-  protected:
-    std::function<void(T)> init;
-    std::function<bool(T)> can_expand;
-    std::function<void(T)> expand, contract;
-    std::function<void(T, T)> apply;
+  private:
+    std::function<void(T)> _init;
+    std::function<bool(T)> _can_expand;
+    std::function<void(T)> _expand, _contract;
+    std::function<void(T, T)> _apply;
 
   public:
     using interval = internal::interval_scanner_impl::interval<T>;
@@ -99,7 +100,10 @@ struct exclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
         std::function<void(T)> expand,
         std::function<void(T)> contract,
         std::function<void(T, T)> apply
-    ) : internal::interval_scanner_impl::base<T>(validate), init(init), can_expand(can_expand), expand(expand), contract(contract), apply(apply) {}
+    )
+      : internal::interval_scanner_impl::base<T>(validate), _init(init), _can_expand(can_expand),
+        _expand(expand), _contract(contract), _apply(apply)
+    {}
 
     template<const bool FOLLOWING = true>
     void scan(const T start, const T end) const {
@@ -107,13 +111,13 @@ struct exclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
         while(l_itr < end) {
             if (FOLLOWING and r_itr <= l_itr) {
                 r_itr = l_itr+1;
-                init(l_itr);
+                _init(l_itr);
             }
-            while(r_itr < end && can_expand(r_itr)) {
-                expand(r_itr++);
+            while(r_itr < end && _can_expand(r_itr)) {
+                _expand(r_itr++);
             }
-            apply(l_itr, r_itr);
-            contract(l_itr++);
+            _apply(l_itr, r_itr);
+            _contract(l_itr++);
         }
     };
 
@@ -129,40 +133,40 @@ struct exclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
 template<class T>
 struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
   protected:
-    std::function<void()> init;
+    std::function<void()> _init;
     std::function<bool()> valid;
-    std::function<void(T)> expand, contract;
-    std::function<void(T, T)> apply;
+    std::function<void(T)> _expand, _contract;
+    std::function<void(T, T)> _apply;
 
   public:
     using interval = internal::interval_scanner_impl::interval<T>;
     using intervals = internal::interval_scanner_impl::intervals<T>;
 
     inclusive_interval_scanner(
-        std::function<bool(T)> validate,
-        std::function<void()> init,
+        std::function<bool(T)> _validate,
+        std::function<void()> _init,
         std::function<bool()> valid,
-        std::function<void(T)> expand,
-        std::function<void(T)> contract,
-        std::function<void(T, T)> apply
-    ) : internal::interval_scanner_impl::base<T>(validate), init(init), valid(valid), expand(expand), contract(contract), apply(apply) {}
+        std::function<void(T)> _expand,
+        std::function<void(T)> _contract,
+        std::function<void(T, T)> _apply
+    ) : internal::interval_scanner_impl::base<T>(_validate), _init(_init), valid(valid), _expand(_expand), _contract(_contract), _apply(_apply) {}
 
     template<const bool INVERSE = false, const bool FOLLOWING = true, const bool CONFIRMATION = true>
     void scan(const T start, const T end) const {
         T l_itr = start, r_itr = start;
-        init();
+        _init();
         while(l_itr < end) {
             if(FOLLOWING and r_itr < l_itr) {
                 r_itr = l_itr;
-                init();
+                _init();
             }
             if(r_itr < end and (INVERSE ^ valid())) {
-                expand(r_itr++);
+                _expand(r_itr++);
             }
             else {
-                contract(l_itr++);
+                _contract(l_itr++);
             }
-            if(!CONFIRMATION or valid()) apply(l_itr, r_itr);
+            if(!CONFIRMATION or valid()) _apply(l_itr, r_itr);
         }
     }
 

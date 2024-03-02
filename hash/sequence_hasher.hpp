@@ -97,7 +97,7 @@ struct sequence_hasher {
         const size_type _len;
 
       public:
-        hash(const hash_type _val, const size_type _len) noexcept(NO_EXCEPT) : _val(_val), _len(_len) {}
+        hash(const hash_type val, const size_type len) noexcept(NO_EXCEPT) : _val(val), _len(len) {}
 
         inline hash_type val() const noexcept(NO_EXCEPT) { return this->_val; }
         inline operator hash_type() const noexcept(NO_EXCEPT) { return this->_val; }
@@ -117,8 +117,8 @@ struct sequence_hasher {
                 sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
             }
             else if constexpr(BASE < 0) {
-                xorshift64<-(1L << 62) + 1> rand64(std::random_device{}());
-                sequence_hasher::base = static_cast<hash_type>(rand64() % sequence_hasher::mod);
+                xorshift64<-(1L << 62) + 1> random(std::random_device{}());
+                sequence_hasher::base = static_cast<hash_type>(random() % sequence_hasher::mod);
             }
         }
     }

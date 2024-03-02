@@ -44,7 +44,7 @@ template<class Node,class Cost> struct edge {
     const node_type from, to; const Cost cost;
     const size_type index = 0;
 
-    edge(const node_type u, const node_type v, const Cost w = 1, const size_type index = 0) noexcept(NO_EXCEPT) : from(u), to(v), cost(w), index(index) {}
+    edge(const node_type u, const node_type v, const Cost w = 1, const size_type i = 0) noexcept(NO_EXCEPT) : from(u), to(v), cost(w), index(i) {}
 
     operator node_type() const noexcept(NO_EXCEPT) { return this->to; }
 

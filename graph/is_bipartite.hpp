@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <queue>
+#include <stack>
 
 #include "snippet/iterations.hpp"
 
@@ -17,19 +18,19 @@ bool lib::internal::graph_impl::mixin<Graph>::is_bipartite() const noexcept(NO_E
     REP(s, this->vertices()) {
         if(color[s] != 0) continue;
 
-        std::stack<size_type> stk;
-        stk.push(s);
+        std::stack<size_type> stack;
+        stack.push(s);
         color[s] = 1;
 
-        while(not stk.empty()) {
-            auto v = stk.top(); stk.pop();
+        while(not stack.empty()) {
+            auto v = stack.top(); stack.pop();
             auto c = color[v];
 
             ITR(nv, this->operator[](v)) {
                 if(color[nv] == c) return false;
                 if(color[nv] == 0) {
                     color[nv] = -c;
-                    stk.push(nv);
+                    stack.push(nv);
                 }
             }
         }

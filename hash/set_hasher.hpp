@@ -13,10 +13,10 @@
 namespace lib {
 
 
-template<class T, int hasher_id = -1>
-struct set_hasher : protected set<T> {
+template<class T, int hasher_id = -1, template<class...> class Set>
+struct set_hasher : protected Set<T> {
   private:
-    using base = set<T>;
+    using base = Set<T>;
 
   public:
     using hash_type = std::uint64_t;

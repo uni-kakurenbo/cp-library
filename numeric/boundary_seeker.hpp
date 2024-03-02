@@ -27,7 +27,7 @@ struct integal {
     std::function<bool(T)> validate;
 
   public:
-    integal(std::function<bool(T)> validate) noexcept(NO_EXCEPT) : validate(validate) {}
+    integal(std::function<bool(T)> _validate) noexcept(NO_EXCEPT) : validate(_validate) {}
 
     template<const bool REVERSE = false>
     T bound(const T _ok, const T _ng) const noexcept(NO_EXCEPT) {

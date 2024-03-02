@@ -18,7 +18,7 @@ class centroid_path_decomposition {
     using size_type = internal::size_t;
 
   private:
-    std::vector<std::vector<size_type>> G;
+    std::vector<std::vector<size_type>> graph;
 
   public:
     std::vector<size_type> in, out, size, head, parent;
@@ -28,42 +28,42 @@ class centroid_path_decomposition {
 
     void _erase_parent(const size_type v, const size_type p) noexcept(NO_EXCEPT) {
         this->parent[v] = p;
-        ITRR(nv, G[v]) {
-            if(nv == this->G[v].back()) break;
-            if(nv == p) std::swap(nv, this->G[v].back());
+        ITRR(nv, graph[v]) {
+            if(nv == this->graph[v].back()) break;
+            if(nv == p) std::swap(nv, this->graph[v].back());
             this->_erase_parent(nv, v);
         }
-        this->G[v].pop_back();
+        this->graph[v].pop_back();
     }
 
     void _race_size(const size_type v) noexcept(NO_EXCEPT) {
-        ITRR(nv, this->G[v]) {
+        ITRR(nv, this->graph[v]) {
             this->_race_size(nv);
             this->size[v] += this->size[nv];
-            if(this->size[nv] > this->size[this->G[v].front()]) std::swap(nv, this->G[v].front());
+            if(this->size[nv] > this->size[this->graph[v].front()]) std::swap(nv, this->graph[v].front());
         }
     }
 
     void _race_path(const size_type v) noexcept(NO_EXCEPT) {
         this->in[v] = this->_cur++;
-        ITR(nv, this->G[v]) {
-            this->head[nv] = (nv == this->G[v].front() ? this->head[v] : nv);
+        ITR(nv, this->graph[v]) {
+            this->head[nv] = (nv == this->graph[v].front() ? this->head[v] : nv);
             this->_race_path(nv);
         }
         this->out[v] = this->_cur;
     }
 
   public:
-    template<class graph>
-    centroid_path_decomposition(const graph& G, const size_type root = 0) noexcept(NO_EXCEPT)
-      : G(G.size()), in(G.size(), -1), out(G.size(), -1), size(G.size(), 1), head(G.size()), parent(G.size(), -1)
+    template<class Graph>
+    centroid_path_decomposition(const Graph& _graph, const size_type root = 0) noexcept(NO_EXCEPT)
+      : graph(_graph.size()), in(_graph.size(), -1), out(_graph.size(), -1), size(_graph.size(), 1), head(_graph.size()), parent(_graph.size(), -1)
     {
-        REP(v, G.size()) ITR(nv, G[v]) this->G[v].push_back(nv);
+        REP(v, this->graph.size()) ITR(nv, this->graph[v]) this->graph[v].push_back(nv);
         this->build(root);
     }
 
     void build(const size_type root = 0) noexcept(NO_EXCEPT) {
-        ITR(v, this->G[root]) this->_erase_parent(v, root);
+        ITR(v, this->graph[root]) this->_erase_parent(v, root);
         this->_race_size(root);
         this->head[root] = root;
         this->_race_path(root);

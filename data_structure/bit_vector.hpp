@@ -29,7 +29,7 @@ struct bit_vector {
     size_type _n, _zeros;
 
   public:
-    bit_vector(const size_type _n = 0) noexcept(NO_EXCEPT) { this->init(_n); }
+    bit_vector(const size_type n = 0) noexcept(NO_EXCEPT) { this->init(n); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     bit_vector(I first, S last) noexcept(NO_EXCEPT)
@@ -52,9 +52,9 @@ struct bit_vector {
     inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return static_cast<std::uint32_t>(this->_block[k / w] >> (k % w)) & 1U; }
 
     __attribute__((optimize("O3", "unroll-loops")))
-    inline void init(const size_type _n) noexcept(NO_EXCEPT) {
-        this->_n = this->_zeros = _n;
-        this->_block.resize(_n / w + 1, 0);
+    inline void init(const size_type n) noexcept(NO_EXCEPT) {
+        this->_n = this->_zeros = n;
+        this->_block.resize(this->_n / w + 1, 0);
         this->_count.resize(this->_block.size(), 0);
     }
 

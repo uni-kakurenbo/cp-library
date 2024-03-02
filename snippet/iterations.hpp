@@ -3,7 +3,7 @@
 #include <type_traits>
 #include "macro/overload.hpp"
 
-#define LOOP(n) REPI($_, (n))
+#define LOOP(n) REPI(_$, (n))
 
 #define REPI(i,n) for(std::decay_t<decltype(n)> i=0, i##_length=(n); i<i##_length; ++i)
 #define REPF(i,l,r) for(std::common_type_t<std::decay_t<decltype(l)>,std::decay_t<decltype(r)>> i=(l), i##_last=(r); i<i##_last; ++i)

@@ -17,7 +17,7 @@ namespace lib {
 
 
 static inline i64 float_div(const i64 n, const i64 p) {
-    return static_cast<i64>(static_cast<double>(n) / p);
+    return static_cast<i64>(static_cast<double>(n) / static_cast<double>(p));
 };
 
 // Thanks to: https://nyaannyaan.github.io/library/multiplicative-function/prime-counting-faster.hpp

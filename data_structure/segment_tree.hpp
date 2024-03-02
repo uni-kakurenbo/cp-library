@@ -47,9 +47,7 @@ struct base {
     explicit base(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
         _data(this->_size << 1)
-    {
-        debug(n, _size, _depth);
-    }
+    {}
 
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
@@ -128,8 +126,10 @@ struct core<Monoid> : base<Monoid> {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->size());
         }
-        size_type p = 0;
-        for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<value_type>(*itr);
+        {
+            size_type p = 0;
+            for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<value_type>(*itr);
+        }
         REPD(p, 1, this->_size) this->update(p);
         return *this;
     }

@@ -32,9 +32,9 @@ class interval_plannner {
     using size_type = internal::size_t;
 
   public:
-    EF expand_front; EB expand_back;
-    PF contract_front; PB contract_back;
-    R evaluate;
+    EF _expand_front; EB _expand_back;
+    PF _contract_front; PB _contract_back;
+    R _evaluate;
 
     using evaluator_result_t = std::invoke_result_t<R>;
 
@@ -43,9 +43,9 @@ class interval_plannner {
         PF contract_front, PB contract_back,
         R evaluate
     ) noexcept(NO_EXCEPT)
-      : expand_front(expand_front), expand_back(expand_back),
-        contract_front(contract_front), contract_back(contract_back),
-        evaluate(evaluate)
+      : _expand_front(expand_front), _expand_back(expand_back),
+        _contract_front(contract_front), _contract_back(contract_back),
+        _evaluate(evaluate)
     {}
 
     interval_plannner(EF expand, PF contract, R evaluate) noexcept(NO_EXCEPT)
@@ -83,11 +83,11 @@ class interval_plannner {
 
         size_type l = 0, r = 0;
         ITR(i, indices) {
-            while(l > query_first[i].first) expand_front(--l);
-            while(r < query_first[i].second) expand_back(r++);
-            while(l < query_first[i].first) contract_front(l++);
-            while(r > query_first[i].second) contract_back(--r);
-            res_first[i] = evaluate();
+            while(l > query_first[i].first) _expand_front(--l);
+            while(r < query_first[i].second) _expand_back(r++);
+            while(l < query_first[i].first) _contract_front(l++);
+            while(r > query_first[i].second) _contract_back(--r);
+            res_first[i] = _evaluate();
         }
     }
 
