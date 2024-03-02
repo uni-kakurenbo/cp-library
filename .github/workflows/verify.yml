@@ -233,6 +233,8 @@ jobs:
                         LINES="$(cat .warn-${PID}.txt | wc -l)"
 
                         if [ ${LINES} -gt 3 ]; then
+                          cat ".warn-${PID}.txt"
+
                           {
                             RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
 
