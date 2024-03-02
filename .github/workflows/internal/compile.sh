@@ -24,9 +24,9 @@ set +e
 
             echo -ne "<details>\r"
             echo -ne "<summary>${RICH_TARGET}</summary>\r"
-            echo -ne "<pre><xmp>\r"
-            head ".warn-${PID}.txt" -n 25 | tail -n 22 | tr '\n' '\r'
-            echo -ne "</xmp></pre>\r"
+            echo -ne "<pre>\r"
+            head ".warn-${PID}.txt" -n 25 | tail -n 22 | tr '\n' '\r' | sed -e 's/</\&lt;/g'
+            echo -ne "</pre>\r"
             echo -e "</details>\r"
         } >>".summary-${PID}.txt"
     fi
