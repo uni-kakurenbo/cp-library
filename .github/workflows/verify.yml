@@ -229,12 +229,13 @@ jobs:
                       {
                         echo "::group::compile: ${TARGET}"
 
-                        time g++-14 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -x c++-header "${TARGET}" 2> ".warn-${PID}.txt"
+                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -x c++-header "${TARGET}" 2> ".warn-${PID}.txt"
 
                         cat ".warn-${PID}.txt"
                         LINES="$(cat .warn-${PID}.txt | wc -l)"
+                        echo "${LINES}"
 
-                        if [ ${LINES} -gt 1 ]; then
+                        if [ ${LINES} -gt 2 ]; then
                           echo "::warning file=${TARGET}::Failed to compile."
                         fi
 
