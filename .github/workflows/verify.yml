@@ -370,7 +370,7 @@ jobs:
                   echo "Parallel execution: ${PARALLEL}"
 
                   head -c -1 ../targets.txt | \
-                  xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' bash
+                  xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' shell
 
             - name: Cache judge data
               uses: actions/github-script@v7
@@ -545,7 +545,7 @@ jobs:
                   echo "Parallel execution: ${PARALLEL}"
 
                   time head -c -1 ../targets.txt | \
-                  xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' bash
+                  xargs -P ${PARALLEL} -n4 bash -c 'bash ./.github/workflows/internal/run-test.sh "$1" "$2" "$3" "$4"' shell
 
                   jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
                     ../timestamps.json > ../temp.json
