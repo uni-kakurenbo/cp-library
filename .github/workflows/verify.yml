@@ -213,7 +213,7 @@ jobs:
             - name: Run compiling test
               working-directory: main
               env:
-                  CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+                  # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
               run: |
                   set -eu
 
@@ -246,8 +246,6 @@ jobs:
 
                             echo -ne "</details>\r"
                           } >> ./summary.txt
-                          GITHUB_STEP_SUMMARY
-                          echo "::warning file=${TARGET}::Failed to compile."
                         fi
 
                         echo "::endgroup::"
