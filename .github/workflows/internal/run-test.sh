@@ -52,7 +52,7 @@ set +e
     fi
 
     echo
-} &>>".log-${PID}.txt"
+} &>".log-${PID}.txt"
 
 set -e
 
