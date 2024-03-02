@@ -241,7 +241,7 @@ template<class Lhs, typename Rhs> struct pipe : range_adapter_closure {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
-    constexpr pipe(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+    constexpr pipe(Lhs _lhs, Rhs _rhs) noexcept(NO_EXCEPT) : lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
@@ -265,7 +265,7 @@ struct pipe<Lhs, Rhs> : range_adapter_closure {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
-    constexpr pipe(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+    constexpr pipe(Lhs _lhs, Rhs _rhs) noexcept(NO_EXCEPT) : lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
