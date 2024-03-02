@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <optional>
+#include <cassert>
 
 
 #include "internal/dev_env.hpp"

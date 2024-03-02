@@ -215,49 +215,10 @@ jobs:
               run: |
                   set -eu
 
-                  function compile() {
-                      WORKING_DIRECTORY="${PWD}"
-                      TARGET="$1"
-                      PID="$$"
-
-                      # shellcheck source=/dev/null
-                      source ./.github/workflows/internal/options.env
-
-                      set +e
-                      {
-                        echo "::group::compile: ${TARGET}"
-
-                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2> ".warn-${PID}.txt"
-
-                        WARNING="$(cat ".warn-${PID}.txt")"
-                        if [[ ${WARNING} =~ error: ]]; then
-                          cat ".warn-${PID}.txt"
-
-                          {
-                            RICH_TARGET="<a href=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET}><code>${TARGET}</code></a>"
-
-                            echo -ne "<details>\r"
-                            echo -ne "<summary>${RICH_TARGET}</summary>\r"
-                            echo -ne "<pre>\r"
-                            cat ".warn-${PID}.txt" | head -n 25 | tail -n 22 | tr '\n' '\r'
-                            echo -ne "</pre>\r"
-                            echo -e "</details>\r"
-                          } >> ".summary-${PID}.txt"
-                        fi
-
-                        echo "::endgroup::"
-                      } &>".log-${PID}.txt"
-                      set -e
-
-                      cat ".log-${PID}.txt"
-                  }
-
-                  export -f compile
-
                   PARALLEL=$(nproc)
                   echo "Parallel execution: ${PARALLEL}"
 
-                  find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
+                  find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c './.github/workflows/internal/compile.sh "$1"' shell
 
                   cat .summary-**.txt | sort > ./temp.txt
                   sed -i '/^$/d' ./temp.txt
@@ -360,6 +321,8 @@ jobs:
                   cat ./targets.txt
 
             - name: Generate testcases
+              env:
+                  YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
               run: |
                   set -eu
 
@@ -371,40 +334,11 @@ jobs:
 
                   mkdir ./testcases/; cd ./testcases/
 
-                  function gen() {
-                    local problem="$1"
-                    local hash="$2"
-                    local pid="$$"
-
-                    mkdir -p "./${hash}/";
-                    {
-                      echo "::group::${problem} [hash: ${hash}]"
-
-                      oj download --system --silent --yukicoder-token "${{ secrets.YUKICODER_TOKEN }}" \
-                        --directory "./${hash}/" "${problem}" || \
-                      rm -r "./${hash}/"
-
-                      find ~/ -type d -name "$(basename "${problem}")"
-                      local cache_directory="$(find ~/ -type d -name "$(basename "${problem}")")"
-
-                      if [ -d "${cache_directory}" ]; then
-                        local checker="$(find "${cache_directory}" -type f -name checker)"
-                        cp "${checker}" "./${hash}/checker"
-                      fi
-
-                      echo "::notice title=${problem}::Fetched and generated."
-                      echo '::endgroup::'
-
-                    } &> "../log-${pid}.txt"
-                    cat "../log-${pid}.txt"
-                  }
-                  export -f gen
-
                   PARALLEL=$(nproc)
                   echo "Parallel execution: ${PARALLEL}"
 
                   head -c -1 ../targets.txt | \
-                  xargs -P ${PARALLEL} -n2 bash -c 'gen "$1" "$2"' shell
+                  xargs -P ${PARALLEL} -n2 bash -c './.github/workflows/internal/generate.sh "$1" "$2"' shell
 
             - name: Cache judge data
               uses: actions/github-script@v7

@@ -1,4 +1,5 @@
 #! /bin/bash
+set -eu
 
 WORKING_DIRECTORY="${PWD}"
 FILE="$1"
