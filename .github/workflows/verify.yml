@@ -240,7 +240,7 @@ jobs:
 
                             echo -ne "<summary>${RICH_TARGET}</summary>\r"
 
-                            cat ".warn-${PID}.txt" | tr '\n' '\r' | head -c 10K
+                            cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
                             echo -ne "</details>\r"
                           } >> ./summary.txt
