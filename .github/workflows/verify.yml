@@ -242,7 +242,7 @@ jobs:
 
                             echo -ne "<summary>Output</summary>\r"
 
-                            cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
+                            # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
                             echo -e "</details>"
                           } >> .summary.txt
