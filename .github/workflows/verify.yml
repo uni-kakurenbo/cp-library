@@ -244,7 +244,7 @@ jobs:
 
                             # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 10
 
-                            echo -ne "</details>\r"
+                            echo -e "</details>"
                           } >> ./summary.txt
                         fi
 
