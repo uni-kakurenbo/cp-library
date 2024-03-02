@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <unordered_set>
 #include <iterator>
 #include <cstdint>
 
@@ -13,7 +14,7 @@
 namespace lib {
 
 
-template<class T, int hasher_id = -1, template<class...> class Set>
+template<class T, int hasher_id = -1, template<class...> class Set = std::unordered_set>
 struct set_hasher : protected Set<T> {
   private:
     using base = Set<T>;
