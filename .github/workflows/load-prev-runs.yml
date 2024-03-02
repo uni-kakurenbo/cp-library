@@ -48,6 +48,8 @@ jobs:
                   if [ '${{ matrix.target }}' == 'verify' ]; then
                     echo './main/.github/workflows/internal/options.env' >> ./file-list.txt
                     echo './main/.github/workflows/internal/allocate.sh' >> ./file-list.txt
+                    echo './main/.github/workflows/internal/generate.sh' >> ./file-list.txt
+                    echo './main/.github/workflows/internal/compile.sh' >> ./file-list.txt
                     echo './main/.github/workflows/internal/run-test.sh' >> ./file-list.txt
                     echo './main/.github/workflows/verify.yml' >> ./file-list.txt
                   fi
