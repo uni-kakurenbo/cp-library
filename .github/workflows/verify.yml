@@ -212,8 +212,8 @@ jobs:
 
             - name: Run compiling test
               working-directory: main
-              # env:
-              # CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
+              env:
+                  CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
               run: |
                   set -eu
 
@@ -242,7 +242,7 @@ jobs:
 
                             echo -ne "<summary>${RICH_TARGET}</summary>\r"
 
-                            cat ".warn-${PID}.txt" | tr '\n' '\r'
+                            cat ".warn-${PID}.txt" | tr '\n' '\r' head -c 10 K
 
                             echo -ne "</details>\r"
                           } >> ./summary.txt
