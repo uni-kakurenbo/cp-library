@@ -240,7 +240,7 @@ jobs:
                             echo -ne "<details>\r"
                             echo -ne "<summary>Output</summary>\r"
                             # cat ".warn-${PID}.txt" | tr '\n' '\r' | head -n 8 | tail -n 5
-                            echo -e "</details>\r\r"
+                            echo -e "</details>\r"
                           } >> ".summary-${PID}.txt"
                         fi
 
@@ -258,12 +258,12 @@ jobs:
 
                   find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
 
-                  cat .summary-**.txt | sort | tr '\r' '\n' | head -c 1M > ./temp.txt
+                  cat .summary-**.txt | sort > ./temp.txt
                   sed -i '/^$/d' ./temp.txt
 
                   if [ -s ./temp.txt ]; then
                     echo "### Compiler warnings" >> "${GITHUB_STEP_SUMMARY}"
-                    cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                    cat ./temp.txt | tr '\r' '\n' | head -c 1M >> "${GITHUB_STEP_SUMMARY}"
                   fi
 
     gen-cases:
@@ -677,24 +677,25 @@ jobs:
                   set -eu
 
                   if ls ./result-*/ > /dev/null 2>&1; then
-
-                    cat ./result-*/failed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
+                    cat ./result-*/failed-tests.txt > ./temp.txt
                     sed -i '/^$/d' ./temp.txt
 
                     if [ -s ./temp.txt ]; then
                       echo "### Failed tests" >> "${GITHUB_STEP_SUMMARY}"
-                      cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                      cat ./temp.txt | sort | tr '\r' '\n' >> "${GITHUB_STEP_SUMMARY}"
                     fi
 
 
-                    cat ./result-*/passed-tests.txt | sort | tr '\r' '\n' > ./temp.txt
+                    cat ./result-*/passed-tests.txt > ./temp.txt
                     sed -i '/^$/d' ./temp.txt
 
                     if [ -s ./temp.txt ]; then
                       echo "### Passed tests" >> "${GITHUB_STEP_SUMMARY}"
-                      cat ./temp.txt >> "${GITHUB_STEP_SUMMARY}"
+                      cat ./temp.txt | sort | tr '\r' '\n' >> "${GITHUB_STEP_SUMMARY}"
                     fi
                   fi
+
+                  sed -i '/^$/d' ./skipped-tests/skipped-tests.txt
 
                   if [ -s ./skipped-tests/skipped-tests.txt ]; then
                     echo "### Skipped tests" >> "${GITHUB_STEP_SUMMARY}"
