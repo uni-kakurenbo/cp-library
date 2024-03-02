@@ -105,6 +105,7 @@ jobs:
             - documantaion
         if: ${{ !cancelled() && needs.documantaion.result == 'success' }}
         uses: ./.github/workflows/gh-pages.yml
+        secrets: inherit
 
     cache-analyze:
         name: cache

@@ -3,6 +3,9 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 
 on:
     workflow_call:
+        secrets:
+            GH_PAT:
+                required: true
 
 concurrency:
     group: pages-${{ github.ref }}
