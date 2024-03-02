@@ -234,12 +234,13 @@ jobs:
                           cat ".warn-${PID}.txt"
 
                           {
-                            RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
+                            RICH_TARGET="<a href=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET}><code>${TARGET}</code></a>"
 
-                            echo -ne "${RICH_TARGET}\r"
                             echo -ne "<details>\r"
-                            echo -ne "<summary>Output</summary>\r"
+                            echo -ne "<summary>${RICH_TARGET}</summary>\r"
+                            echo -ne "<pre>\r"
                             cat ".warn-${PID}.txt" | head -n 11 | tail -n 8 | tr '\n' '\r'
+                            echo -ne "</pre>\r"
                             echo -e "</details>\r"
                           } >> ".summary-${PID}.txt"
                         fi
