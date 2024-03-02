@@ -205,9 +205,6 @@ jobs:
               run: |
                   set -eu
 
-                  PARALLEL=$(nproc)
-                  echo "Parallel execution: ${PARALLEL}"
-
                   function compile() {
                       WORKING_DIRECTORY="${PWD}"
                       TARGET="$1"
@@ -238,7 +235,10 @@ jobs:
 
                   export -f compile
 
-                  find **/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
+                  PARALLEL=$(($(nproc) * 2))
+                  echo "Parallel execution: ${PARALLEL}"
+
+                  find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'compile "$1"' shell
 
     gen-cases:
         runs-on: ${{ vars.RUNNER_IMAGE }}
