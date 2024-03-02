@@ -221,7 +221,9 @@ jobs:
                         echo "::group::compile: ${TARGET}"
 
                         time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" "${TARGET}" 2> ".warn-${PID}.txt"
-                        LINES="$(wc -l .warn-${PID}.txt)"
+
+                        cat ".warn-${PID}.txt"
+                        LINES="$(cat .warn-${PID}.txt | wc -l)"
 
                         if [ ${LINES} -gt 5 ]; then
                           echo "::warning file=${TARGET}::Failed to compile."
