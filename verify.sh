@@ -1,5 +1,5 @@
 #! /bin/bash
 
-cd ./.verify-helper/ || exit 1
+cd "$(dirname "$0")" || exit 1
 
 ./sync.sh && oj-verify run "$1"

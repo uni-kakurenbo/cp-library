@@ -1,5 +1,6 @@
 #! /bin/bash
 
+cd "$(dirname "$0")" || exit 1
 cd ./.verify-helper/ || exit 1
 
 jq --slurp --sort-keys \
