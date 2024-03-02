@@ -10,6 +10,8 @@
 #include <concepts>
 
 
+#include "snippet/iterations.hpp"
+
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 

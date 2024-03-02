@@ -5,6 +5,9 @@
 #include <utility>
 #include <type_traits>
 
+
+#include "snippet/iterations.hpp"
+
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 

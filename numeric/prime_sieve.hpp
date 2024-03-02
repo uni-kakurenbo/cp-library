@@ -3,6 +3,9 @@
 
 #include <vector>
 
+
+#include "snippet/iterations.hpp"
+
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 

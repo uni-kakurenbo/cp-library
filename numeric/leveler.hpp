@@ -3,6 +3,7 @@
 
 #include <initializer_list>
 #include <valarray>
+#include <numeric>
 
 
 #include "snippet/iterations.hpp"

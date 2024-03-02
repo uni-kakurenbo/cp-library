@@ -5,6 +5,7 @@
 
 
 #include "snippet/aliases.hpp"
+#include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
