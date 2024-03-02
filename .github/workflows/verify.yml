@@ -220,10 +220,15 @@ jobs:
                       {
                         echo "::group::compile: ${TARGET}"
 
-                        time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" "${TARGET}"
+                        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" "${TARGET}" 2> ".warn-${PID}.txt"
+                        LINES="$(wc -l .warn-${PID}.txt)"
 
-                        echo
-                      } &>>".log-${PID}.txt"
+                        if [ ${LINES} -gt 5 ]; then
+                          echo "::warning file=${TARGET}::Failed to compile."
+                        fi
+
+                        echo "::endgroup::"
+                      } &>".log-${PID}.txt"
                       set -e
 
                       cat ".log-${PID}.txt"
