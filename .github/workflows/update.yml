@@ -38,9 +38,12 @@ jobs:
 
             ANALYSIS: >-
                 ${{
-                  inputs.force ||
-                  needs.cache.outputs.analysis-status == '' ||
-                  needs.cache.outputs.analysis-status == 'cancelled'
+                  github.ref_name == github.event.repository.default_branch &&
+                  (
+                    inputs.force ||
+                    needs.cache.outputs.analysis-status == '' ||
+                    needs.cache.outputs.analysis-status == 'cancelled'
+                  )
                 }}
 
             VERIFY: >-
