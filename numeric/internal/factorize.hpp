@@ -48,7 +48,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {
-        Mint x, y, ys, q = Mint::one;
+        Mint x, y, ys, q = Mint::one();
         rr = rand_(), y = rand_();
         T g = 1;
         constexpr int m = 128;
