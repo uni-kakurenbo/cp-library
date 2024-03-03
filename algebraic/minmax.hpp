@@ -14,7 +14,8 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct minmax : base<std::pair<T,T>>, associative, commutative {
+template<class T>
+struct minmax : base<std::pair<T,T>>, associative, commutative {
     using base<std::pair<T,T>>::base;
 
     minmax() noexcept(NO_EXCEPT)

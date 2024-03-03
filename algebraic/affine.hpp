@@ -10,7 +10,8 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T, bool REVERSE = false> struct affine : base<std::pair<T,T>>, associative {
+template<class T, bool REVERSE = false>
+struct affine : base<std::pair<T,T>>, associative {
     using base<std::pair<T,T>>::base;
 
     affine() noexcept(NO_EXCEPT) : base<std::pair<T,T>>({ 1, 0 }) {};
