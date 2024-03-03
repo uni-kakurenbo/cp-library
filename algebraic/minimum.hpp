@@ -13,7 +13,8 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct minimum : base<T>, associative, commutative {
+template<class T>
+struct minimum : base<T>, associative, commutative {
     using base<T>::base;
 
     minimum() noexcept(NO_EXCEPT) : base<T>(std::numeric_limits<T>::max()) {};

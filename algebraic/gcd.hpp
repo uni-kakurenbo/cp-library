@@ -11,7 +11,8 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct gcd : base<T>, associative, commutative {
+template<class T>
+struct gcd : base<T>, associative, commutative {
     using base<T>::base;
 
     gcd() noexcept(NO_EXCEPT) : base<T>() {};

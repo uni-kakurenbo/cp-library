@@ -11,7 +11,8 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T> struct addition : base<T>, associative, commutative {
+template<class T>
+struct addition : base<T>, associative, commutative {
     using base<T>::base;
 
     addition() noexcept(NO_EXCEPT) : base<T>() {};

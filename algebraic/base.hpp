@@ -1,5 +1,9 @@
 #pragma once
 
+
+#include <utility>
+#include <concepts>
+
 #include "internal/dev_env.hpp"
 
 
@@ -16,7 +20,9 @@ struct base {
     value_type _value;
 
   public:
-    base(const value_type& value = {}) noexcept(NO_EXCEPT) : _value(value) {};
+    template<class... Args>
+        requires std::constructible_from<value_type, Args...>
+    base(Args&&... args) noexcept(NO_EXCEPT) : _value(std::forward<Args>(args)...) {}
 
     inline explicit operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
     inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; };
