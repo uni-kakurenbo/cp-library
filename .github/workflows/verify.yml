@@ -17,6 +17,7 @@ concurrency:
 jobs:
     setup:
         runs-on: ${{ vars.RUNNER_IMAGE }}
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
 
         outputs:
             gen-ids: ${{ steps.node-ids.outputs.gen }}
