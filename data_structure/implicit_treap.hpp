@@ -42,7 +42,7 @@ struct base : private uncopyable {
     using operand = OperandMonoid;
     using operation = OperatorMonoid;
 
-    using size_type = internal::size_t;
+    using size_type = i64;
 
   private:
     struct node;
@@ -52,6 +52,7 @@ struct base : private uncopyable {
     static inline xorshift<XORSHIFT_ID> rand;
 
     struct node {
+        size_type key = 0;
         operand v, acc;
         operation lazy;
         size_type cnt = 1;
@@ -65,13 +66,17 @@ struct base : private uncopyable {
           : v(_v), acc(operand{}), lazy(operation{}), priority(super->rand())
         {}
 
+        node(const operand& _v, const size_type pos, const base* super) noexcept(NO_EXCEPT)
+          : key(pos), v(_v), acc(operand{}), lazy(operation{}), priority(super->rand())
+        {}
+
         ~node() {
             if(this->left) delete this->left;
             if(this->right) delete this->right;
         }
     };
 
-    Tree root = nullptr;
+    mutable Tree root = nullptr;
 
     inline size_type cnt(const Tree tree) const noexcept(NO_EXCEPT) { return tree ? tree->cnt : 0; }
 
@@ -119,14 +124,12 @@ struct base : private uncopyable {
 
         this->pushdown(tree);
 
-        const size_type key = this->cnt(tree->left) + 1;
-
-        if(pos < key) {
+        if(pos <= tree->key) {
             this->split(tree->left, pos, left, tree->left), right = std::move(tree);
             this->pushup(right);
         }
         else {
-            this->split(tree->right, pos - key, tree->right, right), left = std::move(tree);
+            this->split(tree->right, pos, tree->right, right), left = std::move(tree);
             this->pushup(left);
         }
     }
@@ -165,13 +168,18 @@ struct base : private uncopyable {
         if(t2) delete t2;
     }
 
-    inline void apply(Tree tree, const size_type l, const size_type r, const operation& v) const noexcept(NO_EXCEPT) {
+    inline void apply(Tree& tree, const size_type l, const size_type r, const operation& v) const noexcept(NO_EXCEPT) {
         if(l == r) return;
 
         Tree t0, t1, t2;
 
         this->split(tree, l, t0, t1);
-        this->split(t1, r - l, t1, t2);
+        this->split(t1, r, t1, t2);
+
+        if(!t1) REP(p, l, r) {
+        this->insert(t1, p, new node({}, p, this));
+        }
+        // debug(!!t1);
 
         t1->lazy = v + t1->lazy;
 
@@ -184,10 +192,15 @@ struct base : private uncopyable {
 
         Tree t0, t1, t2;
 
+        // debug(l, r);
+        // debug(!!tree);
         this->split(tree, l, t0, t1);
-        this->split(t1, r - l, t1, t2);
+        // debug(!!t1);
+        this->split(t1, r, t1, t2);
 
-        operand ret = t1->acc;
+        // debug(!!t1);
+
+        operand ret = !t1 ? operand{} : t1->acc;
 
         this->merge(t1, t1, t2);
         this->merge(tree, t0, t1);
@@ -225,7 +238,7 @@ struct base : private uncopyable {
         Tree t0, t1, t2;
 
         this->split(tree, l, t0, t1);
-        this->split(t1, r - l, t1, t2);
+        this->split(t1, r, t1, t2);
 
         t1->rev ^= 1;
 
@@ -248,7 +261,7 @@ struct base : private uncopyable {
 
   public:
     // void insert(const size_type p, const operand& v) { this->insert(this->root, p, std::make_shared<node>(v, this)); }
-    void insert(const size_type p, const operand& v) noexcept(NO_EXCEPT) { this->insert(this->root, p, new node(v, this)); }
+    void insert(const size_type p, const operand& v) noexcept(NO_EXCEPT) { this->insert(this->root, p, new node(v, p, this)); }
 
     inline void apply(const size_type l, const size_type r, const operation& v) noexcept(NO_EXCEPT) { this->apply(this->root, l, r, v); }
 
@@ -267,7 +280,7 @@ struct base : private uncopyable {
         Tree t0, t1, t2;
 
         this->split(this->root, l, t0, t1);
-        this->split(t1, r - l, t1, t2);
+        this->split(t1, r, t1, t2);
 
         const size_type ret = this->find<LEFT>(t1, v, l);
 
@@ -327,7 +340,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
     }
 
     inline auto& insert(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
-        p = this->_positivize_index(p), assert(0 <= p);
+        // p = this->_positivize_index(p), assert(0 <= p);
         this->base::insert(p, v);
         return *this;
     }
@@ -345,7 +358,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
         point_reference(sequency_core *const super, const size_type p) noexcept(NO_EXCEPT)
           : internal::point_reference<sequency_core>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->_super->size());
+            // assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
 
@@ -379,7 +392,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
         range_reference(sequency_core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
           : internal::range_reference<sequency_core>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
+            // assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
         inline value_type fold() noexcept(NO_EXCEPT) {
@@ -479,7 +492,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
 
 
     inline auto& erase(size_type p) noexcept(NO_EXCEPT) {
-        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
+        // p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         this->base::erase(p);
         return *this;
     }
@@ -509,7 +522,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
 
     inline auto& apply(size_type l, size_type r, const action_type& v) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        assert(0 <= l && l <= r && r <= this->size());
+        // assert(0 <= l && l <= r && r <= this->size());
         this->base::apply(l, r, v);
         return *this;
     }
@@ -526,7 +539,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
 
 
     inline value_type get(size_type p) const noexcept(NO_EXCEPT) {
-        p = this->_positivize_index(p), assert(0 <= p && p < this->size());
+        // p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::fold(p, p+1).val();
     }
 
@@ -542,7 +555,7 @@ struct sequency_core : base<typename Action::operand, typename Action::operation
 
     inline value_type fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
-        assert(0 <= l && l <= r && r <= this->size());
+        // assert(0 <= l && l <= r && r <= this->size());
         return this->base::fold(l, r).val();
     }
 
