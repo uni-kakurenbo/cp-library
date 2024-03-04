@@ -21,8 +21,8 @@ set +e
     CACHE_DIRECTORY="$(find ~/ -type d -name "$(basename "${PROBLEM}")")"
 
     if [ -d "${CACHE_DIRECTORY}" ]; then
-        CHECKER="$(find "${CACHE_DIRECTORY}" -type f -name CHECKER)"
-        cp "${CHECKER}" "./${HASH}/CHECKER"
+        CHECKER="$(find "${CACHE_DIRECTORY}" -type f -name checker)"
+        cp "${CHECKER}" "./${HASH}/checker"
     fi
 
     echo "::notice title=${PROBLEM}::Fetched and generated."
