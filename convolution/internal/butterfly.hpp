@@ -52,7 +52,7 @@ struct fft_info {
         }
 
         {
-            mint prod = mint::one, iprod = mint::one;
+            mint prod = mint::one(), iprod = mint::one();
             REP(i, rank2 - 1) {
                 this->rate2[i] = this->root[i + 2] * prod;
                 this->irate2[i] = this->iroot[i + 2] * iprod;
@@ -61,7 +61,7 @@ struct fft_info {
             }
         }
         {
-            mint prod = mint::one, iprod = mint::one;
+            mint prod = mint::one(), iprod = mint::one();
             REP(i, rank2 - 2) {
                 this->rate3[i] = this->root[i + 3] * prod;
                 this->irate3[i] = this->iroot[i + 3] * iprod;
@@ -90,7 +90,7 @@ void butterfly(R& v1) {
     while(len < h) {
         if(h - len == 1) {
             const internal::size_t p = 1 << (h - len - 1);
-            mint rot = mint::one;
+            mint rot = mint::one();
 
             REP(s, 1 << len) {
                 const internal::size_t offset = s << (h - len);
@@ -110,7 +110,7 @@ void butterfly(R& v1) {
         else {
             const internal::size_t p = 1 << (h - len - 2);
             const mint imag = info.root[2];
-            mint rot = mint::one;
+            mint rot = mint::one();
 
             REP(s, 1 << len) {
                 const mint rot2 = rot * rot;
@@ -157,7 +157,7 @@ void butterfly_inv(R& v1) {
     while(len > 0) {
         if(len == 1) {
             const internal::size_t p = 1 << (h - len);
-            mint irot = mint::one;
+            mint irot = mint::one();
 
             REP(s, 1 << (len - 1)) {
                 const internal::size_t offset = s << (h - len + 1);
@@ -175,7 +175,7 @@ void butterfly_inv(R& v1) {
         else {
             const auto p = 1 << (h - len);
             const mint iimag = info.iroot[2];
-            mint irot = mint::one;
+            mint irot = mint::one();
 
             REP(s, 1 << (len - 2)) {
                 const mint irot2 = irot * irot;
