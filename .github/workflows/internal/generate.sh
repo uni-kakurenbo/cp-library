@@ -8,6 +8,8 @@ PID="$$"
 cd ./testcases/
 
 mkdir -p "./${HASH}/"
+
+set +e
 {
     echo "::group::${PROBLEM} [HASH: ${HASH}]"
 
@@ -27,4 +29,6 @@ mkdir -p "./${HASH}/"
     echo '::endgroup::'
 
 } &>"../log-${PID}.txt"
+set -e
+
 cat "../log-${PID}.txt"
