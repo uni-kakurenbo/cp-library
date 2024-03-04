@@ -5,6 +5,8 @@ PROBLEM="$1"
 HASH="$2"
 PID="$$"
 
+cd ./testcases/
+
 mkdir -p "./${HASH}/"
 {
     echo "::group::${PROBLEM} [HASH: ${HASH}]"
