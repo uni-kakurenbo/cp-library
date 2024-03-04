@@ -68,20 +68,20 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
 
 
     static constexpr mint _one() noexcept(NO_EXCEPT)
-        requires internal::has_static_one<typename mint::context::reduction>
+        requires internal::has_static_one<typename mint::context::reductor>
     {
-        return mint::_raw(mint::context::get().one);
+        return mint::_raw(mint::context::reduction.one);
     }
 
     static constexpr mint _one() noexcept(NO_EXCEPT)
-        requires (!internal::has_static_one<typename mint::context::reduction>)
+        requires (!internal::has_static_one<typename mint::context::reductor>)
     {
         return mint::_raw(1);
     }
 
   public:
-    static constexpr int digits = mint::context::reduction::digits;
-    static inline constexpr value_type max() noexcept { return mint::context::reduction::max(); }
+    static constexpr int digits = mint::context::reductor::digits;
+    static inline constexpr value_type max() noexcept { return mint::context::reductor::max(); }
 
 
     static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT)
@@ -92,12 +92,12 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     }
 
 
-    static inline constexpr value_type mod() noexcept(NO_EXCEPT) { return mint::context::get().mod(); }
+    static inline constexpr value_type mod() noexcept(NO_EXCEPT) { return mint::context::reduction.mod(); }
 
     static inline constexpr mint raw(const value_type v) noexcept(NO_EXCEPT)
     {
         mint res;
-        res._val = mint::context::get().convert_raw(v);
+        res._val = mint::context::reduction.convert_raw(v);
         return res;
     };
 
@@ -105,29 +105,29 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     constexpr modint() noexcept = default;
 
     template<std::integral T>
-    constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::get().convert(v)) {}
+    constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(mint::context::reduction.convert(v)) {}
 
 
     inline constexpr value_type val() const noexcept(NO_EXCEPT) {
-        return mint::context::get().revert(this->_val);
+        return mint::context::reduction.revert(this->_val);
     }
 
     inline constexpr explicit operator value_type() const noexcept(NO_EXCEPT) { return this->val(); }
 
 
     inline constexpr mint& operator+=(const mint& rhs) noexcept(NO_EXCEPT) {
-        this->_val = mint::context::get().add(this->_val, rhs._val);
+        this->_val = mint::context::reduction.add(this->_val, rhs._val);
         return *this;
     }
 
     inline constexpr mint& operator-=(const mint& rhs) noexcept(NO_EXCEPT) {
-        this->_val = mint::context::get().subtract(this->_val, rhs._val);
+        this->_val = mint::context::reduction.subtract(this->_val, rhs._val);
         return *this;
     }
 
 
     inline constexpr mint& operator*=(const mint& rhs) noexcept(NO_EXCEPT) {
-        this->_val = mint::context::get().multiply(this->_val, rhs._val);
+        this->_val = mint::context::reduction.multiply(this->_val, rhs._val);
         return *this;
     }
 
@@ -135,7 +135,7 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
 
 
     constexpr mint pow(const i64 n) const noexcept(NO_EXCEPT) {
-        return mint::_raw(mint::context::get().pow(this->_val, n));
+        return mint::_raw(mint::context::reduction.pow(this->_val, n));
     }
 
 
@@ -157,7 +157,7 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     }
 
     friend inline constexpr bool operator==(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) {
-        return mint::context::get().equal(lhs._val, rhs._val);
+        return mint::context::reduction.equal(lhs._val, rhs._val);
     }
 
     friend inline constexpr bool operator!=(const mint& lhs, const mint& rhs) noexcept(NO_EXCEPT) { return !(lhs == rhs); }

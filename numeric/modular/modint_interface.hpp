@@ -87,9 +87,9 @@ concept modular_reduction =
 template<class T>
 concept modular_context =
     requires {
-        typename T::reduction;
+        typename T::reductor;
         typename T::value_type;
-        { T::get() } -> std::same_as<std::add_lvalue_reference_t<std::add_const_t<typename T::reduction>>>;
+        T::reduction;
     };
 
 
@@ -98,37 +98,32 @@ concept modular_context =
 
 template<internal::modular_reduction Reduction, typename Reduction::value_type Mod>
 struct static_modular_context {
-    using reduction = Reduction;
-    using value_type = typename reduction::value_type;
+    using reductor = Reduction;
+    using value_type = typename reductor::value_type;
 
     static constexpr bool dynamic = false;
 
+    static inline constexpr reductor reduction = reductor(Mod);
+
   private:
     using context = static_modular_context;
-
-    static inline constexpr reduction _reduction = reduction(Mod);
-
-  public:
-    static constexpr const reduction& get() noexcept(NO_EXCEPT) { return context::_reduction; }
 };
 
 
 template<internal::modular_reduction Reduction, i64 Id>
 struct dynamic_modular_context {
-    using reduction = Reduction;
-    using value_type = typename reduction::value_type;
+    using reductor = Reduction;
+    using value_type = typename reductor::value_type;
 
     static constexpr bool dynamic = true;
+
+    static inline reductor reduction;
 
   private:
     using context = dynamic_modular_context;
 
-    static inline reduction _reduction;
-
   public:
-    static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT) { context::_reduction = reduction(mod); }
-
-    static constexpr const reduction& get() noexcept(NO_EXCEPT) { return context::_reduction; }
+    static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT) { context::reduction = reductor(mod); }
 };
 
 
