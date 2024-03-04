@@ -38,7 +38,6 @@ jobs:
 
             ANALYSIS: >-
                 ${{
-                  github.ref_name == github.event.repository.default_branch &&
                   (
                     inputs.force ||
                     needs.cache.outputs.analysis-status == '' ||
