@@ -6,7 +6,7 @@
 #include "data_structure/disjoint_set_union.hpp"
 #include "data_structure/disjoint_sparse_table.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/kth_element.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "data_structure/removable_priority_queue.hpp"

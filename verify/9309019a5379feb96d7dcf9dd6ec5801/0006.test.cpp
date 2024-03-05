@@ -14,14 +14,14 @@
 #include "snippet/iterations.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_affine_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<lib::modint998244353> a(n); input >> a;
 
-    lib::implicit_treap<lib::actions::range_affine_range_sum<lib::modint998244353>> data(a);
+    lib::dynamic_sequence<lib::actions::range_affine_range_sum<lib::modint998244353>> data(a);
 
     LOOP(q) {
         int t; std::cin >> t;

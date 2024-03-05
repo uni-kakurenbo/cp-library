@@ -17,7 +17,7 @@
 #include "adapter/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adapter/vector.hpp"
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_affine_range_sum.hpp"
 
 using mint = lib::static_arbitrary_montgomery_modint_32bit<998244353>;
@@ -26,7 +26,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
-    lib::implicit_treap<lib::actions::range_affine_range_sum<mint>> data(a);
+    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>> data(a);
 
     REP(q) {
         int t; std::cin >> t;

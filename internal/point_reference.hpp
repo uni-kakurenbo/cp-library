@@ -2,6 +2,7 @@
 
 
 #include <iterator>
+#include <concepts>
 
 
 #include "internal/dev_env.hpp"
@@ -14,8 +15,9 @@ namespace lib {
 namespace internal {
 
 
-template<class Super> struct point_reference {
-    using size_type = typename Super::size_type;
+template<class Super, std::integral SizeType = typename Super::size_type>
+struct point_reference {
+    using size_type = SizeType;
     using iterator = typename Super::iterator;
 
   protected:

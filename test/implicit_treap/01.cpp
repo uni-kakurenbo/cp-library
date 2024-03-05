@@ -5,11 +5,11 @@
 #include <atcoder/modint>
 #include "template/standard.hpp"
 
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequencece.hpp"
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
-    lib::implicit_treap<lib::actions::range_add_range_sum<int>> data;
+    lib::dynamic_sequencece<lib::actions::range_add_range_sum<int>> data;
 
     {
         data.push_back(1);
