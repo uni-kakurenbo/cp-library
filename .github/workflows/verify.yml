@@ -96,7 +96,7 @@ jobs:
 
                       cachedKeys =
                         new Set(
-                          savedCaches.actions_caches
+                          savedCaches
                           .filter(({ ref }) =>
                             ref === '${{ github.ref }}' ||
                             ref.includes('${{ github.event.repository.default_branch }}') ||
