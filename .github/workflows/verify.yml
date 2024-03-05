@@ -30,7 +30,9 @@ jobs:
                   fetch-depth: 0 # for detect already verified tests
 
             - name: Install octokit
-              run: npm install @octokit/core@5.1.0
+              run: |
+                  npm install @octokit/core@5.1.0
+                  npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
 
             - name: Filter test files
               working-directory: main
@@ -75,7 +77,11 @@ jobs:
 
                       const fs = require('fs');
                       const crypto = require('crypto');
-                      const { Octokit } = require("@octokit/core");
+
+                      const { Octokit: _Octokit } = require("@octokit/core");
+                      const { paginateRest } = require("@octokit/plugin-paginate-rest");
+
+                      const Octokit = _Octokit.plugin(paginateRest);
 
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
@@ -91,10 +97,10 @@ jobs:
                       cachedKeys =
                         new Set(savedCaches.data.actions_caches
                           .filter(({ ref }) =>
-                            ref === "${{ github.ref }}" ||
-                            ref.includes("${{ github.event.repository.default_branch }}") ||
-                            ref.includes("${{ github.head_ref }}") ||
-                            ref.includes("${{ github.base_ref }}")
+                            ref === '${{ github.ref }}' ||
+                            ref.includes('${{ github.event.repository.default_branch }}') ||
+                            ref.includes('${{ github.head_ref }}') ||
+                            ref.includes('${{ github.base_ref }}')
                           )
                           .map(({ key }) => key ));
 
