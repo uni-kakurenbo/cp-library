@@ -30,10 +30,14 @@ jobs:
                   fetch-depth: 0 # for detect already verified tests
 
             - name: Install octokit
-              run: npm install @octokit/core@5.1.0
+              run: |
+                  npm install @octokit/core@5.1.0
+                  npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
 
             - name: Filter test files
               working-directory: main
+              env:
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
                   set -eu
 
@@ -73,11 +77,15 @@ jobs:
 
                       const fs = require('fs');
                       const crypto = require('crypto');
-                      const { Octokit } = require("@octokit/core");
+
+                      const { Octokit: _Octokit } = require("@octokit/core");
+                      const { paginateRest } = require("@octokit/plugin-paginate-rest");
+
+                      const Octokit = _Octokit.plugin(paginateRest);
 
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
-                      savedCaches = await octokit.request(
+                      savedCaches = await octokit.paginate(
                         'GET /repos/${{ github.repository }}/actions/caches',
                         {
                           per_page: 100,
@@ -86,7 +94,17 @@ jobs:
                           headers: { 'X-GitHub-Api-Version': '2022-11-28' }
                         });
 
-                      cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
+                      cachedKeys =
+                        new Set(
+                          savedCaches
+                          .filter(({ ref }) =>
+                            ref === '${{ github.ref }}' ||
+                            ref.includes('${{ github.event.repository.default_branch }}') ||
+                            ref.includes('${{ github.head_ref }}' || '$@$') ||
+                            ref.includes('${{ github.base_ref }}' || '$@$')
+                          )
+                          .map(({ key }) => key )
+                        );
 
                       console.log('::group::Cached hashes:');
                       console.log(cachedKeys);
@@ -211,6 +229,8 @@ jobs:
 
             - name: Run compiling test
               working-directory: main
+              env:
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
                   set -eu
 
@@ -486,6 +506,7 @@ jobs:
               env:
                   CPLUS_INCLUDE_PATH: ${{ github.workspace }}/ac-library
                   YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
                   set -eu
 

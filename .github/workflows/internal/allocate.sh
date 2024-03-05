@@ -30,7 +30,7 @@ PID="$$"
     echo '::endgroup::'
 
     if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
-        RICH_TARGET="[\`${FILE}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${FILE})"
+        RICH_TARGET="[\`${FILE}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${BRANCH_NAME}/${FILE})"
         RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
         echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >>../skipped-tests.txt
     else

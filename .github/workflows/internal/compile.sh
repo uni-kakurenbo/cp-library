@@ -20,7 +20,7 @@ set +e
         cat ".warn-${PID}.txt"
 
         {
-            RICH_TARGET="<a href=https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET}><code>${TARGET}</code></a>"
+            RICH_TARGET="<a href=https://github.com/${GITHUB_REPOSITORY}/blob/${BRANCH_NAME}/${TARGET}><code>${TARGET}</code></a>"
 
             echo -ne "<details>\r"
             echo -ne "<summary>${RICH_TARGET}</summary>\r"
