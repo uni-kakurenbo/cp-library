@@ -35,7 +35,7 @@ jobs:
             - name: Filter test files
               working-directory: main
               env:
-                  BRANCH_NAME: ${{ github.ref_name || github.head_ref }}
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
                   set -eu
 
