@@ -36,7 +36,7 @@ set +e
 
     echo "::endgroup::"
 
-    RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/${TARGET})"
+    RICH_TARGET="[\`${TARGET}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${BRANCH_NAME}/${TARGET})"
     RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
 
     echo -ne "- ${RICH_TARGET} (${RICH_PROBLEM})\r" >../summary.txt
