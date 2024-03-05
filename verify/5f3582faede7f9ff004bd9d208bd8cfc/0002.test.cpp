@@ -13,12 +13,12 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_add_range_min.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::implicit_treap<lib::actions::range_add_range_min<int>> data(n, 0);
+    lib::dynamic_sequence<lib::actions::range_add_range_min<int>> data(n, 0);
     // debug(data);
 
     REP(q) {

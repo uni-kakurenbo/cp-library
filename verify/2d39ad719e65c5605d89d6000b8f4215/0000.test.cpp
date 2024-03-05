@@ -27,7 +27,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>, lib::treap_context<true, int>> data(a);
+    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>> data(a);
 
     REP(q) {
         int t; std::cin >> t;

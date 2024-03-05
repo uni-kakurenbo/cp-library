@@ -13,7 +13,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adapter/io.hpp"
-#include "data_structure/implicit_treap.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
 #include "numeric/modular/modint.hpp"
@@ -36,7 +36,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<std::pair<mint,mint>> f(n); input >> f;
 
-    lib::implicit_treap<action> data(ALL(f));
+    lib::dynamic_sequence<action> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;
