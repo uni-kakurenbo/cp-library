@@ -5,6 +5,8 @@
 #include <utility>
 
 
+#include "internal/dummy.hpp"
+
 #include "algebraic/base.hpp"
 #include "algebraic/internal/concepts.hpp"
 
@@ -12,13 +14,6 @@
 namespace lib {
 
 namespace algebraic {
-
-namespace internal {
-
-struct dummy {};
-
-} // namespace internal
-
 
 template<
     internal::magma M0,
