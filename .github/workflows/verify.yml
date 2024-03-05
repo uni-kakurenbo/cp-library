@@ -79,7 +79,7 @@ jobs:
 
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
-                      savedCaches = await octokit.request(
+                      savedCaches = await octokit.paginate(
                         'GET /repos/${{ github.repository }}/actions/caches',
                         {
                           per_page: 100,
@@ -88,7 +88,15 @@ jobs:
                           headers: { 'X-GitHub-Api-Version': '2022-11-28' }
                         });
 
-                      cachedKeys = new Set(savedCaches.data.actions_caches.map(({ key }) => key ));
+                      cachedKeys =
+                        new Set(savedCaches.data.actions_caches
+                          .filter(({ ref }) =>
+                            ref === "${{ github.ref }}" ||
+                            ref.includes("${{ github.event.repository.default_branch }}") ||
+                            ref.includes("${{ github.head_ref }}") ||
+                            ref.includes("${{ github.base_ref }}")
+                          )
+                          .map(({ key }) => key ));
 
                       console.log('::group::Cached hashes:');
                       console.log(cachedKeys);
