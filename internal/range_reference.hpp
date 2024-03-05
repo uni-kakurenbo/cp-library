@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <iterator>
+#include <concepts>
 #include <ranges>
 
 
@@ -16,8 +17,9 @@ namespace lib {
 namespace internal {
 
 
-template<class Super> struct range_reference {
-    using size_type = typename Super::size_type;
+template<class Super, std::integral SizeType = typename Super::iterator>
+struct range_reference {
+    using size_type = SizeType;
     using iterator = typename Super::iterator;
 
   protected:

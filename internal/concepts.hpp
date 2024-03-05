@@ -12,11 +12,14 @@ namespace lib {
 namespace internal {
 
 
+template<class Structure>
+concept avilable = std::default_initializable<Structure>;
+
 template<
     template<class...> class Structure,
     class... TemplateParameters
 >
-concept available_with = std::default_initializable<Structure<TemplateParameters...>>;
+concept available_with = avilable<Structure<TemplateParameters...>>;
 
 
 template<class T> concept arithmetic = std::is_arithmetic_v<T>;
@@ -26,6 +29,13 @@ template<class T> concept structural = std::is_class_v<T>;
 
 template<class Large, class Small>
 concept has_double_digits_of = (std::numeric_limits<Large>::digits == 2 * std::numeric_limits<Small>::digits);
+
+
+template<class Large, class Small>
+concept has_more_digits_than = (std::numeric_limits<Large>::digits > std::numeric_limits<Small>::digits);
+
+template<class Large, class Small>
+concept has_or_more_digits_than = (std::numeric_limits<Large>::digits >= std::numeric_limits<Small>::digits);
 
 
 template<class T>
