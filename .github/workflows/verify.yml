@@ -100,8 +100,7 @@ jobs:
                           .filter(({ ref }) =>
                             ref === '${{ github.ref }}' ||
                             ref.includes('${{ github.event.repository.default_branch }}') ||
-                            ref.includes('${{ github.head_ref }}') ||
-                            ref.includes('${{ github.base_ref }}')
+                            ref.includes('${{ github.head_ref }}')
                           )
                           .map(({ key }) => key )
                         );
