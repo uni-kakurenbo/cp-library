@@ -24,7 +24,7 @@ struct base {
         requires std::constructible_from<value_type, Args...>
     base(Args&&... args) noexcept(NO_EXCEPT) : _value(std::forward<Args>(args)...) {}
 
-    inline operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
+    inline explicit operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
     inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; };
 
     inline const value_type* operator->() const noexcept(NO_EXCEPT) { return &this->_value; };
