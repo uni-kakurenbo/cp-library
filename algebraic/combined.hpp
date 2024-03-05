@@ -21,8 +21,8 @@ template<
 >
 struct combined
   : base<std::pair<M0, M1>>,
-    std::conditional_t<internal::associative<M0> && internal::associative<M1>, associative, internal::dummy>,
-    std::conditional_t<internal::commutative<M0> && internal::commutative<M1>, commutative, internal::dummy>
+    std::conditional_t<internal::associative<M0> && internal::associative<M1>, associative, lib::internal::dummy>,
+    std::conditional_t<internal::commutative<M0> && internal::commutative<M1>, commutative, lib::internal::dummy>
 {
     using base<std::pair<M0, M1>>::base;
 
