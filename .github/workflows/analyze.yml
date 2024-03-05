@@ -22,7 +22,7 @@ jobs:
               run: cppcheck --max-ctu-depth=32 -j $(nproc) --xml --xml-version=2 -I . --output-file=./cppcheck_report.xml --enable=all .
 
             - name: Run lint (other branches)
-              if: ${{ github.ref_name == github.event.repository.default_branch }}
+              if: ${{ github.ref_name != github.event.repository.default_branch }}
               run: |
                   cppcheck --max-ctu-depth=32 -j $(nproc) -I . --output-file=./cppcheck_report.txt --enable=all .
                   cat ./cppcheck_report.txt
