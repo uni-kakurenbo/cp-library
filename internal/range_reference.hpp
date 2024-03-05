@@ -17,7 +17,7 @@ namespace lib {
 namespace internal {
 
 
-template<class Super, std::integral SizeType = typename Super::iterator>
+template<class Super, std::integral SizeType = typename Super::size_type>
 struct range_reference {
     using size_type = SizeType;
     using iterator = typename Super::iterator;
