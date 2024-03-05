@@ -16,6 +16,7 @@
 #include "internal/uncopyable.hpp"
 #include "internal/dummy.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 
 #include "random/xorshift.hpp"
 
