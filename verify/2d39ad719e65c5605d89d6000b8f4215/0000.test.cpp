@@ -51,5 +51,7 @@ signed main() {
             int l, r; std::cin >> l >> r;
             print(data(l, r).fold());
         }
+
+        debug(data);
     }
 }
