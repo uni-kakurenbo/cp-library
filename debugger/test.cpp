@@ -1,13 +1,7 @@
 #include <bits/stdc++.h>
-#include <atcoder/modint>
+#include "template/debug.hpp"
 
 using namespace std;
-using namespace atcoder;
-
-#include <debug>
-
-#define debug(...) debugger::debug(debugger::split(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
-#define _debug(...) do { debugger::_debug(nullptr, "\033[3;35m#" + to_string(__LINE__) + "\033[m  "); debugger::_debug(__VA_ARGS__); debugger::_debug(nullptr, "\033[m\n"); } while(0);
 
 
 template<class T = int> struct matrix : vector<vector<T>> {
@@ -111,10 +105,10 @@ signed main() {
     // debug(MyString{"abcdefg"});
     debug(string{string{"abcdefg"}});
 
-    static_assert(!debugger::internal::is_loggable_v<int>);
-    static_assert(!debugger::internal::is_loggable_v<vector<int>>);
-    static_assert(debugger::internal::is_loggable_v<MyStructure0>);
-    static_assert(debugger::internal::is_loggable_v<MyStructure1>);
+    static_assert(!lib::internal::is_loggable_v<int>);
+    static_assert(!lib::internal::is_loggable_v<vector<int>>);
+    static_assert(lib::internal::is_loggable_v<MyStructure0>);
+    static_assert(lib::internal::is_loggable_v<MyStructure1>);
 
     MyStructure0 my_structure0 = { 1, 2, 3, 4 };
     debug(my_structure0);
@@ -134,10 +128,11 @@ signed main() {
     vector<pair<int,MyStructure1>> vector_pair__my_structure1 = { { 0, { 1, 2, 3, 4 } }, { 1, { 1, 2, 3, 4 } } };
     debug(vector_pair__my_structure1);
 
-    // map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> comlexed = {
-    //     { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
-    // };
-    // debug(comlexed);
+    map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> complexed = {
+        { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
+    };
+    // static_assert(!lib::internal::wrapping_type_of<map<vector<string>,, std::basic_string>);
+    debug(complexed);
 
     return 0;
 }

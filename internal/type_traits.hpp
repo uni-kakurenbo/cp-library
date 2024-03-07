@@ -27,18 +27,35 @@ constexpr std::underlying_type_t<T> to_underlying(const T& v) noexcept(NO_EXCEPT
 }
 
 
-template<class T, class... Us>
-using are_same = std::conjunction<std::is_same<T,Us>...>;
+template<class T, class... Ts>
+using are_same = std::conjunction<std::is_same<T, Ts>...>;
 
-template<class T, class... Us>
-inline constexpr bool are_same_v = std::conjunction_v<std::is_same<T,Us>...>;
+template<class T, class... Ts>
+inline constexpr bool are_same_v = are_same<T, Ts...>::value;
+
+
+template<class T, class... Ts>
+using is_same_as_any_of = std::disjunction<std::is_same<T, Ts>...>;
+
+template<class T, class... Ts>
+inline constexpr bool is_same_as_any_of_v = is_same_as_any_of<T, Ts...>::value;
+
+template<class T, class... Ts>
+concept same_as_any_of = is_same_as_any_of_v<T, Ts...>;
 
 
 template<class Base, class... Derived>
-using is_base_of_all = std::conjunction<std::is_base_of<Base,Derived>...>;
+using is_base_of_all = std::conjunction<std::is_base_of<Base, Derived>...>;
 
 template<class Base, class... Derived>
-inline constexpr bool are_base_of_v = std::conjunction_v<std::is_same<Base,Derived>...>;
+inline constexpr bool is_base_of_all_v = is_base_of_all<Base, Derived...>::value;
+
+
+template<class Base, class... Derived>
+using is_base_of_any = std::disjunction<std::is_base_of<Base, Derived>...>;
+
+template<class Base, class... Derived>
+inline constexpr bool is_base_of_any_v = is_base_of_any<Base, Derived...>::value;
 
 
 template<class T> struct remove_cvref {
@@ -49,12 +66,17 @@ template<class T> using remove_cvref_t = typename remove_cvref<T>::type;
 
 
 template<class T> struct literal_operator { static constexpr const char* value = ""; };
+
 template<> struct literal_operator<unsigned> { static constexpr const char* value = "U"; };
 template<> struct literal_operator<long> { static constexpr const char* value = "L"; };
-template<> struct literal_operator<long double> { static constexpr const char* value = "L"; };
 template<> struct literal_operator<unsigned long> { static constexpr const char* value = "UL"; };
 template<> struct literal_operator<long long> { static constexpr const char* value = "LL"; };
 template<> struct literal_operator<unsigned long long> { static constexpr const char* value = "ULL"; };
+
+
+template<> struct literal_operator<float> { static constexpr const char* value = "F"; };
+template<> struct literal_operator<double> { static constexpr const char* value = "D"; };
+template<> struct literal_operator<long double> { static constexpr const char* value = "LD"; };
 
 #ifdef __SIZEOF_INT128__
 
@@ -63,14 +85,53 @@ template<> struct literal_operator<__uint128_t> { static constexpr const char* v
 
 #endif
 
-template<class T> inline constexpr const char* literal_operator_v = literal_operator<T>::value;
+template<class T> inline constexpr auto literal_operator_v = literal_operator<T>::value;
 
 
-template<template <class...> class Template, class Arg> struct is_template : std::false_type {};
-template<template <class...> class Template, class... Args> struct is_template<Template, Template<Args...>> : std::true_type {};
+template <std::size_t N, typename... Types>
+struct nth_type {};
 
-template<template <class...> class Template, class... Args>
-inline constexpr bool  is_template_v = is_template<Template,Args...>::value;
+template <class Head, class... Tail>
+struct nth_type<0, Head, Tail...> {
+	using type = Head;
+};
+
+template <std::size_t N, class Head, class... Tail>
+struct nth_type<N, Head, Tail...> : public nth_type<N - 1, Tail...> {};
+
+template <std::size_t N, typename... Types>
+using nth_type_t = typename nth_type<N, Types...>::type;
+
+
+template<template <class...> class, class> struct is_template_of : std::false_type {};
+template<template <class...> class Template, class... Args> struct is_template_of<Template, Template<Args...>> : std::true_type {};
+
+template<template <class...> class Template, class Type>
+inline constexpr bool is_template_of_v = is_template_of<Template, Type>::value;
+
+template<class Type, template <class...> class Template>
+concept substituted_from = is_template_of_v<Template, Type>;
+
+template<template <class...> class Base, class Derived>
+struct _is_basic_tempalte_of
+{
+    template<typename... Ts>
+    static constexpr std::true_type  test(const Base<Ts...> *);
+
+    static constexpr std::false_type test(...);
+
+    using type = decltype(test(std::declval<Derived*>()));
+};
+
+
+template<template <class...> class Base, class Derived>
+using is_basic_tempalte_of = _is_basic_tempalte_of<Base, Derived>::type;
+
+template<template <class...> class Base, class Derived>
+inline constexpr bool is_basic_tempalte_of_v = is_basic_tempalte_of<Base, Derived>::value;
+
+template<class Derived, template <class...> class Base>
+concept derived_from_template = is_basic_tempalte_of_v<Base, Derived>;
 
 
 template<class T> struct is_loggable {
@@ -89,7 +150,11 @@ template<class T> struct is_loggable {
 
 };
 
-template<class T> inline constexpr auto is_loggable_v = is_loggable<T>::value;
+template<class T>
+inline constexpr auto is_loggable_v = is_loggable<T>::value;
+
+template<class T>
+concept loggable = is_loggable_v<T>;
 
 
 template<class T> struct _has_iterator {
