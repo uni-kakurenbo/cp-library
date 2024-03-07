@@ -112,12 +112,8 @@ inline constexpr bool is_template_of_v = is_template_of<Template, Type>::value;
 template<class Type, template <class...> class Template>
 concept substituted_from = is_template_of_v<Template, Type>;
 
-
-namespace internal {
-
-
 template<template <class...> class Base, class Derived>
-struct is_basic_tempalte_of
+struct _is_basic_tempalte_of
 {
     template<typename... Ts>
     static constexpr std::true_type  test(const Base<Ts...> *);
@@ -128,11 +124,8 @@ struct is_basic_tempalte_of
 };
 
 
-} // namespace internal
-
-
 template<template <class...> class Base, class Derived>
-using is_basic_tempalte_of = internal::is_basic_tempalte_of<Base, Derived>::type;
+using is_basic_tempalte_of = _is_basic_tempalte_of<Base, Derived>::type;
 
 template<template <class...> class Base, class Derived>
 inline constexpr bool is_basic_tempalte_of_v = is_basic_tempalte_of<Base, Derived>::value;

@@ -147,9 +147,7 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
     using value_type = std::common_type_t<std::ranges::range_value_t<B0>, std::ranges::range_value_t<B1>>;
     using reference_type = std::common_reference_t<std::ranges::range_reference_t<B0>, std::ranges::range_reference_t<B1>>;
 
-    using iterator_concept = lib::internal::most_primitive_iterator_tag<
-        internal::most_primitive_iterator_concept<Const, V0, V1>
-    >;
+    using iterator_concept = most_primitive_iterator_concept<Const, V0, V1>;
 
     iterator() noexcept(NO_EXCEPT)
         requires std::default_initializable<std::ranges::iterator_t<B0>> &&
