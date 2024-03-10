@@ -20,16 +20,19 @@
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
 #include "random/xorshift.hpp"
+#include "utility/timer.hpp"
 
 signed main() {
     print("Hello World");
 
-    lib::dynamic_sequence<lib::actions::null<lib::i64>> data;
+    lib::dynamic_sequence<lib::i64> data;
     lib::map<lib::i64, lib::i64> corr;
 
     debug(data);
 
-    REP(c, 10) {
+    lib::timer timer(1000);
+
+    while(not timer.expired()) {
         lib::i64 i = lib::rand64();
         lib::i64 v = lib::rand64();
         i /= 2;
@@ -42,7 +45,7 @@ signed main() {
         ITR(i, v, corr) {
             ok &= data[i].val() == v;
         }
-        debug(corr, data.dump_rich());
+        debug(corr, data);
         if(!ok) {
             assert(false);
         }

@@ -21,7 +21,7 @@ struct quotient_enumerator {
 
   private:
     T _n = 0, _n_impl = 0;
-    mutable size_type _size = -1;
+    size_type _size = -1;
 
   protected:
     using iterator_interface = internal::bidirectional_iterator_interface<const value_type>;
@@ -33,13 +33,13 @@ struct quotient_enumerator {
     struct iterator;
     using const_iterator = iterator;
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this->_n_impl, 1); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this->_n_impl, this->_n + 1); }
+    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, 1); }
+    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, this->_n + 1); }
 
     inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
-    inline size_type size() const noexcept(NO_EXCEPT) {
+    inline size_type size() noexcept(NO_EXCEPT) {
         if(this->_size < 0) {
             size_type r = lib::sqrt_floor(this->_n_impl);
             this->_size = 2 * r - (this->_n_impl < r * (r + 1)) + CEIL;

@@ -157,7 +157,6 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        assert(0 <= pos);
         node_pointer t0, t1;
 
         core::split(tree, pos, t0, t1);
@@ -166,7 +165,6 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     static void insert(node_pointer& tree, const size_type pos, I first, S last) noexcept(NO_EXCEPT) {
-        assert(0 <= pos);
         node_pointer t0, t1;
 
         core::split(tree, pos, t0, t1);
@@ -175,7 +173,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void erase(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
         node_pointer t0, t1, t2;
 
         core::split(tree, l, r, t0, t1, t2);
@@ -187,7 +185,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void fill(node_pointer& tree, const size_type l, const size_type r, const operand& val) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
         if(l == r) return;
 
         node_pointer t0, t1, t2;
@@ -201,7 +199,6 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     static void fill(node_pointer& tree, const size_type pos, I first, S last) noexcept(NO_EXCEPT) {
-        assert(0 <= pos);
         node_pointer t0, t1, t2;
 
         core::split(tree, pos, pos + std::ranges::distance(first, last), t0, t1, t2);
@@ -213,7 +210,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void apply(node_pointer& tree, const size_type l, const size_type r, const operation& val) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
         if(l == r) return;
 
         node_pointer t0, t1, t2;
@@ -228,7 +225,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
         if(l == r) return operand{};
 
         node_pointer t0, t1, t2;
@@ -244,7 +241,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void reverse(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
         if(l == r) return;
 
         node_pointer t0, t1, t2;
@@ -258,7 +255,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static void shift_left(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
 
         if(count < 0) return core::shift_right(tree, l, r, -count);
         assert(l + count <= r);
@@ -278,7 +275,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     }
 
     static void shift_right(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r);
+        assert(l <= r);
 
         if(count < 0) return core::shift_left(tree, l, r, -count);
         assert(l + count <= r);
@@ -298,7 +295,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     }
 
     static void rotate(node_pointer& tree, const size_type l, const size_type m, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= m && m < r);
+        assert(l <= m && m < r);
         if(l == m) return;
 
         node_pointer t0, t1, t2, t3;
