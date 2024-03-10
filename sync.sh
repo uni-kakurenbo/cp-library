@@ -13,7 +13,6 @@ jq --slurp --sort-keys \
     ./timestamps.local.json \
     >./timestamps.temp.json
 
-cat ./timestamps.temp.json >./timestamps.remote.json
 cat ./timestamps.temp.json >./timestamps.local.json
 
 rm ./timestamps.temp.json
