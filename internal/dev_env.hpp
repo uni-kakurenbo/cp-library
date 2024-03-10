@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef $DEV_ENV // for debuggers
-#define $DEV_ENV
-
 
 #ifdef LOCAL_JUDGE
     constexpr bool DEV_ENV = true;
@@ -23,6 +20,3 @@
     #define CPP20 false
     #define CPP23 false
 #endif
-
-
-#endif // #ifndef $DEV_ENV

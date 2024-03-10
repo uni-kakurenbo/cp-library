@@ -10,7 +10,8 @@
 #include <ranges>
 
 
-#include "snippet/internal/types.hpp"
+#include "snippet/aliases.hpp"
+#include "utility/functional.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/uncopyable.hpp"
@@ -18,7 +19,12 @@
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
 
+#include "global/constants.hpp"
+
 #include "random/xorshift.hpp"
+
+
+#include "debugger/debug.hpp"
 
 
 namespace lib {
@@ -27,123 +33,130 @@ namespace internal {
 
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
-template<class Derived, std::integral KeyType, std::integral SizeType, bool EXPLICIT>
-struct treap_interface : private uncopyable {
-    using key_type = KeyType;
+template<class Derived, std::integral SizeType, class DataType, tree_indexing_policy INDEXING_POLICY>
+struct interface : private uncopyable {
     using size_type = SizeType;
 
-  public:
-    template<class>
     struct node_type;
+    using node_pointer = std::add_pointer_t<node_type>;
 
   private:
+    using derived = Derived;
+
     static constexpr i64 XORSHIFT_ID = -(1L << 62);
     static inline xorshift<XORSHIFT_ID> rand;
 
     using priority_type = xorshift<>::result_type;
 
 
-    inline Derived* _derived() noexcept(NO_EXCEPT) {
-        return static_cast<Derived*>(this);
-    }
-
-    inline const Derived* _derived() const noexcept(NO_EXCEPT) {
-        return static_cast<const Derived*>(this);
-    }
-
-
-    template<pointer Tree>
-    inline void update_size(const Tree tree) const noexcept(NO_EXCEPT) { if(tree) tree->size = 1 + this->size(tree->left) + this->size(tree->right); }
-
-    template<pointer Tree>
-    inline void pushup(const Tree tree) const noexcept(NO_EXCEPT) {
-        this->update_size(tree);
-        this->_derived()->pushup(tree);
+    static void pushup(const node_pointer tree) noexcept(NO_EXCEPT) {
+        if(!tree) return;
+        tree->size = interface::size(tree->left) + tree->length + interface::size(tree->right);
+        derived::pushup(tree);
     }
 
   public:
-    template<pointer Tree>
-    inline size_type size(const Tree tree) const noexcept(NO_EXCEPT) { return tree ? tree->size : 0; }
+    // size of subtree whoes root is the node.
+    inline static size_type size(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->size : 0; }
 
-    template<class DataType = dummy>
-    struct node_type : DataType {
+    struct node_type {
         using data_type = DataType;
 
         priority_type priority;
-        [[no_unique_address]] std::conditional_t<EXPLICIT, KeyType, dummy> key;
 
         std::add_pointer_t<node_type> left = nullptr, right = nullptr;
 
-        size_type size = 1;
+        size_type length, size;
+        [[no_unique_address]] data_type data;
 
 
-        node_type(const data_type& data, const key_type _key, const treap_interface* super) noexcept(NO_EXCEPT)
-            requires (EXPLICIT)
-          : data_type(data), priority(super->rand()), key(_key)
+        node_type(const data_type& _data, const size_type _size) noexcept(NO_EXCEPT)
+            requires (INDEXING_POLICY == tree_indexing_policy::sorted)
+            : priority(interface::rand()), length(_size), size(_size), data(_data)
         {}
 
-        node_type(const data_type& data, const key_type, const treap_interface* super) noexcept(NO_EXCEPT)
-            requires (!EXPLICIT)
-          : data_type(data), priority(super->rand())
+        node_type(const data_type& _data, const size_type _size) noexcept(NO_EXCEPT)
+            requires (INDEXING_POLICY == tree_indexing_policy::implicit_key)
+            : priority(interface::rand()), length(_size), size(_size), data(_data)
         {}
 
         ~node_type() {
-            if(this->left) delete this->left;
-            if(this->right) delete this->right;
+            delete this->left;
+            delete this->right;
         }
     };
 
 
-    template<pointer Tree, pointer Left, pointer Right>
-    void split(const Tree tree, const key_type pos, Left& left, Right& right) const noexcept(NO_EXCEPT) {
+    static void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(!tree) {
-            left = right = nullptr;
+            if(pos > 0) {
+                left = new node_type({}, pos);
+                right = nullptr;
+            }
+            else if(pos < 0) {
+                right = new node_type({}, -pos);
+                left = nullptr;
+            }
+            else {
+                left = right = nullptr;
+            }
             return;
         }
 
-        this->_derived()->pushdown(tree);
+        derived::pushdown(tree);
 
-        if constexpr(EXPLICIT) {
-            if(pos <= tree->key) {
-                this->split(tree->left, pos, left, tree->left), right = std::move(tree);
-                this->pushup(right);
+        if constexpr(INDEXING_POLICY == tree_indexing_policy::implicit_key) {
+            const size_type lower_bound = interface::size(tree->left);
+            const size_type upper_bound = interface::size(tree) - interface::size(tree->right);
+
+            if(
+                pos <= lower_bound
+            ) {
+                interface::split(tree->left, pos, left, tree->left), right = std::move(tree);
+                interface::pushup(right);
+            }
+            else if(
+                pos >= upper_bound
+            ) {
+                interface::split(tree->right, pos - upper_bound, tree->right, right), left = std::move(tree);
+                interface::pushup(left);
             }
             else {
-                this->split(tree->right, pos, tree->right, right), left = std::move(tree);
-                this->pushup(left);
+                tree->length = pos - lower_bound;
+                interface::merge(tree->right, new node_type(tree->data, upper_bound - pos), tree->right);
+
+                interface::split(tree->right, 0, tree->right, right), left = std::move(tree);
+                interface::pushup(left);
             }
         }
         else {
-            key_type key = this->size(tree->left) + 1;
-
-            if(pos < key) {
-                this->split(tree->left, pos, left, tree->left), right = std::move(tree);
-                this->pushup(right);
+            if(pos <= tree->data) {
+                interface::split(tree->left, pos, left, tree->left), right = std::move(tree);
+                interface::pushup(right);
             }
             else {
-                this->split(tree->right, pos - key, tree->right, right), left = std::move(tree);
-                this->pushup(left);
+                interface::split(tree->right, pos, tree->right, right), left = std::move(tree);
+                interface::pushup(left);
             }
         }
     }
 
 
-    template<pointer Tree, pointer Left, pointer Right>
-    void merge(Tree& tree, const Left left, const Right right) const noexcept(NO_EXCEPT) {
-        this->_derived()->pushdown(left);
-        this->_derived()->pushdown(right);
+    static void merge(node_pointer& tree, const node_pointer left, const node_pointer right) noexcept(NO_EXCEPT) {
+        derived::pushdown(left);
+        derived::pushdown(right);
 
         if(!(left && right)) {
             tree = left ? left : right;
         }
         else if(left->priority > right->priority) {
-            this->merge(left->right, left->right, right), tree = std::move(left);
+            interface::merge(left->right, left->right, right), tree = std::move(left);
         }
         else {
-            this->merge(right->left, left, right->left), tree = std::move(right);
+            interface::merge(right->left, left, right->left), tree = std::move(right);
         }
 
-        this->pushup(tree);
+        interface::pushup(tree);
     }
 };
 
@@ -151,12 +164,10 @@ struct treap_interface : private uncopyable {
 } // namespace internal
 
 
-template<bool EXPLICIT = false, std::integral KeyType = internal::size_t>
+template<std::integral SizeType = i64>
 struct treap_context {
-    inline static constexpr bool IMPLICIT_KEY = !EXPLICIT;
-
-    template<class Derived, std::integral SizeType>
-    using interface = internal::treap_interface<Derived, KeyType, SizeType, EXPLICIT>;
+    template<class derived, tree_indexing_policy INDEXING_POLICY, class DataType = internal::dummy>
+    using interface = internal::interface<derived, SizeType, DataType, INDEXING_POLICY>;
 };
 
 

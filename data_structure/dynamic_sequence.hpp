@@ -8,6 +8,7 @@
 #include <random>
 #include <concepts>
 #include <ranges>
+#include <iterator>
 
 #include "snippet/internal/types.hpp"
 #include "snippet/iterations.hpp"
@@ -17,9 +18,12 @@
 #include "internal/types.hpp"
 #include "internal/iterator.hpp"
 #include "internal/concepts.hpp"
+#include "internal/exception.hpp"
 
 #include "internal/point_reference.hpp"
 #include "internal/range_reference.hpp"
+
+#include "global/constants.hpp"
 
 #include "data_structure/internal/tree_interface.hpp"
 #include "data_structure/treap.hpp"
@@ -27,6 +31,9 @@
 #include "algebraic/internal/concepts.hpp"
 
 #include "action/base.hpp"
+#include "action/helpers.hpp"
+
+#include "debugger/debug.hpp"
 
 
 namespace lib {
@@ -36,246 +43,363 @@ namespace internal {
 namespace dynamic_sequence_impl {
 
 
-template<
-    algebraic::internal::monoid OperandMonoid, algebraic::internal::monoid OperatorMonoid,
-    OperandMonoid (*_map)(const OperandMonoid&, const OperatorMonoid&),
-    OperatorMonoid (*_fold)(const OperatorMonoid&, internal::size_t),
-    class Context
->
-struct base : protected Context::interface<base<OperandMonoid, OperatorMonoid, _map, _fold, Context>, internal::size_t> {
-    using operand = OperandMonoid;
-    using operation = OperatorMonoid;
+template<class Operand, class Operation>
+struct data_type {
+    Operand val, acc;
+    Operation lazy;
+    bool rev = false;
 
-    using size_type = internal::size_t;
+    data_type() noexcept = default;
+    data_type(const Operand& _val) noexcept(NO_EXCEPT) : val(_val) {}
 
-  private:
-    using interface = typename Context::interface<base, size_type>;
-    static_assert(tree_interface<interface>);
 
-    friend interface;
-
-  public:
-    using key_type = typename interface::key_type;
-
-  private:
-    struct data_type {
-        operand val, acc;
-        operation lazy;
-        bool rev = false;
-
-        data_type() noexcept = default;
-        data_type(const operand& _val) noexcept(NO_EXCEPT) : val(_val) {}
-    };
-
-
-    using node_type = typename interface::node_type<data_type>;
-    using node_pointer = std::add_pointer_t<node_type>;
-
-    node_pointer root = nullptr;
-
-  public:
-    ~base() { delete this->root; }
-
-  private:
-    inline operand acc(const node_pointer tree) const noexcept(NO_EXCEPT) { return tree ? tree->acc : operand{}; }
-
-    inline void update_acc(const node_pointer tree) const noexcept(NO_EXCEPT) {
-        if(tree) tree->acc = this->acc(tree->left) + tree->val + this->acc(tree->right);
-    }
-
-    inline void pushup(const node_pointer tree) const noexcept(NO_EXCEPT) { this->update_acc(tree); }
-
-    inline void pushdown(const node_pointer tree) const noexcept(NO_EXCEPT) {
-        if(tree && tree->rev) {
-            tree->rev = false;
-
-            std::swap(tree->left, tree->right);
-
-            if(tree->left) tree->left->rev ^= 1;
-            if(tree->right) tree->right->rev ^= 1;
-        }
-
-        if(tree && tree->lazy != operation{}) {
-            if(tree->left) {
-                tree->left->lazy = tree->lazy + tree->left->lazy;
-                tree->left->acc = _map(tree->left->acc, _fold(tree->lazy, this->interface::size(tree->left)));
-            }
-
-            if(tree->right) {
-                tree->right->lazy = tree->lazy + tree->right->lazy;
-                tree->right->acc = _map(tree->right->acc, _fold(tree->lazy, this->interface::size(tree->right)));
-            }
-
-            tree->val = _map(tree->val, _fold(tree->lazy, 1));
-            tree->lazy = operation{};
-        }
-    }
-
-
-  private:
-    inline void insert(node_pointer& tree, const key_type pos, const operand& val) const noexcept(NO_EXCEPT) {
-        node_pointer t0, t1;
-
-        this->split(tree, pos, t0, t1);
-        this->merge(t0, t0, new node_type(val, pos, this));
-        this->merge(tree, t0, t1);
-    }
-
-    inline void erase(node_pointer& tree, const key_type l, const key_type r) const noexcept(NO_EXCEPT) {
-        node_pointer t0, t1, t2;
-
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
-        this->merge(tree, t0, t2);
-
-        if(t1) delete t1;
-    }
-
-
-    inline void apply(node_pointer& tree, const key_type pos, const operation& val) const noexcept(NO_EXCEPT) {
-        node_pointer t0, t1, t2;
-
-        this->split(tree, pos + 1, t1, t2);
-        this->split(t1, pos, t0, t1);
-
-        if(!t1) t1 = new node_type({}, pos, this);
-        t1->lazy = val + t1->lazy;
-
-        this->merge(t1, t0, t1);
-        this->merge(tree, t1, t2);
-    }
-
-    inline void apply(node_pointer tree, const key_type l, const key_type r, const operation& val) const noexcept(NO_EXCEPT) {
-        if(l == r) return;
-
-        node_pointer t0, t1, t2;
-
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
-
-        if(t1) t1->lazy = val + t1->lazy;
-
-        this->merge(t1, t0, t1);
-        this->merge(tree, t1, t2);
-    }
-
-
-    inline operand fold(node_pointer tree, const key_type l, const key_type r) const noexcept(NO_EXCEPT) {
-        if(l == r) return operand{};
-
-        node_pointer t0, t1, t2;
-
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
-
-        const operand res = t1 ? t1->acc : operand{};
-
-        this->merge(t1, t0, t1);
-        this->merge(tree, t1, t2);
-
-        return res;
-    }
-
-
-    template<bool LEFT>
-    inline key_type find(const node_pointer tree, operand& val, const key_type offset) const noexcept(NO_EXCEPT) {
-        if(tree->acc + val == val) {
-            return -1;
-        }
-
-        if constexpr(LEFT) {
-            if(tree->left and tree->left->acc + val != val) {
-                return this->find<true>(tree->left, val, offset);
-            }
-            else {
-                return tree->val + val != val ? offset + this->size(tree->left) : this->find<true>(tree->right, val, offset + this->size(tree->left) + 1);
-            }
-        }
-        else {
-            if(tree->right and tree->right->acc + val != val) {
-                return this->find<false>(tree->right, val, offset + this->size(tree->left) + 1);
-            }
-            else {
-                return tree->val + val != val ? offset + this->size(tree->left) : this->find<false>(tree->left, val, offset);
-            }
-        }
-    }
-
-    inline void reverse(node_pointer tree, const key_type l, const key_type r) const noexcept(NO_EXCEPT) {
-        if(l == r) return;
-
-        node_pointer t0, t1, t2;
-
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
-
-        if(t1) t1->rev ^= 1;
-
-        this->merge(t1, t0, t1);
-        this->merge(tree, t1, t2);
-    }
-
-    inline void rotate(node_pointer tree, const key_type l, const key_type m, const key_type r) const noexcept(NO_EXCEPT) {
-        if(l == m) return;
-        if(m == r) this->reverse(tree, l, r);
-
-        node_pointer t0, t1, t2, t3;
-
-        this->split(tree, r, t2, t3);
-        this->split(t2, m, t1, t2);
-        this->split(t1, l, t0, t1);
-
-        if(t1) t1->rev ^= 1;
-        if(t2) t2->rev ^= 1;
-
-        this->merge(t2, t1, t2);
-
-        if(t2) t2->rev ^= 1;
-
-        this->merge(t2, t0, t2);
-        this->merge(tree, t2, t3);
-    }
-
-  public:
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->interface::size(this->root); }
-
-    void insert(const key_type pos, const operand& val)  noexcept(NO_EXCEPT) { this->insert(this->root, pos, val); }
-
-    inline void apply(const key_type l, const key_type r, const operation& val) const noexcept(NO_EXCEPT) { this->apply(this->root, l, r, val); }
-    inline void apply(const key_type pos, const operation& val) noexcept(NO_EXCEPT) { this->apply(this->root, pos, val); }
-
-    inline operand fold(const key_type l, const key_type r) const noexcept(NO_EXCEPT) { return this->fold(this->root, l, r); }
-
-    inline void erase(const key_type l, const key_type r) noexcept(NO_EXCEPT) { this->erase(this->root, l, r); }
-
-    inline void clear() const noexcept(NO_EXCEPT) { if(this->root) delete this->root; this->root = nullptr; }
-
-    inline void reverse(const key_type l, const key_type r) const noexcept(NO_EXCEPT) { this->reverse(this->root, l, r); }
-
-    inline void rotate(const key_type l, const key_type m, const key_type r) const noexcept(NO_EXCEPT) { this->rotate(this->root, l, m, r); }
-
-    template<bool LEFT>
-    inline key_type find(const key_type l, const key_type r, const operand& val) const noexcept(NO_EXCEPT) {
-        if(l == r) return -1;
-
-        node_pointer t0, t1, t2;
-
-        this->split(this->root, l, t0, t1);
-        this->split(t1, r - l, t1, t2);
-
-        const key_type res = this->find<LEFT>(t1, val, l);
-
-        this->merge(t1, t1, t2);
-        this->merge(this->root, t0, t1);
-
-        return res;
-    }
+    auto _debug() const { return this->val; }
 };
 
 
 template<actions::internal::full_action Action, class Context>
-    requires avilable<base<typename Action::operand, typename Action::operation, Action::map, Action::fold, Context>>
-struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold, Context> {
+struct core : Context::interface<core<Action, Context>, tree_indexing_policy::implicit_key, data_type<typename Action::operand, typename Action::operation>> {
+    using action = Action;
+    using operand = Action::operand;
+    using operation = Action::operation;
+
+  private:
+    using interface = typename Context::interface<core, tree_indexing_policy::implicit_key, data_type<operand, operation>>;
+    static_assert(tree_interface<interface>);
+
+    friend interface;
+
+  protected:
+    using node_type = typename interface::node_type;
+    using node_pointer = typename interface::node_pointer;
+
+  public:
+    using size_type = typename interface::size_type;
+
+  private:
+    inline static operand acc(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->data.acc : operand{}; }
+
+    inline static void pushup(const node_pointer tree) noexcept(NO_EXCEPT) {
+        tree->data.acc = core::acc(tree->left) + tree->data.val + core::acc(tree->right);
+    }
+
+    inline static void pushdown(const node_pointer tree) noexcept(NO_EXCEPT) {
+        if(tree && tree->data.rev) {
+            tree->data.rev = false;
+
+            std::swap(tree->left, tree->right);
+
+            if(tree->left) tree->left->data.rev ^= 1;
+            if(tree->right) tree->right->data.rev ^= 1;
+        }
+
+        if(tree && tree->data.lazy != operation{}) {
+            if(tree->left) {
+                tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
+                tree->left->data.acc = action::map(tree->left->data.acc, action::fold(tree->data.lazy, interface::size(tree->left)));
+            }
+
+            if(tree->right) {
+                tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
+                tree->right->data.acc = action::map(tree->right->data.acc, action::fold(tree->data.lazy, interface::size(tree->right)));
+            }
+
+            tree->data.val = action::map(tree->data.val, action::fold(tree->data.lazy, tree->length));
+            tree->data.lazy = operation{};
+        }
+    }
+
+  public:
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+        requires std::convertible_to<std::iter_value_t<I>, operand>
+    static node_pointer build(I first, S last) noexcept(NO_EXCEPT) {
+        if(first == last) return nullptr;
+
+        const auto length = std::ranges::distance(first, last);
+        const auto middle = std::next(first, length >> 1);
+
+        node_pointer tree;
+
+        core::merge(tree, core::build(first, middle), new node_type(operand{ *middle }, 1), core::build(std::next(middle), last));
+
+        return tree;
+    }
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+        requires
+            std::convertible_to<typename std::iter_value_t<I>::first_type, operand> &&
+            std::integral<typename std::iter_value_t<I>::second_type>
+    static node_pointer build(I first, S last) noexcept(NO_EXCEPT) {
+        if(first == last) return nullptr;
+
+        const auto length = std::ranges::distance(first, last);
+        const auto middle = std::next(first, length >> 1);
+
+        node_pointer tree;
+        core::merge(tree, core::build(first, middle), new node_type(middle->first, middle->second), core::build(std::next(middle), last));
+
+        return tree;
+    }
+
+
+    using interface::split;
+    using interface::merge;
+
+    inline static void split(const node_pointer tree, const size_type l, const size_type r, node_pointer& t0, node_pointer& t1, node_pointer& t2) noexcept(NO_EXCEPT) {
+        core::split(tree, r, t1, t2);
+        core::split(t1, l, t0, t1);
+    }
+
+    inline static void merge(node_pointer& tree, node_pointer t0, const node_pointer t1, const node_pointer t2) noexcept(NO_EXCEPT) {
+        core::merge(t0, t0, t1);
+        core::merge(tree, t0, t2);
+    }
+
+
+    static void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(0 <= pos);
+        node_pointer t0, t1;
+
+        core::split(tree, pos, t0, t1);
+        core::merge(tree, t0, new node_type(val, count), t1);
+    }
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    static void insert(node_pointer& tree, const size_type pos, I first, S last) noexcept(NO_EXCEPT) {
+        assert(0 <= pos);
+        node_pointer t0, t1;
+
+        core::split(tree, pos, t0, t1);
+        core::merge(tree, t0, core::build(first, last), t1);
+    }
+
+
+    static void erase(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+        node_pointer t0, t1, t2;
+
+        core::split(tree, l, r, t0, t1, t2);
+
+        delete t1;
+
+        core::merge(tree, t0, t2);
+    }
+
+
+    static void fill(node_pointer& tree, const size_type l, const size_type r, const operand& val) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+        if(l == r) return;
+
+        node_pointer t0, t1, t2;
+        core::split(tree, l, r, t0, t1, t2);
+
+        delete t1;
+        t1 = new node_type(val, r - l);
+
+        core::merge(tree, t0, t1, t2);
+    }
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    static void fill(node_pointer& tree, const size_type pos, I first, S last) noexcept(NO_EXCEPT) {
+        assert(0 <= pos);
+        node_pointer t0, t1, t2;
+
+        core::split(tree, pos, pos + std::ranges::distance(first, last), t0, t1, t2);
+
+        delete t1;
+
+        core::merge(tree, t0, core::build(first, last), t2);
+    }
+
+
+    static void apply(node_pointer& tree, const size_type l, const size_type r, const operation& val) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+        if(l == r) return;
+
+        node_pointer t0, t1, t2;
+
+        core::split(tree, l, r, t0, t1, t2);
+
+        if(!t1) t1 = new node_type({}, r - l);
+        t1->data.lazy = val + t1->data.lazy;
+
+        core::merge(tree, t0, t1, t2);
+    }
+
+
+    operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+        if(l == r) return operand{};
+
+        node_pointer t0, t1, t2;
+
+        core::split(tree, l, r, t0, t1, t2);
+
+        const operand res = t1 ? t1->data.acc : operand{};
+
+        core::merge(tree, t0, t1, t2);
+
+        return res;
+    }
+
+
+    static void reverse(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+        if(l == r) return;
+
+        node_pointer t0, t1, t2;
+
+        core::split(tree, l, r, t0, t1, t2);
+
+        if(t1) t1->data.rev ^= 1;
+
+        core::merge(tree, t0, t1, t2);
+    }
+
+
+    static void shift_left(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+
+        if(count < 0) return core::shift_right(tree, l, r, -count);
+        assert(l + count <= r);
+
+        if(count == 0) return;
+        if(count == r - l) return core::erase(tree, l, r);
+
+        node_pointer t0, t1, t2, t3;
+
+        core::split(tree, l + count, r, t1, t2, t3);
+        core::split(t1, l, t0, t1);
+
+        delete t1;
+
+        core::merge(t2, t2, new node_type({}, r - l - count));
+        core::merge(tree, t0, t2, t3);
+    }
+
+    static void shift_right(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r);
+
+        if(count < 0) return core::shift_left(tree, l, r, -count);
+        assert(l + count <= r);
+
+        if(count == 0) return;
+        if(count == r - l) return core::erase(tree, l, r);
+
+        node_pointer t0, t1, t2, t3;
+
+        core::split(tree, l, r - count, t1, t2, t3);
+        core::split(t1, l, t0, t1);
+
+        delete t2;
+
+        core::merge(t1, new node_type({}, r - l - count), t1);
+        core::merge(tree, t0, t1, t3);
+    }
+
+    static void rotate(node_pointer& tree, const size_type l, const size_type m, const size_type r) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= m && m < r);
+        if(l == m) return;
+
+        node_pointer t0, t1, t2, t3;
+
+        core::split(tree, m, r, t1, t2, t3);
+        core::split(t1, l, t0, t1);
+        core::merge(t2, t2, t1);
+        core::merge(tree, t0, t2, t3);
+    }
+
+
+    template<bool LEFT>
+    size_type find(const node_pointer tree, operand& val, const size_type offset) noexcept(NO_EXCEPT) {
+        if(tree->data.acc + val == val) {
+            return -1;
+        }
+
+        if constexpr(LEFT) {
+            if(tree->left and tree->left->data.acc + val != val) {
+                return core::find<true>(tree->left, val, offset);
+            }
+            else {
+                return tree->data.val + val != val ? offset + core::size(tree->left) : core::find<true>(tree->right, val, offset + core::size(tree->left) + 1);
+            }
+        }
+        else {
+            if(tree->right and tree->right->data.acc + val != val) {
+                return core::find<false>(tree->right, val, offset + core::size(tree->left) + 1);
+            }
+            else {
+                return tree->data.val + val != val ? offset + core::size(tree->left) : core::find<false>(tree->left, val, offset);
+            }
+        }
+    }
+
+    template<bool LEFT>
+    inline size_type find(node_pointer& tree, const size_type l, const size_type r, const operand& val) noexcept(NO_EXCEPT) {
+        if(l == r) return -1;
+
+        node_pointer t0, t1, t2;
+
+        core::split(tree, l, r, t0, t1, t2);
+
+        const size_type res = core::find<LEFT>(t1, val, l);
+
+        core::merge(tree, t0, t1, t2);
+
+        return res;
+    }
+
+
+    static debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) {
+        if (!tree) return prefix + "\n";
+
+        core::pushdown(tree);
+
+        const auto left = core::dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
+        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
+        index += tree->length;
+
+        const auto right = core::dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
+
+        return left + here + right;
+    }
+
+    inline static debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix = "   ", const int dir = 0) {
+        size_type index = 0;
+        return core::dump_rich(tree, prefix, dir, index);
+    }
+
+    static debugger::debug_t _debug(const node_pointer tree) {
+        if (!tree) return "";
+
+        core::pushdown(tree);
+
+        return
+            "(" +
+            core::_debug(tree->left) + " " +
+            debugger::dump(tree->data) + " [" +
+            debugger::dump(tree->length) + "] " +
+            core::_debug(tree->right) +
+            ")";
+    }
+};
+
+
+
+} // namespace dynamic_sequence_impl
+
+} // namespace internal
+
+
+template<class Value, class = treap_context<>>
+struct dynamic_sequence : dynamic_sequence<actions::make_full_t<Value>> {
+    using dynamic_sequence<actions::make_full_t<Value>>::dynamic_sequence;
+};
+
+
+template<actions::internal::full_action Action, class Context>
+    requires internal::available_with<internal::dynamic_sequence_impl::core, Action, Context>
+struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_impl::core<Action, Context> {
   public:
     using action = Action;
 
@@ -285,98 +409,286 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     using value_type = operand;
     using action_type = typename operation::value_type;
 
-  private:
-    using base = dynamic_sequence_impl::base<typename Action::operand, typename Action::operation, Action::map, Action::fold, Context>;
-
-  public:
-    using key_type = typename base::key_type;
-    using size_type = typename base::size_type;
-
-    static_assert(
-        (
-            Context::IMPLICIT_KEY && std::same_as<key_type, size_type>
-        ) ||
-        (
-            !Context::IMPLICIT_KEY && internal::has_or_more_digits_than<key_type, size_type>
-        )
-    );
+    using core = internal::dynamic_sequence_impl::core<Action, Context>;
 
   private:
-    inline key_type _positivize_index(const key_type pos) const noexcept(NO_EXCEPT) {
-        static_assert(Context::IMPLICIT_KEY);
-        return pos < 0 ? this->size() + pos : pos;
-    }
-
-
-    inline consteval key_type _left_bound() const noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) return 0;
-        else return std::numeric_limits<key_type>::lowest();
-    }
-
-    inline consteval key_type _right_bound() const noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) return this->size();
-        else return std::numeric_limits<key_type>::max();
-    }
+    using node_pointer = typename core::node_pointer;
 
   public:
-    template<class... Args>
-    explicit core(Args&&... args) noexcept(NO_EXCEPT) : core() { this->assign(std::forward<Args>(args)...); }
+    using size_type = typename core::size_type;
 
-    template<std::convertible_to<value_type> T>
-    core(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
-      : core(std::ranges::begin(values), std::ranges::end(values))
-    {}
+  private:
+    node_pointer _root = nullptr;
 
-    core() noexcept(NO_EXCEPT) {}
+    size_type _offset = 0;
 
 
-    template<std::forward_iterator I, std::sentinel_for<I> S>
-    inline void insert(key_type pos, I first, S last) noexcept(NO_EXCEPT) {
-        for(auto itr=first; itr != last; ++itr, ++pos) {
-            this->insert(pos, *itr);
-        }
+    template<std::same_as<size_type>... SizeTypes>
+    inline void _normalize_index(SizeTypes&... indices) noexcept(NO_EXCEPT) {
+        const size_type min_index = std::min({ indices... });
+        ((indices -= this->_offset), ...);
+        if(min_index < this->_offset) this->_offset = min_index;
     }
+
+
+  public:
+    ~dynamic_sequence() { delete this->_root; }
+
+    dynamic_sequence() noexcept = default;
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    dynamic_sequence(I first, S last) noexcept(NO_EXCEPT) { this->assign(first, last); }
+
+    explicit dynamic_sequence(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) { this->assign(size, val); }
 
     template<std::ranges::input_range R>
-    inline void insert(const key_type pos, R&& range) noexcept(NO_EXCEPT) {
-        return this->insert(pos, std::ranges::begin(range), std::ranges::end(range));
-    }
+    explicit dynamic_sequence(R&& range) noexcept(NO_EXCEPT) : dynamic_sequence(ALL(range)) {}
 
-    inline auto& insert(key_type pos, const value_type& val) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            pos = this->_positivize_index(pos);
-            assert(0 <= pos && pos <= this->size());
-        }
+    template<std::convertible_to<value_type> T>
+    dynamic_sequence(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) : dynamic_sequence(values) {}
 
-        this->base::insert(pos, val);
 
-        return *this;
-    }
-
-    inline auto& insert(const key_type pos, const value_type& val, const size_type count) noexcept(NO_EXCEPT) {
-        REP(k, count) this->insert(pos + k, val);
-        return *this;
-    }
-
+    size_type size() const noexcept(NO_EXCEPT) { return this->core::size(this->_root); }
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
-    struct point_reference : internal::point_reference<core, key_type> {
-        point_reference(core *const super, const key_type pos) noexcept(NO_EXCEPT)
-            requires (Context::IMPLICIT_KEY)
-          : internal::point_reference<core, key_type>(super, super->_positivize_index(pos))
-        {
-        }
+    inline void clear() noexcept(NO_EXCEPT) {
+        delete this->_root;
+        this->_root = nullptr;
+        this->_offset = 0;
+    }
 
-        point_reference(core *const super, const key_type pos) noexcept(NO_EXCEPT)
-            requires (!Context::IMPLICIT_KEY)
-          : internal::point_reference<core, key_type>(super, pos)
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
+        this->clear();
+        this->_root = this->core::build(first, last);
+        return *this;
+    }
+
+    inline auto& assign(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
+        this->clear();
+        this->core::insert(this->_root, 0, val, size);
+        return *this;
+    }
+
+    template<std::ranges::input_range R>
+    inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
+
+    template<std::convertible_to<value_type> T>
+    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) { return this->assign(values); }
+
+
+    inline auto& resize(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
+        if(this->size() > size) this->core::erase(this->_root, size, this->size());
+        if(this->size() < size) this->core::push_back(val, size - this->size());
+        return *this;
+    }
+
+
+    inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
+        this->core::fill(this->_root, 0, this->size());
+        return *this;
+    }
+
+    inline value_type fold() noexcept(NO_EXCEPT) {
+        return this->core::fold(this->_root, 0, this->size());
+    }
+
+    inline auto& apply(const action_type& val) noexcept(NO_EXCEPT) {
+        this->core::apply(this->_root, 0, this->size(), val);
+        return *this;
+    }
+
+    inline value_type front() noexcept(NO_EXCEPT) {
+        return this->core::fold(this->_root, 0, 1);
+    }
+
+    inline value_type back() noexcept(NO_EXCEPT) {
+        return this->core::fold(this->_root, this->size() - 1, this->size());
+    }
+
+
+    inline auto& push_front(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->core::insert(this->_root, 0, val, count);
+        return *this;
+    }
+
+    inline auto& push_back(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->core::insert(this->_root, this->size(), val, count);
+        return *this;
+    }
+
+    inline auto& reverse() noexcept(NO_EXCEPT) {
+        this->core::reverse(this->_root, 0, this->size());
+        return *this;
+    }
+
+    inline auto& shift_left(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->core::shift_left(this->_root, 0, this->size(), count);
+        return *this;
+    }
+
+    inline auto& shift_right(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->core::shift_right(this->_root, 0, this->size(), count);
+        return *this;
+    }
+
+    // Same usage as: std::rotate(:m:)
+    inline auto& rotate(size_type m) noexcept(NO_EXCEPT) {
+        this->_normalize_index(m);
+        this->core::rotate(this->_root, 0, m, this->size());
+        return *this;
+    }
+
+    // Same usage as: std::rotate(:m:)
+    inline auto& rotate_left(const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(!this->empty());
+        this->core::rotate(this->_root, 0, lib::mod(count, this->size()), this->size());
+        return *this;
+    }
+
+    // Same usage as: std::rotate(:m:)
+    inline auto& rotate_right(const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(!this->empty());
+        this->core::rotate(this->_root, 0, this->size() - lib::mod(count, this->size()), this->size());
+        return *this;
+    }
+
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    inline auto& insert(size_type pos, I first, S last) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        this->core::insert(this->_root, pos, first, last);
+        return *this;
+    }
+
+    inline auto& insert(size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        this->core::insert(this->_root, pos, val, count);
+        return *this;
+    }
+
+    inline void erase(size_type l, size_type r) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::erase(this->_root, l, r);
+    }
+
+    inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::fill(this->_root, l, r, val);
+        return *this;
+    }
+
+    inline operand fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        return this->core::fold(this->_root, l, r);
+    }
+
+    inline auto& apply(size_type l, size_type r, const operation& val) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::apply(this->_root, l, r, val);
+        return *this;
+    }
+
+    inline auto& reverse(size_type l, size_type r) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::reverse(this->_root, l, r);
+        return *this;
+    }
+
+    inline auto& rotate(size_type l, size_type m, size_type r) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, m, r);
+        this->core::rotate(this->_root, l, m, r);
+        return *this;
+    }
+
+    inline auto& shift_left(size_type l, size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::shift_left(this->_root, l, r, count);
+        return *this;
+    }
+
+    inline auto& shift_right(size_type l, size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        this->core::shift_right(this->_root, l, r, count);
+        return *this;
+    }
+
+
+    template<std::ranges::input_range R>
+    inline auto& insert(const size_type pos, R&& range) noexcept(NO_EXCEPT) {
+        this->insert(pos, std::ranges::begin(range), std::ranges::end(range));
+        return *this;
+    }
+
+
+    inline auto& set(const size_type pos, const value_type& val) noexcept(NO_EXCEPT) {
+        return this->fill(pos, pos + 1, val);
+    }
+
+    inline value_type get(const size_type pos) noexcept(NO_EXCEPT) {
+        return this->fold(pos, pos + 1).val();
+    }
+
+
+    inline auto& erase(const size_type pos) noexcept(NO_EXCEPT) {
+        this->erase(pos, pos + 1);
+        return *this;
+    }
+
+
+    inline auto& pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->erase(0, count);
+        return *this;
+    }
+
+    inline auto& pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->erase(this->size() - count, count);
+        return *this;
+    }
+
+
+    inline auto& apply(const size_type pos, const action_type& val) noexcept(NO_EXCEPT) {
+        this->apply(pos, pos + 1, val);
+        return *this;
+    }
+
+
+    inline auto& rotate_left(const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(l < r);
+        return this->rotate(l, l + lib::mod(count, r - l), r);
+    }
+
+    inline auto& rotate_right(const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(l < r);
+        return this->rotate(l, r - lib::mod(count, r - l), r);
+    }
+
+
+    // Find the min / max k in [l, r) that satisfies (this[k] + x) != x.
+    // If no such k is found, return -1.
+    template<bool LEFT = true>
+    inline size_type find(const size_type l, const size_type r, const value_type& val) noexcept(NO_EXCEPT) {
+        return this->template core::find<LEFT>(l, r - 1, r);
+    }
+
+    // Find the min / max k in whole that satisfies (this[k] + x) != x.
+    // If no such k is found, return -1.
+    template<bool LEFT = true>
+    inline size_type find(const value_type& val) noexcept(NO_EXCEPT) {
+        return this->find<LEFT>(0, this->size(), val);
+    }
+
+
+    struct point_reference : internal::point_reference<dynamic_sequence, size_type> {
+        point_reference(dynamic_sequence *const super, const size_type pos) noexcept(NO_EXCEPT)
+          : internal::point_reference<dynamic_sequence, size_type>(super, pos)
         {}
 
-
-        operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        operator value_type() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        value_type val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
 
         inline point_reference& apply(const action_type& val) noexcept(NO_EXCEPT) {
@@ -401,24 +713,13 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     };
 
 
-    struct range_reference : internal::range_reference<core, key_type> {
-        range_reference(core *const super, const key_type l, const key_type r) noexcept(NO_EXCEPT)
-            requires (Context::IMPLICIT_KEY)
-          : internal::range_reference<core, key_type>(super, super->_positivize_index(l), super->_positivize_index(r))
-        {
-            if constexpr(Context::IMPLICIT_KEY) {
-                assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
-            }
-        }
-
-        range_reference(core *const super, const key_type l, const key_type r) noexcept(NO_EXCEPT)
-            requires (!Context::IMPLICIT_KEY)
-          : internal::range_reference<core, key_type>(super, l, r)
+    struct range_reference : internal::range_reference<dynamic_sequence, size_type> {
+        range_reference(dynamic_sequence *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<dynamic_sequence, size_type>(super, l, r)
         {}
 
 
-        inline value_type fold() const noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+        inline value_type fold() noexcept(NO_EXCEPT) {
             return this->_super->fold(this->_begin, this->_end);
         }
 
@@ -443,252 +744,56 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         // Find the min / max k in [l, r) that satisfies (this[k] + x) != x.
         // If no such k is found, return -1.
         template<bool LEFT = true>
-        inline key_type find(const value_type& val) const noexcept(NO_EXCEPT) {
-            return this->_super->template base::find<LEFT>(this->_begin, this->_end, val);
+        inline size_type find(const value_type& val) noexcept(NO_EXCEPT) {
+            return this->_super->template core::find<LEFT>(this->_begin, this->_end, val);
         }
     };
 
 
-    inline auto& push_front(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT)
-    {
-        this->insert(0, val, count);
-        return *this;
+    inline point_reference operator[](const size_type pos) noexcept(NO_EXCEPT) {
+        return point_reference(this, pos);
     }
 
-    inline auto& push_back(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT)
-    {
-        this->insert(this->size(), val, count);
-        return *this;
+    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        return range_reference(this, l, r);
     }
 
-
-    inline auto& resize(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
-        REP(this->size() - size) this->erase(-1);
-        REP(i, this->size(), size) this->push_back(val);
-        return *this;
-    }
-
-
-    inline auto& assign(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
-        this->clear();
-        this->insert(0, val, size);
-        return *this;
-    }
-
-    template<std::convertible_to<value_type> T>
-    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT)
-    {
-        this->assign(std::ranges::begin(values), std::ranges::end(values));
-        return *this;
-    }
-
-    template<std::input_iterator I, std::sentinel_for<I> S>
-    inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
-        this->clear();
-        this->insert(0, first, last);
-        return *this;
-    }
-
-    template<std::ranges::input_range R>
-    inline auto& assign(R&& range) noexcept(NO_EXCEPT) {
-        return this->assign(ALL(range));
-    }
-
-
-    inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
-        const size_type count = this->size();
-        this->clear(), this->insert(0, val, count);
-        return *this;
-    }
-
-    inline auto& fill(const key_type l, const key_type r, const value_type& val) noexcept(NO_EXCEPT) {
-        this->erase(l, r);
-        REP(pos, l, r) this->insert(pos, val);
-        return *this;
-    }
-
-
-    inline auto& set(const key_type pos, const value_type& val) noexcept(NO_EXCEPT) {
-        this->fill(pos, pos+1, val);
-        return *this;
-    }
-
-
-    inline auto& erase(key_type pos) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            pos = this->_positivize_index(pos);
-            assert(0 <= pos && pos < this->size());
-        }
-
-        this->base::erase(pos, pos + 1);
-
-        return *this;
-    }
-
-    inline auto& erase(key_type l, key_type r) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->size());
-        }
-
-        this->base::erase(l, r);
-
-        return *this;
-    }
-
-
-    inline auto& clear() noexcept(NO_EXCEPT) {
-        this->base::erase(0, this->size());
-        return *this;
-    }
-
-
-    inline auto& pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->erase(0, count);
-        return *this;
-    }
-
-    inline auto& pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->erase(this->size() - count, count);
-        return *this;
-    }
-
-
-    inline auto& apply(key_type l, key_type r, const action_type& val) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->size());
-        }
-
-        this->base::apply(l, r, val);
-
-        return *this;
-    }
-
-    inline auto& apply(const key_type pos, const action_type& val) noexcept(NO_EXCEPT) {
-        this->base::apply(pos, val);
-        return *this;
-    }
-
-    inline auto& apply(const action_type& val) noexcept(NO_EXCEPT) {
-        this->apply(this->_left_bound(), this->_right_bound(), val);
-        return *this;
-    }
-
-
-    inline value_type get(key_type pos) const noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            pos = this->_positivize_index(pos);
-            assert(0 <= pos && pos < this->size());
-        }
-
-        return this->base::fold(pos, pos+1).val();
-    }
-
-
-    inline point_reference operator[](const key_type pos) noexcept(NO_EXCEPT) { return point_reference(this, pos); }
-    inline range_reference operator()(const key_type l, const key_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
-
-
-    inline value_type front() const noexcept(NO_EXCEPT) { return this->get(0); }
-
-    inline value_type back() const noexcept(NO_EXCEPT) { return this->get(this->size()-1); }
-
-
-    inline value_type fold(key_type l, key_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->size());
-        }
-
-        return this->base::fold(l, r).val();
-    }
-
-    inline value_type fold() const noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
-
-
-    inline auto& reverse(key_type l, key_type r) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->size());
-        }
-
-        this->base::reverse(l, r);
-
-        return *this;
-    }
-
-    inline auto& reverse() noexcept(NO_EXCEPT) {
-        this->reverse(0, this->size());
-        return *this;
-    }
-
-
-    // Same usage as: std::rotate(l, m, r)
-    inline auto& rotate(key_type l, key_type m, key_type r) noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), m = this->_positivize_index(m), r = this->_positivize_index(r);
-            assert(0 <= l && l <= m && m < r && r <= this->size());
-        }
-
-        this->base::rotate(l, m, r);
-
-        return *this;
-    }
-
-    // Same usage as: std::rotate(0, m, size)
-    inline auto& rotate(const key_type m) noexcept(NO_EXCEPT) {
-        this->rotate(0, m, this->size());
-        return *this;
-    }
-
-
-    // Find the min / max k in [l, r) that satisfies (this[k] + x) != x.
-    // If no such k is found, return -1.
-    template<bool LEFT = true>
-    inline key_type find(key_type l, key_type r, const value_type& val) const noexcept(NO_EXCEPT) {
-        if constexpr(Context::IMPLICIT_KEY) {
-            l = this->_positivize_index(l), r = this->_positivize_index(r);
-            assert(0 <= l && l <= r && r <= this->size());
-        }
-
-        return this->template base::find<LEFT>(l, r, val);
-    }
-
-    // Find the min / max k in whole that satisfies (this[k] + x) != x.
-    // If no such k is found, return -1.
-    template<bool LEFT = true>
-    inline key_type find(const value_type& val) const noexcept(NO_EXCEPT) {
-        return this->find<LEFT>(0, this->size(), val);
-    }
 
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,core,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type,dynamic_sequence,iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
-        iterator(const core *const ref, const key_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
+        iterator(dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
-};
+    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 
 
-} // namespace dynamic_sequence_impl
+    using core::dump_rich;
+    using core::_debug;
 
-} // namespace internal
+
+    debugger::debug_t dump_rich(const typename core::node_pointer tree, const std::string prefix = "   ", const int dir = 0) const {
+        size_type index = this->_offset;
+        return this->dump_rich(tree, prefix, dir, index);
+    }
+
+    debugger::debug_t dump_rich(const std::string prefix = "   ") const {
+        return "\n" + this->dump_rich(this->_root, prefix);
+    }
 
 
-template<actions::internal::full_action Action, class Context = treap_context<>>
-    requires internal::avilable<internal::dynamic_sequence_impl::core<Action, Context>>
-struct dynamic_sequence : internal::dynamic_sequence_impl::core<Action, Context> {
-    using internal::dynamic_sequence_impl::core<Action, Context>::core;
+    debugger::debug_t _debug() const {
+        return "[ " + this->_debug(this->_root) + " ]";
+    }
+
 };
 
 

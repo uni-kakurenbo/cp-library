@@ -65,7 +65,7 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     using difference_type = typename bidirectional_iterator_interface<T>::difference_type;
 
   protected:
-    const Container* _ref;
+    Container* _ref;
     difference_type _pos;
 
     inline Derived* _derived() noexcept(NO_EXCEPT) {
@@ -77,9 +77,9 @@ struct container_iterator_interface : random_access_iterator_base<T> {
 
   public:
     container_iterator_interface() noexcept = default;
-    container_iterator_interface(const Container *const ref, const difference_type& pos) noexcept(NO_EXCEPT) : _ref(ref), _pos(pos) {}
+    container_iterator_interface(Container *const ref, const difference_type& pos) noexcept(NO_EXCEPT) : _ref(ref), _pos(pos) {}
 
-    inline const Container* ref() const noexcept(NO_EXCEPT) { return this->_ref; }
+    inline Container* ref() const noexcept(NO_EXCEPT) { return this->_ref; }
 
     inline difference_type pos() const noexcept(NO_EXCEPT) { return this->_pos; }
     inline difference_type& pos() { return this->_pos; }

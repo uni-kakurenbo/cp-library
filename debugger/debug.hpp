@@ -29,6 +29,10 @@
 #include "internal/type_traits.hpp"
 #include "internal/concepts.hpp"
 #include "internal/resolving_rank.hpp"
+#include "internal/exception.hpp"
+
+#include <typeinfo>
+#include <cxxabi.h>
 
 
 namespace debugger {
@@ -57,9 +61,45 @@ template<class T>
 std::string dump(T&&);
 
 
+template<class T>
+const std::string get_type_name(T&& val) {
+    const char* const name = typeid(std::forward<T>(val)).name();
+    int status = -4;
+    char* const demangled_name = abi::__cxa_demangle(name, NULL, NULL, &status);
+    std::string res{name};
+    if (status == 0) {
+        res = std::string(demangled_name);
+        free(demangled_name);
+    }
+
+    return COLOR_TYPE + "<" + res + ">" + COLOR_INIT;
+
+    // auto right = res.find('<');
+    // auto left = res.find_last_of(':', right);
+
+    // if(left == std::string::npos) left = 0;
+    // else ++left;
+
+    // if(right == std::string::npos) right = res.size();
+
+    // return res.substr(left, right - left);
+}
+
+// struct dump_has_value;
+
+// template<class T>
+// const std::string get_type_name(const T variable) {
+//     return get_type_name_impl(variable);
+// }
+
+// template<template<class...> class Template, class... Ts>
+// const std::string get_type_name(const Template<Ts...> variable) {
+//     return get_type_name_impl(variable) + "< " + (get_type_name(Ts{}) + ...) + " >";
+// }
+
 struct debug_t : std::string {
-    template<std::same_as<std::string> T>
-    debug_t(const T& str) {
+    using std::string::string;
+    debug_t(const std::string& str) {
         this->assign(str);
     }
 };
@@ -175,7 +215,7 @@ struct dump_has_val {
     template<class T>
         requires requires (T val) { val.val(); }
     std::string operator()(const T& val) const {
-        return COLOR_TYPE + "<...> " + dump(val.val());
+        return dump(val.val());
     }
 };
 
@@ -191,52 +231,52 @@ struct dump_iterator {
 struct dump_wrapper {
     template<lib::internal::derived_from_template<std::map> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<map>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::multimap> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<multimap>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::unordered_map> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<unordered_map>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::unordered_multimap> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<unordered_multimap>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::set> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<set>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::multiset> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<multiset>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::unordered_set> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<unordered_set>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::unordered_multiset> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<unordered_multiset>" + COLOR_INIT + " {", "}"));
+        return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<lib::internal::derived_from_template<std::vector> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<vector>" + COLOR_INIT + " [", "]"));
+        return dump_range_impl(val, Brackets("[", "]"));
     }
 
     template<lib::internal::derived_from_template<std::deque> T>
     std::string operator()(const T& val) const {
-        return dump_range_impl(val, Brackets(COLOR_TYPE + "<deque>" + COLOR_INIT + " [", "]"));
+        return dump_range_impl(val, Brackets("[", "]"));
     }
 
 
@@ -248,7 +288,7 @@ struct dump_wrapper {
         while(!val.empty()) vec.emplace_back(val.top()), val.pop();
         std::ranges::reverse(vec);
 
-        return dump_range_impl(vec, Brackets(COLOR_TYPE + "<stack>" + COLOR_INIT + " [", "]"));
+        return dump_range_impl(vec, Brackets("<", ">"));
     }
 
     template<lib::internal::derived_from_template<std::priority_queue> T>
@@ -258,25 +298,21 @@ struct dump_wrapper {
 
         while(!val.empty()) vec.emplace_back(val.top()), val.pop();
 
-        return dump_range_impl(vec, Brackets(COLOR_TYPE + "<priority_queue>" + COLOR_INIT + " [", "]"));
+        return dump_range_impl(vec, Brackets("<", ">"));
     }
 
 
     template<lib::internal::derived_from_template<std::pair> T>
     std::string operator()(const T& val) const {
         std::stringstream res;
-        res << COLOR_TYPE << "<pair>" << COLOR_INIT << " ( ";
-        res << dump(val.first);
-        res << ", ";
-        res << dump(val.second);
-        res << " )";
+        res << " ( " << dump(val.first) << ", " << dump(val.second) << " )";
         return res.str();
     }
 
     template<lib::internal::derived_from_template<std::tuple> T>
     std::string operator()(const T& val) const {
         std::stringstream res;
-        res << COLOR_TYPE << "<tuple>" << COLOR_INIT << " ( ";
+        res << " ( ";
         dump_tuple_impl<0>(val, res);
         res << " )";
         return res.str();
@@ -309,7 +345,7 @@ struct dump_loggable {
 
 template<class T>
 std::string dump(T&& val) {
-    if constexpr(std::same_as<T, debug_t>) {
+    if constexpr(std::same_as<std::remove_cvref_t<T>, debug_t>) {
         // return "debug_t";
         return dump_debug_t(std::forward<T>(val));
     }
@@ -347,16 +383,32 @@ std::string dump(T&& val) {
         return dump_range{}(std::forward<T>(val));
     }
 
-    assert(false);
+    return "== dmup error ==";
 }
 
-
-template<class T = std::nullptr_t> void debug(T&& = nullptr, const std::string& = "\n");
 
 template<class T> void debug(T&& val, const std::string& endl) {
     *cdebug << dump(val) << endl << std::flush;
 }
 
+
+constexpr std::string WHITESPACES = " \n\r\t\f\v";
+
+std::string ltrim(const std::string &s)
+{
+    size_t start = s.find_first_not_of(WHITESPACES);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+
+std::string rtrim(const std::string &s)
+{
+    size_t end = s.find_last_not_of(WHITESPACES);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+
+std::string trim(const std::string &s) {
+    return rtrim(ltrim(s));
+}
 
 std::vector<std::string> split(const std::string& str) {
     constexpr char SEPARATOR = ',';
@@ -398,23 +450,38 @@ std::vector<std::string> split(const std::string& str) {
         }
     }
 
+    for(auto&& v : res) v = trim(v);
+
     return res;
 }
 
 template<class Arg> void raw(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
 template<class Arg> void raw(Arg&& arg) { *cdebug << dump(std::forward<Arg>(arg)) << std::flush; }
 
-void debug(
-    std::vector<std::string> __attribute__ ((unused)) args,
-    __attribute__ ((unused)) size_t idx,
-    __attribute__ ((unused)) int LINE_NUM
-) { debug(nullptr, COLOR_INIT + "\n"); }
+void debug(std::vector<std::string>, size_t, int) { debug(nullptr, COLOR_INIT + "\n"); }
 
-template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int LINE_NUM, Head&& H, Tail&&... T) {
-    if(idx > 0) debug(nullptr, ","); else debug(nullptr, "\033[3;35m#" + std::to_string(LINE_NUM) + "  " + COLOR_INIT);
-    debug(nullptr, "\033[32m" + args[idx]  + COLOR_INIT + ": ");
-    debug(std::forward<Head>(H), std::string());
+std::map<int, int> count;
+template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int line, Head&& H, Tail&&... T) {
+    if(idx == 0) {
+        debug(nullptr, "\033[3;35m#" + std::to_string(line) + " (" + std::to_string(count[line]) + ")" + COLOR_INIT);
+        count[line]++;
+    }
+    debug(nullptr, "\n - ");
+
+
+    const std::string content = dump(H);
+    const std::string type_name = get_type_name(std::forward<Head>(H));
+
+
+    debug(nullptr, "\033[32m" + args[idx]  + COLOR_INIT + " : ");
+    debug(nullptr, content);
+
+    if(type_name.size() + content.size() >= 300) debug(nullptr, "\n   ");
+
+    debug(nullptr, " " + type_name);
+
     debug(args, idx + 1, 0, std::forward<Tail>(T)...);
 }
+
 
 } // namespace debugger
