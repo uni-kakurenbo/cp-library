@@ -301,9 +301,12 @@ struct core<Monoid> : base<Monoid> {
     }
 
 
-    struct iterator : internal::container_iterator_interface<value_type,core,iterator> {
+    struct iterator : internal::container_iterator_interface<value_type, const core, iterator> {
         iterator() noexcept = default;
-        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : internal::container_iterator_interface<value_type,core,iterator>(ref, p) {}
+
+        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT)
+          : internal::container_iterator_interface<value_type, const core, iterator>(ref, p)
+        {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };

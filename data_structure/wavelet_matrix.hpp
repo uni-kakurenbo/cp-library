@@ -487,7 +487,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,wavelet_matrix,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, const wavelet_matrix, const iterator>;
 
   public:
     struct iterator : iterator_interface {
@@ -660,7 +660,7 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,compressed_wavelet_matrix,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, const compressed_wavelet_matrix, const iterator>;
 
   public:
     struct iterator : iterator_interface {

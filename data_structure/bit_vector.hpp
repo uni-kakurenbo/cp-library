@@ -113,7 +113,7 @@ struct bit_vector {
     struct iterator;
 
   private:
-    using iterator_interface = internal::container_iterator_interface<bool,bit_vector,iterator>;
+    using iterator_interface = internal::container_iterator_interface<bool, const bit_vector, iterator>;
 
   public:
     struct iterator : iterator_interface {
