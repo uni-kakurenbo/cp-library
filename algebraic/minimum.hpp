@@ -14,8 +14,8 @@ namespace algebraic {
 
 
 template<class T>
-struct minimum : base<T>, scalar_multipliable<gcd<T>>::identity, associative, commutative {
-    using base = base<T>::base;
+struct minimum : base<T>, scalar_multipliable<minimum<T>>::identity, associative, commutative {
+    using base<T>::base;
 
     minimum() noexcept(NO_EXCEPT) : minimum(std::numeric_limits<T>::max()) {};
 

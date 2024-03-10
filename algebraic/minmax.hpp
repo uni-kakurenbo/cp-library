@@ -15,7 +15,7 @@ namespace algebraic {
 
 
 template<class T>
-struct minmax : base<std::pair<T, T>>, scalar_multipliable<minmax<std::pair<T, T>>>::identity, associative, commutative {
+struct minmax : base<std::pair<T, T>>, scalar_multipliable<minmax<T>>::identity, associative, commutative {
     using base<std::pair<T, T>>::base;
 
     minmax() noexcept(NO_EXCEPT)
