@@ -52,7 +52,6 @@ struct data_type {
     data_type() noexcept = default;
     data_type(const Operand& _val) noexcept(NO_EXCEPT) : val(_val) {}
 
-
     auto _debug() const { return this->val; }
 };
 
@@ -77,10 +76,12 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     using size_type = typename interface::size_type;
 
   private:
+    inline static operand val(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->length * tree->data.val : operand{}; }
+
     inline static operand acc(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->data.acc : operand{}; }
 
     inline static void pushup(const node_pointer tree) noexcept(NO_EXCEPT) {
-        tree->data.acc = core::acc(tree->left) + tree->data.val + core::acc(tree->right);
+        tree->data.acc = core::acc(tree->left) + core::val(tree) + core::acc(tree->right);
     }
 
     inline static void pushdown(const node_pointer tree) noexcept(NO_EXCEPT) {
@@ -104,7 +105,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
                 tree->right->data.acc = action::map(tree->right->data.acc, action::fold(tree->data.lazy, interface::size(tree->right)));
             }
 
-            tree->data.val = action::map(tree->data.val, action::fold(tree->data.lazy, tree->length));
+            tree->data.val = action::map(tree->data.val, tree->data.lazy);
             tree->data.lazy = operation{};
         }
     }

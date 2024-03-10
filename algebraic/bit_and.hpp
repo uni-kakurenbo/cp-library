@@ -10,7 +10,7 @@ namespace algebraic {
 
 
 template<class T>
-struct bit_and : base<T>, associative, commutative {
+struct bit_and : base<T>, associative, scalar_multipliable<bit_and<T>>::identity, commutative {
     using base<T>::base;
 
     bit_and() noexcept(NO_EXCEPT) : base<T>(lib::numeric_limits<T>::max()) {};

@@ -66,7 +66,7 @@ template<
     lib::internal::modint_family T = lib::static_modint_64bit<(1UL << 61) - 1>,
     typename T::value_type BASE = 0
 >
-struct rolling_hash : base<rolling_hash_impl<T, BASE>>, associative {
+struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<rolling_hash<REVERSE, T, BASE>>::automatic, associative {
     using base<rolling_hash_impl<T, BASE>>::base;
 
     template<class U>

@@ -20,19 +20,28 @@ template<
     internal::magma M1
 >
 struct combined
-  : base<std::pair<M0, M1>>,
+  : base<combined<std::pair<M0, M1>>, std::pair<M0, M1>>,
     std::conditional_t<internal::associative<M0> && internal::associative<M1>, associative, lib::internal::dummy>,
     std::conditional_t<internal::commutative<M0> && internal::commutative<M1>, commutative, lib::internal::dummy>
 {
     using base<std::pair<M0, M1>>::base;
 
+
     template<class T>
         requires std::convertible_to<T, M0> && std::convertible_to<T, M1>
     combined(const T& v) : combined(v, v) {};
 
+
     friend inline combined operator+(const combined& lhs, const combined& rhs) noexcept(NO_EXCEPT) {
         return { lhs->first + rhs->first, lhs->second + rhs->second };
     }
+
+
+    template<std::integral Scalar>
+    friend inline combined&& operator*(const Scalar k, const combined& val) noexcept(NO_EXCEPT) {
+        return { k * val->first, k * val->second };
+    }
+
 
     friend inline combined operator-(const combined& val) noexcept(NO_EXCEPT)
         requires internal::invertible<M0> && internal::invertible<M1>

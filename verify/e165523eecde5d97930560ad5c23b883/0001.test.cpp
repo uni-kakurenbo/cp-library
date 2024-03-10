@@ -19,9 +19,9 @@
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::dynamic_sequence<lib::actions::range_add_range_sum<long>> data(n);
-    // debug(data);
+    debug(data.dump_rich());
 
-    for(;q--;) {
+    while(q--) {
         int t; std::cin >> t;
         if(t == 0) {
             int l, r, x; std::cin >> l >> r >> x; --l;
@@ -31,6 +31,6 @@ signed main() {
             int l, r; std::cin >> l >> r; --l;
             std::cout << data(l, r).fold().val() << "\n";
         }
-        // debug(data);
+        debug(data.dump_rich());
     }
 }
