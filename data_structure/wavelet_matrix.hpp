@@ -430,10 +430,10 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
         }
 
         inline auto next_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_smallest_element(std::clamp(this->count_under(v) + k, 0, this->size()));
+            return this->kth_smallest_element(std::clamp(this->count_under(v) + k, size_type{ 0 }, this->size()));
         }
         inline auto prev_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_largest_element(std::clamp(this->count_over(v) - k, 0, this->size()));
+            return this->kth_largest_element(std::clamp(this->count_over(v) - k, size_type{ 0 }, this->size()));
         }
 
         inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) { return this->_super->base::next(this->_begin, this->_end, v, k); }

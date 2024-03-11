@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <iterator>
 #include <variant>
+#include <compare>
 #include <ranges>
 
 
@@ -64,15 +65,19 @@ template<class T, class Container, class Derived>
 struct container_iterator_interface : random_access_iterator_base<T> {
     using difference_type = typename bidirectional_iterator_interface<T>::difference_type;
 
-  protected:
+  private:
+    using derived = std::decay_t<Derived>;
+
     Container* _ref;
     difference_type _pos;
 
-    inline Derived* _derived() noexcept(NO_EXCEPT) {
-        return static_cast<Derived*>(this);
+    static_assert(std::three_way_comparable<difference_type>);
+
+    inline derived* _derived() noexcept(NO_EXCEPT) {
+        return static_cast<derived*>(this);
     }
-    inline const Derived* _derived() const noexcept(NO_EXCEPT) {
-        return static_cast<const Derived*>(this);
+    inline const derived* _derived() const noexcept(NO_EXCEPT) {
+        return static_cast<const derived*>(this);
     }
 
   public:
@@ -84,28 +89,30 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     inline difference_type pos() const noexcept(NO_EXCEPT) { return this->_pos; }
     inline difference_type& pos() { return this->_pos; }
 
-    inline Derived& operator++() noexcept(NO_EXCEPT) { return ++this->_derived()->pos(), *this->_derived(); }
-    inline Derived& operator--() noexcept(NO_EXCEPT) { return --this->_derived()->pos(), *this->_derived(); }
+    inline derived& operator++() noexcept(NO_EXCEPT) { return ++this->_pos, *this->_derived(); }
+    inline derived& operator--() noexcept(NO_EXCEPT) { return --this->_pos, *this->_derived(); }
 
-    inline Derived operator++(int) noexcept(NO_EXCEPT) { const auto res = *this->_derived(); return ++this->_derived()->pos(), res; }
-    inline Derived operator--(int) noexcept(NO_EXCEPT) { const auto res = *this->_derived(); return --this->_derived()->pos(), res; }
+    inline derived operator++(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return ++this->_pos, res; }
+    inline derived operator--(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return --this->_pos, res; }
 
-    inline Derived& operator+=(const difference_type count) noexcept(NO_EXCEPT) { return this->pos() += count, *this->_derived(); }
-    inline Derived& operator-=(const difference_type count) noexcept(NO_EXCEPT) { return this->pos() -= count, *this->_derived(); }
+    inline derived& operator+=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos += count, *this->_derived(); }
+    inline derived& operator-=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos -= count, *this->_derived(); }
 
-    inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+    inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->_pos); }
     inline T operator[](const difference_type count) const noexcept(NO_EXCEPT) { return *(*this->_derived() + count); }
 
-    inline difference_type operator-(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return this->pos() - other.pos(); }
+    inline difference_type operator-(const derived& other) const noexcept(NO_EXCEPT) { return this->_pos - other._pos; }
 
-    inline bool operator<(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return *this->_derived() - other < 0; }
-    inline bool operator>(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return *this->_derived() - other > 0; }
 
-    inline bool operator<=(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return not (*this->_derived() > other); }
-    inline bool operator>=(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return not (*this->_derived() < other); }
+    friend inline bool operator==(const derived& lhs, const derived& rhs) noexcept(NO_EXCEPT) {
+        if(lhs.ref() == rhs.ref()) return lhs._pos == rhs._pos;
+        return false;
+    }
 
-    inline bool operator==(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return this->_derived()->ref() == other.ref() and this->pos() == other.pos(); }
-    inline bool operator!=(const container_iterator_interface& other) const noexcept(NO_EXCEPT) { return not (*this->_derived() == other); }
+    friend inline std::partial_ordering operator<=>(const derived& lhs, const derived& rhs) noexcept(NO_EXCEPT) {
+        if(lhs.ref() != rhs.ref()) return std::partial_ordering::unordered;
+        return lhs._pos <=> rhs._pos;
+    }
 };
 
 template<class V, std::input_or_output_iterator I>

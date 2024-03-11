@@ -111,9 +111,10 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     }
 
   public:
-    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
         requires std::convertible_to<std::iter_value_t<I>, operand>
-    static node_pointer build(I first, S last) noexcept(NO_EXCEPT) {
+    static node_pointer build(I first, S last) {
+        std::vector<int>;
         if(first == last) return nullptr;
 
         const auto length = std::ranges::distance(first, last);
@@ -126,7 +127,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
         return tree;
     }
 
-    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
         requires
             std::convertible_to<typename std::iter_value_t<I>::first_type, operand> &&
             std::integral<typename std::iter_value_t<I>::second_type>
