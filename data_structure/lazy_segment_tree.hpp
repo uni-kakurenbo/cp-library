@@ -353,7 +353,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     inline auto& apply(const action_type& v) noexcept(NO_EXCEPT) { this->apply(0, this->size(), v);  return *this; }
 
 
-    inline value_type get(size_type p) const noexcept(NO_EXCEPT) {
+    inline value_type get(size_type p) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
         return this->base::get(p).val();
     }
