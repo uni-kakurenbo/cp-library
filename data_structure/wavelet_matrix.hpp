@@ -612,10 +612,10 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
 
 
         inline auto next_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->_comp.rank(v) + k), 0, this->size()));
+            return this->kth_smallest_element(std::clamp(this->_range().count_under(this->_super->_comp.rank(v) + k), size_type{ 0 }, this->size()));
         }
         inline auto prev_element(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
-            return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->_comp.rank2(v) + k), 0, this->size()));
+            return this->kth_largest_element(std::clamp(this->_range().count_over(this->_super->_comp.rank2(v) + k), size_type{ 0 }, this->size()));
         }
 
         inline std::optional<value_type> next(const value_type& v, const size_type k = 0) const noexcept(NO_EXCEPT) {
