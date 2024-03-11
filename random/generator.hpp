@@ -16,7 +16,7 @@ struct random_engine {
     using signed_result_type = typename std::make_signed_t<result_type>;
 
   private:
-    mutable Engine engine;
+    Engine engine;
 
   public:
     static constexpr result_type MIN = Engine::min();
@@ -27,21 +27,21 @@ struct random_engine {
 
     constexpr random_engine(unsigned long seed = 3141592653UL) noexcept(NO_EXCEPT) { this->engine.seed(seed); };
 
-    inline constexpr result_type operator()() const noexcept(NO_EXCEPT) {
+    inline constexpr result_type operator()() noexcept(NO_EXCEPT) {
         return this->engine();
     }
 
-    inline constexpr result_type operator()(result_type max) const noexcept(NO_EXCEPT) {
+    inline constexpr result_type operator()(result_type max) noexcept(NO_EXCEPT) {
         if(max == 0) return 0;
         return (*this)() % max;
     }
-    inline constexpr signed_result_type operator()(signed_result_type min, signed_result_type max) const noexcept(NO_EXCEPT) {
+    inline constexpr signed_result_type operator()(const signed_result_type min, const signed_result_type max) noexcept(NO_EXCEPT) {
         assert(min <= max);
         return min + (*this)(max - min);
     };
 
     template<class T = double>
-    inline constexpr T real() const noexcept(NO_EXCEPT) {
+    inline constexpr T real() noexcept(NO_EXCEPT) {
         const T v = static_cast<T>((this->engine() + 0.5) / (1.0 + this->max()));
         return static_cast<T>((this->operator()() + v) / (1.0 + this->max()));
     }

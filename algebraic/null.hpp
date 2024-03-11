@@ -16,7 +16,7 @@ namespace algebraic {
 
 
 template<class T = std::nullptr_t>
-struct null : base<T>, associative, commutative {
+struct null : base<T>, scalar_multipliable<null<T>>::identity, associative, commutative {
     using base<T>::base;
 
     friend inline null operator+(const null& lhs, const null& rhs) noexcept(NO_EXCEPT) {

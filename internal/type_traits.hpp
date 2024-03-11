@@ -1,5 +1,4 @@
-#ifndef INCLUDED_TYPE_TRAITS // for debuggers
-#define INCLUDED_TYPE_TRAITS
+#pragma once
 
 
 #include <iostream>
@@ -240,6 +239,3 @@ template<class T> concept can_reference = requires { typename with_ref<T>; };
 } // namespace internal
 
 }  // namespace lib
-
-
-#endif //ifndef INCLUDED_TYPE_TRAITS

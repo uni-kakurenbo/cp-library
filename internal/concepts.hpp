@@ -1,5 +1,5 @@
-#ifndef INCLUDED_CONCEPTS // for debuggers
-#define INCLUDED_CONCEPTS
+#pragma once
+
 
 #include <type_traits>
 #include <concepts>
@@ -13,13 +13,13 @@ namespace internal {
 
 
 template<class Structure>
-concept avilable = std::default_initializable<Structure>;
+concept available = std::default_initializable<Structure>;
 
 template<
     template<class...> class Structure,
     class... TemplateParameters
 >
-concept available_with = avilable<Structure<TemplateParameters...>>;
+concept available_with = available<Structure<TemplateParameters...>>;
 
 
 template<class T> concept arithmetic = std::is_arithmetic_v<T>;
@@ -219,6 +219,3 @@ concept numeric =
 } // namespace internal
 
 } // namespace lib
-
-
-#endif //ifndef INCLUDED_CONCEPTS

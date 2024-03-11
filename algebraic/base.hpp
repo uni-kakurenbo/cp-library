@@ -4,12 +4,34 @@
 #include <utility>
 #include <concepts>
 
+
 #include "internal/dev_env.hpp"
+#include "numeric/arithmetic.hpp"
 
 
 namespace lib {
 
 namespace algebraic {
+
+
+template<class Derived>
+struct scalar_multipliable {
+    struct identity {
+        template<std::integral Scalar>
+        friend inline Derived operator*(const Scalar, const Derived& val) noexcept(NO_EXCEPT) {
+            return val;
+        }
+    };
+
+
+    struct automatic {
+        template<std::integral Scalar>
+        friend inline Derived operator*(const Scalar k, const Derived& val) noexcept(NO_EXCEPT) {
+            return lib::pow<Derived, Scalar, std::plus<Derived>>(val, k, {}, {});
+        }
+    };
+};
+
 
 
 template<class T>

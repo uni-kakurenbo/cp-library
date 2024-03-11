@@ -29,8 +29,8 @@ struct range_reference {
     range_reference(Super *const super, const size_type begin, const size_type end) noexcept(NO_EXCEPT) : _super(super), _begin(begin), _end(end) {}
 
   public:
-    inline iterator begin() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*_super), this->_begin); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*_super), this->_end); }
+    inline iterator begin() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_begin); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_end); }
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_end - this->_begin; }
 

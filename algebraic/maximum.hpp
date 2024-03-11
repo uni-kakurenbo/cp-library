@@ -14,10 +14,10 @@ namespace algebraic {
 
 
 template<class T>
-struct maximum : base<T>, associative, commutative {
+struct maximum : base<T>, scalar_multipliable<maximum<T>>::identity, associative, commutative {
     using base<T>::base;
 
-    maximum() noexcept(NO_EXCEPT) : base<T>(std::numeric_limits<T>::lowest()) {};
+    maximum() noexcept(NO_EXCEPT) : maximum(std::numeric_limits<T>::lowest()) {};
 
     friend inline maximum operator+(const maximum& lhs, const maximum& rhs) noexcept(NO_EXCEPT) {
         return std::max(lhs.val(), rhs.val());

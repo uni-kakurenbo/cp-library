@@ -49,7 +49,7 @@ struct sequence_hasher {
             size_type n = static_cast<size_type>(sequence_hasher::_powers.size());
             sequence_hasher::_powers.resize(p+1);
             if(n == 0) sequence_hasher::_powers[0] = 1;
-            REP(i, std::max(0, n-1), p) sequence_hasher::_powers[i+1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
+            REP(i, std::max(size_type{ 0 }, n-1), p) sequence_hasher::_powers[i+1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
         }
         return sequence_hasher::_powers[p];
     }

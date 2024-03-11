@@ -276,7 +276,7 @@ struct core<Monoid> : base<Monoid> {
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,core,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, const core, iterator>;
 
   public:
     struct iterator : iterator_interface {

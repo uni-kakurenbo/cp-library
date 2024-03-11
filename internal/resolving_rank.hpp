@@ -1,6 +1,4 @@
-
-#ifndef INCLUDED_RESOLVING_RANK // for debuggers
-#define INCLUDED_RESOLVING_RANK
+#pragma once
 
 
 namespace lib {
@@ -15,6 +13,3 @@ template<> struct resolving_rank<0> {};
 } // namespace internal
 
 } // namespace lib
-
-
-#endif //ifndef INCLUDED_RESOLVING_RANK
