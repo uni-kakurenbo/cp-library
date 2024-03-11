@@ -14,15 +14,15 @@
 #include "snippet/fast_io.hpp"
 #include "adapter/io.hpp"
 #include "utility/timer.hpp"
-#include "random/xorshift.hpp"
-#include "random/generator.hpp"
+#include "random/engine.hpp"
+#include "random/adaptor.hpp"
 #include "numeric/prime_sieve.hpp"
 #include "numeric/prime_enumerator.hpp"
 
 signed main() {
     print("Hello World");
 
-    lib::random_engine<lib::xorshift<>> rng;
+    lib::random_adaptor<lib::random_engine_32bit<>> rng;
     lib::timer timer(1000);
 
     // int i = 0;

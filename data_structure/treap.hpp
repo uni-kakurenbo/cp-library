@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <memory>
 #include <cassert>
 #include <utility>
 #include <type_traits>
@@ -21,7 +22,7 @@
 
 #include "global/constants.hpp"
 
-#include "random/xorshift.hpp"
+#include "random/engine.hpp"
 
 
 #include "debugger/debug.hpp"
@@ -34,7 +35,7 @@ namespace internal {
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
 template<class Derived, std::integral SizeType, class DataType, tree_indexing_policy INDEXING_POLICY>
-struct interface : private uncopyable {
+struct treap_impl : private uncopyable {
     using size_type = SizeType;
 
     struct node_type;
@@ -44,61 +45,71 @@ struct interface : private uncopyable {
     using derived = Derived;
 
     static constexpr i64 XORSHIFT_ID = -(1L << 62);
-    static inline xorshift<XORSHIFT_ID> rand;
+    static inline random_engine_32bit<XORSHIFT_ID> rand;
 
-    using priority_type = xorshift<>::result_type;
+    using priority_type = random_engine_32bit<>::result_type;
 
 
     static void pushup(const node_pointer tree) noexcept(NO_EXCEPT) {
-        if(!tree) return;
-        tree->size = interface::size(tree->left) + tree->length + interface::size(tree->right);
+        if(tree == node_type::nil) return;
+        tree->size = tree->left->size + tree->length + tree->right->size;
         derived::pushup(tree);
     }
 
   public:
-    // size of subtree whoes root is the node.
-    inline static size_type size(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->size : 0; }
-
     struct node_type {
         using data_type = DataType;
 
-        priority_type priority;
+        priority_type priority = std::numeric_limits<priority_type>::lowest();
 
-        std::add_pointer_t<node_type> left = nullptr, right = nullptr;
+        std::add_pointer_t<node_type> left = node_type::nil, right = node_type::nil;
 
         size_type length, size;
         [[no_unique_address]] data_type data;
 
+        node_type() noexcept = default;
 
         node_type(const data_type& _data, const size_type _size) noexcept(NO_EXCEPT)
             requires (INDEXING_POLICY == tree_indexing_policy::sorted)
-            : priority(interface::rand()), length(_size), size(_size), data(_data)
+            : priority(treap_impl::rand()), length(_size), size(_size), data(_data)
         {}
 
         node_type(const data_type& _data, const size_type _size) noexcept(NO_EXCEPT)
             requires (INDEXING_POLICY == tree_indexing_policy::implicit_key)
-            : priority(interface::rand()), length(_size), size(_size), data(_data)
+            : priority(treap_impl::rand()), length(_size), size(_size), data(_data)
         {}
 
         ~node_type() {
             delete this->left;
             delete this->right;
         }
+
+
+        static inline const node_pointer nil = new node_type{};
+
+        void* operator new(std::size_t n) {
+            return malloc(n);
+        };
+
+        void operator delete(void* ptr) noexcept {
+            if(ptr == node_type::nil) return;
+            free(ptr);
+        }
     };
 
 
     static void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
-        if(!tree) {
+        if(tree == node_type::nil) {
             if(pos > 0) {
                 left = new node_type({}, pos);
-                right = nullptr;
+                right = node_type::nil;
             }
             else if(pos < 0) {
                 right = new node_type({}, -pos);
-                left = nullptr;
+                left = node_type::nil;
             }
             else {
-                left = right = nullptr;
+                left = right = node_type::nil;
             }
             return;
         }
@@ -106,37 +117,37 @@ struct interface : private uncopyable {
         derived::pushdown(tree);
 
         if constexpr(INDEXING_POLICY == tree_indexing_policy::implicit_key) {
-            const size_type lower_bound = interface::size(tree->left);
-            const size_type upper_bound = interface::size(tree) - interface::size(tree->right);
+            const size_type lower_bound = tree->left->size;
+            const size_type upper_bound = tree->size - tree->right->size;
 
             if(
                 pos <= lower_bound
             ) {
-                interface::split(tree->left, pos, left, tree->left), right = std::move(tree);
-                interface::pushup(right);
+                treap_impl::split(tree->left, pos, left, tree->left), right = std::move(tree);
+                treap_impl::pushup(right);
             }
             else if(
                 pos >= upper_bound
             ) {
-                interface::split(tree->right, pos - upper_bound, tree->right, right), left = std::move(tree);
-                interface::pushup(left);
+                treap_impl::split(tree->right, pos - upper_bound, tree->right, right), left = std::move(tree);
+                treap_impl::pushup(left);
             }
             else {
                 tree->length = pos - lower_bound;
-                interface::merge(tree->right, new node_type(tree->data, upper_bound - pos), tree->right);
+                treap_impl::merge(tree->right, new node_type(tree->data, upper_bound - pos), tree->right);
 
-                interface::split(tree->right, 0, tree->right, right), left = std::move(tree);
-                interface::pushup(left);
+                treap_impl::split(tree->right, 0, tree->right, right), left = std::move(tree);
+                treap_impl::pushup(left);
             }
         }
         else {
             if(pos <= tree->data) {
-                interface::split(tree->left, pos, left, tree->left), right = std::move(tree);
-                interface::pushup(right);
+                treap_impl::split(tree->left, pos, left, tree->left), right = std::move(tree);
+                treap_impl::pushup(right);
             }
             else {
-                interface::split(tree->right, pos, tree->right, right), left = std::move(tree);
-                interface::pushup(left);
+                treap_impl::split(tree->right, pos, tree->right, right), left = std::move(tree);
+                treap_impl::pushup(left);
             }
         }
     }
@@ -146,17 +157,17 @@ struct interface : private uncopyable {
         derived::pushdown(left);
         derived::pushdown(right);
 
-        if(!(left && right)) {
-            tree = left ? left : right;
+        if(left == node_type::nil || right == node_type::nil) {
+            tree = left == node_type::nil ? right : left;
         }
         else if(left->priority > right->priority) {
-            interface::merge(left->right, left->right, right), tree = std::move(left);
+            treap_impl::merge(left->right, left->right, right), tree = std::move(left);
         }
         else {
-            interface::merge(right->left, left, right->left), tree = std::move(right);
+            treap_impl::merge(right->left, left, right->left), tree = std::move(right);
         }
 
-        interface::pushup(tree);
+        treap_impl::pushup(tree);
     }
 };
 
@@ -167,7 +178,7 @@ struct interface : private uncopyable {
 template<std::integral SizeType = i64>
 struct treap_context {
     template<class derived, tree_indexing_policy INDEXING_POLICY, class DataType = internal::dummy>
-    using interface = internal::interface<derived, SizeType, DataType, INDEXING_POLICY>;
+    using interface = internal::treap_impl<derived, SizeType, DataType, INDEXING_POLICY>;
 };
 
 

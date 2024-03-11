@@ -76,33 +76,31 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     using size_type = typename interface::size_type;
 
   private:
-    inline static operand val(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->length * tree->data.val : operand{}; }
-
-    inline static operand acc(const node_pointer tree) noexcept(NO_EXCEPT) { return tree ? tree->data.acc : operand{}; }
-
     inline static void pushup(const node_pointer tree) noexcept(NO_EXCEPT) {
-        tree->data.acc = core::acc(tree->left) + core::val(tree) + core::acc(tree->right);
+        tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
     }
 
     inline static void pushdown(const node_pointer tree) noexcept(NO_EXCEPT) {
-        if(tree && tree->data.rev) {
+        if(tree == node_type::nil) return;
+
+        if(tree->data.rev) {
             tree->data.rev = false;
 
             std::swap(tree->left, tree->right);
 
-            if(tree->left) tree->left->data.rev ^= 1;
-            if(tree->right) tree->right->data.rev ^= 1;
+            if(tree->left != node_type::nil) tree->left->data.rev ^= 1;
+            if(tree->right != node_type::nil) tree->right->data.rev ^= 1;
         }
 
-        if(tree && tree->data.lazy != operation{}) {
-            if(tree->left) {
+        if(tree->data.lazy != operation{}) {
+            if(tree->left != node_type::nil) {
                 tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
-                tree->left->data.acc = action::map(tree->left->data.acc, action::fold(tree->data.lazy, interface::size(tree->left)));
+                tree->left->data.acc = action::map(tree->left->data.acc, action::fold(tree->data.lazy, tree->left->size));
             }
 
-            if(tree->right) {
+            if(tree->right != node_type::nil) {
                 tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
-                tree->right->data.acc = action::map(tree->right->data.acc, action::fold(tree->data.lazy, interface::size(tree->right)));
+                tree->right->data.acc = action::map(tree->right->data.acc, action::fold(tree->data.lazy, tree->right->size));
             }
 
             tree->data.val = action::map(tree->data.val, tree->data.lazy);
@@ -113,14 +111,13 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
   public:
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
         requires std::convertible_to<std::iter_value_t<I>, operand>
-    static node_pointer build(I first, S last) {
-        if(first == last) return nullptr;
+    static node_pointer build(I first, S last) noexcept(NO_EXCEPT) {
+        if(first == last) return node_type::nil;
 
         const auto length = std::ranges::distance(first, last);
         const auto middle = std::next(first, length >> 1);
 
         node_pointer tree;
-
         core::merge(tree, core::build(first, middle), new node_type(operand{ *middle }, 1), core::build(std::next(middle), last));
 
         return tree;
@@ -131,10 +128,10 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
             std::convertible_to<typename std::iter_value_t<I>::first_type, operand> &&
             std::integral<typename std::iter_value_t<I>::second_type>
     static node_pointer build(I first, S last) noexcept(NO_EXCEPT) {
-        if(first == last) return nullptr;
+        if(first == last) return node_type::nil;
 
         const auto length = std::ranges::distance(first, last);
-        const auto middle = std::next(first, length >> 1);
+        const auto middle = std::ranges::next(first, length >> 1);
 
         node_pointer tree;
         core::merge(tree, core::build(first, middle), new node_type(middle->first, middle->second), core::build(std::next(middle), last));
@@ -218,7 +215,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
         core::split(tree, l, r, t0, t1, t2);
 
-        if(!t1) t1 = new node_type({}, r - l);
+        if(t1 == node_type::nil) t1 = new node_type({}, r - l);
         t1->data.lazy = val + t1->data.lazy;
 
         core::merge(tree, t0, t1, t2);
@@ -249,7 +246,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
         core::split(tree, l, r, t0, t1, t2);
 
-        if(t1) t1->data.rev ^= 1;
+        if(t1 != node_type::nil) t1->data.rev ^= 1;
 
         core::merge(tree, t0, t1, t2);
     }
@@ -315,19 +312,19 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
         }
 
         if constexpr(LEFT) {
-            if(tree->left and tree->left->data.acc + val != val) {
+            if(tree->left != node_type::nil and tree->left->data.acc + val != val) {
                 return core::find<true>(tree->left, val, offset);
             }
             else {
-                return tree->data.val + val != val ? offset + core::size(tree->left) : core::find<true>(tree->right, val, offset + core::size(tree->left) + 1);
+                return tree->data.val + val != val ? offset + tree->left->size : core::find<true>(tree->right, val, offset + tree->left->size + 1);
             }
         }
         else {
-            if(tree->right and tree->right->data.acc + val != val) {
-                return core::find<false>(tree->right, val, offset + core::size(tree->left) + 1);
+            if(tree->right != node_type::nil and tree->right->data.acc + val != val) {
+                return core::find<false>(tree->right, val, offset + tree->left->size + 1);
             }
             else {
-                return tree->data.val + val != val ? offset + core::size(tree->left) : core::find<false>(tree->left, val, offset);
+                return tree->data.val + val != val ? offset + tree->left->size : core::find<false>(tree->left, val, offset);
             }
         }
     }
@@ -349,7 +346,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     static debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) {
-        if (!tree) return prefix + "\n";
+        if (tree == node_type::nil ) return prefix + "\n";
 
         core::pushdown(tree);
 
@@ -410,13 +407,14 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     using core = internal::dynamic_sequence_impl::core<Action, Context>;
 
   private:
+    using node_type = typename core::node_type;
     using node_pointer = typename core::node_pointer;
 
   public:
     using size_type = typename core::size_type;
 
   private:
-    node_pointer _root = nullptr;
+    node_pointer _root = node_type::nil;
 
     size_type _offset = 0;
 
@@ -445,15 +443,14 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     template<std::convertible_to<value_type> T>
     dynamic_sequence(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) : dynamic_sequence(values) {}
 
-
-    size_type size() const noexcept(NO_EXCEPT) { return this->core::size(this->_root); }
+    size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
     inline void clear() noexcept(NO_EXCEPT) {
         delete this->_root;
-        this->_root = nullptr;
+        this->_root = node_type::nil;
         this->_offset = 0;
     }
 
