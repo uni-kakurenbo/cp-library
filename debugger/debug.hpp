@@ -305,14 +305,14 @@ struct dump_wrapper {
     template<lib::internal::derived_from_template<std::pair> T>
     std::string operator()(const T& val) const {
         std::stringstream res;
-        res << " ( " << dump(val.first) << ", " << dump(val.second) << " )";
+        res << "( " << dump(val.first) << ", " << dump(val.second) << " )";
         return res.str();
     }
 
     template<lib::internal::derived_from_template<std::tuple> T>
     std::string operator()(const T& val) const {
         std::stringstream res;
-        res << " ( ";
+        res << "( ";
         dump_tuple_impl<0>(val, res);
         res << " )";
         return res.str();
@@ -383,7 +383,7 @@ std::string dump(T&& val) {
         return dump_range{}(std::forward<T>(val));
     }
 
-    return "== dmup error ==";
+    return "== dump error ==";
 }
 
 

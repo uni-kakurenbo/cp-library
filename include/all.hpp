@@ -13,8 +13,8 @@
 #include "include/snippets.hpp"
 #include "include/views.hpp"
 
-#include "random/generator.hpp"
-#include "random/xorshift.hpp"
+#include "random/adaptor.hpp"
+#include "random/engine.hpp"
 
 #include "utility/functional.hpp"
 #include "utility/restrictor.hpp"

@@ -19,7 +19,7 @@
 #include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
-#include "random/xorshift.hpp"
+#include "random/engine.hpp"
 #include "utility/timer.hpp"
 
 signed main() {
@@ -33,8 +33,8 @@ signed main() {
     lib::timer timer(1000);
 
     while(not timer.expired()) {
-        lib::i64 i = lib::rand64();
-        lib::i64 v = lib::rand64();
+        lib::i64 i = lib::randi64();
+        lib::i64 v = lib::randi64();
         i /= 2;
         debug(i, v);
 

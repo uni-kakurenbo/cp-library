@@ -11,7 +11,7 @@ namespace lib {
 
 
 template<class Engine>
-struct random_engine {
+struct random_adaptor {
     using result_type = typename Engine::result_type;
     using signed_result_type = typename std::make_signed_t<result_type>;
 
@@ -25,7 +25,7 @@ struct random_engine {
     static constexpr result_type min() noexcept(NO_EXCEPT) { return MIN; }
     static constexpr result_type max() noexcept(NO_EXCEPT) { return MAX; }
 
-    constexpr random_engine(unsigned long seed = 3141592653UL) noexcept(NO_EXCEPT) { this->engine.seed(seed); };
+    constexpr random_adaptor(unsigned long seed = 3141592653UL) noexcept(NO_EXCEPT) { this->engine.seed(seed); };
 
     inline constexpr result_type operator()() noexcept(NO_EXCEPT) {
         return this->engine();

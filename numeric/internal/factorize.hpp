@@ -19,7 +19,7 @@
 #include "numeric/modular/modint_interface.hpp"
 #include "numeric/bit.hpp"
 
-#include "random/xorshift.hpp"
+#include "random/engine.hpp"
 
 
 namespace lib {
@@ -44,7 +44,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 
     auto f = [&](const Mint& x) noexcept(NO_EXCEPT) { return x * x + rr; };
 
-    static xorshift64<-(1L << 62) + 2> rand(std::random_device{}());
+    static random_engine_64bit rand(std::random_device{}());
     auto rand_ = [&]() noexcept(NO_EXCEPT) { return rand() % (n - 2) + 2; };
 
     while(true) {

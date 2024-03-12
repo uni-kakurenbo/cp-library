@@ -78,8 +78,8 @@ inline constexpr T clear_higher_bits(const T v, const T p) {
 }
 
 
-template<std::unsigned_integral T> constexpr T shiftl(const T, const int);
-template<std::unsigned_integral T> constexpr T shiftr(const T, const int);
+template<std::unsigned_integral T> constexpr T shiftl(const T, const int = 1);
+template<std::unsigned_integral T> constexpr T shiftr(const T, const int = 1);
 
 template<std::unsigned_integral T>
 constexpr T shiftl(const T x, const int n) {
