@@ -38,7 +38,7 @@ T primitive_root(const T p) noexcept(NO_EXCEPT) {
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(p);
     assert(Mint::mod() == p);
 
-    static random_engine_64bit<-(1L << 62) + 3> rand;
+    static random_engine_64bit rand;
     while(true) {
         const Mint x = rand();
         if(x == Mint::zero) continue;

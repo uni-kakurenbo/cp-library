@@ -60,9 +60,8 @@ constexpr double to_double(const std::uint64_t x) noexcept(NO_EXCEPT) {
 }
 
 
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct mulberry32 : internal::random_engine<mulberry32<Id>, std::uint32_t> {
-    using internal::random_engine<mulberry32<Id>, std::uint32_t>::random_engine;
+struct mulberry32 : internal::random_engine<mulberry32, std::uint32_t> {
+    using internal::random_engine<mulberry32, std::uint32_t>::random_engine;
 
   private:
     std::uint32_t _x;
@@ -80,9 +79,8 @@ struct mulberry32 : internal::random_engine<mulberry32<Id>, std::uint32_t> {
 };
 
 
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct splitmix64 : internal::random_engine<splitmix64<Id>, std::uint64_t> {
-    using internal::random_engine<splitmix64<Id>, std::uint64_t>::random_engine;
+struct splitmix64 : internal::random_engine<splitmix64, std::uint64_t> {
+    using internal::random_engine<splitmix64, std::uint64_t>::random_engine;
 
   private:
     std::uint64_t _x;
@@ -102,9 +100,8 @@ struct splitmix64 : internal::random_engine<splitmix64<Id>, std::uint64_t> {
 
 
 // xoroshiro64**
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct xoroshiro64ss : internal::random_engine<xoroshiro64ss<Id>, std::uint32_t> {
-    using internal::random_engine<xoroshiro64ss<Id>, std::uint32_t>::random_engine;
+struct xoroshiro64ss : internal::random_engine<xoroshiro64ss, std::uint32_t> {
+    using internal::random_engine<xoroshiro64ss, std::uint32_t>::random_engine;
 
   private:
     std::uint32_t s[2];
@@ -133,9 +130,8 @@ struct xoroshiro64ss : internal::random_engine<xoroshiro64ss<Id>, std::uint32_t>
 
 
 
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct xoroshiro128ss : internal::random_engine<xoroshiro128ss<Id>, std::uint64_t> {
-    using internal::random_engine<xoroshiro128ss<Id>, std::uint64_t>::random_engine;
+struct xoroshiro128ss : internal::random_engine<xoroshiro128ss, std::uint64_t> {
+    using internal::random_engine<xoroshiro128ss, std::uint64_t>::random_engine;
 
   private:
     std::uint64_t s[2];
@@ -162,9 +158,8 @@ struct xoroshiro128ss : internal::random_engine<xoroshiro128ss<Id>, std::uint64_
 };
 
 
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct xoroshiro128pp : internal::random_engine<xoroshiro128pp<Id>, std::uint64_t> {
-    using internal::random_engine<xoroshiro128pp<Id>, std::uint64_t>::random_engine;
+struct xoroshiro128pp : internal::random_engine<xoroshiro128pp, std::uint64_t> {
+    using internal::random_engine<xoroshiro128pp, std::uint64_t>::random_engine;
 
   private:
     std::uint64_t s[2];
@@ -192,9 +187,8 @@ struct xoroshiro128pp : internal::random_engine<xoroshiro128pp<Id>, std::uint64_
 
 
 // xoroshiro128+
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct xoroshiro128p : internal::random_engine<xoroshiro128p<Id>, std::uint64_t> {
-    using internal::random_engine<xoroshiro128p<Id>, std::uint64_t>::random_engine;
+struct xoroshiro128p : internal::random_engine<xoroshiro128p, std::uint64_t> {
+    using internal::random_engine<xoroshiro128p, std::uint64_t>::random_engine;
 
   private:
     std::uint64_t s[2];
@@ -221,9 +215,8 @@ struct xoroshiro128p : internal::random_engine<xoroshiro128p<Id>, std::uint64_t>
 };
 
 
-template<i64 Id = internal::INTERNAL_RANDOM_GENERATOR_ID>
-struct xoroshiro64s : internal::random_engine<xoroshiro64s<Id>, std::uint32_t> {
-    using internal::random_engine<xoroshiro64s<Id>, std::uint32_t>::random_engine;
+struct xoroshiro64s : internal::random_engine<xoroshiro64s, std::uint32_t> {
+    using internal::random_engine<xoroshiro64s, std::uint32_t>::random_engine;
 
   private:
     std::uint32_t s[2];
@@ -250,30 +243,26 @@ struct xoroshiro64s : internal::random_engine<xoroshiro64s<Id>, std::uint32_t> {
 };
 
 
-template<i64 id = -1>
-using random_engine_32bit = xoroshiro64ss<id>;
+using random_engine_32bit = xoroshiro64ss;
 
-template<i64 id = -1>
-using random_engine_64bit = xoroshiro128pp<id>;
+using random_engine_64bit = xoroshiro128pp;
 
-template<i64 id = -1>
-using random_engine_float = xoroshiro64s<id>;
+using random_engine_float = xoroshiro64s;
 
-template<i64 id = -1>
-using random_engine_double = xoroshiro128p<id>;
+using random_engine_double = xoroshiro128p;
 
 
 
-random_engine_32bit<internal::INTERNAL_RANDOM_GENERATOR_ID> randi32;
-random_engine_64bit<internal::INTERNAL_RANDOM_GENERATOR_ID> randi64;
+random_engine_32bit randi32;
+random_engine_64bit randi64;
 
 float randf() {
-    static random_engine_float<internal::INTERNAL_RANDOM_GENERATOR_ID> gen;
+    static random_engine_float gen;
     return to_float(gen());
 }
 
 double randd() {
-    static random_engine_double<internal::INTERNAL_RANDOM_GENERATOR_ID> gen;
+    static random_engine_double gen;
     return to_double(gen());
 }
 

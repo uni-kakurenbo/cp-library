@@ -117,7 +117,7 @@ struct sequence_hasher {
                 sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
             }
             else if constexpr(BASE < 0) {
-                random_engine_64bit<-(1L << 62) + 1> random(std::random_device{}());
+                random_engine_64bit random(std::random_device{}());
                 sequence_hasher::base = static_cast<hash_type>(random() % sequence_hasher::mod);
             }
         }
