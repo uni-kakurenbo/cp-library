@@ -78,6 +78,8 @@ struct treap_impl : private uncopyable {
 
 
     void rectify(const node_pointer tree) const noexcept(NO_EXCEPT) {
+        if(tree->size == 0) return;
+
         std::vector<priority_type> priorities(tree->size);
         std::ranges::generate(priorities, this->_rand);
         std::ranges::make_heap(priorities, std::ranges::greater{});
@@ -100,10 +102,10 @@ struct treap_impl : private uncopyable {
 
     template<class... Args>
     node_pointer create_node(Args&&... args) noexcept(NO_EXCEPT) {
-        node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
-        node_allocator_traits::construct(this->_allocator, node, node_type{ std::forward<Args>(args)... });
+        // node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
+        // node_allocator_traits::construct(this->_allocator, node, node_type{ std::forward<Args>(args)... });
 
-        return node;
+        return new node_type{ std::forward<Args>(args)... };
     }
 
     void delete_tree(node_pointer tree) noexcept(NO_EXCEPT) {
@@ -113,7 +115,8 @@ struct treap_impl : private uncopyable {
         this->delete_tree(tree->right);
 
         // node_allocator_traits::destroy(this->_allocator, tree);
-        node_allocator_traits::deallocate(this->_allocator, tree, 1);
+        // node_allocator_traits::deallocate(this->_allocator, tree, 1);
+        delete tree;
     }
 
 
@@ -219,7 +222,7 @@ struct treap_impl : private uncopyable {
         this->_derived()->pushdown(right);
 
         if(left == node_type::nil || right == node_type::nil) {
-            tree = std::move(left == node_type::nil ? right : left);
+            tree = left == node_type::nil ? right : left;
         }
         else if(left->priority > right->priority) {
             this->merge(left->right, left->right, right), tree = std::move(left);
