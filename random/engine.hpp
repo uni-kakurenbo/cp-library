@@ -109,7 +109,7 @@ struct xoroshiro64ss : internal::random_engine<xoroshiro64ss, std::uint32_t> {
   public:
     template<std::unsigned_integral T>
     inline constexpr void seed(const T _seed) noexcept(NO_EXCEPT) {
-        mulberry32<internal::INTERNAL_RANDOM_GENERATOR_ID> gen32(hash32(_seed));
+        mulberry32 gen32(hash32(_seed));
         this->s[0] = gen32();
         this->s[1] = gen32();
     }
@@ -139,7 +139,7 @@ struct xoroshiro128ss : internal::random_engine<xoroshiro128ss, std::uint64_t> {
   public:
     template<std::unsigned_integral T>
     inline constexpr void seed(const T _seed) noexcept(NO_EXCEPT) {
-        splitmix64<internal::INTERNAL_RANDOM_GENERATOR_ID> gen64(hash32(_seed));
+        splitmix64 gen64(hash32(_seed));
         this->s[0] = gen64();
         this->s[1] = gen64();
     }
@@ -167,7 +167,7 @@ struct xoroshiro128pp : internal::random_engine<xoroshiro128pp, std::uint64_t> {
   public:
     template<std::unsigned_integral T>
     inline constexpr void seed(const T _seed) noexcept(NO_EXCEPT) {
-        splitmix64<internal::INTERNAL_RANDOM_GENERATOR_ID> gen64(hash32(_seed));
+        splitmix64 gen64(hash32(_seed));
         this->s[0] = gen64();
         this->s[1] = gen64();
     }
@@ -196,7 +196,7 @@ struct xoroshiro128p : internal::random_engine<xoroshiro128p, std::uint64_t> {
   public:
     template<std::unsigned_integral T>
     inline constexpr void seed(const T _seed) noexcept(NO_EXCEPT) {
-        splitmix64<internal::INTERNAL_RANDOM_GENERATOR_ID> gen64(hash64(_seed));
+        splitmix64 gen64(hash64(_seed));
         this->s[0] = gen64();
         this->s[1] = gen64();
     }
@@ -224,7 +224,7 @@ struct xoroshiro64s : internal::random_engine<xoroshiro64s, std::uint32_t> {
   public:
     template<std::unsigned_integral T>
     inline constexpr void seed(const T _seed) noexcept(NO_EXCEPT) {
-        mulberry32<internal::INTERNAL_RANDOM_GENERATOR_ID> gen32(hash32(_seed));
+        mulberry32 gen32(hash32(_seed));
         this->s[0] = gen32();
         this->s[1] = gen32();
     }
