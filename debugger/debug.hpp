@@ -383,7 +383,7 @@ std::string dump(T&& val) {
         return dump_range{}(std::forward<T>(val));
     }
 
-    return "== dmup error ==";
+    return "== dump error ==";
 }
 
 
