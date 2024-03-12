@@ -23,11 +23,22 @@
 
 using mint = lib::modint998244353;
 
+
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>> data(a);
+
+    static char buffer[1000000000]{};
+
+    std::pmr::synchronized_pool_resource pr{};
+    std::pmr::monotonic_buffer_resource mr{ buffer, sizeof(buffer), &pr };
+
+    lib::dynamic_sequence<
+        lib::actions::range_affine_range_sum<mint>,
+        lib::pmr::treap_context<lib::i64>
+    > data(a, &mr);
+
 
     REP(q) {
         int t; std::cin >> t;
@@ -52,6 +63,6 @@ signed main() {
             print(data(l, r).fold());
         }
 
-        debug(data);
+        debug(data.dump_rich());
     }
 }
