@@ -46,7 +46,7 @@ constexpr T multiply_high(const T x, const T y) noexcept(NO_EXCEPT) {
 
 template<std::unsigned_integral T>
 inline constexpr int highest_bit_pos(const T v) noexcept(NO_EXCEPT) {
-    return std::bit_width(v) - 1;
+    return (int)std::bit_width(v) - 1; // cast to int for GCC12
 }
 
 template<std::unsigned_integral T>

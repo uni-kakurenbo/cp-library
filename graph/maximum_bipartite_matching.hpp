@@ -16,7 +16,8 @@
 namespace lib {
 
 struct maximum_bipartite_matching {
-    using size_type = internal::size_t;
+    // using size_type = internal::size_t;
+    using size_type = int;
 
   protected:
     using MF = atcoder::mf_graph<size_type>;
