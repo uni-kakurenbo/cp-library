@@ -102,10 +102,10 @@ struct treap_impl : private uncopyable {
 
     template<class... Args>
     node_pointer create_node(Args&&... args) noexcept(NO_EXCEPT) {
-        // node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
-        // node_allocator_traits::construct(this->_allocator, node, node_type{ std::forward<Args>(args)... });
+        node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
+        node_allocator_traits::construct(this->_allocator, node, node_type{ std::forward<Args>(args)... });
 
-        return new node_type{ std::forward<Args>(args)... };
+        return node;
     }
 
     void delete_tree(node_pointer tree) noexcept(NO_EXCEPT) {
@@ -114,9 +114,7 @@ struct treap_impl : private uncopyable {
         this->delete_tree(tree->left);
         this->delete_tree(tree->right);
 
-        // node_allocator_traits::destroy(this->_allocator, tree);
-        // node_allocator_traits::deallocate(this->_allocator, tree, 1);
-        delete tree;
+        node_allocator_traits::deallocate(this->_allocator, tree, 1);
     }
 
 

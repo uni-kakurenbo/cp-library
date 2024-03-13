@@ -23,16 +23,14 @@
 
 using mint = lib::modint998244353;
 
-
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
 
-    static char buffer[1000000000]{};
+    static std::array<std::byte, 64U * 2000000> buffer;
+    std::pmr::monotonic_buffer_resource mr{ &buffer, sizeof(buffer) };
 
-    std::pmr::synchronized_pool_resource pr{};
-    std::pmr::monotonic_buffer_resource mr{ buffer, sizeof(buffer), &pr };
 
     lib::dynamic_sequence<
         lib::actions::range_affine_range_sum<mint>,
