@@ -9,7 +9,7 @@
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/g++-12",
+            "compilerPath": "/usr/bin/g++-13",
             "cStandard": "gnu23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "linux-gcc-x64"
