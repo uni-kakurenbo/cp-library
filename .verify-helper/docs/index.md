@@ -25,5 +25,6 @@
 - `utility/`: その他の便利系ライブラリ．
 - `view/`: 列のビュー．基本的には `std::ranges::views::` を踏襲している．
 - `**/internal/`: 主に内部実装．concepts やメタ関数も含まれる．コンテスト中に個別で `#include` することは想定していない．
+
 ---
 [**Lint Report**](./lint)
