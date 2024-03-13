@@ -11,7 +11,7 @@
 
 template<class Graph>
 bool lib::internal::graph_impl::mixin<Graph>::is_bipartite() const noexcept(NO_EXCEPT) {
-    using color_type = int;
+    using color_type = std::int8_t;
 
     std::valarray<color_type> color(0, this->vertices());
 
