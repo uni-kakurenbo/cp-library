@@ -35,7 +35,7 @@ namespace fenwick_tree_impl {
 
 // Thanks to: atcoder::fenwick_tree
 template<algebraic::internal::monoid S>
-struct base {
+struct core {
     using size_type = internal::size_t;
 
   private:
@@ -43,7 +43,7 @@ struct base {
     std::valarray<S> _data;
 
   protected:
-    base() noexcept(NO_EXCEPT) {}
+    core() noexcept(NO_EXCEPT) {}
 
     inline void initialize() noexcept(NO_EXCEPT) {
         FOR(i, 1, this->_n) {
@@ -52,7 +52,7 @@ struct base {
         }
     }
 
-    explicit base(const size_type n) noexcept(NO_EXCEPT)
+    explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _bit_ceil(std::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
     {}
 
@@ -116,17 +116,24 @@ struct base {
 };
 
 
-template<class> struct core : unconstructible {};
+} // namespace fenwick_tree_impl
+
+} // namespace internal
+
+
+template<class Value>
+struct fenwick_tree : internal::unconstructible {};
+
 
 template<algebraic::internal::monoid Monoid>
     requires algebraic::internal::commutative<Monoid>
-struct core<Monoid> : base<Monoid> {
+struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
   private:
-    using base = typename fenwick_tree_impl::base<Monoid>;
+    using core = typename internal::fenwick_tree_impl::core<Monoid>;
 
   public:
     using value_type = Monoid;
-    using size_type = typename base::size_type;
+    using size_type = typename core::size_type;
 
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
@@ -134,21 +141,21 @@ struct core<Monoid> : base<Monoid> {
     }
 
   public:
-    core() noexcept(NO_EXCEPT) : base() {}
+    fenwick_tree() noexcept(NO_EXCEPT) : core() {}
 
-    explicit core(const size_type n) noexcept(NO_EXCEPT) : base(n) {}
-    explicit core(const size_type n, const value_type& v) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit fenwick_tree(const size_type n) noexcept(NO_EXCEPT) : core(n) {}
+    explicit fenwick_tree(const size_type n, const value_type& v) noexcept(NO_EXCEPT) : core(n) { this->fill(v); }
 
     template<std::convertible_to<value_type> T>
-    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+    fenwick_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : fenwick_tree(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    explicit core(I first, S last) noexcept(NO_EXCEPT)
-      : core(static_cast<size_type>(std::ranges::distance(first, last)))
+    explicit fenwick_tree(I first, S last) noexcept(NO_EXCEPT)
+      : fenwick_tree(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
     template<std::ranges::input_range R>
-    explicit core(R&& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
+    explicit fenwick_tree(R&& range) noexcept(NO_EXCEPT) : fenwick_tree(ALL(range)) {}
 
 
     template<std::convertible_to<value_type> T>
@@ -173,12 +180,12 @@ struct core<Monoid> : base<Monoid> {
         return *this;
     }
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->base::size(); }
-    inline bool empty() const noexcept(NO_EXCEPT) { return this->base::size() == 0; }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->core::size(); }
+    inline bool empty() const noexcept(NO_EXCEPT) { return this->core::size() == 0; }
 
-    struct point_reference : internal::point_reference<core> {
-        point_reference(core *const super, const size_type p) noexcept(NO_EXCEPT)
-          : internal::point_reference<core>(super, super->_positivize_index(p))
+    struct point_reference : internal::point_reference<fenwick_tree> {
+        point_reference(fenwick_tree *const super, const size_type p) noexcept(NO_EXCEPT)
+          : internal::point_reference<fenwick_tree>(super, super->_positivize_index(p))
         {
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
@@ -205,9 +212,9 @@ struct core<Monoid> : base<Monoid> {
         }
     };
 
-    struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
-          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+    struct range_reference : internal::range_reference<fenwick_tree> {
+        range_reference(fenwick_tree *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<fenwick_tree>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
@@ -228,7 +235,7 @@ struct core<Monoid> : base<Monoid> {
 
     inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
-        this->base::apply(p, x);
+        this->core::apply(p, x);
          return *this;
     }
 
@@ -236,7 +243,7 @@ struct core<Monoid> : base<Monoid> {
         requires algebraic::internal::invertible<value_type>
     {
         assert(0 <= p && p < this->size());
-        this->base::set(p, x);
+        this->core::set(p, x);
          return *this;
     }
 
@@ -244,7 +251,7 @@ struct core<Monoid> : base<Monoid> {
         requires algebraic::internal::invertible<value_type>
     {
         assert(0 <= p && p < this->size());
-        return this->base::get(p);
+        return this->core::get(p);
     }
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
@@ -261,27 +268,27 @@ struct core<Monoid> : base<Monoid> {
         requires algebraic::internal::invertible<value_type>
     {
         assert(0 <= l && l <= r && r <= this->size());
-        return this->base::fold(l, r);
+        return this->core::fold(l, r);
     }
 
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= this->size());
-        return this->base::fold(r);
+        return this->core::fold(r);
     }
 
     inline value_type fold() const noexcept(NO_EXCEPT) {
-        return this->base::fold(this->size());
+        return this->core::fold(this->size());
     }
 
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type, const core, iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, const fenwick_tree, iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
-        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT) : iterator_interface(ref, p) {}
+        iterator(const fenwick_tree *const ref, const size_type p) noexcept(NO_EXCEPT) : iterator_interface(ref, p) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
@@ -290,22 +297,10 @@ struct core<Monoid> : base<Monoid> {
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<actions::internal::operand_only_action Action>
-struct core<Action> : core<typename Action::operand> {
-    using action = Action;
-    using core<typename action::operand>::core;
-};
 
-
-} // namespace fenwick_tree_impl
-
-} // namespace internal
-
-
-template<class ActionOrMonoid>
-    requires internal::available_with<internal::fenwick_tree_impl::core, ActionOrMonoid>
-struct fenwick_tree : internal::fenwick_tree_impl::core<ActionOrMonoid> {
-    using internal::fenwick_tree_impl::core<ActionOrMonoid>::core;
+template<actions::internal::operatable_action Action>
+struct fenwick_tree<Action> : fenwick_tree<typename Action::operand> {
+    using fenwick_tree<typename Action::operand>::fenwick_tree;
 };
 
 

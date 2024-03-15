@@ -30,13 +30,6 @@ concept can_removable_priority_queue =
         pq.emplace(v);
     };
 
-
-// template<class ValueType>
-// struct dummy_set {
-//     using value_type = ValueType;
-// };
-
-
 } // namespace internal
 
 

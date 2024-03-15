@@ -4,6 +4,7 @@
 #include <concepts>
 
 #include "algebraic/null.hpp"
+// #include "algebraic/internal/concepts.hpp"
 #include "algebraic/helper.hpp"
 #include "action/base.hpp"
 #include "action/null.hpp"
@@ -37,6 +38,11 @@ struct make_operatable {
     static_assert(internal::operatable_action<type>);
 };
 
+
+template<class T>
+using make_operatable_t = typename make_operatable<T>::type;
+
+
 template<algebraic::internal::magma Magma>
 struct make_effective {
     struct type : base<Magma> {
@@ -48,12 +54,20 @@ struct make_effective {
 
 
 template<class T>
+using make_effective_t = typename make_effective<T>::type;
+
+
+template<class T>
 struct make_full {
     using type = null<T>;
 
     static_assert(internal::full_action<type>);
 };
 
+template<algebraic::internal::magma Magma>
+struct make_full<Magma> {
+    using type = make_full<make_operatable_t<Magma>>::type;
+};
 
 template<internal::full_action Action>
 struct make_full<Action> {
@@ -91,12 +105,6 @@ struct make_full<Action> {
     static_assert(internal::full_action<type>);
 };
 
-
-template<class T>
-using make_operatable_t = typename make_operatable<T>::type;
-
-template<class T>
-using make_effective_t = typename make_effective<T>::type;
 
 template<class T>
 using make_full_t = typename make_full<T>::type;

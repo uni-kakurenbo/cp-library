@@ -18,17 +18,21 @@ namespace internal {
 
 
 template<class T>
-concept magma = lib::internal::addable<T> && std::same_as<std::common_type_t<T>, T>;
+concept magma =
+    lib::internal::addable<T> && std::same_as<std::common_type_t<T>, T> &&
+    requires () {
+        typename T::value_type;
+    };
 
 
 template<class T>
-concept associative = magma<T> && std::is_base_of_v<algebraic::associative, T>;
+concept associative = std::is_base_of_v<algebraic::associative, T>;
 
 template<class T>
-concept commutative = magma<T> && std::is_base_of_v<algebraic::commutative, T>;
+concept commutative = std::is_base_of_v<algebraic::commutative, T>;
 
 template<class T>
-concept invertible = magma<T> && lib::internal::unary_subtractable<T>;
+concept invertible = lib::internal::unary_subtractable<T>;
 
 
 template<class T>

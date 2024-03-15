@@ -412,9 +412,9 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 } // namespace internal
 
 
-template<class Value, class = treap_context<>>
-struct dynamic_sequence : dynamic_sequence<actions::make_full_t<Value>> {
-    using dynamic_sequence<actions::make_full_t<Value>>::dynamic_sequence;
+template<class Value, class Context = treap_context<>>
+struct dynamic_sequence : dynamic_sequence<actions::make_full_t<Value>, Context> {
+    using dynamic_sequence<actions::make_full_t<Value>, Context>::dynamic_sequence;
 };
 
 

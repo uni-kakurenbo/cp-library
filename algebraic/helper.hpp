@@ -2,6 +2,9 @@
 
 
 #include "algebraic/base.hpp"
+#include "algebraic/null.hpp"
+#include "algebraic/internal/concepts.hpp"
+
 
 namespace lib {
 
@@ -22,6 +25,23 @@ struct helper : lib::algebraic::base<T>, lib::algebraic::scalar_multipliable<hel
 
 template<class T, T (*op)(T, T), T (*e)()>
 using monoid_helper = helper<T, op, e, associative>;
+
+
+template<class T>
+struct make_magma {
+    using type = null<T>;
+
+    static_assert(internal::magma<type>);
+};
+
+
+template<internal::magma T>
+struct make_magma<T> {
+    using type = T;
+};
+
+template<class T>
+using make_magma_t = typename make_magma<T>::type;
 
 
 } // namespace algebraic

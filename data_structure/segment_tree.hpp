@@ -33,7 +33,7 @@ namespace segment_tree_impl {
 
 // Thanks to: atcoder::segtree
 template<algebraic::internal::monoid S>
-struct base {
+struct core {
     using size_type = internal::size_t;
 
   protected:
@@ -43,8 +43,8 @@ struct base {
     inline void update(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
   protected:
-    base() noexcept(NO_EXCEPT) {}
-    explicit base(const size_type n) noexcept(NO_EXCEPT)
+    core() noexcept(NO_EXCEPT) {}
+    explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
         _data(this->_size << 1)
     {}
@@ -87,16 +87,24 @@ struct base {
 };
 
 
-template<class> struct core : unconstructible {};
+
+} // namespace segment_tree_impl
+
+} // namespace internal
+
+
+template<class T>
+struct segment_tree : internal::unconstructible {};
+
 
 template<algebraic::internal::monoid Monoid>
-struct core<Monoid> : base<Monoid> {
+struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
   private:
-    using base = typename segment_tree_impl::base<Monoid>;
+    using core = typename internal::segment_tree_impl::core<Monoid>;
 
   public:
     using value_type = Monoid;
-    using size_type = typename base::size_type;
+    using size_type = typename core::size_type;
 
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
@@ -104,19 +112,19 @@ struct core<Monoid> : base<Monoid> {
     }
 
   public:
-    core() noexcept(NO_EXCEPT) : base() {};
-    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    segment_tree() noexcept(NO_EXCEPT) : core() {};
+    explicit segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : core(n) { this->fill(v); }
 
     template<std::convertible_to<value_type> T>
-    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+    segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : segment_tree(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    core(I first, S last) noexcept(NO_EXCEPT)
-      : core(static_cast<size_type>(std::ranges::distance(first, last)))
+    segment_tree(I first, S last) noexcept(NO_EXCEPT)
+      : segment_tree(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
     template<std::ranges::input_range R>
-    explicit core(R&& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
+    explicit segment_tree(R&& range) noexcept(NO_EXCEPT) : segment_tree(ALL(range)) {}
 
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
@@ -145,9 +153,9 @@ struct core<Monoid> : base<Monoid> {
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
-    struct point_reference : internal::point_reference<core> {
-        point_reference(core *const super, const size_type p) noexcept(NO_EXCEPT)
-          : internal::point_reference<core>(super, super->_positivize_index(p))
+    struct point_reference : internal::point_reference<segment_tree> {
+        point_reference(segment_tree *const super, const size_type p) noexcept(NO_EXCEPT)
+          : internal::point_reference<segment_tree>(super, super->_positivize_index(p))
         {
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
@@ -174,9 +182,9 @@ struct core<Monoid> : base<Monoid> {
         }
     };
 
-    struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
-          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+    struct range_reference : internal::range_reference<segment_tree> {
+        range_reference(segment_tree *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<segment_tree>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
@@ -193,19 +201,19 @@ struct core<Monoid> : base<Monoid> {
 
     inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
-        this->base::apply(p, x);
+        this->core::apply(p, x);
          return *this;
     }
 
     inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
-        this->base::set(p, x);
+        this->core::set(p, x);
          return *this;
     }
 
     inline value_type get(const size_type p) const noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->size());
-        return this->base::fold(p, p+1);
+        return this->core::fold(p, p+1);
     }
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
@@ -213,14 +221,14 @@ struct core<Monoid> : base<Monoid> {
 
     inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= this->size());
-        return this->base::fold(l, r);
+        return this->core::fold(l, r);
     }
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= this->size());
-        return this->base::fold(0, r);
+        return this->core::fold(0, r);
     }
     inline value_type fold() const noexcept(NO_EXCEPT) {
-        return this->base::fold_all();
+        return this->core::fold_all();
     }
 
 
@@ -301,11 +309,11 @@ struct core<Monoid> : base<Monoid> {
     }
 
 
-    struct iterator : internal::container_iterator_interface<value_type, const core, iterator> {
+    struct iterator : internal::container_iterator_interface<value_type, const segment_tree, iterator> {
         iterator() noexcept = default;
 
-        iterator(const core *const ref, const size_type p) noexcept(NO_EXCEPT)
-          : internal::container_iterator_interface<value_type, const core, iterator>(ref, p)
+        iterator(const segment_tree *const ref, const size_type p) noexcept(NO_EXCEPT)
+          : internal::container_iterator_interface<value_type, const segment_tree, iterator>(ref, p)
         {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
@@ -315,22 +323,10 @@ struct core<Monoid> : base<Monoid> {
     inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
-template<actions::internal::operand_only_action Action>
-struct core<Action> : core<typename Action::operand> {
-    using action = Action;
-    using core<typename action::operand>::core;
-};
 
-
-} // namespace segment_tree_impl
-
-} // namespace internal
-
-
-template<class ActionOrMonoid>
-    requires internal::available_with<internal::segment_tree_impl::core, ActionOrMonoid>
-struct segment_tree : internal::segment_tree_impl::core<ActionOrMonoid> {
-    using internal::segment_tree_impl::core<ActionOrMonoid>::core;
+template<actions::internal::operatable_action Action>
+struct segment_tree<Action> : segment_tree<typename Action::operand> {
+    segment_tree<typename Action::operand>::segment_tree;
 };
 
 

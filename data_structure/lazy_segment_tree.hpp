@@ -23,7 +23,9 @@
 #include "numeric/arithmetic.hpp"
 
 #include "algebraic/internal/concepts.hpp"
+
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 
 
 namespace lib {
@@ -37,7 +39,7 @@ template<
     algebraic::internal::monoid S, algebraic::internal::monoid F,
     S (*_map)(const S&, const F&), F (*_fold)(const F&, const internal::size_t)
 >
-struct base {
+struct core {
     using size_type = internal::size_t;
 
   public:
@@ -60,9 +62,9 @@ struct base {
     }
 
   protected:
-    base() noexcept(NO_EXCEPT) {}
+    core() noexcept(NO_EXCEPT) {}
 
-    explicit base(const size_type n) noexcept(NO_EXCEPT)
+    explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
         _lengths(this->_size << 1), _values(this->_size << 1), _lazy(this->_size)
     {}
@@ -211,8 +213,20 @@ struct base {
 };
 
 
+} // namespace lazy_segment_tree_impl
+
+} // namespace internal
+
+
+template<class T>
+struct lazy_segment_tree : lazy_segment_tree<actions::make_full_t<T>> {
+    using lazy_segment_tree<actions::make_full_t<T>>::lazy_segment_tree;
+};
+
+
 template<actions::internal::full_action Action>
-struct core : base<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
+    requires internal::available<internal::lazy_segment_tree_impl::core<typename Action::operand, typename Action::operation, Action::map, Action::fold>>
+struct lazy_segment_tree<Action> : internal::lazy_segment_tree_impl::core<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
   public:
     using action = Action;
 
@@ -220,13 +234,13 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     using operation = typename action::operation;
 
   private:
-    using base = lazy_segment_tree_impl::base<operand, operation, action::map, action::fold>;
+    using core = internal::lazy_segment_tree_impl::core<operand, operation, action::map, action::fold>;
 
   public:
     using value_type = operand;
     using action_type = typename operation::value_type;
 
-    using size_type = typename base::size_type;
+    using size_type = typename core::size_type;
 
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
@@ -234,20 +248,20 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     }
 
   public:
-    core() noexcept(NO_EXCEPT) : base() {}
+    lazy_segment_tree() noexcept(NO_EXCEPT) : core() {}
 
-    explicit core(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : base(n) { this->fill(v); }
+    explicit lazy_segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : core(n) { this->fill(v); }
 
     template<std::convertible_to<value_type> T>
-    core(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : core(ALL(init_list)) {}
+    lazy_segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : lazy_segment_tree(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    explicit core(I first, S last) noexcept(NO_EXCEPT)
-      : base(static_cast<size_type>(std::ranges::distance(first, last)))
+    explicit lazy_segment_tree(I first, S last) noexcept(NO_EXCEPT)
+      : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
     template<std::ranges::input_range R>
-    explicit core(R&& range) noexcept(NO_EXCEPT) : core(ALL(range)) {}
+    explicit lazy_segment_tree(R&& range) noexcept(NO_EXCEPT) : lazy_segment_tree(ALL(range)) {}
 
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT)
@@ -281,9 +295,9 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
-    struct point_reference : internal::point_reference<core> {
-        point_reference(core *const super, const size_type p) noexcept(NO_EXCEPT)
-          : internal::point_reference<core>(super, super->_positivize_index(p))
+    struct point_reference : internal::point_reference<lazy_segment_tree> {
+        point_reference(lazy_segment_tree *const super, const size_type p) noexcept(NO_EXCEPT)
+          : internal::point_reference<lazy_segment_tree>(super, super->_positivize_index(p))
         {
             assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
@@ -310,9 +324,9 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
         }
     };
 
-    struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
-          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+    struct range_reference : internal::range_reference<lazy_segment_tree> {
+        range_reference(lazy_segment_tree *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<lazy_segment_tree>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
@@ -339,14 +353,14 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline auto& set(size_type p, const value_type& v) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
-        this->base::set(p, v);
+        this->core::set(p, v);
          return *this;
     }
 
     inline auto& apply(size_type l, size_type r, const action_type& v) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
-        this->base::apply(l, r, v);
+        this->core::apply(l, r, v);
         return *this;
     }
     inline auto& apply(const size_type p, const action_type& v) noexcept(NO_EXCEPT) { this->apply(p, p+1, v); return *this; }
@@ -355,7 +369,7 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline value_type get(size_type p) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->size());
-        return this->base::get(p).val();
+        return this->core::get(p).val();
     }
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
@@ -364,15 +378,15 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
     inline value_type fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
-        return this->base::fold(l, r).val();
+        return this->core::fold(l, r).val();
     }
     inline value_type fold() noexcept(NO_EXCEPT) { return this->fold_all(); }
 
-    struct iterator : internal::container_iterator_interface<value_type, core, iterator> {
+    struct iterator : internal::container_iterator_interface<value_type, lazy_segment_tree, iterator> {
         iterator() noexcept = default;
 
-        iterator(core *const ref, const size_type p) noexcept(NO_EXCEPT)
-          : internal::container_iterator_interface<value_type, core, iterator>(ref, p)
+        iterator(lazy_segment_tree *const ref, const size_type p) noexcept(NO_EXCEPT)
+          : internal::container_iterator_interface<value_type, lazy_segment_tree, iterator>(ref, p)
         {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
@@ -380,18 +394,6 @@ struct core : base<typename Action::operand, typename Action::operation, Action:
 
     inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
-};
-
-
-} // namespace lazy_segment_tree_impl
-
-} // namespace internal
-
-
-template<actions::internal::full_action Action>
-    requires internal::available_with<internal::lazy_segment_tree_impl::core, Action>
-struct lazy_segment_tree : internal::lazy_segment_tree_impl::core<Action> {
-    using internal::lazy_segment_tree_impl::core<Action>::core;
 };
 
 
