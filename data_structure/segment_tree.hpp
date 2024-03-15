@@ -326,7 +326,7 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
 
 template<actions::internal::operatable_action Action>
 struct segment_tree<Action> : segment_tree<typename Action::operand> {
-    segment_tree<typename Action::operand>::segment_tree;
+    using segment_tree<typename Action::operand>::segment_tree;
 };
 
 
