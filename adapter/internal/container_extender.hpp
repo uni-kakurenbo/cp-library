@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include "internal/dev_env.hpp"
+#include "numeric/internal/mod.hpp"
 
 
 namespace lib {
@@ -31,7 +32,19 @@ struct extended_container : Base {
     using size_type = decltype(Base().size());
     using value_type = typename Base::value_type;
 
-    // inline auto ssize() const noexcept(NO_EXCEPT) { return to_signed(this->size()); }
+    inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
+
+
+    template<class T>
+    inline const auto& operator[](T&& p) const noexcept(NO_EXCEPT) {
+        return this->Base::operator[](lib::mod(std::forward<T>(p), this->size()));
+    }
+
+    template<class T>
+    inline auto& operator[](T&& p) noexcept(NO_EXCEPT) {
+        return this->Base::operator[](lib::mod(std::forward<T>(p), this->size()));
+    }
+
 
     inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
         std::ranges::fill(*this->_base(), v);

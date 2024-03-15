@@ -60,6 +60,9 @@ concept weakly_multipliable = requires (L lhs, R rhs) { lhs * rhs; };
 template<class L, class R = L>
 concept weakly_divisable = requires (L lhs, R rhs) { lhs / rhs; };
 
+template<class L, class R = L>
+concept weakly_remainder_calculable = requires (L lhs, R rhs) { lhs % rhs; };
+
 
 template<class L, class R = L>
 concept weakly_addition_assignable = requires (L lhs, R rhs) { lhs += rhs; };
@@ -72,6 +75,9 @@ concept weakly_multipliation_assignalbe = requires (L lhs, R rhs) { lhs *= rhs; 
 
 template<class L, class R = L>
 concept weakly_division_assignable = requires (L lhs, R rhs) { lhs /= rhs; };
+
+template<class L, class R = L>
+concept weakly_remainder_assignable = requires (L lhs, R rhs) { lhs /= rhs; };
 
 template<class L, class R = L>
 concept addable =
@@ -101,6 +107,13 @@ concept divisable =
     weakly_divisable<L, std::invoke_result_t<std::divides<>&, L, R>> &&
     weakly_divisable<std::invoke_result_t<std::divides<>&, L, R>, std::invoke_result_t<std::divides<>&, L, R>>;
 
+template<class L, class R = L>
+concept remainder_calculable =
+    weakly_remainder_calculable<L, R> &&
+    weakly_remainder_calculable<std::invoke_result_t<std::modulus<>&, L, R>, R> &&
+    weakly_remainder_calculable<L, std::invoke_result_t<std::modulus<>&, L, R>> &&
+    weakly_remainder_calculable<std::invoke_result_t<std::modulus<>&, L, R>, std::invoke_result_t<std::modulus<>&, L, R>>;
+
 
 template<class L, class R = L>
 concept addition_assignable =
@@ -129,6 +142,13 @@ concept division_assignable =
     weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, R> &&
     weakly_division_assignable<L, std::invoke_result_t<std::divides<>&, L, R>> &&
     weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, std::invoke_result_t<std::divides<>&, L, R>>;
+
+template<class L, class R = L>
+concept remainder_assignable =
+    weakly_remainder_assignable<L, R> &&
+    weakly_remainder_assignable<std::decay_t<std::invoke_result_t<std::modulus<>&, L, R>>, R> &&
+    weakly_remainder_assignable<L, std::invoke_result_t<std::modulus<>&, L, R>> &&
+    weakly_remainder_assignable<std::decay_t<std::invoke_result_t<std::modulus<>&, L, R>>, std::invoke_result_t<std::modulus<>&, L, R>>;
 
 
 template<class T>
