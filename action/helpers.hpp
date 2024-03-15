@@ -38,7 +38,6 @@ struct make_operatable {
     static_assert(internal::operatable_action<type>);
 };
 
-
 template<class T>
 using make_operatable_t = typename make_operatable<T>::type;
 
@@ -51,7 +50,6 @@ struct make_effective {
 
     static_assert(internal::effective_action<type>);
 };
-
 
 template<class T>
 using make_effective_t = typename make_effective<T>::type;

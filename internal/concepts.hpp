@@ -13,7 +13,10 @@ namespace internal {
 
 
 template<class Structure>
-concept available = std::default_initializable<Structure>;
+concept available =
+    requires () {
+        typename Structure;
+    };
 
 template<
     template<class...> class Structure,
