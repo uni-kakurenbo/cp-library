@@ -5,6 +5,7 @@
 
 
 #include "internal/dev_env.hpp"
+#include "internal/dummy.hpp"
 
 #include "algebraic/base.hpp"
 #include "algebraic/internal/concepts.hpp"
@@ -15,7 +16,7 @@ namespace lib {
 namespace algebraic {
 
 
-template<class T = std::nullptr_t>
+template<class T = lib::internal::dummy>
 struct null : base<T>, scalar_multipliable<null<T>>::identity, associative, commutative {
     using base<T>::base;
 

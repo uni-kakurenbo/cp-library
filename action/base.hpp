@@ -7,6 +7,7 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/dummy.hpp"
 
 #include "algebraic/internal/concepts.hpp"
 
@@ -16,8 +17,8 @@ namespace lib {
 namespace actions {
 
 
-template<class operation = std::nullptr_t>
-    requires algebraic::internal::monoid<operation> || std::same_as<operation, std::nullptr_t>
+template<class operation = lib::internal::dummy>
+    requires algebraic::internal::monoid<operation> || std::same_as<operation, lib::internal::dummy>
 struct base {
     static operation fold(const operation& x, const lib::internal::size_t) noexcept(NO_EXCEPT) { return x; }
 };
