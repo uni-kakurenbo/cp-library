@@ -34,7 +34,7 @@ struct extended_container : Base {
 
     extended_container(const Base& base) : Base(base) {}
 
-    using size_type = typename Base::size_type;
+    using size_type = decltype(std::ranges::size(std::declval<Base>()));
     using value_type = typename Base::value_type;
 
     inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
