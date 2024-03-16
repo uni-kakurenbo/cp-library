@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
-#include "adapter/valarray.hpp"
-#include "adapter/map.hpp"
+#include "adaptor/valarray.hpp"
+#include "adaptor/map.hpp"
 
 #include "internal/resolving_rank.hpp"
 

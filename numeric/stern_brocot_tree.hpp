@@ -7,7 +7,7 @@
 
 #include "internal/concepts.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

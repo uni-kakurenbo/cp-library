@@ -15,8 +15,8 @@
 #include "internal/types.hpp"
 #include "internal/dev_env.hpp"
 
-#include "adapter/string.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/string.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

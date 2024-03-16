@@ -13,7 +13,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "action/range_set_range_sum.hpp"
 

@@ -8,7 +8,7 @@
 #include "graph/internal/01bfs.hpp"
 #include "graph/internal/dijkstra.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

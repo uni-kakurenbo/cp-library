@@ -11,7 +11,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "iterable/applied.hpp"
 #include "numeric/boundary_seeker.hpp"
 #include "iterable/count_inversion.hpp"

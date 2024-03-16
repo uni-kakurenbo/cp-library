@@ -3,7 +3,7 @@
 #include "include/snippets.hpp"
 #include "include/views.hpp"
 #include "include/geometries.hpp"
-#include "include/adapters.hpp"
+#include "include/adaptors.hpp"
 
 #include "algebraic/helper.hpp"
 #include "action/helpers.hpp"

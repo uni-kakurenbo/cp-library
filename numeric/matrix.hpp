@@ -10,7 +10,7 @@
 #include "internal/dev_env.hpp"
 
 #include "structure/grid.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 #include "numeric/modular/modint_interface.hpp"
 

@@ -12,7 +12,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adapter/internal/container_extender.hpp"
+#include "adaptor/internal/container_extender.hpp"
 
 
 namespace lib {

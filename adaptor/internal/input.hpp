@@ -22,14 +22,14 @@
 
 #include "numeric/modular/modint_interface.hpp"
 
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 
 namespace lib {
 
 
 template<std::derived_from<std::ios_base> Source = std::istream>
-struct input_adapter {
+struct input_adaptor {
     using source_type = Source;
 
   private:
@@ -114,10 +114,10 @@ struct input_adapter {
 
     source_type *in;
 
-    input_adapter(source_type *_in = &std::cin) noexcept(NO_EXCEPT) : in(_in) {}
+    input_adaptor(source_type *_in = &std::cin) noexcept(NO_EXCEPT) : in(_in) {}
 
     template<class T>
-    inline input_adapter& operator>>(T&& s) noexcept(NO_EXCEPT) {
+    inline input_adaptor& operator>>(T&& s) noexcept(NO_EXCEPT) {
         this->set(std::forward<T>(s));
         return *this;
     }

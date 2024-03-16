@@ -12,8 +12,8 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/vector.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/vector.hpp"
+#include "adaptor/io.hpp"
 #include "data_structure/segment_tree.hpp"
 #include "action/range_sum.hpp"
 

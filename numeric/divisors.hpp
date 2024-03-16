@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "internal/dev_env.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 namespace lib {
 

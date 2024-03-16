@@ -13,7 +13,7 @@
 
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "numeric/fast_prime.hpp"
 
 signed main() {

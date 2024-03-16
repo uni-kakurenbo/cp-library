@@ -9,7 +9,7 @@
 #include "internal/dev_env.hpp"
 
 #include "numeric/limits.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 #include "structure/graph.hpp"
 #include "internal/auto_holder.hpp"

@@ -7,7 +7,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 #include "internal/auto_holder.hpp"
 

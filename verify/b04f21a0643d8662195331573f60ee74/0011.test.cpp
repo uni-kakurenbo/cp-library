@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 

@@ -36,7 +36,7 @@ template<
     template<class...> class Action
 >
     requires actions::internal::action<Action<internal::size_t>>
-struct set_adapter_impl {
+struct set_adaptor_impl {
     using size_type = internal::size_t;
     using key_type = internal::size_t;
     using value_type = internal::size_t;
@@ -60,7 +60,7 @@ struct set_adapter_impl {
     size_type _elem = 0;
 
   public:
-    set_adapter_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
+    set_adaptor_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_data.fold(); }
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
@@ -112,22 +112,22 @@ struct set_adapter_impl {
 
 
 template<template<class...> class Tree = lib::segment_tree>
-struct set_adapter : internal::set_adapter_impl<Tree, actions::range_set_range_sum> {
+struct set_adaptor : internal::set_adaptor_impl<Tree, actions::range_set_range_sum> {
     using size_type = internal::size_t;
     using key_type = internal::size_t;
     using value_type = size_type;
 
   protected:
-    using Base = internal::set_adapter_impl<Tree, actions::range_set_range_sum>;
+    using Base = internal::set_adaptor_impl<Tree, actions::range_set_range_sum>;
     using impl_data_type = typename Base::impl_data_type;
 
   public:
-    set_adapter() noexcept(NO_EXCEPT) = default;
+    set_adaptor() noexcept(NO_EXCEPT) = default;
 
-    set_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
+    set_adaptor(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    set_adapter(I first, S last) noexcept(NO_EXCEPT) : set_adapter(*std::ranges::max_element(first, last) + 1) {
+    set_adaptor(I first, S last) noexcept(NO_EXCEPT) : set_adaptor(*std::ranges::max_element(first, last) + 1) {
         valarray<bool> bits(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
@@ -137,7 +137,7 @@ struct set_adapter : internal::set_adapter_impl<Tree, actions::range_set_range_s
     };
 
     template<std::ranges::input_range R>
-    set_adapter(R&& range) noexcept(NO_EXCEPT) : set_adapter(ALL(range)) {}
+    set_adaptor(R&& range) noexcept(NO_EXCEPT) : set_adaptor(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& build_from_bits(I first, S last) noexcept(NO_EXCEPT) {
@@ -170,21 +170,21 @@ struct set_adapter : internal::set_adapter_impl<Tree, actions::range_set_range_s
 
 
 template<template<class...> class Tree = lib::segment_tree, std::integral Size = std::int64_t>
-struct multiset_adapter : internal::set_adapter_impl<Tree, actions::range_add_range_sum> {
+struct multiset_adaptor : internal::set_adaptor_impl<Tree, actions::range_add_range_sum> {
     using size_type = Size;
     using key_type = internal::size_t;
     using value_type = key_type;
 
   private:
-    using Base = internal::set_adapter_impl<Tree, actions::range_add_range_sum>;
+    using Base = internal::set_adaptor_impl<Tree, actions::range_add_range_sum>;
     using impl_data_type = typename Base::impl_data_type;
 
 
   public:
-    multiset_adapter(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
+    multiset_adaptor(const size_type sup) noexcept(NO_EXCEPT) : Base(sup) {};
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    multiset_adapter(I first, S last) noexcept(NO_EXCEPT) : Base(*std::ranges::max_element(first, last) + 1) {
+    multiset_adaptor(I first, S last) noexcept(NO_EXCEPT) : Base(*std::ranges::max_element(first, last) + 1) {
         vector<size_type> cnts(this->_data.size());
         REP(itr, first, last) {
             assert(0 <= *itr && *itr < this->_data.size());
@@ -194,7 +194,7 @@ struct multiset_adapter : internal::set_adapter_impl<Tree, actions::range_add_ra
     };
 
     template<std::ranges::input_range R>
-    multiset_adapter(R&& range) noexcept(NO_EXCEPT) : multiset_adapter(ALL(range)) {}
+    multiset_adaptor(R&& range) noexcept(NO_EXCEPT) : multiset_adaptor(ALL(range)) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& build_from_histogram(I first, S last) noexcept(NO_EXCEPT) {

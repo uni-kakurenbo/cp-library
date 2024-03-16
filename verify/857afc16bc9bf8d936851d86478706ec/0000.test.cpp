@@ -12,10 +12,10 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/valarray.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/adapter/set.hpp"
+#include "data_structure/adaptor/set.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
@@ -24,7 +24,7 @@ signed main() {
         char v; std::cin >> v;
         t[i] = v == '1';
     }
-    lib::set_adapter st(n);
+    lib::set_adaptor st(n);
     st.build_from_bits(t);
 
     REP(q) {

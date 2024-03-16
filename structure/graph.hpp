@@ -12,14 +12,14 @@
 #include "internal/types.hpp"
 
 #include "utility/functional.hpp"
-#include "adapter/valarray.hpp"
-#include "adapter/vector.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/valarray.hpp"
+#include "adaptor/vector.hpp"
+#include "adaptor/io.hpp"
 
 #include "structure/grid.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 
-#include "adapter/virtual_map.hpp"
+#include "adaptor/virtual_map.hpp"
 
 #include "internal/auto_holder.hpp"
 
@@ -183,7 +183,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         this->add_edge<edge_kind::undirected>(u, v, w);
     }
 
-    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adapter<>>
+    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adaptor<>>
     void inline read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
@@ -192,7 +192,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         }
     }
 
-    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adapter<>>
+    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adaptor<>>
     void inline read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;

@@ -12,7 +12,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "data_structure/dynamic_sequence.hpp"
 #include "action/range_add_range_min.hpp"
 

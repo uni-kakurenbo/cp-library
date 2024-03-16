@@ -1,17 +1,17 @@
 #pragma once
 
 
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 
-#include "adapter/set.hpp"
-#include "adapter/map.hpp"
+#include "adaptor/set.hpp"
+#include "adaptor/map.hpp"
 
-#include "adapter/array.hpp"
-#include "adapter/valarray.hpp"
-#include "adapter/string.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/array.hpp"
+#include "adaptor/valarray.hpp"
+#include "adaptor/string.hpp"
+#include "adaptor/vector.hpp"
 
-#include "adapter/multi_container.hpp"
-#include "adapter/range_extractor.hpp"
+#include "adaptor/multi_container.hpp"
+#include "adaptor/range_extractor.hpp"
 
-#include "adapter/virtual_map.hpp"
+#include "adaptor/virtual_map.hpp"

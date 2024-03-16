@@ -9,7 +9,7 @@
 
 #include "numeric/divisor_multiple_transform.hpp"
 
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 
 namespace lib {

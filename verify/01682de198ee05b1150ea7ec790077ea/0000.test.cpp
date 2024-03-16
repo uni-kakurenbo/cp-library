@@ -11,7 +11,7 @@
 #include "sneaky/enforce_int128_enable.hpp"
 
 #include <iostream>
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 #include "snippet/aliases.hpp"
 #include "structure/graph.hpp"
 #include "graph/shortest_path.hpp"

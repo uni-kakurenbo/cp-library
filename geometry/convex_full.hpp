@@ -7,7 +7,7 @@
 
 #include "internal/dev_env.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 #include "geometry/basic.hpp"
 

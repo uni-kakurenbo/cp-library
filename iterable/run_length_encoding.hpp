@@ -10,7 +10,7 @@
 #include "snippet/aliases.hpp"
 #include "internal/types.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

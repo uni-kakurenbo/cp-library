@@ -12,10 +12,10 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/valarray.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/adapter/set.hpp"
+#include "data_structure/adaptor/set.hpp"
 #include "data_structure/segment_tree.hpp"
 
 signed main() {
@@ -27,7 +27,7 @@ signed main() {
         t[i] = v == '1';
     }
 
-    lib::set_adapter<lib::segment_tree> st(n);
+    lib::set_adaptor<lib::segment_tree> st(n);
     st.build_from_bits(ALL(t));
 
     REP(q) {

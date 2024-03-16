@@ -29,7 +29,7 @@
 #include "iterable/z_array.hpp"
 #include "iterable/internal/operation_base.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 #include "view/concat.hpp"
 #include "global/constants.hpp"
 
