@@ -33,20 +33,20 @@ constexpr int holder_type = _holder_type<T,DYNAMIC>(resolving_rank<10>{});
 template<class,class,int> struct holder {};
 
 template<class T, class U>
-struct holder<T,U,0> : valarray<U> {
-    using valarray<U>::valarray;
+struct holder<T, U, 0> : vector<U> {
+    using vector<U>::vector;
 };
 
 template<class T, class U>
-struct holder<T,U,1> : unordered_map<T,U> {
-    using unordered_map<T,U>::unordered_map;
+struct holder<T, U, 1> : unordered_map<T, U> {
+    using unordered_map<T, U>::unordered_map;
 
     template<class V> inline void assign(const internal::size_t, const V& v) { this->set_default(v); }
 };
 
 template<class T, class U>
-struct holder<T,U,2> : map<T,U> {
-    using map<T,U>::map;
+struct holder<T, U, 2> : map<T, U> {
+    using map<T, U>::map;
 
     template<class V> inline void assign(const internal::size_t, const V& v) { this->set_default(v); }
 };
