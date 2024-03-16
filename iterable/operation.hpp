@@ -27,28 +27,14 @@
 #include "internal/ranges.hpp"
 
 #include "iterable/z_array.hpp"
+#include "iterable/internal/operation_base.hpp"
+
 #include "adapter/vector.hpp"
 #include "view/concat.hpp"
 #include "global/constants.hpp"
 
 
 namespace lib {
-
-
-template<std::input_iterator I, std::sentinel_for<I> S>
-std::string join(I first, S last, const char* sep = "") noexcept(NO_EXCEPT) {
-    if(first == last) return "";
-    std::advance(last, -1);
-    std::ostringstream res;
-    std::copy(first, last, std::ostream_iterator<std::iter_value_t<I>>(res, sep));
-    res << *last;
-    return res.str();
-}
-
-template<std::ranges::input_range R>
-std::string join(R&& range, const char* sep = "") noexcept(NO_EXCEPT) {
-    return join(ALL(range), sep);
-}
 
 
 template<std::ranges::input_range R0, std::ranges::input_range R1>

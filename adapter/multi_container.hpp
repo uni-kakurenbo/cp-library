@@ -14,6 +14,7 @@
 #include "internal/types.hpp"
 
 #include "adapter/valarray.hpp"
+#include "adapter/vector.hpp"
 
 
 namespace lib {
@@ -23,14 +24,13 @@ namespace internal {
 namespace multi_container_impl {
 
 
-template<class container> struct base : container {
-    using container::container;
+template<class Holder> struct base : Holder {
+    using Holder::Holder;
 
   protected:
-    inline void _validate_index(__attribute__ ((unused)) const internal::size_t index) const noexcept(NO_EXCEPT) {
-        assert(0 <= index and index < (internal::size_t)this->size());
-    }
-    inline internal::size_t _positivize_index(const internal::size_t x) const noexcept(NO_EXCEPT) {
+    template<std::integral T>
+    inline auto _positivize_index(const T _x) const noexcept(NO_EXCEPT) {
+        auto x = static_cast<internal::size_t>(_x);
         return x < 0 ? this->size() + x : x;
     }
 };
@@ -41,97 +41,71 @@ template<class container> struct base : container {
 } // namespace internal
 
 
-template<class T, const unsigned int RANK, template<class...> class container = valarray>
-struct multi_container : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>> {
-    using internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>::base;
+template<class T, unsigned int RANK, template<class...> class Holder = vector, template<class...> class Container = valarray>
+struct multi_container : internal::multi_container_impl::base<Holder<multi_container<T, RANK - 1, Holder, Container>>> {
+  private:
+    using base = internal::multi_container_impl::base<Holder<multi_container<T, RANK - 1, Holder, Container>>>;
+
+  public:
+    using base::base;
 
     template<std::integral Head, class... Tail>
-    multi_container(const Head head, const Tail... tail) noexcept(NO_EXCEPT)
-    : internal::multi_container_impl::base<container<multi_container<T,RANK-1,container>>>(head, multi_container<T,RANK-1,container>(tail...)) { assert(head >= 0); }
-
-    template<class Head, class... Tail> T& operator()(const Head _head, const Tail... tail) noexcept(NO_EXCEPT) {
-        static_assert(std::is_integral_v<Head>, "index must be integral");
-
-        const internal::size_t head = this->_positivize_index(_head);
-        this->_validate_index(head);
-        return (*this)[head](tail...);
+    multi_container(const Head head, Tail&&... tail) noexcept(NO_EXCEPT)
+    : base(head, multi_container<T, RANK - 1, Holder, Container>(std::forward<Tail>(tail)...)) {
+        assert(head >= 0);
     }
 
-    template<class Head, class... Tail> const T& operator()(const Head _head, const Tail... tail) const noexcept(NO_EXCEPT) {
+    template<std::integral Head, class... Tail>
+    T& operator()(Head _head, Tail&&... tail) noexcept(NO_EXCEPT) {
         static_assert(std::is_integral_v<Head>, "index must be integral");
 
-        const internal::size_t head = this->_positivize_index(_head);
-        this->_validate_index(head);
-        return (*this)[head](tail...);
+        const auto index = this->_positivize_index(_head);
+        assert(0 <= index && index < std::ranges::ssize(*this));
+
+        return (*this)[index](std::forward<Tail>(tail)...);
+    }
+
+    template<std::integral Head, class... Tail>
+    const T& operator()(Head _head, Tail&&... tail) const noexcept(NO_EXCEPT) {
+        static_assert(std::is_integral_v<Head>, "index must be integral");
+
+        const auto index = this->_positivize_index(_head);
+        assert(0 <= index && index < std::ranges::ssize(*this));
+
+        return (*this)[index](std::forward<Tail>(tail)...);
     }
 };
 
-template<class T, template<class...> class container>
-struct multi_container<T,1,container> : internal::multi_container_impl::base<container<T>> {
-    using internal::multi_container_impl::base<container<T>>::base;
+template<class T, template<class...> class Holder, template<class...> class Container>
+struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl::base<Container<T>> {
+    using internal::multi_container_impl::base<Container<T>>::base;
 
-    template<class... Args> multi_container(const Args&... args) noexcept(NO_EXCEPT) : internal::multi_container_impl::base<container<T>>(args...) {}
+    template<class... Args>
+    multi_container(const Args&... args) noexcept(NO_EXCEPT) : internal::multi_container_impl::base<Container<T>>(args...)
+    {}
 
-    T& operator()(const internal::size_t _index) noexcept(NO_EXCEPT) {
-        const internal::size_t index = this->_positivize_index(_index);
-        this->_validate_index(index);
+    template<class Index>
+    T& operator()(Index&& _index) noexcept(NO_EXCEPT) {
+        const auto index = this->_positivize_index(std::forward<T>(_index));
+        assert(0 <= index && index < std::ranges::ssize(*this));
+
         return (*this)[index];
     }
-    const T& operator()(const internal::size_t _index) const noexcept(NO_EXCEPT) {
-        const internal::size_t index = this->_positivize_index(_index);
-        this->_validate_index(index);
+
+    template<class Index>
+    const T& operator()(Index&& _index) const noexcept(NO_EXCEPT) {
+        const auto index = this->_positivize_index(std::forward<T>(_index));
+        assert(0 <= index && index < std::ranges::ssize(*this));
+
         return (*this)[index];
     }
 };
 
 
-// template<class T, const unsigned int RANK, class base = std::vector<T>>
-// struct UnfoldedMultiContainer : base {
-//   protected:
-//     std::array<size_t,RANK> size_list;
-
-//   public:
-//     using base::base;
-
-//     template<class... Args>
-//     UnfoldedMultiContainer(const Args... _args) {
-//         const std::initializer_list<size_t> args { _args... };
-
-//         dev_debug(args.size() == RANK or args.size() == RANK + 1);
-
-//         size_t length = 0;
-//         REP(r, RANK) length += size_list[r] = args[r];
-
-//         if(args.size() == RANK+1) this->assign(length, args.back());
-//         else this->assign(length, T{});
-//     }
-
-//     template<class... Args> T& operator()(Args... args) {
-//         const std::initializer_list<size_t> args { _args... };
-//         reverse(ALL(args));
-
-//         assert(args.size() == RANK);
-
-//         size_t curr = 0;
-//         ITR(r, RANK) {
-//             curr += arg[r];
-//             curr += arg[r] * size_list[];
-//         }
-//     }
-
-//     template<class Head, class... Tail> const T& operator()(Head head, Tail... tail) const noexcept(NO_EXCEPT) {
-//     }
-// };
-
-
-template<class T, template<class...> class container>
-struct multi_container<T,0,container> {
+template<class T, template<class...> class Holder, template<class...> class Container>
+struct multi_container<T, 0, Holder, Container> {
     static_assert(internal::EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
 };
 
-// template<class T, class container>
-// struct UnfoldedMultiContainer<T,0,container> {
-//     static_assert(internal::EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
-// };
 
 } // namespace lib

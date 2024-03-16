@@ -10,11 +10,13 @@ namespace lib {
 
 template<class T, class R>
     requires
-        internal::weakly_remainder_assignable<T, R> &&
-        internal::weakly_addition_assignable<T, R>
+        internal::remainder_calculable<T, R> &&
+        internal::subtractable<T, R> &&
+        internal::unary_subtractable<T>
 inline T mod(T x, const R& r) noexcept(NO_EXCEPT) {
-    x %= r;
-    if(x < 0) x += r;
+    if(x >= 0) return x % r;
+    x = -x % r;
+    if(x != 0) x = r - x;
     return x;
 }
 
