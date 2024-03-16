@@ -7,8 +7,8 @@
 #include <set>
 
 
-#include "internal/auto_holder.hpp"
-
+#include "internal/dummy.hpp"
+#include "internal/dev_env.hpp"
 
 namespace lib {
 
@@ -48,9 +48,9 @@ struct removable_priority_queue<ValueType, Args...> : removable_priority_queue<s
 
 template<internal::can_removable_priority_queue PriorityQueue>
 struct removable_priority_queue<PriorityQueue>
-  : removable_priority_queue<PriorityQueue, std::nullptr_t>
+  : removable_priority_queue<PriorityQueue, internal::dummy>
 {
-    using removable_priority_queue<PriorityQueue, std::nullptr_t>::removable_priority_queue;
+    using removable_priority_queue<PriorityQueue, internal::dummy>::removable_priority_queue;
 };
 
 template<
@@ -71,7 +71,7 @@ struct removable_priority_queue<PriorityQueue, Multiset> : PriorityQueue {
     base_type _deleted;
     multiset_type _elements;
 
-    static constexpr bool CHECK_EXISTANCE = !std::same_as<multiset_type, std::nullptr_t>;
+    static constexpr bool CHECK_EXISTANCE = !std::same_as<multiset_type, internal::dummy>;
 
     void _delete() noexcept(NO_EXCEPT) {
         while(!this->_deleted.empty() && this->_deleted.top() == this->base_type::top()) {
@@ -139,7 +139,7 @@ struct removable_priority_queue<PriorityQueue, Multiset> : PriorityQueue {
     template<class... Args>
     std::conditional_t<self::CHECK_EXISTANCE, bool, void> eliminate(Args&&... args) noexcept(NO_EXCEPT) {
         if constexpr(self::CHECK_EXISTANCE) {
-            if(!this->_elements.contains(args...)) return false;
+            if(!this->_elements.contains({ args... })) return false;
         }
 
         this->_deleted.emplace(std::forward<Args>(args)...);

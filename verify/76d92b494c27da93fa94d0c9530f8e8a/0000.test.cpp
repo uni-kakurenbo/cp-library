@@ -12,9 +12,9 @@
 
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 #include "convolution/sum.hpp"
 
 using mint = lib::modint998244353;

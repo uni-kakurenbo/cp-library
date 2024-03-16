@@ -9,8 +9,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adapter/valarray.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/valarray.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

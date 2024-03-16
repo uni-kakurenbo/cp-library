@@ -15,7 +15,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "snippet/aliases.hpp"
 #include "numeric/binomial_coefficient.hpp"
 

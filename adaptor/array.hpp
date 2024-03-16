@@ -5,7 +5,7 @@
 #include <algorithm>
 
 
-#include "adapter/internal/container_extender.hpp"
+#include "adaptor/internal/container_extender.hpp"
 
 
 namespace lib {

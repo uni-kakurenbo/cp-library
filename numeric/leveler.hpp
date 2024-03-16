@@ -11,7 +11,7 @@
 #include "internal/types.hpp"
 #include "internal/dev_env.hpp"
 
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 #include <concepts>
 #include <ranges>

@@ -11,7 +11,7 @@
 
 // #include "template/standard.hpp"
 //
-// output_adapter _print;
+// output_adaptor _print;
 // #define print _print
 // /* #endregion */
 

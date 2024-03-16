@@ -13,8 +13,8 @@
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/vector.hpp"
 #include "numeric/modular/modint.hpp"
 #include "convolution/sum.hpp"
 

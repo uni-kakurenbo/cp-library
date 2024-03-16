@@ -12,8 +12,8 @@
 
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
-#include "adapter/string.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/string.hpp"
 #include "data_structure/disjoint_sparse_table.hpp"
 #include "action/range_sequence_hash.hpp"
 

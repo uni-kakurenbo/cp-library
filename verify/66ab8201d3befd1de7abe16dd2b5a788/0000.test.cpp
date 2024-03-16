@@ -10,8 +10,8 @@
 
 #include <iostream>
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/vector.hpp"
 #include "iterable/longest_increasing_subsequence.hpp"
 
 signed main() {

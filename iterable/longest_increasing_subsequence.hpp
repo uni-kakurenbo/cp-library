@@ -10,7 +10,7 @@
 
 #include "structure/grid.hpp"
 
-#include "adapter/vector.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {

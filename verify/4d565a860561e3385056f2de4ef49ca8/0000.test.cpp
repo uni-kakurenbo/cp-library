@@ -11,7 +11,7 @@
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "numeric/prime_counter.hpp"
 
 signed main() {

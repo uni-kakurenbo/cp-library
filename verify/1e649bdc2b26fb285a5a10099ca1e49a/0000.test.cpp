@@ -12,7 +12,7 @@
 #include <ranges>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "utility/timer.hpp"
 #include "random/engine.hpp"
 #include "random/adaptor.hpp"

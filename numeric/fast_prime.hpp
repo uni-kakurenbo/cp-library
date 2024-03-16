@@ -5,9 +5,9 @@
 #include <ranges>
 
 
-#include "adapter/vector.hpp"
-#include "adapter/set.hpp"
-#include "adapter/map.hpp"
+#include "adaptor/vector.hpp"
+#include "adaptor/set.hpp"
+#include "adaptor/map.hpp"
 
 #include "numeric/internal/primality_test.hpp"
 #include "numeric/internal/factorize.hpp"

@@ -12,7 +12,7 @@
 #include <tuple>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "numeric/quotient_enumerator.hpp"
 
 signed main() {

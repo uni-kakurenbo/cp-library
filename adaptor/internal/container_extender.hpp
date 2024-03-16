@@ -1,11 +1,17 @@
 #pragma once
 
 
+#include <cassert>
 #include <algorithm>
 #include <utility>
 #include <ranges>
 
+
 #include "internal/dev_env.hpp"
+#include "internal/types.hpp"
+
+#include "numeric/internal/mod.hpp"
+#include "iterable/internal/operation_base.hpp"
 
 
 namespace lib {
@@ -28,10 +34,24 @@ struct extended_container : Base {
 
     extended_container(const Base& base) : Base(base) {}
 
-    using size_type = decltype(Base().size());
+    using size_type = decltype(std::ranges::size(std::declval<Base>()));
     using value_type = typename Base::value_type;
 
-    // inline auto ssize() const noexcept(NO_EXCEPT) { return to_signed(this->size()); }
+    inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
+
+
+    inline const auto& operator[](internal::size_t p) const noexcept(NO_EXCEPT) {
+        p = p < 0 ? p + this->size() : p;
+        assert(0 <= p && p < static_cast<internal::size_t>(this->size()));
+        return this->Base::operator[](p);
+    }
+
+    inline auto& operator[](internal::size_t p) noexcept(NO_EXCEPT) {
+        p = p < 0 ? p + this->size() : p;
+        assert(0 <= p && p < static_cast<internal::size_t>(this->size()));
+        return this->Base::operator[](p);
+    }
+
 
     inline auto& fill(const value_type& v) noexcept(NO_EXCEPT) {
         std::ranges::fill(*this->_base(), v);
@@ -39,7 +59,7 @@ struct extended_container : Base {
     }
 
     inline auto& swap(const size_type i, const size_type j) noexcept(NO_EXCEPT) {
-        std::swap(this->_base()->operator[](i), this->_base()->operator[](j));
+        std::swap(this->operator[](i), this->operator[](j));
         return *this;
     }
 
@@ -114,6 +134,10 @@ struct extended_container : Base {
     template<class T>
     inline auto upper_bound(const T& v) noexcept(NO_EXCEPT) {
         return std::ranges::upper_bound(*this->_base(), v);
+    }
+
+    inline auto join(const char* sep = "") noexcept(NO_EXCEPT) {
+        return lib::join(*this->_base(), sep);
     }
 };
 

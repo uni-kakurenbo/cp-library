@@ -53,8 +53,8 @@ using lib::DIRS8;
 using lib::DIRS4P;
 using lib::DIRS8P;
 
-using lib::input_adapter;
-using lib::output_adapter;
+using lib::input_adaptor;
+using lib::output_adaptor;
 
 using lib::pow_mod;
 using lib::inv_mod;

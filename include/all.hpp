@@ -1,6 +1,6 @@
 #pragma once
 
-#include "include/adapters.hpp"
+#include "include/adaptors.hpp"
 #include "include/algebraic.hpp"
 #include "include/actions.hpp"
 #include "include/convolutions.hpp"

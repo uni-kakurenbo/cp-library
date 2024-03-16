@@ -322,7 +322,7 @@ concept can_stride_view = requires { stride_view(std::declval<Range>(), std::dec
 
 }
 
-struct Stride : adapter::range_adapter<Stride> {
+struct Stride : adaptor::range_adaptor<Stride> {
     template<std::ranges::viewable_range Range, class T = std::ranges::range_difference_t<Range>>
         requires internal::can_stride_view<Range, T>
     inline constexpr auto operator() [[nodiscard]] (Range &&res, std::type_identity_t<T> diff) const
@@ -330,7 +330,7 @@ struct Stride : adapter::range_adapter<Stride> {
         return stride_view(std::forward<Range>(res), diff);
     }
 
-    using adapter::range_adapter<Stride>::operator();
+    using adaptor::range_adaptor<Stride>::operator();
     inline static constexpr int arity = 2;
     inline static constexpr bool has_simple_call_op = true;
 };

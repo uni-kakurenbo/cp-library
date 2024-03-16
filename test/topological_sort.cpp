@@ -12,7 +12,7 @@
 #include "graph/topological_sort.hpp"
 
 using namespace std;
-output_adapter print;
+output_adaptor print;
 
 // https://atcoder.jp/contests/abc223/tasks/abc223_d
 

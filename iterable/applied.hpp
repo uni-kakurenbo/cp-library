@@ -8,7 +8,7 @@
 
 #include "internal/dev_env.hpp"
 
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 
 namespace lib {

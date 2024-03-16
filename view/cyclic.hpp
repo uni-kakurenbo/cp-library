@@ -271,7 +271,7 @@ concept can_cyclic_view = requires { cyclic_view(std::declval<Range>()); };
 
 }
 
-struct Cyclic : adapter::range_adapter<Cyclic> {
+struct Cyclic : adaptor::range_adaptor<Cyclic> {
     template<std::ranges::viewable_range Range>
         requires internal::can_cyclic_view<Range>
     inline constexpr auto operator() [[nodiscard]] (Range &&res) const
@@ -279,7 +279,7 @@ struct Cyclic : adapter::range_adapter<Cyclic> {
         return cyclic_view(std::forward<Range>(res));
     }
 
-    using adapter::range_adapter<Cyclic>::operator();
+    using adaptor::range_adaptor<Cyclic>::operator();
     inline static constexpr int arity = 1;
     inline static constexpr bool has_simple_call_op = true;
 };

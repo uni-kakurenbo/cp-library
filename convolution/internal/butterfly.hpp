@@ -19,7 +19,7 @@
 
 #include "utility/functional.hpp"
 
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 
 namespace lib {

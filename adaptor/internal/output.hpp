@@ -18,7 +18,7 @@ namespace lib {
 
 
 template<class Destination = std::ostream>
-struct output_adapter {
+struct output_adaptor {
     using destination_type = Destination;
 
   private:
@@ -89,7 +89,7 @@ struct output_adapter {
     static constexpr auto sflush = std::flush<char_type,std::char_traits<char_type>>;
 
   protected:
-    using sfunc_type = std::remove_const_t<decltype(output_adapter::sendl)>;
+    using sfunc_type = std::remove_const_t<decltype(output_adaptor::sendl)>;
 
   public:
     using separator_type = std::variant<std::string,sfunc_type>;
@@ -110,7 +110,7 @@ struct output_adapter {
 
   public:
     template<class Terminator = std::string, class Separator = std::string>
-    output_adapter(destination_type *des = &std::cout, Terminator endl = "\n", Separator sep = " ") noexcept(NO_EXCEPT)
+    output_adaptor(destination_type *des = &std::cout, Terminator endl = "\n", Separator sep = " ") noexcept(NO_EXCEPT)
       : out(des), endline(endl), separator(sep)
     {
         *this << std::fixed << std::setprecision(20);
@@ -120,7 +120,7 @@ struct output_adapter {
         this->out->seekp(off, dir); return *this;
     };
 
-    template<class T> inline output_adapter& operator<<(T&& s) noexcept(NO_EXCEPT){
+    template<class T> inline output_adaptor& operator<<(T&& s) noexcept(NO_EXCEPT){
         this->put(std::forward<T>(s));
         return *this;
     }

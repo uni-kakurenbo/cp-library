@@ -19,8 +19,8 @@
 
 #include "global/constants.hpp"
 
-#include "adapter/vector.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/vector.hpp"
+#include "adaptor/valarray.hpp"
 
 
 namespace lib {

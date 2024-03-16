@@ -11,8 +11,8 @@ using namespace std;
 
 #include "template/standard.hpp"
 
-input_adapter _input;
-output_adapter _print;
+input_adaptor _input;
+output_adaptor _print;
 #define input _input
 #define print _print
 /* #endregion */

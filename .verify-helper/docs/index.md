@@ -3,11 +3,11 @@
 
 ---
 - `action/`: Lazy Segment Tree などに乗る構造．
-- `adapter/`: 主に，STL のデータ構造や入出力のラッパー．
+- `adaptor/`: 主に，STL のデータ構造や入出力のラッパー．
 - `algebraic/`: よく使う代数構造の定義や，手軽に定義するためのヘルパー．
 - `convolution/`: 畳み込み．
 - `data_structure/`: データ構造．
-  - `adapter/`: Fenwick Tree を Set 風に使うためのアダプターなど．
+  - `adaptor/`: Fenwick Tree を Set 風に使うためのアダプターなど．
 - `debugger/`: デバッガー．展開されて提出に含まれることはない．
 - `geometry/`: 初等幾何．
 - `global/`: 主に各種の定数．

@@ -12,14 +12,14 @@
 #include "internal/types.hpp"
 
 #include "utility/functional.hpp"
-#include "adapter/valarray.hpp"
-#include "adapter/vector.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/valarray.hpp"
+#include "adaptor/vector.hpp"
+#include "adaptor/io.hpp"
 
 #include "structure/grid.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 
-#include "adapter/virtual_map.hpp"
+#include "adaptor/virtual_map.hpp"
 
 #include "internal/auto_holder.hpp"
 
@@ -44,7 +44,9 @@ template<class Node,class Cost> struct edge {
     const node_type from, to; const Cost cost;
     const size_type index = 0;
 
-    edge(const node_type u, const node_type v, const Cost w = 1, const size_type i = 0) noexcept(NO_EXCEPT) : from(u), to(v), cost(w), index(i) {}
+    edge(const node_type u, const node_type v, const Cost w = 1, const size_type i = 0) noexcept(NO_EXCEPT)
+      : from(u), to(v), cost(w), index(i)
+    {}
 
     operator node_type() const noexcept(NO_EXCEPT) { return this->to; }
 
@@ -64,7 +66,7 @@ template<class Node,class Cost> struct edge {
 template<class NodeType, class CostType, class EdgeCollector>
 struct regular_base : EdgeCollector {
     using EdgeCollector::EdgeCollector;
-    using size_type = size_t;
+    using size_type = internal::size_t;
     using node_type = NodeType;
     using cost_type = CostType;
 
@@ -181,7 +183,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         this->add_edge<edge_kind::undirected>(u, v, w);
     }
 
-    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adapter<>>
+    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adaptor<>>
     void inline read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
@@ -189,7 +191,8 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
             this->add_edge<EDGE_TYPE>(u, v, w);
         }
     }
-    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adapter<>>
+
+    template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adaptor<>>
     void inline read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
@@ -198,6 +201,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         }
     }
 };
+
 
 template<class Graph>
 struct mixin : Graph {
@@ -211,25 +215,22 @@ struct mixin : Graph {
 
   public:
     // graph/shortest_path.hpp
-    template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_without_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
+    template<class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_without_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
-    template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_without_cost(const node_type) const noexcept(NO_EXCEPT);
-
-    // graph/dijkstra.hpp
-    template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_with_01cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
-
-    template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_with_01cost(const node_type) const noexcept(NO_EXCEPT);
+    inline auto shortest_path_without_cost(const node_type&) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
-    template<class Cost = cost_type, class Dist, class Prev = std::nullptr_t>
-    inline void distances_with_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = {}, const node_type& = {}) const noexcept(NO_EXCEPT);
+    template<class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_with_01cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
-    template<class Cost = cost_type>
-    inline auto_holder<node_type,Cost> distances_with_cost(const node_type) const noexcept(NO_EXCEPT);
+    inline auto shortest_path_with_01cost(const node_type&) const noexcept(NO_EXCEPT);
+
+    // graph/dijkstra.hpp
+    template<class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_with_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+
+    inline auto shortest_path_with_cost(const node_type&) const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
     inline bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);
@@ -243,12 +244,10 @@ struct mixin : Graph {
     inline size_type minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
-    template<class Cost = cost_type>
-    inline Cost minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
+    inline auto minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
-    template<class Cost = cost_type>
-    inline Cost maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
+    inline auto maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
     inline dsu components() const noexcept(NO_EXCEPT);
@@ -268,14 +267,16 @@ struct mixin : Graph {
     inline cost_type build_manhattan_mst(I0, S0, I1, S1) noexcept(NO_EXCEPT);
 };
 
+
 } // namespace graph_impl
 
 } // namespace internal
 
+
 template<class Cost = std::int64_t, class Node = internal::size_t, template<class...> class Container = vector>
-struct graph : internal::graph_impl::mixin<internal::graph_impl::regular_core<Node,Cost,Container>> {
+struct graph : internal::graph_impl::mixin<internal::graph_impl::regular_core<Node, Cost, Container>> {
   private:
-    using base = internal::graph_impl::mixin<internal::graph_impl::regular_core<Node,Cost,Container>>;
+    using base = internal::graph_impl::mixin<internal::graph_impl::regular_core<Node, Cost, Container>>;
 
   public:
     using size_type = typename base::size_type;
@@ -285,14 +286,14 @@ struct graph : internal::graph_impl::mixin<internal::graph_impl::regular_core<No
     explicit graph(const size_type n = 0) noexcept(NO_EXCEPT) : base(n) {}
 };
 
-template<class Node = internal::size_t, class Cost = std::int64_t, class Edges = virtual_map<Node,vector<typename internal::graph_impl::edge<Node,Cost>>>>
-struct virtual_graph : internal::graph_impl::mixin<internal::graph_impl::virtual_base<Node,Cost,Edges>> {
+template<class Node = internal::size_t, class Cost = std::int64_t, class Edges = virtual_map<Node, vector<typename internal::graph_impl::edge<Node, Cost>>>>
+struct virtual_graph : internal::graph_impl::mixin<internal::graph_impl::virtual_base<Node, Cost, Edges>> {
   private:
-    using base = internal::graph_impl::mixin<internal::graph_impl::virtual_base<Node,Cost,Edges>>;
+    using base = internal::graph_impl::mixin<internal::graph_impl::virtual_base<Node, Cost, Edges>>;
 
   public:
     using size_type = typename base::size_type;
-    using edge = typename internal::graph_impl::edge<Node,Cost>;
+    using edge = typename internal::graph_impl::edge<Node, Cost>;
 
   private:
     size_type _n = 0;

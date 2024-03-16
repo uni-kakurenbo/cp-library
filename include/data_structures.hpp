@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data_structure/adapter/set.hpp"
+#include "data_structure/adaptor/set.hpp"
 
 #include "data_structure/bit_vector.hpp"
 #include "data_structure/disjoint_set_union.hpp"

@@ -14,7 +14,7 @@
 #include <iostream>
 #include <ranges>
 #include "snippet/fast_io.hpp"
-#include "adapter/io.hpp"
+#include "adaptor/io.hpp"
 #include "view/stride.hpp"
 #include "view/zip.hpp"
 #include "numeric/prime_enumerator.hpp"

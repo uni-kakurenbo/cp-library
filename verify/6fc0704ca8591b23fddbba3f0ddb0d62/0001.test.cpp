@@ -12,7 +12,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {

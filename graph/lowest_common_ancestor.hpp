@@ -10,7 +10,7 @@
 #include "internal/types.hpp"
 
 #include "numeric/bit.hpp"
-#include "adapter/valarray.hpp"
+#include "adaptor/valarray.hpp"
 
 #include "structure/graph.hpp"
 

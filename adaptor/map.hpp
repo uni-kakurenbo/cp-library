@@ -9,7 +9,7 @@
 #include "internal/types.hpp"
 #include "internal/exception.hpp"
 
-#include "adapter/set.hpp"
+#include "adaptor/set.hpp"
 
 
 namespace lib {

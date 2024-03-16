@@ -11,6 +11,7 @@
 
 #include "utility/internal/functional_base.hpp"
 
+#include "numeric/internal/mod.hpp"
 #include "numeric/arithmetic.hpp"
 
 #include "global/constants.hpp"
@@ -49,8 +50,6 @@ template<class T, class U> inline auto to_optional_if_or_under(const T& v, const
 template<class T, class F> inline auto to_optional_if(const T& v, F&& f) noexcept(NO_EXCEPT) -> decltype(f(v), std::optional<T>{}){
     return f(v) ? std::optional<T>{} : std::optional<T>(v);
 }
-
-template<class T, class U> inline auto mod(const T& x, const U& r) noexcept(NO_EXCEPT) { return (x%r+r)%r; }
 
 template<class T, class U> inline bool chmin(T &a, const U& b) noexcept(NO_EXCEPT) { return (a>b ? a=b, true : false); }
 template<class T, class U> inline bool chmax(T &a, const U& b) noexcept(NO_EXCEPT) { return (a<b ? a=b, true : false); }

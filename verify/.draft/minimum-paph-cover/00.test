@@ -12,9 +12,9 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adapter/io.hpp"
-#include "adapter/string.hpp"
-#include "adapter/vector.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/string.hpp"
+#include "adaptor/vector.hpp"
 #include "structure/graph.hpp"
 #include "graph/minimum_paph_cover.hpp"
 
