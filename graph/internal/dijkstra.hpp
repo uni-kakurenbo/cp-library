@@ -25,12 +25,12 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_with_cost(
     std::priority_queue<state, std::vector<state>, std::greater<state>> que;
 
     dist->assign(this->size(), lib::numeric_limits<cost_type>::arithmetic_infinity());
-    if constexpr(not std::is_same_v<Prev, std::nullptr_t>) prev->assign(this->size(), unreachable);
+    if constexpr(!std::same_as<Prev, std::nullptr_t>) prev->assign(this->size(), unreachable);
 
     que.emplace(0, s), dist->operator[](s) = 0;
-    if constexpr(not std::is_same_v<Prev, std::nullptr_t>) prev->operator[](s) = root;
+    if constexpr(!std::same_as<Prev, std::nullptr_t>) prev->operator[](s) = root;
 
-    while(not que.empty()) {
+    while(!que.empty()) {
         const auto [d, u] = que.top(); que.pop();
 
         if(dist->operator[](u) < d) continue;
@@ -41,7 +41,7 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_with_cost(
             if(dist->operator[](v) <= next) continue;
 
             dist->operator[](v) = next;
-            if constexpr(not std::is_same_v<Prev, std::nullptr_t>) prev->operator[](v) = u;
+            if constexpr(!std::same_as<Prev, std::nullptr_t>) prev->operator[](v) = u;
 
             que.emplace(dist->operator[](v), v);
         }
@@ -51,6 +51,6 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_with_cost(
 template<class Graph>
 auto lib::internal::graph_impl::mixin<Graph>::shortest_path_with_cost(const typename Graph::node_type& s) const noexcept(NO_EXCEPT) {
     lib::auto_holder<node_type, cost_type> dist;
-    this->shortest_path_with_cost<cost_type>(s, &dist);
+    this->shortest_path_with_cost(s, &dist);
     return dist;
 }
