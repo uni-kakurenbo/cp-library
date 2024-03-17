@@ -29,7 +29,7 @@ template<class Holder> struct base : Holder {
 
   protected:
     template<std::integral T>
-    inline auto _positivize_index(const T _x) const noexcept(NO_EXCEPT) {
+    constexpr auto _positivize_index(const T _x) const noexcept(NO_EXCEPT) {
         auto x = static_cast<internal::size_t>(_x);
         return x < 0 ? this->size() + x : x;
     }
@@ -50,13 +50,14 @@ struct multi_container : internal::multi_container_impl::base<Holder<multi_conta
     using base::base;
 
     template<std::integral Head, class... Tail>
-    multi_container(const Head head, Tail&&... tail) noexcept(NO_EXCEPT)
-    : base(head, multi_container<T, RANK - 1, Holder, Container>(std::forward<Tail>(tail)...)) {
+    constexpr multi_container(const Head head, Tail&&... tail) noexcept(NO_EXCEPT)
+      : base(head, multi_container<T, RANK - 1, Holder, Container>(std::forward<Tail>(tail)...))
+    {
         assert(head >= 0);
     }
 
     template<std::integral Head, class... Tail>
-    T& operator()(Head _head, Tail&&... tail) noexcept(NO_EXCEPT) {
+    constexpr T& operator()(Head _head, Tail&&... tail) noexcept(NO_EXCEPT) {
         static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const auto index = this->_positivize_index(_head);
@@ -66,7 +67,7 @@ struct multi_container : internal::multi_container_impl::base<Holder<multi_conta
     }
 
     template<std::integral Head, class... Tail>
-    const T& operator()(Head _head, Tail&&... tail) const noexcept(NO_EXCEPT) {
+    constexpr  T& operator()(Head _head, Tail&&... tail) const noexcept(NO_EXCEPT) {
         static_assert(std::is_integral_v<Head>, "index must be integral");
 
         const auto index = this->_positivize_index(_head);
@@ -81,11 +82,11 @@ struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl
     using internal::multi_container_impl::base<Container<T>>::base;
 
     template<class... Args>
-    multi_container(const Args&... args) noexcept(NO_EXCEPT) : internal::multi_container_impl::base<Container<T>>(args...)
+    constexpr multi_container(const Args&... args) noexcept(NO_EXCEPT) : internal::multi_container_impl::base<Container<T>>(args...)
     {}
 
     template<class Index>
-    T& operator()(Index&& _index) noexcept(NO_EXCEPT) {
+    constexpr T& operator()(Index&& _index) noexcept(NO_EXCEPT) {
         const auto index = this->_positivize_index(std::forward<T>(_index));
         assert(0 <= index && index < std::ranges::ssize(*this));
 
@@ -93,7 +94,7 @@ struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl
     }
 
     template<class Index>
-    const T& operator()(Index&& _index) const noexcept(NO_EXCEPT) {
+    constexpr T& operator()(Index&& _index) const noexcept(NO_EXCEPT) {
         const auto index = this->_positivize_index(std::forward<T>(_index));
         assert(0 <= index && index < std::ranges::ssize(*this));
 
