@@ -134,6 +134,12 @@ signed main() {
     // static_assert(!lib::internal::wrapping_type_of<map<vector<string>,, std::basic_string>);
     debug(complexed);
 
+    debug(
+        map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> {
+            { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
+        }
+    );
+
     std::queue<int> que;
     que.push(3), que.push(1), que.push(4), que.push(1);
     debug(que);
