@@ -14,7 +14,7 @@
 namespace lib {
 
 
-template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
+template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         internal::static_modint_family<std::ranges::range_value_t<R0>> &&
@@ -30,21 +30,21 @@ Res convolution(R0&& v0, R1&& v1) {
     const auto z = to_signed(std::bit_ceil(to_unsigned(n + m - 1)));
     assert((mint::mod() - 1) % z == 0);
 
-    if(lib::min(n, m) <= 60) return convolution_naive<Res>(v0, v1);
+    // if(lib::min(n, m) <= 60) return convolution_naive<Res>(v0, v1);
     return convolution_fft<Res>(v0, v1);
 }
 
 
 template<
     u32 Mod = 998244353,
-    std::ranges::range Res,
+    class Res,
     std::ranges::sized_range R0, std::ranges::sized_range R1
 >
     requires
         std::convertible_to<std::ranges::range_value_t<R0>, static_modint_32bit<Mod>> &&
         std::convertible_to<std::ranges::range_value_t<R1>, static_modint_32bit<Mod>> &&
         std::convertible_to<std::ranges::range_value_t<R0>, std::ranges::range_value_t<Res>>
-std::remove_reference_t<Res> convolution(R0&& v0, R1&& v1) {
+Res convolution(R0&& v0, R1&& v1) {
     using mint = static_modint_32bit<Mod>;
 
     const auto n = std::ranges::ssize(v0);
@@ -62,14 +62,14 @@ std::remove_reference_t<Res> convolution(R0&& v0, R1&& v1) {
 
     const auto c1 = convolution(a2, b2);
 
-    std::remove_reference_t<Res> c(n + m - 1);
+    Res c(n + m - 1);
     REP(i, n + m - 1) c[i] = c1[i].val();
 
     return c;
 }
 
 
-template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
+template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::common_with<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         std::integral<std::common_type_t<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>> &&
@@ -119,7 +119,7 @@ Res convolution(R0&& v0, R1&& v1) {
     const auto c1 = convolution<MOD1, R0>(v0, v1);
     const auto c2 = convolution<MOD2, R0>(v0, v1);
 
-    std::remove_reference_t<Res> c(n + m - 1);
+    Res c(n + m - 1);
 
     REP(i, n + m - 1) {
         if constexpr(internal::modint_family<res_value_type>) {
@@ -148,7 +148,8 @@ Res convolution(R0&& v0, R1&& v1) {
 
 template<std::ranges::range R0, std::ranges::range R1>
     requires
-        std::common_with<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>
+        std::common_with<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
+        internal::modint_family<std::common_type_t<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>>
 auto convolution(R0&& v0, R1&& v1) {
     using common_type = std::common_type_t<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>>;
     return convolution<valarray<common_type>>(v0, v1);

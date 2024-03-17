@@ -411,11 +411,11 @@ std::string trim(const std::string &s) {
 }
 
 std::vector<std::string> split(const std::string& str) {
-    constexpr char SEPARATOR = ',';
-    constexpr char ESCAPE = '\\';
-    constexpr char QUOTATIONS[] = "\"\'";
-    constexpr char PARENTHESES[] = "()[]{}<>";
-    constexpr auto PARENTHESES_KINDS = std::char_traits<char>::length(PARENTHESES);
+    static constexpr char SEPARATOR = ',';
+    static constexpr char ESCAPE = '\\';
+    static constexpr char QUOTATIONS[] = "\"\'";
+    static constexpr char PARENTHESES[] = "()[]{}<>";
+    static constexpr auto PARENTHESES_KINDS = std::char_traits<char>::length(PARENTHESES);
     static_assert(PARENTHESES_KINDS % 2 == 0);
 
     std::vector<std::string> res = { "" };

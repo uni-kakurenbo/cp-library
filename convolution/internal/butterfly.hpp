@@ -42,7 +42,7 @@ struct fft_info {
     std::array<mint, std::max(0, rank2 - 3 + 1)> rate3;
     std::array<mint, std::max(0, rank2 - 3 + 1)> irate3;
 
-    constexpr fft_info() {
+    consteval fft_info() {
         this->root[rank2] = g.pow((mint::mod() - 1) >> this->rank2);
         this->iroot[rank2] = this->root[this->rank2].inv();
 
@@ -151,7 +151,7 @@ void butterfly_inv(R& v1) {
     const auto n = std::ranges::ssize(v1);
     const auto h = std::countr_zero(to_unsigned(n));
 
-    static constexpr internal::fft_info<mint> info;
+    static constinit internal::fft_info<mint> info;
 
     internal::size_t len = h;
     while(len > 0) {
@@ -204,15 +204,15 @@ void butterfly_inv(R& v1) {
 }
 
 
-template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
+template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         internal::static_modint_family<std::ranges::range_value_t<R0>>
-std::remove_reference_t<Res> convolution_naive(R0&& v0, R1&& v1) {
+Res convolution_naive(R0&& v0, R1&& v1) {
     const auto n = std::ranges::ssize(v0);
     const auto m = std::ranges::ssize(v1);
 
-    std::remove_reference_t<Res> ans(n + m - 1);
+    Res ans(n + m - 1);
 
     if(n < m) {
         REP(j, m) REP(i, n) ans[i + j] += v0[i] * v1[j];
@@ -225,13 +225,13 @@ std::remove_reference_t<Res> convolution_naive(R0&& v0, R1&& v1) {
 }
 
 
-template<std::ranges::range Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
+template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
     requires
         std::same_as<std::ranges::range_value_t<R0>, std::ranges::range_value_t<R1>> &&
         internal::static_modint_family<std::ranges::range_value_t<R0>> &&
         internal::resizable_range<R0> && internal::resizable_range<R1> &&
         std::convertible_to<std::ranges::range_value_t<R0>, std::ranges::range_value_t<Res>>
-std::remove_reference_t<Res> convolution_fft(R0 v0, R1 v1) {
+Res convolution_fft(R0&& v0, R1&& v1) {
     using mint = std::ranges::range_value_t<R0>;
 
     const auto n = std::ranges::ssize(v0);
@@ -253,7 +253,7 @@ std::remove_reference_t<Res> convolution_fft(R0 v0, R1 v1) {
     const mint iz = mint{ z }.inv();
     REP(i, n + m - 1) v0[i] *= iz;
 
-    if constexpr(std::same_as<Res, R0>) return v0;
+    if constexpr(std::convertible_to<R0, Res>) return v0;
     else return Res(ALL(v0));
 }
 
