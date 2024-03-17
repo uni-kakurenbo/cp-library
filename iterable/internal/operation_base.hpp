@@ -15,10 +15,13 @@ namespace lib {
 template<std::input_iterator I, std::sentinel_for<I> S>
 std::string join(I first, S last, const char* sep = "") noexcept(NO_EXCEPT) {
     if(first == last) return "";
-    std::ranges::advance(last, -1);
     std::ostringstream res;
-    std::ranges::copy(first, last, std::ostream_iterator<std::iter_value_t<I>>(res, sep));
-    res << *last;
+    while(true) {
+        res << *first;
+        std::ranges::advance(first, 1);
+        if(first == last) break;
+        res << sep;
+    }
     return res.str();
 }
 
