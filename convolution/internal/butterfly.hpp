@@ -231,7 +231,7 @@ template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
         internal::static_modint_family<std::ranges::range_value_t<R0>> &&
         internal::resizable_range<R0> && internal::resizable_range<R1> &&
         std::convertible_to<std::ranges::range_value_t<R0>, std::ranges::range_value_t<Res>>
-Res convolution_fft(R0&& v0, R1&& v1) {
+Res convolution_fft(R0 v0, R1 v1) {
     using mint = std::ranges::range_value_t<R0>;
 
     const auto n = std::ranges::ssize(v0);
