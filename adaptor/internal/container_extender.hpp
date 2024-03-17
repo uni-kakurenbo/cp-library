@@ -115,7 +115,6 @@ struct extended_container : Base {
     }
 
     inline auto& unique() noexcept(NO_EXCEPT) {
-        std::ranges::sort(*this->_base());
         const auto rest = std::ranges::unique(*this->_base());
         this->erase(ALL(rest));
         return *this;
