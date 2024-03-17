@@ -38,7 +38,7 @@ struct montgomery_reduction {
   public:
 
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
-    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_reduction::digits) - 1; }
+    static constexpr value_type max() noexcept { return (value_type{ 1 } << montgomery_reduction::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 
@@ -171,7 +171,7 @@ struct arbitrary_montgomery_reduction {
 
   public:
     static constexpr int digits = std::numeric_limits<value_type>::digits - 2;
-    static inline constexpr value_type max() noexcept { return (value_type{ 1 } << context::digits) - 1; }
+    static constexpr value_type max() noexcept { return (value_type{ 1 } << context::digits) - 1; }
 
     inline constexpr value_type mod() const noexcept(NO_EXCEPT) { return this->_mod; }
 

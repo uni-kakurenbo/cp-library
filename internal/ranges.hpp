@@ -81,7 +81,7 @@ using range_iterator_category = typename std::iterator_traits<
 
 
 template<class Range>
-inline static constexpr auto _iterator_concept() noexcept(NO_EXCEPT) {
+static constexpr auto _iterator_concept() noexcept(NO_EXCEPT) {
     if constexpr(std::ranges::random_access_range<Range>)
         return std::random_access_iterator_tag{};
     else if constexpr(std::ranges::bidirectional_range<Range>)
@@ -212,7 +212,7 @@ struct partial<Adapter, Args...> : range_adaptor_closure {
         return std::apply(forwarder, this->args);
     }
 
-    inline static constexpr bool has_simple_call_op = true;
+    static constexpr bool has_simple_call_op = true;
 };
 
 template<class Adapter, typename Arg>
@@ -229,7 +229,7 @@ struct partial<Adapter, Arg> : range_adaptor_closure {
         return Adapter{}(std::forward<Range>(range), this->arg);
     }
 
-    inline static constexpr bool has_simple_call_op = true;
+    static constexpr bool has_simple_call_op = true;
 };
 
 template<class Lhs, typename Rhs, typename Range>
@@ -273,7 +273,7 @@ struct pipe<Lhs, Rhs> : range_adaptor_closure {
         return rhs(lhs(std::forward<Range>(range)));
     }
 
-    inline static constexpr bool has_simple_call_op = true;
+    static constexpr bool has_simple_call_op = true;
 };
 
 

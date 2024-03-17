@@ -6,8 +6,8 @@ namespace lib {
 namespace internal {
 
 
-template<class... T> constexpr bool EXCEPTION = false;
-template<const int T> constexpr bool EXCEPTION_INT = false;
+template<class... T> inline constexpr bool EXCEPTION = false;
+template<const int T> inline constexpr bool EXCEPTION_INT = false;
 
 
 } // namespace internal
