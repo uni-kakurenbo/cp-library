@@ -1,0 +1,2 @@
+#! /bin/bash
+./verify/group-by.sh
