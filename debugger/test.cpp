@@ -134,5 +134,17 @@ signed main() {
     // static_assert(!lib::internal::wrapping_type_of<map<vector<string>,, std::basic_string>);
     debug(complexed);
 
+    std::queue<int> que;
+    que.push(3), que.push(1), que.push(4), que.push(1);
+    debug(que);
+
+    std::stack<int> stk;
+    stk.push(3), stk.push(1), stk.push(4), stk.push(1);
+    debug(stk);
+
+    std::priority_queue<int> prique;
+    prique.push(3), prique.push(1), prique.push(4), prique.push(1);
+    debug(prique);
+
     return 0;
 }
