@@ -31,7 +31,7 @@ struct cyclic_view : std::ranges::view_interface<cyclic_view<View>> {
         requires std::ranges::forward_range<Base<Const>>
     struct iterator_tag<Const> {
       private:
-        inline static constexpr auto _iterator_category() noexcept {
+        static constexpr auto _iterator_category() noexcept {
             using category = typename std::iterator_traits<std::ranges::iterator_t<Base<Const>>>::iterator_category;
             if constexpr(std::derived_from<category, std::random_access_iterator_tag>)
                 return std::random_access_iterator_tag{};
@@ -280,8 +280,8 @@ struct Cyclic : adaptor::range_adaptor<Cyclic> {
     }
 
     using adaptor::range_adaptor<Cyclic>::operator();
-    inline static constexpr int arity = 1;
-    inline static constexpr bool has_simple_call_op = true;
+    static constexpr int arity = 1;
+    static constexpr bool has_simple_call_op = true;
 };
 
 inline constexpr Cyclic cyclic;

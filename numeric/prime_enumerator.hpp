@@ -39,11 +39,11 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
     using large_bit_type = std::uint64_t;
 
 
-    inline static constexpr impl_type SEGMENT_SIZE = 1'000'000;
+    static constexpr impl_type SEGMENT_SIZE = 1'000'000;
 
-    inline static constexpr impl_type  MOD30[8] = { 1, 7, 11, 13, 17, 19, 23, 29 };
+    static constexpr impl_type  MOD30[8] = { 1, 7, 11, 13, 17, 19, 23, 29 };
 
-    inline static constexpr small_bit_type MASK[8][8] = {
+    static constexpr small_bit_type MASK[8][8] = {
         { 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f },
         { 0xfd, 0xdf, 0xef, 0xfe, 0x7f, 0xf7, 0xfb, 0xbf },
         { 0xfb, 0xef, 0xfe, 0xbf, 0xfd, 0x7f, 0xf7, 0xdf },
@@ -54,8 +54,8 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe },
     };
 
-    inline static constexpr impl_type C1[8] = { 6, 4, 2, 4, 2, 4, 6, 2 };
-    inline static constexpr impl_type C0[8][8] = {
+    static constexpr impl_type C1[8] = { 6, 4, 2, 4, 2, 4, 6, 2 };
+    static constexpr impl_type C0[8][8] = {
         { 0, 0, 0, 0, 0, 0, 0, 1 }, { 1, 1, 1, 0, 1, 1, 1, 1 },
         { 2, 2, 0, 2, 0, 2, 2, 1 }, { 3, 1, 1, 2, 1, 1, 3, 1 },
         { 3, 3, 1, 2, 1, 3, 3, 1 }, { 4, 2, 2, 2, 2, 2, 4, 1 },

@@ -21,7 +21,7 @@ struct factorial_base {
     using value_type = T;
     using size_type = internal::size_t;
 
-    inline static constexpr value_type calc(const size_type& n) noexcept(NO_EXCEPT) {
+    static constexpr value_type calc(const size_type& n) noexcept(NO_EXCEPT) {
         assert(n >= 0);
         value_type ans = 1;
         FOR(k, 1, n) ans *= k;

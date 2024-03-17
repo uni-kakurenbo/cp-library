@@ -38,7 +38,7 @@ struct run_length : container {
 template<std::input_iterator I, std::sentinel_for<I> S>
 run_length(I, S) -> run_length<std::iter_value_t<I>>;
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
 explicit run_length(R&& range) -> run_length<std::ranges::range_value_t<R>>;
 
 

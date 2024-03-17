@@ -103,7 +103,7 @@ struct static_modular_context {
 
     static constexpr bool dynamic = false;
 
-    static inline constexpr reductor reduction = reductor(Mod);
+    static constexpr reductor reduction = reductor(Mod);
 
   private:
     using context = static_modular_context;

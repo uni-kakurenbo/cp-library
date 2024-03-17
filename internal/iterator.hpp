@@ -172,7 +172,7 @@ struct is_iterator<T, typename std::enable_if<!std::is_same<typename std::iterat
 };
 
 template<class T>
-constexpr bool is_iterator_v = is_iterator<T>::value;
+inline constexpr bool is_iterator_v = is_iterator<T>::value;
 
 template<class T>
 using is_iterator_t = std::enable_if_t<is_iterator_v<T>>;

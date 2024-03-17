@@ -81,7 +81,7 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
 
   public:
     static constexpr int digits = mint::context::reductor::digits;
-    static inline constexpr value_type max() noexcept { return mint::context::reductor::max(); }
+    static constexpr value_type max() noexcept { return mint::context::reductor::max(); }
 
 
     static constexpr void set_mod(const value_type mod) noexcept(NO_EXCEPT)
@@ -92,9 +92,9 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     }
 
 
-    static inline constexpr value_type mod() noexcept(NO_EXCEPT) { return mint::context::reduction.mod(); }
+    static constexpr value_type mod() noexcept(NO_EXCEPT) { return mint::context::reduction.mod(); }
 
-    static inline constexpr mint raw(const value_type v) noexcept(NO_EXCEPT)
+    static constexpr mint raw(const value_type v) noexcept(NO_EXCEPT)
     {
         mint res;
         res._val = mint::context::reduction.convert_raw(v);

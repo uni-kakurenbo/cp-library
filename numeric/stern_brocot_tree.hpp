@@ -88,14 +88,14 @@ struct stern_brocot_tree {
         return { l.first + r.first, l.second + r.second };
     }
 
-    inline static constexpr pair<fraction_type, fraction_type> children(const fraction_type x) {
+    static constexpr pair<fraction_type, fraction_type> children(const fraction_type x) {
         const auto [ l, r ] = range(x);
         const fraction_type lc = { l.first + x.first, l.second + x.second };
         const fraction_type rc = { x.first + r.first, x.second + r.second };
         return { lc, rc };
     }
 
-    inline static constexpr fraction_type lowest_common_ancestor(const fraction_type x, const fraction_type y) {
+    static constexpr fraction_type lowest_common_ancestor(const fraction_type x, const fraction_type y) {
         const auto px = path(x);
         const auto py = path(y);
         path_type path;
@@ -107,7 +107,7 @@ struct stern_brocot_tree {
         return from_path(path);
     }
 
-    inline static constexpr fraction_type ancestor(const fraction_type x, middle_type dep) {
+    static constexpr fraction_type ancestor(const fraction_type x, middle_type dep) {
         fraction_type l = { 0, 1 }, r = { 1, 0 };
         fraction_type m = { 1, 1 };
         middle_type det_l = l.first * x.second - l.second * x.first;
@@ -133,7 +133,7 @@ struct stern_brocot_tree {
         return { -1, -1 };
     }
 
-    inline static constexpr std::string to_string(const path_type &p) {
+    static constexpr std::string to_string(const path_type &p) {
         std::string res;
         char c = 'L';
         ITR(x, p) {
