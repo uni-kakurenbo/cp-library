@@ -1,3 +1,5 @@
 #! /bin/bash
 
 ./verify/group-by.sh
+git add verify/
+git commit -m "sort verification files"

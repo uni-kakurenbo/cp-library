@@ -15,14 +15,15 @@
 #include "internal/types.hpp"
 #include "internal/type_traits.hpp"
 
+#include "adaptor/vector.hpp"
 #include "adaptor/valarray.hpp"
 
 
 namespace lib {
 
 
-template<class T, class container = valarray<T>>
-struct accumulation : container {
+template<class T, class Container = valarray<T>>
+struct accumulation : Container {
     using size_type = internal::size_t;
 
   protected:
@@ -35,22 +36,19 @@ struct accumulation : container {
 
     template<std::ranges::input_range R, class Operator = std::plus<T>>
         requires std::regular_invocable<Operator, T, T>
-    accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
-        this->resize(std::ranges::size(range) + 1);
-        std::exclusive_scan(ALL(range), std::begin(*this), head, op);
-        const auto back = std::prev(std::end(*this));
-        *back = op(*std::prev(back), *std::prev(std::ranges::end(range)));
-    }
+    explicit accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{})
+      : accumulation(ALL(range), head, op)
+    {}
 
     template<
         std::input_iterator I, std::sentinel_for<I> S,
         class Operator = std::plus<T>
     >
     accumulation(I first, S last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
-        this->resize(std::distance(first, last) + 1);
-        std::exclusive_scan(first, last, std::begin(*this), head, op);
-        const auto back = std::prev(std::end(*this));
-        *back = op(*std::prev(back), *std::prev(last));
+        this->resize(std::ranges::distance(first, last) + 1);
+        std::exclusive_scan(first, last, std::ranges::begin(*this), head, op);
+        const auto back = std::ranges::prev(std::ranges::end(*this));
+        *back = op(*std::ranges::prev(back), *std::ranges::prev(last));
     }
 
     template<class Operator = std::minus<T>>
@@ -69,8 +67,8 @@ template<std::ranges::input_range R>
 explicit accumulation(R&&) -> accumulation<typename std::ranges::range_value_t<R>>;
 
 
-template<class T, class container = valarray<valarray<T>>, class Operator = std::plus<T>>
-struct accumulation_2d : container {
+template<class T, class Container = vector<valarray<T>>, class Operator = std::plus<T>>
+struct accumulation_2d : Container {
     using size_type = internal::size_t;
 
   protected:
@@ -81,25 +79,33 @@ struct accumulation_2d : container {
     Operator _op;
 
   public:
-    explicit accumulation_2d() noexcept(NO_EXCEPT) {}
+    accumulation_2d() noexcept(NO_EXCEPT) {}
+
+    template<std::ranges::input_range R>
+        requires
+            std::ranges::input_range<typename std::ranges::range_value_t<R>> &&
+            std::regular_invocable<Operator, T, T>
+    explicit accumulation_2d(R&& range, const T& head = {}, Operator&& op = std::plus<T>{})
+      : accumulation_2d(ALL(range), head, op)
+    {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    explicit accumulation_2d(I first, S last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
-        const size_type h = static_cast<size_type>(std::distance(first, last));
-        const size_type w = static_cast<size_type>(std::distance(std::begin(*first), std::end(*first)));
+    accumulation_2d(I first, S last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
+        const size_type h = static_cast<size_type>(std::ranges::distance(first, last));
+        const size_type w = static_cast<size_type>(std::ranges::distance(ALL(*first)));
         {
             auto row = first;
-            this->assign(h+1, head);
-            (*this)[0].assign(w+1, head);
+            this->assign(h + 1, {});
+            (*this)[0].assign(w + 1, head);
             REP(i, h) {
-                assert(w == std::distance(std::begin(*row), std::end(*row)));
-                (*this)[i+1].assign(w+1, head);
-                REP(j, w) (*this)[i+1][j+1] = first[i][j];
+                assert(w == std::distance(ALL(*row)));
+                (*this)[i + 1].assign(w + 1, head);
+                REP(j, w) (*this)[i + 1][j + 1] = first[i][j];
                 ++row;
             }
         }
-        FOR(i, 1, h) FOR(j, w) (*this)[i][j] = op((*this)[i][j], (*this)[i-1][j]);
-        FOR(i, h) FOR(j, 1, w) (*this)[i][j] = op((*this)[i][j], (*this)[i][j-1]);
+        FOR(i, 1, h) FOR(j, w) (*this)[i][j] = op((*this)[i][j], (*this)[i - 1][j]);
+        FOR(i, h) FOR(j, 1, w) (*this)[i][j] = op((*this)[i][j], (*this)[i][j - 1]);
     }
 
     template<class Rev = std::minus<T>>
@@ -127,6 +133,13 @@ template<std::input_iterator I, std::sentinel_for<I> S>
 explicit accumulation_2d(I, S) ->
     accumulation_2d<
         typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
+    >;
+
+template<std::ranges::input_range R>
+    requires std::ranges::input_range<typename std::ranges::range_value_t<R>>
+explicit accumulation_2d(R&&) ->
+    accumulation_2d<
+        typename std::ranges::range_value_t<typename std::ranges::range_value_t<R>>
     >;
 
 
