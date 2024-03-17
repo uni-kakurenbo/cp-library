@@ -23,7 +23,7 @@ Res gcd_convolution(R0 v0, R1 v1) {
     REP(i, std::ranges::size(v0)) v0[i] *= v1[i];
     multiple_transform::mobius(v0);
 
-    if constexpr(std::same_as<Res, R0>) return v0;
+    if constexpr(std::convertible_to<R0, Res) return v0;
     else return Res(ALL(v0));
 }
 
