@@ -17,7 +17,7 @@ namespace internal {
 
 
 //Thanks to: https://github.com/NyaanNyaan/library/blob/master/prime/fast-factorize.hpp
-template<modint_family Small, modint_family Large, std::ranges::range R>
+template<modint_family Small, modint_family Large, class R>
 void divisors(const u64 n, R *const res) noexcept(NO_EXCEPT) {
     if(n == 0) return;
 

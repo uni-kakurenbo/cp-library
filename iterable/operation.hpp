@@ -66,6 +66,7 @@ auto sum(R&& range, T base = {}) noexcept(NO_EXCEPT) {
     return sum(ALL(r), base);
 }
 
+
 template<std::ranges::input_range R>
     requires
         requires(R r) {
@@ -105,6 +106,7 @@ auto mex(const std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(v), base);
 }
 
+
 template<std::input_iterator I, std::sentinel_for<I> S, class T>
 inline constexpr auto gcd(I first, S last) noexcept(NO_EXCEPT) {
     T res = T{0};
@@ -119,10 +121,12 @@ inline constexpr auto lcm(I first, S last) noexcept(NO_EXCEPT) {
     return res;
 }
 
+
 template<std::ranges::input_range R, class T = std::ranges::range_value_t<R>>
 auto mex(R&& range, const T& base) noexcept(NO_EXCEPT) {
     return mex(ALL(range), base);
 }
+
 
 template<std::ranges::input_range R>
 auto gcd(R&& range) noexcept(NO_EXCEPT) {
@@ -133,6 +137,7 @@ template<std::ranges::input_range R>
 auto lcm(R&& range) noexcept(NO_EXCEPT) {
     return lcm(ALL(range));
 }
+
 
 template<class R, std::input_iterator I, std::sentinel_for<I> S, class D>
     requires
@@ -151,11 +156,13 @@ auto split(I first, S last, const D& delim = ' ') noexcept(NO_EXCEPT) {
     return res;
 }
 
+
 template<class R, std::ranges::input_range V, class D>
-    requires (!std::ranges::range<D>)
+    requires (!std::ranges::input_range<D>)
 auto split(V&& v, D&& d) noexcept(NO_EXCEPT) { return split<R>(ALL(v), d); }
 
-template<class R, std::ranges::input_range V, std::ranges::range Ds>
+
+template<class R, std::ranges::input_range V, std::ranges::input_range Ds>
 auto split(V&& v, Ds&& ds) noexcept(NO_EXCEPT) {
     R res = { v };
     ITR(d, ds) {
@@ -165,6 +172,7 @@ auto split(V&& v, Ds&& ds) noexcept(NO_EXCEPT) {
     }
     return res;
 }
+
 
 template<class R, std::ranges::input_range V, class T>
 auto split(V&& v, const std::initializer_list<T> ds) noexcept(NO_EXCEPT){
@@ -195,7 +203,8 @@ auto find(R source,  R query) noexcept(NO_EXCEPT) {
     return res;
 }
 
-template<std::ranges::input_range R, replacement_policy POLICY = replacement_policy::insert_sync>
+
+template<replacement_policy POLICY = replacement_policy::insert_sync, std::ranges::input_range R>
 auto replace(R&& source, R&& from, R&& to) noexcept(NO_EXCEPT) {
     R res;
 
@@ -229,6 +238,7 @@ auto replace(R&& source, R&& from, R&& to) noexcept(NO_EXCEPT) {
 
     return res;
 }
+
 
 template<alignment ALIGNMENT, internal::resizable_range R, class T = std::ranges::range_value_t<R>>
 auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
@@ -272,6 +282,39 @@ auto cjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
 auto rjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
     return align<alignment::right>(source, size, v);
+}
+
+
+template<
+    class Res,
+    std::ranges::random_access_range Target,
+    std::ranges::forward_range Order
+>
+    requires std::ranges::output_range<Res, std::ranges::range_value_t<Target>>
+Res order_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
+    const auto size = std::ranges::ssize(target);
+    Res res(size);
+
+    {
+        auto res_itr = std::ranges::begin(res);
+        auto order_itr = std::ranges::begin(std::forward<Order>(order));
+
+        for(const auto res_end = std::ranges::end(res); res_itr != res_end; ++res_itr, ++order_itr) {
+            assert(0 <= *order_itr && *order_itr < size);
+            *res_itr = target[*order_itr];
+        }
+    }
+
+    return res;
+}
+
+
+template<
+    std::ranges::random_access_range Target,
+    std::ranges::forward_range Order
+>
+auto order_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
+    return order_by<std::decay_t<Target>, Target, Order>(std::forward<Target>(target), std::forward<Order>(order));
 }
 
 

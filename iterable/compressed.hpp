@@ -13,12 +13,12 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adaptor/valarray.hpp"
+#include "adaptor/vector.hpp"
 
 
 namespace lib {
 
-template<class T, std::ranges::range Container = valarray<internal::size_t>>
+template<class T, class Container = vector<internal::size_t>>
 struct compressed : Container {
     using size_type = internal::size_t;
     using value_type = T;

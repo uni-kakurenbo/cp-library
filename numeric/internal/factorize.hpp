@@ -75,7 +75,7 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
 }
 
 
-template<modint_family Small, modint_family Large, std::ranges::range R>
+template<modint_family Small, modint_family Large, class R>
 void factorize(const u64 n, R *const res) noexcept(NO_EXCEPT) {
     if(n <= 1) return;
 

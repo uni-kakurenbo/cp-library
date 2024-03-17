@@ -115,7 +115,7 @@ void dump_tuple_impl([[maybe_unused]] T&& val, std::stringstream &res) {
 }
 
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
 std::string dump_range_impl(R&& range, const Brackets& brcs = { "[", "]" }, const std::string& spl = ", ") {
     std::stringstream res;
 
@@ -203,7 +203,7 @@ struct dump_primitive_like {
 
 struct dump_bitset {
     template<std::size_t N>
-    std::string operator()(std::bitset<N>&& val) const {
+    std::string operator()(const std::bitset<N>& val) const {
         std::stringstream res;
         res << COLOR_NUMERIC << val.to_string() << COLOR_INIT;
         return res.str();
@@ -321,7 +321,7 @@ struct dump_wrapper {
 
 
 struct dump_range {
-    template<std::ranges::range T>
+    template<std::ranges::input_range T>
     std::string operator()(T&& val) const {
         return dump_range_impl(val);
     }

@@ -35,7 +35,7 @@ auto mobius(R& v) noexcept(NO_EXCEPT) {
 }
 
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
     requires requires () { typename R::mapped_type; }
 auto zeta(R& v) noexcept(NO_EXCEPT) {
     const auto begin = std::ranges::begin(v);
@@ -48,7 +48,7 @@ auto zeta(R& v) noexcept(NO_EXCEPT) {
     }
 }
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
     requires requires () { typename R::mapped_type; }
 auto mobius(R& v) noexcept(NO_EXCEPT) {
     const auto begin = std::ranges::begin(v);
@@ -88,7 +88,7 @@ auto mobius(R& v) noexcept(NO_EXCEPT) {
 }
 
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
     requires requires () { typename R::mapped_type; }
 auto zeta(R& v) noexcept(NO_EXCEPT) {
     const auto begin = std::ranges::begin(v);
@@ -100,7 +100,7 @@ auto zeta(R& v) noexcept(NO_EXCEPT) {
     }
 }
 
-template<std::ranges::range R>
+template<std::ranges::input_range R>
     requires requires () { typename R::mapped_type; }
 auto mobius(R& v) noexcept(NO_EXCEPT) {
     const auto begin = std::ranges::begin(v);
