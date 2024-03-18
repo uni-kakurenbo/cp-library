@@ -594,7 +594,7 @@ jobs:
                   jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item) | with_entries(.value = .)' \
                     ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
 
-                  find ../verify/ -type f -name **.test.cpp -printf 'verify/%P\n' | \
+                  find ../verify/ -type f -name **.test.cpp -printf 'verify/%P\n' | sort | \
                     jq -R -s -c 'split("\n")[:-1]' > ./files.json
                   
                   jq --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
