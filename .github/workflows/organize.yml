@@ -32,7 +32,7 @@ jobs:
                   git add .
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
+                    git commit -m "[auto-verifier] organization commit ${GITHUB_SHA}"
                     git pull --rebase origin ${{ github.head_ref || github.ref_name }}
                     git push origin ${{ github.head_ref || github.ref_name }}
                   else
