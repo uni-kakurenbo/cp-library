@@ -587,8 +587,9 @@ jobs:
                   touch ./timestamps.remote.json
 
                   if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
-                    echo "No timestamps found."
-                    exit 0
+                    echo "No updated timestamps found."
+                    mkdir -p ./test/test-dummy/
+                    echo '{}' > ./tests/test-dummy/timestamps.json
                   fi
 
                   jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item) | with_entries(.value = .)' \
