@@ -22,8 +22,13 @@ jobs:
         uses: ./.github/workflows/load-prev-runs.yml
         secrets: inherit
 
+    organize:
+        uses: ./.github/workflows/organize.yml
+
     config:
-        needs: cache
+        needs:
+            - cache
+            - organize
         if: ${{ !cancelled() }}
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
