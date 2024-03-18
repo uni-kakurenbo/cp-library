@@ -7,11 +7,11 @@ function get_problem_tag() {
     TAG=""
 
     if [[ $URL == *judge.u-aizu.ac.jp* ]]; then
-        TAG="aoj/${URL//*id=/}"
+        TAG="aizu-online-judge/${URL//*id=/}"
     fi
 
     if [[ $URL == *judge.yosupo.jp* ]]; then
-        TAG="yosupo/${URL//*problem\//}"
+        TAG="yosupo-judge/${URL//*problem\//}"
     fi
 
     if [[ $URL == *yukicoder.me* ]]; then
