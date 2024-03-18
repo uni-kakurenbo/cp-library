@@ -15,7 +15,7 @@ jobs:
                   fetch-depth: 0
 
             - name: Sort verification files
-              run: ./verify/group-by.sh
+              run: ./.github/workflows/internal/group-by.sh
 
             - name: Push report
               env:
