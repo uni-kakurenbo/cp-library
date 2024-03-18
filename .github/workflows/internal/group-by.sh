@@ -31,7 +31,7 @@ function rename() {
 
 export -f rename
 
-rm ./**/**/problem.info
+rm -f ./**/**/problem.info
 
 find ./**/**/**.test.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
     xargs -I {} bash -c 'rename "{}"'
