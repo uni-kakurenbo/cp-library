@@ -593,13 +593,12 @@ jobs:
 
                   jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item) | with_entries(.value = .)' \
                     ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
-                  cat ./merged-timestamps.json
 
-                  find ../verify/ -type f -name **.test.cpp -printf 'verify/%P\n' | jq -R -s -c 'split("\n")[:-1]' > ./files.json
-                  cat ./files.json
+                  find ../verify/ -type f -name **.test.cpp -printf 'verify/%P\n' | \
+                    jq -R -s -c 'split("\n")[:-1]' > ./files.json
                   
-                  jq < ./files.json --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
-                    > ./timestamps.remote.json
+                  jq --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
+                    ./files.json | jq > ./timestamps.remote.json
                   cat ./timestamps.remote.json
 
             - name: Push merged timestamps
