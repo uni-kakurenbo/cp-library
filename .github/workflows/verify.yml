@@ -588,7 +588,7 @@ jobs:
 
                   if ! ls ./tests/test-*/timestamps.json > /dev/null 2>&1; then
                     echo "No updated timestamps found."
-                    mkdir -p ./test/test-dummy/
+                    mkdir -p ./tests/test-dummy/
                     echo '{}' > ./tests/test-dummy/timestamps.json
                   fi
 
