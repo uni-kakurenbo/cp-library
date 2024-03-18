@@ -1,0 +1,40 @@
+name: organization
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+    workflow_call:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Sort verification files
+              run: ./verify/group-by.sh
+
+            - name: Push report
+              if: ${{ github.ref_name == github.event.repository.default_branch }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -eu
+
+                  git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+
+                  git config --global user.name "GitHub"
+                  git config --global user.email "noreply@github.com"
+
+                  git add .
+
+                  if (git diff --cached --shortstat | grep '[0-9]'); then
+                    git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
+                    git pull --rebase origin ${{ github.head_ref || github.ref_name }}
+                    git push origin ${{ github.head_ref || github.ref_name }}
+                  else
+                    echo "No updated reports."
+                  fi
