@@ -569,7 +569,9 @@ jobs:
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-                  sparse-checkout: .verify-helper
+                  sparse-checkout: |
+                      .verify-helper
+                      verify
 
             - name: Load timestamps
               uses: actions/download-artifact@v4
@@ -589,10 +591,15 @@ jobs:
                     exit 0
                   fi
 
-                  jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item)' \
+                  jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item) | with_entries(.value = .)' \
                     ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
+                  cat ./merged-timestamps.json
 
-                  cp -f ./merged-timestamps.json ./timestamps.remote.json
+                  find ../verify/ -type f | jq -R -s -c 'split("\n")[:-1]' > ./files.json
+                  cat ./files.json
+                  
+                  jq < ./files.json --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
+                    > ./timestamps.remote.json
                   cat ./timestamps.remote.json
 
             - name: Push merged timestamps
