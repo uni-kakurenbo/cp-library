@@ -1,8 +1,0 @@
-#! /bin/bash
-
-./verify/group-by.sh
-git add -N verify/
-
-if ! git diff --exit-code --quiet; then
-    git commit -m "sort verification files"
-fi
