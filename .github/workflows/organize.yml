@@ -6,7 +6,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    lint:
+    sort-files:
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
         steps:
@@ -18,7 +18,6 @@ jobs:
               run: ./verify/group-by.sh
 
             - name: Push report
-              if: ${{ github.ref_name == github.event.repository.default_branch }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
