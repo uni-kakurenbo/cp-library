@@ -33,8 +33,9 @@ jobs:
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] organization commit ${GITHUB_SHA}"
-                    git pull --rebase origin ${{ github.head_ref || github.ref_name }}
-                    git push origin ${{ github.head_ref || github.ref_name }}
+                    REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
+                    git pull --rebase origin "${REPOSITORY_NAME}"
+                    git push origin "${REPOSITORY_NAME}"
                   else
                     echo "No updated reports."
                   fi
