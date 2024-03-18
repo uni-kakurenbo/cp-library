@@ -33,7 +33,7 @@ export -f rename
 
 rm ./**/**/problem.info
 
-find ./**/**.test.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
+find ./**/**/**.test.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
     xargs -I {} bash -c 'rename "{}"'
 
 find . -type d -empty -delete
