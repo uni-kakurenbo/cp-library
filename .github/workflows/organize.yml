@@ -36,7 +36,7 @@ jobs:
                     REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
 
                     git pull --rebase origin "${REPOSITORY_NAME}"
-                    git push origin "${REPOSITORY_NAME}"
+                    git push origin "HEAD:${REPOSITORY_NAME}"
                   else
                     echo "No updated reports."
                   fi
