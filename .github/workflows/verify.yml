@@ -596,7 +596,7 @@ jobs:
                     ./timestamps.remote.json ./tests/test-*/timestamps.json > ./merged-timestamps.json
                   cat ./merged-timestamps.json
 
-                  find ../verify/ -type f | jq -R -s -c 'split("\n")[:-1]' > ./files.json
+                  find ../verify/ -type f -name **.test.cpp -printf '%P\n' | jq -R -s -c 'split("\n")[:-1]' > ./files.json
                   cat ./files.json
                   
                   jq < ./files.json --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
