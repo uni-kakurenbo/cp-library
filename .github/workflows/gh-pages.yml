@@ -19,9 +19,6 @@ jobs:
             - name: Configure pages
               uses: actions/configure-pages@v4
 
-            - name: Make directory
-              run: mkdir ./_site/
-
     lint:
         runs-on: ${{ vars.RUNNER_IMAGE }}
         needs: configure
