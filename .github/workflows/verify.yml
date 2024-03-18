@@ -597,9 +597,10 @@ jobs:
 
                   find ../verify/ -type f -name **.test.cpp -printf 'verify/%P\n' | sort | \
                     jq -R -s -c 'split("\n")[:-1]' > ./files.json
-                  
+
                   jq --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
                     ./files.json | jq > ./timestamps.remote.json
+
                   cat ./timestamps.remote.json
 
             - name: Push merged timestamps
