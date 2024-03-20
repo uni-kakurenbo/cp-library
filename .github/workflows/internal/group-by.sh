@@ -26,14 +26,14 @@ export -f sort_out
 
 function rename() {
     cd "$1"
-    find ./**.test.cpp -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR - 1 }' | bash
+    find . -wholename './*.test.cpp' -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR - 1 }' | bash
 }
 
 export -f rename
 
-rm -f ./**/**/problem.info
+find . -wholename './*/problem.info' -exec rm -f {} \;
 
-find ./**/**/**.test.cpp -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
+find . -wholename './*.test.cpp' -type f -exec bash -c 'sort_out "$1"' shell {} \; | sort -u |
     xargs -I {} bash -c 'rename "{}"'
 
 find . -type d -empty -delete
