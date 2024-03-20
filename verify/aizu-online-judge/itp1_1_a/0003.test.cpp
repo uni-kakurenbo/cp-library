@@ -11,24 +11,16 @@
 #include "sneaky/enforce_int128_enable.hpp"
 
 #include <iostream>
-#include "sneaky/enforce_int128_enable.hpp"
 
-#include <iostream>
-#include "snippet/aliases.hpp"
-#include "snippet/fast_io.hpp"
-#include "snippet/iterations.hpp"
-#include "snippet/iterations.hpp"
+#include "action/null.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/map.hpp"
 #include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
-#include "action/null.hpp"
 #include "random/engine.hpp"
-#include "adaptor/map.hpp"
-#include "data_structure/dynamic_sequence.hpp"
-#include "data_structure/treap.hpp"
-#include "action/null.hpp"
-#include "random/engine.hpp"
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
 #include "utility/timer.hpp"
 
 signed main() {
