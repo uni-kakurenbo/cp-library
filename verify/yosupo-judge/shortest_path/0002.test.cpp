@@ -15,42 +15,25 @@
 #include "snippet/aliases.hpp"
 #include "structure/graph.hpp"
 #include "graph/shortest_path.hpp"
-#include "iterable/operation.hpp"
-#include "data_structure/removable_priority_queue.hpp"
 
 signed main() {
     int n, m, s, t; input >> n >> m >> s >> t;
     lib::graph<lib::i64> graph(n); graph.read<true, false>(m);
+    debug(graph);
 
-    lib::removable_priority_queue<std::pair<lib::i64, int>, std::vector<std::pair<lib::i64, int>>, std::greater<std::pair<lib::i64, int>>> que;
-    lib::vector<lib::i64> dists(n, lib::INF64);
-    lib::vector<int> prev(n, -1);
+    lib::vector<lib::i64> dist, prev;
+    graph.shortest_path_with_cost(s, &dist, &prev);
+    debug(dist, prev);
 
-    que.emplace(dists[s] = 0, s);
-
-    while(!que.empty()) {
-        auto [ d, v ] = que.top(); que.pop();
-
-        ITR(e, graph[v]) {
-            auto nd = d + e.cost;
-            if(nd >= dists[e]) continue;
-
-            if(dists[e] < lib::INF64) que.eliminate(dists[e], e);
-
-            dists[e] = nd;
-            prev[e] = v;
-            que.emplace(nd, e.to);
-
-        }
-    }
-
-    if(dists[t] >= lib::INF64) {
+    if(dist[t] >= lib::INF64) {
         print(-1);
         return 0;
     }
 
     auto path = lib::restore_path(t, prev);
+    debug(path);
 
-    print(dists[t], path.size() - 1);
+    print(dist[t], path.size() - 1);
+
     REP(i, 1, path.size()) print(path[i - 1], path[i]);
 }
