@@ -166,7 +166,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
 
-    void insert(node_pointer& tree, const operand& val, const size_type count) noexcept(NO_EXCEPT) {
+    void insert(node_pointer& tree, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
         if(count == 0) return;
         if(count < 0) return this->erase(tree, val, -count);
 
@@ -176,7 +176,22 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->merge(tree, t0, this->create_node(val, count), t1);
     }
 
-    void erase(node_pointer& tree, const operand& val, const size_type count) noexcept(NO_EXCEPT) {
+    void insert_unique(node_pointer& tree, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
+        if(count == 0) return;
+        if(count < 0) return this->erase(tree, val, -count);
+
+        node_pointer t0, t1, t2;
+
+        this->split(tree, { val }, t0, t1);
+        this->template split<true>(t1, { val }, t1, t2);
+
+        if(t1 == node_type::nil) t1 = this->create_node(val, count);
+
+        this->merge(tree, t0, t1, t2);
+    }
+
+
+    void erase(node_pointer& tree, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
         if(count == 0) return;
         if(count < 0) return this->insert(tree, val, -count);
 
@@ -186,9 +201,26 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->split(t1, count, t1, t2);
 
         this->delete_tree(t1);
-
         this->merge(tree, t0, t2);
     }
+
+    void erase_limit(node_pointer& tree, const operand& val, size_type count = 1) noexcept(NO_EXCEPT) {
+        if(count == 0) return;
+        if(count < 0) return this->insert(tree, val, -count);
+
+        node_pointer t0, t1, t2, t3;
+
+        this->split(tree, { val }, t0, t1);
+        this->template split<true>(t1, { val }, t1, t3);
+
+        if(count >= t1->size) count = t1->size;
+        this->split(t1, count, t1, t2);
+
+        this->delete_tree(t1);
+        this->merge(t2, t0, t2);
+        this->merge(tree, t2, t3);
+    }
+
 
     void erase(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= tree->size);
@@ -197,9 +229,27 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->split(tree, l, r, t0, t1, t2);
 
         this->delete_tree(t1);
-
         this->merge(tree, t0, t1, t2);
     }
+
+
+    auto pop(node_pointer& tree, const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(0 <= pos && pos + count <= tree->size);
+        if(count == 0) return operand{};
+
+        node_pointer t0, t1, t2;
+
+        this->split(tree, pos, t0, t1);
+        this->split(t1, count, t1, t2);
+
+        const auto res = t1->data.acc;
+
+        this->delete_tree(t1);
+        this->merge(tree, t0, t2);
+
+        return res;
+    }
+
 
     operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= tree->size);
@@ -366,40 +416,48 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     }
 
 
-    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    template<bool UNIQUE = false, std::input_iterator I, std::sized_sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         this->clear();
-        this->insert(first, last);
+        this->insert<UNIQUE>(first, last);
         return *this;
     }
 
+    template<bool UNIQUE = false>
     inline auto& assign(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
         this->clear();
-        this->insert(val, size);
+        this->insert<UNIQUE>(val, size);
         return *this;
     }
 
-    template<std::ranges::input_range R>
-    inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
+    template<bool UNIQUE = false, std::ranges::input_range R>
+    inline auto& assign(R&& range) noexcept(NO_EXCEPT) {
+        return this->assign<UNIQUE>(ALL(range));
+    }
 
-    template<std::convertible_to<value_type> T>
-    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) { return this->assign(values); }
+    template<bool UNIQUE = false, std::convertible_to<value_type> T>
+    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) {
+        return this->assign<UNIQUE>(values);
+    }
 
 
+    template<bool UNIQUE = false>
     inline auto& insert(const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::insert(this->_root, val, count);
+        if constexpr(UNIQUE) this->core::insert_unique(this->_root, val, count);
+        else this->core::insert(this->_root, val, count);
+
         return *this;
     }
 
-    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    template<bool UNIQUE = false, std::input_iterator I, std::sized_sentinel_for<I> S>
     inline auto& insert(I first, S last) noexcept(NO_EXCEPT) {
-        for(; first != last; ++first) this->insert(*first);
+        for(; first != last; ++first) this->template insert<UNIQUE>(*first);
         return *this;
     }
 
-    template<std::ranges::input_range R>
+    template<bool UNIQUE = false, std::ranges::input_range R>
     inline auto& insert(R&& range) noexcept(NO_EXCEPT) {
-        return this->insert(ALL(range));
+        return this->template insert<UNIQUE>(ALL(range));
     }
 
     inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
@@ -410,8 +468,11 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     }
 
 
+    template<bool LIMIT = true>
     inline auto& erase(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::erase(this->_root, val, count);
+        if constexpr(LIMIT) this->core::erase_limit(this->_root, val, count);
+        else this->core::erase(this->_root, val, count);
+
         return *this;
     }
 
@@ -421,12 +482,16 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     }
 
 
-    inline value_type pop_min() noexcept(NO_EXCEPT) {
-        return this->erase(0, 1);
+    inline value_type pop(const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->core::pop(this->_root, pos, count);
     }
 
-    inline value_type pop_max() noexcept(NO_EXCEPT) {
-        return this->erase(this->size() - 1, this->size());
+    inline value_type pop_min(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->pop(0, count);
+    }
+
+    inline value_type pop_max(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->pop(this->size() - count, count);
     }
 
 
@@ -471,17 +536,27 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     struct iterator;
 
 
-    inline auto lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
+    inline size_type lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
         return iterator{ this, this->find(this->_root, val) };
     }
 
-    inline auto upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
+    inline size_type upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
         return iterator{ this, this->template find<true>(this->_root, val) };
     }
 
     inline auto equal_range(const value_type& val) noexcept(NO_EXCEPT) {
-        auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
         return std::make_pair(iterator{ this, lower }, iterator{ this, upper });
+    }
+
+
+    inline size_type count(const value_type& val) noexcept(NO_EXCEPT) {
+        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        return upper - lower;
+    }
+
+    inline bool contains(const value_type& val) noexcept(NO_EXCEPT) {
+        return this->count(val) == 0;
     }
 
 

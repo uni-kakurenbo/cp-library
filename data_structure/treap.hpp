@@ -194,11 +194,11 @@ struct treap_impl : private uncopyable {
         this->_derived()->pushdown(tree);
 
         if(val < tree->data || (!STRICT && val == tree->data)) {
-            this->split(tree->left, val, left, tree->left), right = std::move(tree);
+            this->template split<STRICT>(tree->left, val, left, tree->left), right = std::move(tree);
             this->pushup(right);
         }
         else {
-            this->split(tree->right, val, tree->right, right), left = std::move(tree);
+            this->template split<STRICT>(tree->right, val, tree->right, right), left = std::move(tree);
             this->pushup(left);
         }
     }
@@ -206,12 +206,12 @@ struct treap_impl : private uncopyable {
 
     void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
-            left = this->create_node(value_type{}, -pos);
-            right = std::move(tree);
+            left = node_type::nil;
+            this->merge(right, this->create_node(value_type{}, -pos), std::move(tree));
         }
         else if(tree->size <= pos) {
-            right = this->create_node(value_type{}, pos - tree->size);
-            left = std::move(tree);
+            right = node_type::nil;
+            this->merge(left, std::move(tree), this->create_node(value_type{}, pos - tree->size));
         }
         else {
             this->_split(std::move(tree), pos, left, right);

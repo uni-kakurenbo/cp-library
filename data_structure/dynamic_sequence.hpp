@@ -185,7 +185,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->merge(tree, t0, t2);
     }
 
-    void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count) noexcept(NO_EXCEPT) {
+    void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(count >= 0);
         if(count == 0) return;
 
@@ -209,10 +209,25 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1, t2;
 
         this->split(tree, l, r, t0, t1, t2);
+        this->delete_tree(t1);
+        this->merge(tree, t0, t2);
+    }
+
+    auto pop(node_pointer& tree, const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
+        assert(0 <= pos && 0 <= count);
+        if(count == 0) return operand{};
+
+        node_pointer t0, t1, t2;
+
+        this->split(tree, pos, t0, t1);
+        this->split(t1, count, t1, t2);
+
+        const auto res = t1->data.acc;
 
         this->delete_tree(t1);
-
         this->merge(tree, t0, t2);
+
+        return res;
     }
 
 
@@ -234,9 +249,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1, t2;
 
         this->split(tree, pos, pos + std::ranges::distance(first, last), t0, t1, t2);
-
         this->delete_tree(t1);
-
         this->merge(tree, t0, this->build(first, last), t2);
     }
 
@@ -286,7 +299,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
 
-    void shift_left(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
+    void shift_left(node_pointer& tree, const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(l <= r);
 
         if(count < 0) return this->shift_right(tree, l, r, -count);
@@ -306,7 +319,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->merge(tree, t0, t2, t3);
     }
 
-    void shift_right(node_pointer& tree, const size_type l, const size_type r, const size_type count) noexcept(NO_EXCEPT) {
+    void shift_right(node_pointer& tree, const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(l <= r);
 
         if(count < 0) return this->shift_left(tree, l, r, -count);
@@ -385,7 +398,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->pushdown(tree);
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
-        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->priority) + " [" + debugger::dump(tree->length) + "]\n";
+        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
         index += tree->length;
 
         const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
@@ -631,6 +644,11 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
         return *this;
     }
 
+    inline auto pop(size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        return this->core::pop(this->_root, pos, count);
+    }
+
     inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         this->core::fill(this->_root, l, r, val);
@@ -688,17 +706,12 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     }
 
 
-    inline auto& erase(const size_type pos) noexcept(NO_EXCEPT) {
-        return this->erase(pos, pos + 1);
+    inline auto pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->pop(0, count);
     }
 
-
-    inline auto& pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->erase(0, count);
-    }
-
-    inline auto& pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->erase(this->size() - count, count);
+    inline auto pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->pop(this->size() - count, count);
     }
 
 
