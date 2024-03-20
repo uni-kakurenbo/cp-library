@@ -17,9 +17,9 @@
 
 signed main() {
     int n; std::cin >> n;
-    std::vector<int> a(n); ITRR(v, a) std::cin >> v;
+    lib::valarray<int> a(n); ITRR(v, a) std::cin >> v;
 
-    lib::wavelet_matrix<lib::ll>::compressed data(a);
+    lib::wavelet_matrix<lib::ll> data(a);
     // debug(data);
 
     int q; std::cin >> q;

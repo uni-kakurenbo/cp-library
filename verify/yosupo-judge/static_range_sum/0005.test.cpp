@@ -15,14 +15,16 @@
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
 #include "iterable/accumulation.hpp"
+#include "data_structure/segment_tree.hpp"
+#include "algebraic/addition.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); input >> a;
-    lib::accumulation<lib::ll> sum(ALL(a));
+    lib::valarray<lib::i64> a(n); input >> a;
+    lib::segment_tree<lib::algebraic::addition<lib::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;
-        print(sum(l, r));
+        print(sum(l, r).fold());
     }
 }

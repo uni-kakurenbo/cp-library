@@ -13,23 +13,24 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/dynamic_sequence.hpp"
-#include "action/range_affine_range_minmax.hpp"
+#include "data_structure/lazy_segment_tree.hpp"
+#include "action/range_add_range_min.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_minmax<lib::ll>> data(n, lib::spair<lib::ll>{ 0, 0 });
+    lib::lazy_segment_tree<lib::actions::range_add_range_min<lib::ll>> data(n, 0);
+    // debug(data);
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int l, r, x; std::cin >> l >> r >> x; ++r;
-            data(l, r) += { 1, x };
+            data(l, r) += x;
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r; ++r;
-            print(data(l, r).fold()->first);
+            print(data(l, r).fold());
         }
         // debug(data);
     }

@@ -17,10 +17,10 @@
 #include "numeric/matrix.hpp"
 
 signed main() {
-    lib::dynamic_arbitrary_montgomery_modint_32bit<-1>::set_mod(998244353);
+    lib::dynamic_builtin_modint_64bit<-1>::set_mod(998244353);
 
     int n, m, k; std::cin >> n >> m >> k;
-    lib::matrix<lib::dynamic_arbitrary_montgomery_modint_32bit<-1>> a(n, m), b(m, k);
+    lib::matrix<lib::dynamic_builtin_modint_64bit<-1>> a(n, m), b(m, k);
     input >> a >> b;
     print(a * b);
 }

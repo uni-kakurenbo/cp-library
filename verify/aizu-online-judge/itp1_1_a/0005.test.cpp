@@ -15,8 +15,8 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "adaptor/set.hpp"
-#include "data_structure/dynamic_set.hpp"
+#include "adaptor/map.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
 #include "random/engine.hpp"
@@ -25,36 +25,27 @@
 signed main() {
     print("Hello World");
 
-    lib::dynamic_set<lib::i64> data;
-    lib::multiset<lib::i64> corr;
+    lib::dynamic_sequence<lib::i64> data;
+    lib::map<lib::i64, lib::i64> corr;
 
     debug(data);
 
-    lib::timer timer(10000);
+    lib::timer timer(1000);
 
     while(not timer.expired()) {
-        int t = lib::randi64() % 2;
-        lib::i64 v = (lib::randi64() % 2) || data.empty() ? lib::randi64() : data[lib::randi64() % data.size()].val();
-        debug(t, v);
+        lib::i64 i = lib::randi64();
+        lib::i64 v = lib::randi64();
+        i /= 2;
+        debug(i, v);
 
-        if(t == 0) {
-            corr.insert(v);
-            data.insert(v);
-        }
-
-        if(t == 1) {
-            corr.remove(v);
-            data.erase(v);
-        }
+        corr[i] = v;
+        data[i] = v;
 
         debug(corr, data);
 
         bool ok = true;
-        {
-            int i = 0;
-            ITR(v, corr) {
-                ok &= data[i++].val() == v;
-            }
+        ITR(i, v, corr) {
+            ok &= data[i].val() == v;
         }
         if(!ok) {
             assert(false);
