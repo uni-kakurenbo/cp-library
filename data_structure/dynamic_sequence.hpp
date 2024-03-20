@@ -644,6 +644,10 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
         return *this;
     }
 
+    inline auto& erase(const size_type pos) noexcept(NO_EXCEPT) {
+        return this->erase(pos, pos + 1);
+    }
+
     inline auto pop(size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         return this->core::pop(this->_root, pos, count);
