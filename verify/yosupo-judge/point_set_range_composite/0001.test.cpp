@@ -13,15 +13,13 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/lazy_segment_tree.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
-#include "numeric/modular/modint.hpp"
 
 
 using lib::algebraic::affine;
-using mint = lib::modint998244353;
-
+using mint = atcoder::modint998244353;
 
 struct action {
     using operand = affine<mint,true>;
@@ -34,9 +32,9 @@ struct action {
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<std::pair<mint,mint>> f(n); input >> f;
+    lib::vector<lib::spair<int>> f(n); input >> f;
 
-    lib::dynamic_sequence<action> data(ALL(f));
+    lib::lazy_segment_tree<action> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;

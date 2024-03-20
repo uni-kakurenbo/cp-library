@@ -22,15 +22,7 @@ signed main() {
     int n, m, s, t; input >> n >> m >> s >> t;
     lib::graph<lib::i64> graph(n); graph.read<true, false>(m);
 
-    lib::removable_priority_queue<
-        std::priority_queue<
-            std::pair<lib::i64, int>,
-            std::vector<std::pair<lib::i64, int>>,
-            std::greater<std::pair<lib::i64, int>>
-        >,
-        std::set<std::pair<lib::i64, int>>
-    > que;
-
+    lib::removable_priority_queue<std::pair<lib::i64, int>, std::vector<std::pair<lib::i64, int>>, std::greater<std::pair<lib::i64, int>>> que;
     lib::vector<lib::i64> dists(n, lib::INF64);
     lib::vector<int> prev(n, -1);
 
@@ -43,7 +35,7 @@ signed main() {
             auto nd = d + e.cost;
             if(nd >= dists[e]) continue;
 
-            que.eliminate(dists[e], e);
+            if(dists[e] < lib::INF64) que.eliminate(dists[e], e);
 
             dists[e] = nd;
             prev[e] = v;
