@@ -101,8 +101,8 @@ struct montgomery_reduction {
         return v - this->_mod;
     }
 
-    inline constexpr bool equal(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
-        return this->normalize(x) == this->normalize(y);
+    inline constexpr auto compare(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return this->normalize(x) <=> this->normalize(y);
     }
 
 
@@ -250,8 +250,8 @@ struct arbitrary_montgomery_reduction {
         return v - this->_mod;
     }
 
-    inline constexpr bool equal(const large_type x, const large_type y) const noexcept(NO_EXCEPT) {
-        return this->normalize(x) == this->normalize(y);
+    inline constexpr auto compare(const large_type x, const large_type y) const noexcept(NO_EXCEPT) {
+        return this->normalize(x) <=> this->normalize(y);
     }
 
 

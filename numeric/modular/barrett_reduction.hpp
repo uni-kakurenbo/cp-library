@@ -92,8 +92,8 @@ struct barrett_reduction {
     }
 
 
-    inline constexpr bool equal(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
-        return x == y;
+    inline constexpr auto compare(const value_type x, const value_type y) const noexcept(NO_EXCEPT) {
+        return x <=> y;
     }
 
 

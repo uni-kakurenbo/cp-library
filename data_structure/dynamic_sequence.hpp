@@ -63,7 +63,7 @@ struct data_type {
 
 
 template<actions::internal::full_action Action, class Context>
-struct core : Context::interface<core<Action, Context>, tree_indexing_policy::implicit_key, internal::data_type<typename Action::operand, typename Action::operation>> {
+struct core : Context::interface<core<Action, Context>, internal::data_type<typename Action::operand, typename Action::operation>> {
     using action = Action;
     using operand = Action::operand;
     using operation = Action::operation;
@@ -71,7 +71,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
   private:
     using data_type = internal::data_type<operand, operation>;
 
-    using interface = typename Context::interface<core, tree_indexing_policy::implicit_key, internal::data_type<operand, operation>>;
+    using interface = typename Context::interface<core, data_type>;
     static_assert(tree_interface<interface>);
 
     friend interface;
@@ -129,7 +129,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
         tree->left = this->_build(first, middle);
         tree->right = this->_build(std::next(middle), last);
 
-        interface::pushup(tree);
+        this->interface::pushup(tree);
 
         return tree;
     }
@@ -149,9 +149,15 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
         tree->left = this->_build(first, middle);
         tree->right = this->_build(std::next(middle), last);
 
-        interface::pushup(tree);
+        this->interface::pushup(tree);
 
         return tree;
+    }
+
+  protected:
+    inline void update(const node_pointer tree) noexcept(NO_EXCEPT) {
+        this->pushdown(tree);
+        this->pushup(tree);
     }
 
   public:
@@ -161,7 +167,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
     node_pointer build(I first, S last) {
         const auto tree = this->_build(first, last);
-        interface::rectify(tree);
+        this->interface::rectify(tree);
         return tree;
     }
 
@@ -179,8 +185,10 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
         this->merge(tree, t0, t2);
     }
 
+    void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count) noexcept(NO_EXCEPT) {
+        assert(count >= 0);
+        if(count == 0) return;
 
-    void insert(node_pointer& tree, const size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
         node_pointer t0, t1;
 
         this->split(tree, pos, t0, t1);
@@ -372,12 +380,12 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
 
 
     debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
-        if (tree == node_type::nil ) return prefix + "\n";
+        if(!tree || tree == node_type::nil) return prefix + "\n";
 
         this->pushdown(tree);
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
-        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
+        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->priority) + " [" + debugger::dump(tree->length) + "]\n";
         index += tree->length;
 
         const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
@@ -391,7 +399,7 @@ struct core : Context::interface<core<Action, Context>, tree_indexing_policy::im
     }
 
     debugger::debug_t _debug(const node_pointer tree) const {
-        if (!tree) return "";
+        if(!tree || tree == node_type::nil) return "";
 
         this->pushdown(tree);
 
@@ -488,10 +496,10 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
       : dynamic_sequence(values, alloc)
     {}
 
+    inline size_type offset() const noexcept(NO_EXCEPT) { return this->_offset; }
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
-    size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
-
-    bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
+    inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
     inline void clear() noexcept(NO_EXCEPT) {
@@ -515,10 +523,14 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     }
 
     template<std::ranges::input_range R>
-    inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
+    inline auto& assign(R&& range) noexcept(NO_EXCEPT) {
+        return this->assign(ALL(range));
+    }
 
     template<std::convertible_to<value_type> T>
-    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) { return this->assign(values); }
+    inline auto& assign(const std::initializer_list<T>& values) noexcept(NO_EXCEPT) {
+        return this->assign(values);
+    }
 
 
     inline auto& resize(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
@@ -529,16 +541,17 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
 
 
     inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
-        this->core::fill(this->_root, 0, this->size());
+        this->core::fill(this->_root, 0, this->size(), val);
         return *this;
     }
 
     inline value_type fold() noexcept(NO_EXCEPT) {
-        return this->core::fold(this->_root, 0, this->size());
+        return this->_root->data.acc;
     }
 
     inline auto& apply(const action_type& val) noexcept(NO_EXCEPT) {
-        this->core::apply(this->_root, 0, this->size(), val);
+        this->_root->data.lazy += val;
+        this->update(this->_root);
         return *this;
     }
 
@@ -562,7 +575,8 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     }
 
     inline auto& reverse() noexcept(NO_EXCEPT) {
-        this->core::reverse(this->_root, 0, this->size());
+        this->_root->data.rev ^= 1;
+        this->update(this->_root);
         return *this;
     }
 
@@ -611,9 +625,10 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
         return *this;
     }
 
-    inline void erase(size_type l, size_type r) noexcept(NO_EXCEPT) {
+    inline auto& erase(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         this->core::erase(this->_root, l, r);
+        return *this;
     }
 
     inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
@@ -660,8 +675,7 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
 
     template<std::ranges::input_range R>
     inline auto& insert(const size_type pos, R&& range) noexcept(NO_EXCEPT) {
-        this->insert(pos, ALL(range));
-        return *this;
+        return this->insert(pos, ALL(range));
     }
 
 
@@ -670,30 +684,26 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     }
 
     inline value_type get(const size_type pos) noexcept(NO_EXCEPT) {
-        return this->fold(pos, pos + 1).val();
+        return this->fold(pos, pos + 1);
     }
 
 
     inline auto& erase(const size_type pos) noexcept(NO_EXCEPT) {
-        this->erase(pos, pos + 1);
-        return *this;
+        return this->erase(pos, pos + 1);
     }
 
 
     inline auto& pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->erase(0, count);
-        return *this;
+        return this->erase(0, count);
     }
 
     inline auto& pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->erase(this->size() - count, count);
-        return *this;
+        return this->erase(this->size() - count, count);
     }
 
 
     inline auto& apply(const size_type pos, const action_type& val) noexcept(NO_EXCEPT) {
-        this->apply(pos, pos + 1, val);
-        return *this;
+        return this->apply(pos, pos + 1, val);
     }
 
 
@@ -803,7 +813,7 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,dynamic_sequence,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, dynamic_sequence, iterator>;
 
   public:
     struct iterator : iterator_interface {

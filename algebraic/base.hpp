@@ -52,8 +52,14 @@ struct base {
     inline const value_type* operator->() const noexcept(NO_EXCEPT) { return &this->_value; };
     inline value_type* operator->() noexcept(NO_EXCEPT) { return &this->_value; };
 
-    friend inline bool operator==(const base& lhs, const base& rhs) noexcept(NO_EXCEPT) { return lhs._value == rhs._value; };
-    friend bool operator!=(const base& lhs, const base& rhs) noexcept(NO_EXCEPT) { return lhs._value != rhs._value; };
+
+    friend inline auto operator<=>(const base& lhs, const base& rhs) noexcept(NO_EXCEPT) {
+        return lhs._value <=> rhs._value;
+    };
+
+    friend inline bool operator==(const base& lhs, const base& rhs) noexcept(NO_EXCEPT) {
+        return lhs._value == rhs._value;
+    }
 };
 
 struct associative {};
