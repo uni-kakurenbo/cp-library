@@ -31,11 +31,6 @@ signed main() {
 
     debug(data);
 
-    lib::dynamic_sequence<lib::i64> data;
-    lib::map<lib::i64, lib::i64> corr;
-
-    debug(data);
-
     lib::timer timer(1000);
 
     while(not timer.expired()) {
