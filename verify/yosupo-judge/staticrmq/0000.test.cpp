@@ -14,17 +14,16 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
-#include "data_structure/disjoint_sparse_table.hpp"
-#include "algebraic/minimum.hpp"
-
+#include "data_structure/segment_tree.hpp"
+#include "action/range_max.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<int> a(n); input >> a;
-    lib::disjoint_sparse_table<lib::algebraic::minimum<int>> min(a);
+    lib::valarray<int> a(n); input >> a; a *= -1;
+    lib::segment_tree<lib::actions::range_max<int>> max(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;
-        print(min(l, r).fold());
+        print(-max(l, r).fold().val());
     }
 }

@@ -14,14 +14,15 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
-#include "data_structure/segment_tree.hpp"
+#include "data_structure/disjoint_sparse_table.hpp"
 #include "action/range_min.hpp"
+
 
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::valarray<int> a(n); input >> a;
 
-    lib::segment_tree<lib::actions::range_min<int>> min(a);
+    lib::disjoint_sparse_table<lib::actions::range_min<int>> min(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

@@ -14,27 +14,24 @@
 #include "snippet/iterations.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/lazy_segment_tree.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-
 signed main() {
-    lib::modint_64::set_mod(998244353);
-
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint_64> a(n); input >> a;
+    std::vector<lib::modint998244353> a(n); input >> a;
 
-    lib::lazy_segment_tree<lib::actions::range_affine_range_sum<lib::modint_64>> data(ALL(a));
+    lib::dynamic_sequence<lib::actions::range_affine_range_sum<lib::modint998244353>> data(a);
 
-    REP(q) {
+    LOOP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int l, r, b, c; std::cin >> l >> r >> b >> c;
-            data(l, r) += { b, c };
+            data.apply(l, r, { b, c });
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;
-            print(data(l, r).fold());
+            print(data.fold(l, r));
         }
     }
 }

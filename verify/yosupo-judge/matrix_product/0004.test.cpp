@@ -18,7 +18,7 @@
 
 signed main() {
     int n, m, k; std::cin >> n >> m >> k;
-    lib::matrix<lib::static_montgomery_modint_32bit<998244353>> a(n, m), b(m, k);
+    lib::matrix<lib::static_barrett_modint_32bit<998244353>> a(n, m), b(m, k);
     input >> a >> b;
     print(a * b);
 }

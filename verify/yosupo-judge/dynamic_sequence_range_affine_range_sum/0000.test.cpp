@@ -18,25 +18,15 @@
 #include "numeric/modular/modint.hpp"
 #include "adaptor/vector.hpp"
 #include "data_structure/dynamic_sequence.hpp"
-#include "data_structure/treap.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-using mint = lib::modint998244353;
+using mint = lib::static_montgomery_modint_32bit<998244353>;
 
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
-
-    static std::array<std::byte, 64U * 2000000> buffer;
-    std::pmr::monotonic_buffer_resource mr{ &buffer, sizeof(buffer) };
-
-
-    lib::dynamic_sequence<
-        lib::actions::range_affine_range_sum<mint>,
-        lib::pmr::treap_context<lib::i64>
-    > data(a, &mr);
-
+    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>> data(a);
 
     REP(q) {
         int t; std::cin >> t;
@@ -60,7 +50,5 @@ signed main() {
             int l, r; std::cin >> l >> r;
             print(data(l, r).fold());
         }
-
-        debug(data.dump_rich());
     }
 }

@@ -8,46 +8,34 @@
 
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ITP1_1_A"
 
-#include "sneaky/enforce_int128_enable.hpp"
-
-#include <iostream>
+#include <cassert>
+#include <ranges>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
-#include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "adaptor/map.hpp"
-#include "data_structure/dynamic_sequence.hpp"
-#include "data_structure/treap.hpp"
-#include "action/null.hpp"
-#include "random/engine.hpp"
 #include "utility/timer.hpp"
+#include "random/engine.hpp"
+#include "random/adaptor.hpp"
+#include "numeric/prime_sieve.hpp"
+#include "numeric/prime_enumerator.hpp"
 
 signed main() {
     print("Hello World");
 
-    lib::dynamic_sequence<lib::i64> data;
-    lib::map<lib::i64, lib::i64> corr;
-
-    debug(data);
-
+    lib::random_adaptor<lib::random_engine_32bit> rng;
     lib::timer timer(1000);
 
+    // int i = 0;
     while(not timer.expired()) {
-        lib::i64 i = lib::randi64();
-        lib::i64 v = lib::randi64();
-        i /= 2;
-        debug(i, v);
+        const int n = rng(1'000'000) + 1;
+        // debug(i, n);
 
-        corr[i] = v;
-        data[i] = v;
+        auto p = lib::prime_sieve(n);
+        auto q = lib::prime_enumerator(n);
 
-        bool ok = true;
-        ITR(i, v, corr) {
-            ok &= data[i].val() == v;
-        }
-        debug(corr, data);
-        if(!ok) {
-            assert(false);
-        }
+        // debug(p, q);
+
+        assert(std::ranges::equal(p, q));
+        assert(std::ranges::equal(p | std::views::reverse, q | std::views::reverse));
     }
 }
