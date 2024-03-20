@@ -26,7 +26,7 @@ export -f sort_out
 
 function rename() {
     cd "$1"
-    find . -wholename './*.test.cpp' -type f | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR - 1 }' | bash
+    find . -wholename './*.test.cpp' -type f | sort -u | awk '{ printf "mv %s %04d.test.cpp\n", $0, NR - 1 }' | bash
 }
 
 export -f rename
