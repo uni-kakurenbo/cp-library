@@ -50,9 +50,12 @@ struct base {
     using value_type = T;
 
   private:
-    size_type _n, _bits;
+    size_type _n;
+    int _bits;
+
     std::vector<bit_vector> _index;
     std::vector<std::vector<value_type>> _sum;
+
     DictType _first_pos;
 
     value_type _max = 0;
@@ -115,7 +118,7 @@ struct base {
             std::swap(bit, nxt);
         }
 
-        REPD(i, this->_n) this->_first_pos[bit[i]] = i;
+        REPD(i, this->_n) this->_first_pos[bit[i]] = static_cast<DictType::mapped_type>(i);
     }
 
   protected:
@@ -127,14 +130,13 @@ struct base {
         if(v > this->_max) return this->_n;
         if(not this->_first_pos.contains(v)) return this->_n;
 
-        size_type pos = this->_first_pos.at(v) + rank + 1;
+        size_type pos = this->_first_pos.at(v) + rank;
         REP(h, this->_bits) {
-            const bool bit = (v >> h) & 1;
-            if(bit) pos -= this->_index[h].zeros();
-            pos = this->_index[h].select(bit, pos);
+            if(lib::bit(v, h)) pos = this->_index[h].select1(pos - this->_index[h].zeros());
+            else pos = this->_index[h].select0(pos);
         }
 
-        return pos - 1;
+        return pos;
     }
 
 
@@ -166,9 +168,8 @@ struct base {
 
         size_type left = 0;
         REPD(h, this->_bits) {
-            const bool bit = (val >> h) & 1;
-            left = this->_index[h].rank(bit, left);
-            if(bit) left += this->_index[h].zeros();
+            if(lib::bit(val, h)) left = this->_index[h].rank1(left) + this->_index[h].zeros();
+            else  left = this->_index[h].rank0(left);
         }
 
         return this->select(val, l + k - left);
