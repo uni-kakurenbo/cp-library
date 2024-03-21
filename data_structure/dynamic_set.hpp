@@ -267,7 +267,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
     template<bool STRICT = false>
-    spair<size_type> find(node_type& tree, const operand& val) noexcept(NO_EXCEPT) {
+    size_type find(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
         node_pointer t0, t1;
 
         this->template split<STRICT>(tree, { val }, t0, t1);
@@ -536,11 +536,11 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     struct iterator;
 
 
-    inline size_type lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
-        return iterator{ this, this->find(this->_root, val) };
+    inline auto lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
+        return iterator{ this, this->template find<false>(this->_root, val) };
     }
 
-    inline size_type upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
+    inline auto upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
         return iterator{ this, this->template find<true>(this->_root, val) };
     }
 
@@ -556,7 +556,7 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     }
 
     inline bool contains(const value_type& val) noexcept(NO_EXCEPT) {
-        return this->count(val) == 0;
+        return this->count(val) == 1;
     }
 
 
