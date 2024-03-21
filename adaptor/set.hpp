@@ -127,7 +127,7 @@ struct set_wrapper : Set {
     template<class Rhs>
     inline set_wrapper& operator&=(Rhs&& rhs) noexcept(NO_EXCEPT) {
         set_wrapper res;
-        std::ranges::set_intersection(*this, std::forward<Rhs>(rhs), std::inserter(res, std::ranges::end(res)));
+        std::ranges::set_intersection(*this, std::forward<Rhs>(rhs), std::inserter(res, res.end()));
         this->swap(res);
         return *this;
     }
@@ -135,7 +135,7 @@ struct set_wrapper : Set {
     template<class Rhs>
     inline set_wrapper& operator^=(Rhs&& rhs) noexcept(NO_EXCEPT) {
         set_wrapper res;
-        std::ranges::set_symmetric_difference(*this, std::forward<Rhs>(rhs), std::inserter(res, std::ranges::end(res)));
+        std::ranges::set_symmetric_difference(*this, std::forward<Rhs>(rhs), std::inserter(res, res.end()));
         this->swap(res);
         return *this;
     }
