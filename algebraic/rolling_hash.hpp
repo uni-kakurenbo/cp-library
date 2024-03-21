@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <compare>
+
+
 #include "snippet/aliases.hpp"
 
 #include "internal/dev_env.hpp"
@@ -55,8 +58,10 @@ struct rolling_hash_impl {
         return lhs._power == rhs._power && lhs._value == rhs._value;
     }
 
-    friend bool operator!=(const rolling_hash_impl& lhs, const rolling_hash_impl& rhs) noexcept(NO_EXCEPT) {
-        return lhs._power != rhs._power || lhs._value != rhs._value;
+    friend inline auto operator<=>(const rolling_hash_impl& lhs, const rolling_hash_impl& rhs) noexcept(NO_EXCEPT) {
+        const auto comp_power = lhs._power <=> rhs._power;
+        if(comp_power != 0) return comp_power;
+        return lhs._value <=> rhs._value;
     }
 };
 

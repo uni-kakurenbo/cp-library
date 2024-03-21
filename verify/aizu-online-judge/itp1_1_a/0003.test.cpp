@@ -11,15 +11,16 @@
 #include "sneaky/enforce_int128_enable.hpp"
 
 #include <iostream>
-#include "snippet/aliases.hpp"
-#include "snippet/fast_io.hpp"
-#include "snippet/iterations.hpp"
+
+#include "action/null.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/map.hpp"
 #include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
-#include "action/null.hpp"
 #include "random/engine.hpp"
+#include "snippet/aliases.hpp"
+#include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
 #include "utility/timer.hpp"
 
 signed main() {
@@ -41,11 +42,12 @@ signed main() {
         corr[i] = v;
         data[i] = v;
 
+        debug(corr, data);
+
         bool ok = true;
         ITR(i, v, corr) {
             ok &= data[i].val() == v;
         }
-        debug(corr, data);
         if(!ok) {
             assert(false);
         }

@@ -86,10 +86,4 @@ enum class alignment : std::int8_t {
 };
 
 
-enum class tree_indexing_policy : std::int8_t {
-    implicit_key,
-    sorted,
-};
-
-
 } // namespace lib

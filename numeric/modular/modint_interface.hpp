@@ -80,7 +80,7 @@ concept modular_reduction =
         { v.convert(x) } -> std::same_as<typename T::value_type>;
         { v.revert(x) } -> std::same_as<typename T::value_type>;
 
-        { v.equal(x, x) } -> std::same_as<bool>;
+        v.compare(x, x);
     };
 
 

@@ -6,6 +6,7 @@
 #include <iterator>
 #include <optional>
 #include <ranges>
+#include <algorithm>
 #include <concepts>
 
 
@@ -117,59 +118,58 @@ struct set_wrapper : Set {
     }
 
 
-    friend inline set_wrapper operator|(set_wrapper s, const set_wrapper& t) noexcept(NO_EXCEPT) {
-        s.merge(t);
-        return s;
+    template<class Rhs>
+    inline set_wrapper& operator|=(Rhs&& rhs) noexcept(NO_EXCEPT) {
+        this->merge(std::forward<Rhs>(rhs));
+        return *this;
     }
 
-    friend inline set_wrapper operator&(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    template<class Rhs>
+    inline set_wrapper& operator&=(Rhs&& rhs) noexcept(NO_EXCEPT) {
         set_wrapper res;
-        std::ranges::set_intersection(s, t, std::inserter(res, res.end()));
-        return res;
+        std::ranges::set_intersection(*this, std::forward<Rhs>(rhs), std::inserter(res, std::ranges::end(res)));
+        this->swap(res);
+        return *this;
     }
 
-    friend inline set_wrapper operator^(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
+    template<class Rhs>
+    inline set_wrapper& operator^=(Rhs&& rhs) noexcept(NO_EXCEPT) {
         set_wrapper res;
-        std::ranges::set_symmetric_difference(s, t, std::inserter(res, res.end()));
-        return res;
+        std::ranges::set_symmetric_difference(*this, std::forward<Rhs>(rhs), std::inserter(res, std::ranges::end(res)));
+        this->swap(res);
+        return *this;
+    }
+
+    template<class... Args>
+    inline set_wrapper operator|(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
+        return *this |= rhs;
+    }
+
+    template<class... Args>
+    inline set_wrapper operator&(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
+        return *this &= rhs;
+    }
+
+    template<class... Args>
+    inline set_wrapper operator^(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
+        return *this ^= rhs;
     }
 
 
-    template<std::equality_comparable_with<value_type> V>
-    friend inline bool operator<=(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
-        return st.contains(val);
-    }
+    template<class... Args>
+    inline auto operator<=>(const set_wrapper<Args...>& rhs) const noexcept(NO_EXCEPT) {
+        const bool leq = this->size() <= rhs.size() && std::ranges::includes(rhs, *this);
+        const bool geq = rhs.size() <= this->size() && std::ranges::includes(*this, rhs);
+        debug(*this, rhs, leq, geq);
 
-    template<std::equality_comparable_with<value_type> V>
-    friend inline bool operator>=(const set_wrapper& st, const V&val) noexcept(NO_EXCEPT) {
-        return val <= st;
-    }
+        if(leq) {
+            if(geq) return std::partial_ordering::equivalent;
+            return std::partial_ordering::less;
+        }
 
-    template<std::equality_comparable_with<value_type> V>
-    friend inline bool operator<(const V& val, const set_wrapper& st) noexcept(NO_EXCEPT) {
-        return val <= st;
-    }
+        if(geq) return std::partial_ordering::greater;
 
-    template<std::equality_comparable_with<value_type> V>
-    friend inline bool operator>(const set_wrapper& st, const V& val) noexcept(NO_EXCEPT) {
-        return val <= st;
-    }
-
-    friend inline bool operator<=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
-        if(s.size() > t.size()) return false;
-        return std::ranges::all_of(s, [&](auto&& v) { return t.contains(v); });
-    }
-
-    friend inline bool operator>=(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
-        return t <= s;
-    }
-
-    friend inline bool operator<(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
-        return s <= t;
-    }
-
-    friend inline bool operator>(const set_wrapper& s, const set_wrapper& t) noexcept(NO_EXCEPT) {
-        return t <= s;
+        return std::partial_ordering::unordered;
     }
 };
 
