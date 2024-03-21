@@ -37,10 +37,14 @@ struct bit_vector {
     {
         size_type pos = 0;
         for(auto itr=first; itr != last; ++pos, ++itr) if(*itr) this->set(pos);
+        this->build();
     }
 
+    template<std::ranges::input_range R>
+    bit_vector(R&& range) noexcept(NO_EXCEPT) : bit_vector(ALL(range)) {}
+
     template<class T> bit_vector(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT)
-      : bit_vector(std::ranges::begin(init_list), std::ranges::end(init_list))
+      : bit_vector(ALL(init_list))
     {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
@@ -49,7 +53,7 @@ struct bit_vector {
     inline size_type ones() const noexcept(NO_EXCEPT) { return this->_n - this->_zeros; }
 
     inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / w] |= (1LL << (k % w)); }
-    inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return static_cast<std::uint32_t>(this->_block[k / w] >> (k % w)) & 1U; }
+    inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return static_cast<bool>(this->_block[k / w] >> (k % w)) & 1U; }
 
     __attribute__((optimize("O3", "unroll-loops")))
     inline void init(const size_type n) noexcept(NO_EXCEPT) {
@@ -65,14 +69,18 @@ struct bit_vector {
         this->_zeros = this->rank0(this->_n);
     }
 
+
     inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
         return this->_count[k / w] + static_cast<size_type>(std::popcount(lib::clear_higher_bits(this->_block[k / w], k % w)));
     }
-    inline size_type rank0(size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
+
+    inline size_type rank0(const size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
+
 
     inline size_type rank(const bool bit, const size_type k) const noexcept(NO_EXCEPT) {
         return bit ? this->rank1(k) : this->rank0(k);
     }
+
 
     inline size_type select(const bool bit, const size_type rank) const noexcept(NO_EXCEPT) {
         if (!bit and rank > this->zeros()) { return this->_n + 1; }
@@ -106,6 +114,7 @@ struct bit_vector {
 
         return base_index + ok;
     }
+
 
     inline size_type select0(const size_type k) const noexcept(NO_EXCEPT) { return this->select(0, k); }
     inline size_type select1(const size_type k) const noexcept(NO_EXCEPT) { return this->select(1, k); }
