@@ -5,6 +5,7 @@
 
 #include <type_traits>
 #include <cstdint>
+#include <cstddef>
 #include <limits>
 #include <concepts>
 #include <bit>
@@ -107,6 +108,40 @@ inline constexpr T bit(const T x, const int p) {
 template<std::unsigned_integral T>
 inline constexpr T lower_bits(const T x, const int digits = (std::numeric_limits<T>::digits >> 1)) {
     return x & (lib::shiftl(x, digits) - 1);
+}
+
+
+// Thanks to: https://noshi91.github.io/Library/other/select64.cpp
+constexpr int select64(const u64 x0, u32 k) {
+    const u64 x1 = (x0 & UINT64_C(0x5555555555555555)) + (x0 >> 1 & UINT64_C(0x5555555555555555));
+    const u64 x2 = (x1 & UINT64_C(0x3333333333333333)) + (x1 >> 2 & UINT64_C(0x3333333333333333));
+    const u64 x3 = (x2 & UINT64_C(0x0F0F0F0F0F0F0F0F)) + (x2 >> 4 & UINT64_C(0x0F0F0F0F0F0F0F0F));
+    const u64 x4 = (x3 & UINT64_C(0x00FF00FF00FF00FF)) + (x3 >> 8 & UINT64_C(0x00FF00FF00FF00FF));
+    const u64 x5 = (x4 & UINT64_C(0x0000FFFF0000FFFF)) + (x4 >> 16 & UINT64_C(0x0000FFFF0000FFFF));
+
+    int res = 0;
+
+    u32 t;
+
+    t = x5 & 0xFFFFFFFF;
+    if(t <= k) k -= t, res += 32;
+
+    t = x4 >> res & 0xFFFF;
+    if(t <= k) k -= t, res += 16;
+
+    t = x3 >> res & 0xFF;
+    if(t <= k) k -= t, res += 8;
+
+    t = x2 >> res & 0xF;
+    if(t <= k) k -= t, res += 4;
+
+    t = x1 >> res & 0x3;
+    if(t <= k) k -= t, res += 2;
+
+    t = x0 >> res & 0x1;
+    if(t <= k) k -= t, res += 1;
+
+    return res;
 }
 
 

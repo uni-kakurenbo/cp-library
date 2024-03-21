@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/range_kth_smallest"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"

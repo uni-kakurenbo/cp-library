@@ -23,7 +23,7 @@ struct bit_vector {
     using size_type = std::uint_fast32_t;
 
   private:
-    static constexpr size_type w = 64;
+    static constexpr size_type WORDSIZE = 64;
     std::vector<std::uint64_t> _block;
     std::vector<size_type> _count;
     size_type _n, _zeros;
@@ -37,7 +37,6 @@ struct bit_vector {
     {
         size_type pos = 0;
         for(auto itr=first; itr != last; ++pos, ++itr) if(*itr) this->set(pos);
-        this->build();
     }
 
     template<std::ranges::input_range R>
@@ -52,13 +51,15 @@ struct bit_vector {
     inline size_type zeros() const noexcept(NO_EXCEPT) { return this->_zeros; }
     inline size_type ones() const noexcept(NO_EXCEPT) { return this->_n - this->_zeros; }
 
-    inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / w] |= (1LL << (k % w)); }
-    inline bool get(const size_type k) const noexcept(NO_EXCEPT) { return static_cast<bool>(this->_block[k / w] >> (k % w)) & 1U; }
+    inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / WORDSIZE] |= (1LL << (k % WORDSIZE)); }
+    inline bool get(const size_type k) const noexcept(NO_EXCEPT) {
+        return 1U & static_cast<std::uint32_t>(this->_block[k / WORDSIZE] >> (k % WORDSIZE));
+    }
 
     __attribute__((optimize("O3", "unroll-loops")))
     inline void init(const size_type n) noexcept(NO_EXCEPT) {
         this->_n = this->_zeros = n;
-        this->_block.resize(this->_n / w + 1, 0);
+        this->_block.resize(this->_n / WORDSIZE + 1, 0);
         this->_count.resize(this->_block.size(), 0);
     }
 
@@ -71,53 +72,55 @@ struct bit_vector {
 
 
     inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
-        return this->_count[k / w] + static_cast<size_type>(std::popcount(lib::clear_higher_bits(this->_block[k / w], k % w)));
+        return
+            this->_count[k / WORDSIZE] +
+            static_cast<size_type>(std::popcount(lib::clear_higher_bits(this->_block[k / WORDSIZE], k % WORDSIZE)));
     }
 
     inline size_type rank0(const size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
 
 
-    inline size_type rank(const bool bit, const size_type k) const noexcept(NO_EXCEPT) {
-        return bit ? this->rank1(k) : this->rank0(k);
+    template<bool BIT>
+    inline size_type rank(const size_type k) const noexcept(NO_EXCEPT) {
+        if constexpr(BIT) return this->rank0(k);
+        else return this->rank1(k);
     }
 
+    template<bool BIT>
+    inline size_type select(const size_type rank) const noexcept(NO_EXCEPT) {
+        if constexpr(BIT) {
+            if(rank >= this->ones()) return this->_n;
+        }
+        else {
+            if(rank >= this->zeros()) return this->_n;
+        }
 
-    inline size_type select(const bool bit, const size_type rank) const noexcept(NO_EXCEPT) {
-        if (!bit and rank > this->zeros()) { return this->_n + 1; }
-        if (bit and rank > this->ones()) { return this->_n + 1; }
-
-        size_type block_pos = 0;
+        size_type index = 0;
         {
-            size_type ng = -1, ok = static_cast<size_type>(this->_count.size());
-            while(ok - ng > 1) {
-                size_type mid = (ng + ok) / 2;
+            size_type ng = static_cast<size_type>(this->_count.size());
+            while(ng - index > 1) {
+                size_type mid = (ng + index) / 2;
 
                 size_type cnt = this->_count[mid];
-                if(!bit) cnt = mid * w - cnt;
+                if constexpr(!BIT) cnt = mid * WORDSIZE - cnt;
 
-                (cnt >= rank ? ok : ng) = mid;
+                (cnt <= rank ? index : ng) = mid;
             }
-            block_pos = ok;
         }
 
-        const size_type base_index = (block_pos - 1) * w;
-        const size_type count = this->_count[block_pos - 1];
-        const std::uint64_t block = this->_block[block_pos - 1];
+        const size_type base = index * WORDSIZE;
 
-        size_type ng = -1, ok = w;
-        while(ok - ng > 1) {
-            const size_type mid = (ok + ng) / 2;
-            size_type r = count + static_cast<size_type>(std::popcount(lib::clear_higher_bits(block, mid)));
-            if(!bit) r = base_index + mid - r;
-            (r >= rank ? ok : ng) = mid;
+        if constexpr(BIT) {
+            return base + select64(this->_block[index], rank - this->_count[index]);
         }
-
-        return base_index + ok;
+        else {
+            return base + select64(~this->_block[index], rank - (base - this->_count[index]));
+        }
     }
 
 
-    inline size_type select0(const size_type k) const noexcept(NO_EXCEPT) { return this->select(0, k); }
-    inline size_type select1(const size_type k) const noexcept(NO_EXCEPT) { return this->select(1, k); }
+    inline size_type select0(const size_type k) const noexcept(NO_EXCEPT) { return this->select<false>(k); }
+    inline size_type select1(const size_type k) const noexcept(NO_EXCEPT) { return this->select<true>(k); }
 
     struct iterator;
 
