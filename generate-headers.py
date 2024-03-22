@@ -50,7 +50,7 @@ output_all = open(OUTPUT_DIRECTORY / "all.hpp")
 output_file_all = open(output_all.name, "w")
 
 content_all = "#pragma once\n\n"
-for dir in map(Path, INDIVIDUAL.keys()):
+for dir in map(Path, INDIVIDUAL.values()):
     content_all += f"#include \"{ OUTPUT_DIRECTORY / dir }\"\n"
 
 content_all += "\n"
