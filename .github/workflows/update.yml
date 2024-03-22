@@ -30,6 +30,18 @@ jobs:
     organize:
         uses: ./.github/workflows/organize.yml
 
+    prune:
+        if: ${{ github.event_name == 'pull_request' }}
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Remove test branches
+              env:
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+              run: |
+                  git push --delete origin test/commit/${BRANCH_NAME} || true
+                  git push --delete origin test/push/${BRANCH_NAME} || true
+
     config:
         needs:
             - cache
