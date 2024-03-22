@@ -1,5 +1,5 @@
 #! /bin/bash
 
-REF="$(git symbolic-ref HEAD)"
+REF="$(git symbolic-ref --short HEAD)"
 
 git push origin "${REF}:test/commit/${REF}" --no-verify
