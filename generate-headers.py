@@ -51,7 +51,7 @@ output_file_all = open(output_all.name, "w")
 
 content_all = "#pragma once\n\n"
 for dir in map(Path, INDIVIDUAL.keys()):
-    content_all += f"#include \"{ dir }\"\n"
+    content_all += f"#include \"{ OUTPUT_DIRECTORY / dir }\"\n"
 
 content_all += "\n"
 
