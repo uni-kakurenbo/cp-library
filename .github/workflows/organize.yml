@@ -6,7 +6,51 @@ on:
     workflow_dispatch:
 
 jobs:
-    sort-files:
+    gen-include:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: 3.12.0
+
+            - name: Generate headers
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -eu
+                  python3 ./generate-headers.py
+
+            - name: Push
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -eu
+
+                  git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+
+                  git config --global user.name "GitHub"
+                  git config --global user.email "noreply@github.com"
+
+                  git add .
+
+                  if (git diff --cached --shortstat | grep '[0-9]'); then
+                    git commit -m "[auto-verifier] header-generation commit ${GITHUB_SHA}"
+
+                    REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
+
+                    git pull --rebase origin "${REPOSITORY_NAME}"
+                    git push origin "HEAD:${REPOSITORY_NAME}"
+                  else
+                    echo "No updated files."
+                  fi
+
+    sort-verify:
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
         steps:
@@ -17,7 +61,7 @@ jobs:
             - name: Sort verification files
               run: ./.github/workflows/internal/group-by.sh
 
-            - name: Push report
+            - name: Push
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -38,5 +82,5 @@ jobs:
                     git pull --rebase origin "${REPOSITORY_NAME}"
                     git push origin "HEAD:${REPOSITORY_NAME}"
                   else
-                    echo "No updated reports."
+                    echo "No updated files."
                   fi
