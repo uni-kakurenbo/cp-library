@@ -44,8 +44,11 @@ jobs:
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
-                    git pull --rebase
-                    git push origin HEAD:${GITHUB_REF}
+
+                    REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
+
+                    git pull --rebase origin "${REPOSITORY_NAME}"
+                    git push origin "HEAD:${REPOSITORY_NAME}"
                   else
                     echo "No updated reports."
                   fi
