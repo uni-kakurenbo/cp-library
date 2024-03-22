@@ -26,6 +26,7 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   path: main
                   fetch-depth: 0 # for detect already verified tests  with:
 
@@ -216,8 +217,8 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
-                  path: main
                   ref: ${{ github.head_ref || github.ref_name }}
+                  path: main
                   token: ${{ secrets.GH_PAT }}
 
             - name: Clone AC-Library
@@ -262,6 +263,7 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   token: ${{ secrets.GH_PAT }}
                   path: main
                   sparse-checkout: ./.github/workflows/internal/
@@ -401,6 +403,7 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   path: main
                   token: ${{ secrets.GH_PAT }}
 
@@ -569,6 +572,7 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   fetch-depth: 0
                   sparse-checkout: |
                       .verify-helper
