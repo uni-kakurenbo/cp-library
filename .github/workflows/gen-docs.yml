@@ -20,6 +20,7 @@ jobs:
             - name: Git checkout
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   fetch-depth: 0
                   path: main
 

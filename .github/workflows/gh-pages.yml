@@ -30,6 +30,7 @@ jobs:
             - name: Clone raw data
               uses: actions/checkout@v4
               with:
+                  ref: ${{ github.head_ref || github.ref_name }}
                   token: ${{ secrets.GH_PAT }}
 
             - name: Build

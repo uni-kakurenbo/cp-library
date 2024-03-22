@@ -1,13 +1,13 @@
 #pragma once
 
+#include "include/actions.hpp"
 #include "include/adaptors.hpp"
 #include "include/algebraic.hpp"
-#include "include/actions.hpp"
 #include "include/convolutions.hpp"
 #include "include/data_structures.hpp"
-#include "include/hashes.hpp"
 #include "include/geometries.hpp"
 #include "include/graph_theory.hpp"
+#include "include/hashes.hpp"
 #include "include/iterable.hpp"
 #include "include/numeric.hpp"
 #include "include/snippets.hpp"
@@ -25,3 +25,4 @@
 
 #include "structure/graph.hpp"
 #include "structure/grid.hpp"
+

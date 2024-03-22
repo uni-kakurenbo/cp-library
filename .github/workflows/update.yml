@@ -11,10 +11,15 @@ on:
     push:
         branches:
             - main
+            - test/**
     pull_request:
 
 concurrency:
-    group: update-${{ github.ref }}
+    group: |
+        update-${{
+            startsWith(github.ref_name, 'test') && github.ref_name ||
+            format('test/{0}', github.head_ref || github.ref_name)
+        }}
     cancel-in-progress: true
 
 jobs:
@@ -24,6 +29,20 @@ jobs:
 
     organize:
         uses: ./.github/workflows/organize.yml
+
+    prune:
+        if: ${{ github.event_name == 'pull_request' }}
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+
+            - name: Remove test branches
+              env:
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+              run: |
+                  git push --delete origin test/${BRANCH_NAME} || true
 
     config:
         needs:
