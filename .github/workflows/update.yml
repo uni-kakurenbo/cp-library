@@ -35,6 +35,9 @@ jobs:
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
         steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+
             - name: Remove test branches
               env:
                   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
