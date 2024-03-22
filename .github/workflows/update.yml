@@ -17,8 +17,7 @@ on:
 concurrency:
     group: |
         update-${{
-          startsWith(github.ref_name, 'test') && 'test' ||
-          github.ref_name
+          startsWith(github.ref_name, 'test') &&  || github.ref_name
         }}
     cancel-in-progress: true
 

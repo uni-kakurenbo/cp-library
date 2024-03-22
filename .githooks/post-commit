@@ -2,4 +2,4 @@
 
 REF="$(git symbolic-ref --short HEAD)"
 
-git push origin "${REF}:test/commit/${REF}" --no-verify --force
+git push origin "${REF}:test/${REF}" --no-verify --force
