@@ -184,8 +184,8 @@ struct treap_impl : private uncopyable {
     };
 
 
-    template<bool STRICT = false>
-    void split(const node_pointer tree, const value_type& val, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
+    template<bool STRICT = false, bool RETURN_EXISTENCE = false>
+    void split(const node_pointer tree, const value_type& val, node_pointer& left, node_pointer& right, bool* exist = nullptr) noexcept(NO_EXCEPT) {
         if(tree == node_type::nil) {
             left = right = node_type::nil;
             return;
@@ -193,12 +193,14 @@ struct treap_impl : private uncopyable {
 
         this->_derived()->pushdown(tree);
 
+        if constexpr(RETURN_EXISTENCE) *exist |= val == tree->data;
+
         if(val < tree->data || (!STRICT && val == tree->data)) {
-            this->template split<STRICT>(tree->left, val, left, tree->left), right = std::move(tree);
+            this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, tree->left, exist), right = std::move(tree);
             this->pushup(right);
         }
         else {
-            this->template split<STRICT>(tree->right, val, tree->right, right), left = std::move(tree);
+            this->template split<STRICT, RETURN_EXISTENCE>(tree->right, val, tree->right, right, exist), left = std::move(tree);
             this->pushup(left);
         }
     }

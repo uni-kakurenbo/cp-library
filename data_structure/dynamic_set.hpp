@@ -180,14 +180,13 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         if(count == 0) return;
         if(count < 0) return this->erase(tree, val, -count);
 
-        node_pointer t0, t1, t2;
+        node_pointer t0, t1;
+        bool exist = false;
 
-        this->split(tree, { val }, t0, t1);
-        this->template split<true>(t1, { val }, t1, t2);
+        this->template split<false, true>(tree, { val }, t0, t1, &exist);
 
-        if(t1 == node_type::nil) t1 = this->create_node(val, count);
-
-        this->merge(tree, t0, t1, t2);
+        if(exist) this->merge(tree, t0, t1);
+        else this->merge(tree, t0, this->create_node(val, count), t1);
     }
 
 
