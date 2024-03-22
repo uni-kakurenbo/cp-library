@@ -1,0 +1,5 @@
+#! /bin/bash
+
+while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
+    git push --atomic "${local_ref}:${remote_ref}" "${local_ref}:test/${remote_ref}"
+done
