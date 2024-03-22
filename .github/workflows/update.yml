@@ -42,8 +42,7 @@ jobs:
               env:
                   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
-                  git push --delete origin test/commit/${BRANCH_NAME} || true
-                  git push --delete origin test/push/${BRANCH_NAME} || true
+                  git push --delete origin test/${BRANCH_NAME} || true
 
     config:
         needs:
