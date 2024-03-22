@@ -15,7 +15,11 @@ on:
     pull_request:
 
 concurrency:
-    group: update-${{ github.ref }}
+    group: |
+        update-${{
+          startsWith(github.ref_name, 'test') && 'test' ||
+          github.ref_name
+        }}
     cancel-in-progress: true
 
 jobs:
