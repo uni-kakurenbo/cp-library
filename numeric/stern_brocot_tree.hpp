@@ -59,7 +59,7 @@ struct stern_brocot_tree {
         return path;
     }
 
-    static constexpr pair<fraction_type, fraction_type> range(const fraction_type x) {
+    static constexpr spair<fraction_type> range(const fraction_type x) {
         const auto [ path, l, r ] = path_and_rang(x);
         return { l, r };
     }
@@ -89,7 +89,7 @@ struct stern_brocot_tree {
         return { l.first + r.first, l.second + r.second };
     }
 
-    static constexpr pair<fraction_type, fraction_type> children(const fraction_type x) {
+    static constexpr pair<fraction_type> children(const fraction_type x) {
         const auto [ l, r ] = range(x);
         const fraction_type lc = { l.first + x.first, l.second + x.second };
         const fraction_type rc = { x.first + r.first, x.second + r.second };
