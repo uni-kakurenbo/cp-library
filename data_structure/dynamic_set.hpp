@@ -57,8 +57,8 @@ struct data_type {
         return lhs.val == rhs.val;
     }
 
-    friend bool operator<(const data_type& lhs, const data_type& rhs) noexcept(NO_EXCEPT) {
-        return lhs.val < rhs.val;
+    friend bool operator<=>(const data_type& lhs, const data_type& rhs) noexcept(NO_EXCEPT) {
+        return lhs.val <=> rhs.val;
     }
 
     auto _debug() const { return this->val; }
