@@ -1,6 +1,7 @@
 #pragma once
 
 #include "action/base.hpp"
+#include "action/helpers.hpp"
 #include "action/null.hpp"
 #include "action/range_add.hpp"
 #include "action/range_add_range_max.hpp"
@@ -12,6 +13,7 @@
 #include "action/range_gcd.hpp"
 #include "action/range_max.hpp"
 #include "action/range_min.hpp"
+#include "action/range_sequence_hash.hpp"
 #include "action/range_set_range_max.hpp"
 #include "action/range_set_range_min.hpp"
 #include "action/range_set_range_sum.hpp"

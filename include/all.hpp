@@ -1,17 +1,17 @@
 #pragma once
 
-#include "include/adaptors.hpp"
-#include "include/algebraic.hpp"
-#include "include/actions.hpp"
-#include "include/convolutions.hpp"
-#include "include/data_structures.hpp"
-#include "include/hashes.hpp"
-#include "include/geometries.hpp"
-#include "include/graph_theory.hpp"
-#include "include/iterable.hpp"
-#include "include/numeric.hpp"
-#include "include/snippets.hpp"
-#include "include/views.hpp"
+#include "action"
+#include "adaptor"
+#include "algebraic"
+#include "convolution"
+#include "data_structure"
+#include "geometry"
+#include "graph"
+#include "hash"
+#include "iterable"
+#include "numeric"
+#include "snippet"
+#include "view"
 
 #include "random/adaptor.hpp"
 #include "random/engine.hpp"
@@ -25,3 +25,4 @@
 
 #include "structure/graph.hpp"
 #include "structure/grid.hpp"
+
