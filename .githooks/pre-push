@@ -1,6 +1,5 @@
 #! /bin/bash
 
 while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
-    echo "git push origin ${local_ref}:test/${remote_ref}"
-    git push origin "${local_ref}:test/${remote_ref}"
+    git push origin "${local_ref}:test/push/${remote_ref}" --no-verify
 done
