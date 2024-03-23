@@ -120,7 +120,9 @@ struct set_wrapper : Set {
 
     template<class Rhs>
     inline set_wrapper& operator|=(Rhs&& rhs) noexcept(NO_EXCEPT) {
-        this->merge(std::forward<Rhs>(rhs));
+        set_wrapper res;
+        std::ranges::set_union(*this, std::forward<Rhs>(rhs), std::inserter(res, res.end()));
+        this->swap(res);
         return *this;
     }
 
@@ -141,18 +143,18 @@ struct set_wrapper : Set {
     }
 
     template<class... Args>
-    inline set_wrapper operator|(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
-        return *this |= rhs;
+    inline set_wrapper operator|(set_wrapper<Args...> rhs) noexcept(NO_EXCEPT) {
+        return rhs |= *this;
     }
 
     template<class... Args>
-    inline set_wrapper operator&(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
-        return *this &= rhs;
+    inline set_wrapper operator&(set_wrapper<Args...> rhs) noexcept(NO_EXCEPT) {
+        return rhs &= *this;
     }
 
     template<class... Args>
-    inline set_wrapper operator^(const set_wrapper<Args...>& rhs) noexcept(NO_EXCEPT) {
-        return *this ^= rhs;
+    inline set_wrapper operator^(set_wrapper<Args...> rhs) noexcept(NO_EXCEPT) {
+        return rhs ^= *this;
     }
 
 
@@ -160,7 +162,6 @@ struct set_wrapper : Set {
     inline auto operator<=>(const set_wrapper<Args...>& rhs) const noexcept(NO_EXCEPT) {
         const bool leq = this->size() <= rhs.size() && std::ranges::includes(rhs, *this);
         const bool geq = rhs.size() <= this->size() && std::ranges::includes(*this, rhs);
-        debug(*this, rhs, leq, geq);
 
         if(leq) {
             if(geq) return std::partial_ordering::equivalent;
