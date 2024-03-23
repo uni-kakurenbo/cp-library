@@ -114,7 +114,7 @@ concept substituted_from = is_template_of_v<Template, Type>;
 template<template <class...> class Base, class Derived>
 struct _is_basic_tempalte_of
 {
-    template<typename... Ts>
+    template<class... Ts>
     static constexpr std::true_type  test(const Base<Ts...> *);
 
     static constexpr std::false_type test(...);
