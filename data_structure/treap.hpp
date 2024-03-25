@@ -62,7 +62,7 @@ struct treap_impl : private uncopyable {
     using node_allocator_type = allocator_traits::template rebind_alloc<node_type>;
     using node_allocator_traits = std::allocator_traits<node_allocator_type>;
 
-    node_allocator_type _allocator;
+    [[no_unique_address]] node_allocator_type _allocator;
 
 
     static inline random_engine_32bit _rand;
