@@ -26,7 +26,7 @@ struct compressed : Container {
     std::vector<value_type> values;
 
   public:
-    explicit compressed() noexcept(NO_EXCEPT) = default;
+    compressed() noexcept(NO_EXCEPT) = default;
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     compressed(I first, S last) noexcept(NO_EXCEPT) {
@@ -45,7 +45,7 @@ struct compressed : Container {
     }
 
     template<std::ranges::input_range R>
-    compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
+    explicit compressed(R&& range) noexcept(NO_EXCEPT) : compressed(ALL(range)) {}
 
     inline size_type rank_sup() const { return static_cast<size_type>(this->values.size()); }
 
@@ -61,8 +61,10 @@ struct compressed : Container {
         ) - 1;
     }
 
-    inline value_type value(const size_type rank) const noexcept(NO_EXCEPT) { return this->values[rank]; }
-    inline value_type operator()(const internal::size_t val) const noexcept(NO_EXCEPT) { return this->values[val]; }
+    inline value_type value(const size_type rank) const noexcept(NO_EXCEPT) {
+        assert(0 <= rank && rank < this->rank_sup());
+        return this->values[rank];
+    }
 };
 
 template<std::input_iterator I, std::sized_sentinel_for<I> S>
