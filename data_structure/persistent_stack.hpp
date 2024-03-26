@@ -19,12 +19,8 @@ struct persistent_stack {
 
     using allocator_type = Allocator;
 
-//   private:
+
     struct node_type;
-
-    using node_allocator = typename std::allocator_traits<allocator_type>::rebind_alloc<node_type>;
-    using node_allocator_traits = std::allocator_traits<node_allocator>;
-
     using node_pointer = std::shared_ptr<node_type>;
 
     struct node_type {
@@ -36,6 +32,7 @@ struct persistent_stack {
         {}
     };
 
+  private:
     size_type _size = 0;
     node_pointer _head = {};
 

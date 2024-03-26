@@ -22,6 +22,7 @@
 #include "algebraic/internal/concepts.hpp"
 #include "action/base.hpp"
 
+#include "debugger/debug.hpp"
 
 namespace lib {
 
@@ -30,7 +31,7 @@ namespace internal {
 namespace dynamic_segment_tree_impl {
 
 
-// Thanks to: atcoder::segtree
+// Thanks to: https://lorent-kyopro.hatenablog.com/entry/2021/03/12/025644
 template<algebraic::internal::monoid Monoid, class Allocator = std::allocator<Monoid>>
 struct core {
     using size_type = internal::size_t;
@@ -89,7 +90,7 @@ struct core {
 
     static inline unsigned _instance_count = 0;
 
-  protected:
+  public:
     template<std::random_access_iterator I>
     node_pointer build(const size_type lower, const size_type upper, const size_type l, const size_type r, I first) noexcept(NO_EXCEPT) {
         const size_type middle = (lower + upper) >> 1;
@@ -378,9 +379,10 @@ struct dynamic_segment_tree<Monoid, Allocator> : private internal::dynamic_segme
     inline value_type fold() const noexcept(NO_EXCEPT) { return this->_root->acc; }
 
 
-    inline void clear(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+    inline auto& clear(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= this->_n);
-        return this->core::clear(this->_root, 0, this->_n, l, r);
+        this->core::clear(this->_root, 0, this->_n, l, r);
+        return *this;
     }
 
 
