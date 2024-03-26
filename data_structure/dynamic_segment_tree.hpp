@@ -329,8 +329,9 @@ struct dynamic_segment_tree<Monoid, Allocator> : private internal::dynamic_segme
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
 
-    inline auto& clear() const noexcept(NO_EXCEPT) {
+    inline auto& clear() noexcept(NO_EXCEPT) {
         this->delete_tree(this->_root);
+        this->_n = 0;
         this->_root = node_type::nil;
         return *this;
     }
