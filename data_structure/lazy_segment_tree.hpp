@@ -66,7 +66,7 @@ struct core {
     }
 
 
-    core() noexcept(NO_EXCEPT) {}
+    core() noexcept = default;
 
     explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
@@ -261,8 +261,8 @@ struct lazy_segment_tree<Action> : protected internal::lazy_segment_tree_impl::c
     template<std::convertible_to<value_type> T>
     lazy_segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : lazy_segment_tree(ALL(init_list)) {}
 
-    template<std::input_iterator I, std::sized_sentinel_for<I> operand>
-    lazy_segment_tree(I first, operand last) noexcept(NO_EXCEPT)
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    lazy_segment_tree(I first, S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
@@ -275,8 +275,8 @@ struct lazy_segment_tree<Action> : protected internal::lazy_segment_tree_impl::c
         return this->assign(ALL(init_list));
     }
 
-    template<std::input_iterator I, std::sentinel_for<I> operand>
-    inline auto& assign(I first, operand last) noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<operand, I>) {
             assert(std::ranges::distance(first, last) == this->_n);
         }
@@ -347,10 +347,6 @@ struct lazy_segment_tree<Action> : protected internal::lazy_segment_tree_impl::c
         }
 
         inline value_type fold() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
-            return this->_super->fold(this->_begin, this->_end);
-        }
-        inline value_type operator*() noexcept(NO_EXCEPT) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }

@@ -139,9 +139,6 @@ struct core<Semigroup> : base<Semigroup> {
         inline value_type fold() noexcept(NO_EXCEPT) {
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() noexcept(NO_EXCEPT) {
-            return this->_super->fold(this->_begin, this->_end);
-        }
     };
 
     inline value_type fold(size_type l, size_type r) noexcept(NO_EXCEPT) {

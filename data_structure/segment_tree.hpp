@@ -32,40 +32,45 @@ namespace segment_tree_impl {
 
 
 // Thanks to: atcoder::segtree
-template<algebraic::internal::monoid S>
+template<algebraic::internal::monoid Monoid>
 struct core {
     using size_type = internal::size_t;
 
+    using operand = Monoid;
+
   protected:
     size_type _n = 0, _size = 0, _depth = 0;
-    std::valarray<S> _data;
+    std::valarray<operand> _data;
 
-    inline void pull(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
+    inline void pull(const size_type k) noexcept(NO_EXCEPT) {
+        this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1];
+    }
 
   public:
-    core() noexcept(NO_EXCEPT) {}
+    core() noexcept = default;
+
     explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
         _data(this->_size << 1)
     {}
 
 
-    inline void apply(size_type p, const S& x) noexcept(NO_EXCEPT) {
+    inline void add(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         this->set(p, this->_data[p + this->_size] + x);
     }
 
-    inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {
+    inline void set(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         p += this->_size;
         this->_data[p] = x;
         FOR(i, 1, this->_depth) this->pull(p >> i);
     }
 
-    inline S get(size_type p) const noexcept(NO_EXCEPT) {
+    inline operand get(size_type p) const noexcept(NO_EXCEPT) {
         return this->_data[p + this->_size];
     }
 
-    inline S fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
-        S sml, smr;
+    inline operand fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
+        operand sml, smr;
         l += this->_size;
         r += this->_size;
 
@@ -78,7 +83,7 @@ struct core {
         return sml + smr;
     }
 
-    inline S fold_all() const noexcept(NO_EXCEPT) { return this->_data[1]; }
+    inline operand fold_all() const noexcept(NO_EXCEPT) { return this->_data[1]; }
 };
 
 
@@ -173,12 +178,12 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
             return *this;
         }
 
-        inline point_reference& apply(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, v);
+        inline point_reference& add(const value_type& v) noexcept(NO_EXCEPT) {
+            this->_super->add(this->_pos, v);
             return *this;
         }
         inline point_reference& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, v);
+            this->_super->add(this->_pos, v);
             return *this;
         }
     };
@@ -194,15 +199,12 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
             if(this->_begin == 0 and this->_end == this->_super->_n) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
-        inline value_type operator*() noexcept(NO_EXCEPT) {
-            return this->_super->fold(this->_begin, this->_end);
-        }
     };
 
 
-    inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
+    inline auto& add(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->_n);
-        this->core::apply(p, x);
+        this->core::add(p, x);
          return *this;
     }
 
