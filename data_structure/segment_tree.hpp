@@ -42,19 +42,14 @@ struct core {
 
     inline void pull(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
-  protected:
+  public:
     core() noexcept(NO_EXCEPT) {}
     explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
         _data(this->_size << 1)
     {}
 
-  public:
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_data.size(); }
-    inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
-  protected:
     inline void apply(size_type p, const S& x) noexcept(NO_EXCEPT) {
         this->set(p, this->_data[p + this->_size] + x);
     }
@@ -98,7 +93,7 @@ struct segment_tree : internal::unconstructible {};
 
 
 template<algebraic::internal::monoid Monoid>
-struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
+struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> {
   private:
     using core = typename internal::segment_tree_impl::core<Monoid>;
 
@@ -106,9 +101,9 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
     using value_type = Monoid;
     using size_type = typename core::size_type;
 
-  protected:
+  private:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
-        return p < 0 ? this->size() + p : p;
+        return p < 0 ? this->_n + p : p;
     }
 
   public:
@@ -126,13 +121,19 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
     template<std::ranges::input_range R>
     explicit segment_tree(R&& range) noexcept(NO_EXCEPT) : segment_tree(ALL(range)) {}
 
+
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_data.size(); }
+    inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
+
+
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(ALL(init_list)); }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         if constexpr(std::sized_sentinel_for<S, I>) {
-            assert(std::ranges::distance(first, last) == this->size());
+            assert(std::ranges::distance(first, last) == this->_n);
         }
         {
             size_type p = 0;
@@ -151,13 +152,13 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
         return *this;
     }
 
-    bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
+    bool empty() const noexcept(NO_EXCEPT) { return this->_n == 0; }
 
     struct point_reference : internal::point_reference<segment_tree> {
         point_reference(segment_tree *const super, const size_type p) noexcept(NO_EXCEPT)
           : internal::point_reference<segment_tree>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->_super->size());
+            assert(0 <= this->_pos && this->_pos < this->_super->_n);
         }
 
         operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
@@ -186,11 +187,11 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
         range_reference(segment_tree *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
           : internal::range_reference<segment_tree>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->_n);
         }
 
         inline value_type fold() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+            if(this->_begin == 0 and this->_end == this->_super->_n) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
         inline value_type operator*() noexcept(NO_EXCEPT) {
@@ -200,19 +201,19 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
 
 
     inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->size());
+        assert(0 <= p && p < this->_n);
         this->core::apply(p, x);
          return *this;
     }
 
     inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->size());
+        assert(0 <= p && p < this->_n);
         this->core::set(p, x);
          return *this;
     }
 
     inline value_type get(const size_type p) const noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->size());
+        assert(0 <= p && p < this->_n);
         return this->core::fold(p, p+1);
     }
 
@@ -220,11 +221,11 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
     inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
     inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r && r <= this->size());
+        assert(0 <= l && l <= r && r <= this->_n);
         return this->core::fold(l, r);
     }
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
-        assert(0 <= r && r <= this->size());
+        assert(0 <= r && r <= this->_n);
         return this->core::fold(0, r);
     }
     inline value_type fold() const noexcept(NO_EXCEPT) {
@@ -320,7 +321,7 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->_n); }
 };
 
 
