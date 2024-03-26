@@ -48,7 +48,7 @@ struct core {
     std::valarray<S> _values;
     std::valarray<F> _lazy;
 
-    inline void update(const size_type p) noexcept(NO_EXCEPT) {
+    inline void pull(const size_type p) noexcept(NO_EXCEPT) {
         this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
     }
     inline void all_apply(const size_type p, const F& f) noexcept(NO_EXCEPT) {
@@ -72,7 +72,7 @@ struct core {
     inline void initialize() noexcept(NO_EXCEPT) {
         REPD(p, 1, this->_size) {
             this->_lengths[p] = this->_lengths[p << 1] + this->_lengths[p << 1 | 1];
-            this->update(p);
+            this->pull(p);
         }
     }
 
@@ -87,7 +87,7 @@ struct core {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         this->_values[p] = x;
-        FOR(i, 1, this->_depth) this->update(p >> i);
+        FOR(i, 1, this->_depth) this->pull(p >> i);
     }
 
     inline S get(size_type p) noexcept(NO_EXCEPT) {
@@ -122,7 +122,7 @@ struct core {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
-        FOR(i, 1, this->_depth) this->update(p >> i);
+        FOR(i, 1, this->_depth) this->pull(p >> i);
     }
     inline void apply(size_type l, size_type r, const F& f) noexcept(NO_EXCEPT) {
         if(l == r) return;
@@ -148,8 +148,8 @@ struct core {
         }
 
         FOR(i, 1, this->_depth) {
-            if(((l >> i) << i) != l) this->update(l >> i);
-            if(((r >> i) << i) != r) this->update((r - 1) >> i);
+            if(((l >> i) << i) != l) this->pull(l >> i);
+            if(((r >> i) << i) != r) this->pull((r - 1) >> i);
         }
     }
 

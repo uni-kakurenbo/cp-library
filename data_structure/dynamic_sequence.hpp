@@ -84,11 +84,11 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     using size_type = typename interface::size_type;
 
   private:
-    inline void pushup(const node_pointer tree) const noexcept(NO_EXCEPT) {
+    inline void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
         tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
     }
 
-    inline void pushdown(const node_pointer tree) const noexcept(NO_EXCEPT) {
+    inline void push(const node_pointer tree) const noexcept(NO_EXCEPT) {
         if(tree == node_type::nil) return;
 
         if(tree->data.rev) {
@@ -129,7 +129,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         tree->left = this->_build(first, middle);
         tree->right = this->_build(std::next(middle), last);
 
-        this->interface::pushup(tree);
+        this->interface::pull(tree);
 
         return tree;
     }
@@ -149,15 +149,15 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         tree->left = this->_build(first, middle);
         tree->right = this->_build(std::next(middle), last);
 
-        this->interface::pushup(tree);
+        this->interface::pull(tree);
 
         return tree;
     }
 
   protected:
     inline void update(const node_pointer tree) noexcept(NO_EXCEPT) {
-        this->pushdown(tree);
-        this->pushup(tree);
+        this->push(tree);
+        this->pull(tree);
     }
 
   public:
@@ -395,7 +395,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
         if(!tree || tree == node_type::nil) return prefix + "\n";
 
-        this->pushdown(tree);
+        this->push(tree);
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
         const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
@@ -414,7 +414,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     debugger::debug_t _debug(const node_pointer tree) const {
         if(!tree || tree == node_type::nil) return "";
 
-        this->pushdown(tree);
+        this->push(tree);
 
         return
             "(" +

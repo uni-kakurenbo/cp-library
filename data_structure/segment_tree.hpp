@@ -40,7 +40,7 @@ struct core {
     size_type _n = 0, _size = 0, _depth = 0;
     std::valarray<S> _data;
 
-    inline void update(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
+    inline void pull(const size_type k) noexcept(NO_EXCEPT) { this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1]; }
 
   protected:
     core() noexcept(NO_EXCEPT) {}
@@ -62,7 +62,7 @@ struct core {
     inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {
         p += this->_size;
         this->_data[p] = x;
-        FOR(i, 1, this->_depth) this->update(p >> i);
+        FOR(i, 1, this->_depth) this->pull(p >> i);
     }
 
     inline S get(size_type p) const noexcept(NO_EXCEPT) {
@@ -138,7 +138,7 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
             size_type p = 0;
             for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<value_type>(*itr);
         }
-        REPD(p, 1, this->_size) this->update(p);
+        REPD(p, 1, this->_size) this->pull(p);
         return *this;
     }
 
@@ -147,7 +147,7 @@ struct segment_tree<Monoid> : internal::segment_tree_impl::core<Monoid> {
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
         REP(p, this->_n) this->_data[this->_size + p] = v;
-        REPD(p, 1, this->_size) this->update(p);
+        REPD(p, 1, this->_size) this->pull(p);
         return *this;
     }
 

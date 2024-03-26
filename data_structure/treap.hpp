@@ -73,10 +73,10 @@ struct treap_impl : private uncopyable {
     using priority_type = random_engine_32bit::result_type;
 
   protected:
-    void pushup(const node_pointer tree) const noexcept(NO_EXCEPT) {
+    void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
         if(tree == node_type::nil) return;
         tree->size = tree->left->size + tree->length + tree->right->size;
-        this->_derived()->pushup(tree);
+        this->_derived()->pull(tree);
     }
 
 
@@ -128,25 +128,25 @@ struct treap_impl : private uncopyable {
             return;
         }
 
-        this->_derived()->pushdown(tree);
+        this->_derived()->push(tree);
 
         const size_type lower_bound = tree->left->size;
         const size_type upper_bound = tree->size - tree->right->size;
 
         if(pos <= lower_bound) {
             this->split(tree->left, pos, left, tree->left), right = std::move(tree);
-            this->pushup(right);
+            this->pull(right);
         }
         else if(pos >= upper_bound) {
             this->split(tree->right, pos - upper_bound, tree->right, right), left = std::move(tree);
-            this->pushup(left);
+            this->pull(left);
         }
         else {
             tree->length = pos - lower_bound;
             this->merge(tree->right, this->create_node(tree->data, upper_bound - pos), tree->right);
 
             this->split(tree->right, 0, tree->right, right), left = std::move(tree);
-            this->pushup(left);
+            this->pull(left);
         }
     }
 
@@ -191,17 +191,17 @@ struct treap_impl : private uncopyable {
             return;
         }
 
-        this->_derived()->pushdown(tree);
+        this->_derived()->push(tree);
 
         if constexpr(RETURN_EXISTENCE) *exist |= val == tree->data;
 
         if(val < tree->data || (!STRICT && val == tree->data)) {
             this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, tree->left, exist), right = std::move(tree);
-            this->pushup(right);
+            this->pull(right);
         }
         else {
             this->template split<STRICT, RETURN_EXISTENCE>(tree->right, val, tree->right, right, exist), left = std::move(tree);
-            this->pushup(left);
+            this->pull(left);
         }
     }
 
@@ -222,8 +222,8 @@ struct treap_impl : private uncopyable {
 
 
     void merge(node_pointer& tree, const node_pointer left, const node_pointer right) noexcept(NO_EXCEPT) {
-        this->_derived()->pushdown(left);
-        this->_derived()->pushdown(right);
+        this->_derived()->push(left);
+        this->_derived()->push(right);
 
         // debug(left->priority, right->priority);
 
@@ -237,7 +237,7 @@ struct treap_impl : private uncopyable {
             this->merge(right->left, left, right->left), tree = std::move(right);
         }
 
-        this->pushup(tree);
+        this->pull(tree);
     }
 };
 
