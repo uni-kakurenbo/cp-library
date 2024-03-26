@@ -4,6 +4,7 @@
 #include "adaptor/io.hpp"
 #include "adaptor/map.hpp"
 #include "adaptor/multi_container.hpp"
+#include "adaptor/queue_by_stack.hpp"
 #include "adaptor/range_extractor.hpp"
 #include "adaptor/set.hpp"
 #include "adaptor/string.hpp"
