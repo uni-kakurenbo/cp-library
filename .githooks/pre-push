@@ -1,5 +1,13 @@
 #! /bin/bash
 
 while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
-    git push origin "${local_ref}:test/$(basename "${remote_ref}")" --no-verify --force
+    TEST_BRANCH="test/$(basename "${remote_ref}")"
+    TIMESTAMP_FILE=".verify-helper/timestamps.remote.json"
+
+    git fetch
+    git checkout -m "${TEST_BRANCH}" "${TIMESTAMP_FILE}"
+    git add "${TIMESTAMP_FILE}"
+    git commit
+
+    git push origin "${local_ref}:${TEST_BRANCH}" --no-verify --force
 done
