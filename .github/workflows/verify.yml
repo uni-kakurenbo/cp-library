@@ -566,7 +566,14 @@ jobs:
     collect:
         runs-on: ${{ vars.RUNNER_IMAGE }}
         needs: run
-        if: ${{ !cancelled() && github.ref_name == github.event.repository.default_branch }}
+        if: >-
+            ${{
+                !cancelled() &&
+                (
+                    github.ref_name == github.event.repository.default_branch ||
+                    startsWith(github.ref_name, 'test')
+                )
+            }}
 
         steps:
             - name: Git checkout

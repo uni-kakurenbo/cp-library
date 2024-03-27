@@ -5,7 +5,7 @@ while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
     TIMESTAMP_FILE=".verify-helper/timestamps.remote.json"
 
     git fetch
-    git checkout -m "${TEST_BRANCH}" "${TIMESTAMP_FILE}"
+    git checkout -m "origin/${TEST_BRANCH}" "${TIMESTAMP_FILE}"
     git add "${TIMESTAMP_FILE}"
     git commit
 
