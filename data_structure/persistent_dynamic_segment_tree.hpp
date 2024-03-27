@@ -34,7 +34,12 @@ namespace persistent_dynamic_segment_tree_impl {
 
 
 // Thanks to: atcoder::segtree
-template<algebraic::internal::monoid Monoid, class Allocator = std::allocator<Monoid>>
+template<
+    algebraic::internal::monoid Monoid,
+    class Allocator = std::allocator<Monoid>,
+    class PointerWrapper,
+    bool COPYING_NODE
+>
 struct core {
     using size_type = internal::size_t;
     using operand = Monoid;
@@ -65,7 +70,7 @@ struct core {
           : index(_index), val(_val), acc(_val)
         {}
 
-        static inline node_pointer nil = nullptr;
+        static inline node_pointer nil = std::make_shared<node_type>();
     };
 
   protected:
@@ -110,7 +115,9 @@ struct core {
             return;
         }
 
-        tree = this->create_node(*tree);
+        if constexpr(COPYING_NODE) {
+            tree = this->create_node(*tree);
+        }
 
         if(tree->index == pos) {
             tree->val = val;
@@ -215,9 +222,7 @@ struct core {
     }
 
   public:
-    explicit core(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _allocator(alloc) {
-        if(!node_type::nil) node_type::nil = std::make_shared<node_type>();
-    }
+    explicit core(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _allocator(alloc) {}
 
     ~core() {}
 
@@ -332,14 +337,12 @@ struct persistent_dynamic_segment_tree<Monoid, Allocator> : private internal::pe
 
     inline auto& clear() noexcept(NO_EXCEPT) {
         this->delete_tree(this->_root);
+        this->_n = 0;
         this->_root = node_type::nil;
         return *this;
     }
 
-
-    inline auto clone() const noexcept(NO_EXCEPT) { return *this; }
-
-
+    
     template<std::convertible_to<value_type> T>
     inline auto& assign(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) { return this->assign(init_list); }
 
