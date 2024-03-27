@@ -8,8 +8,8 @@
 
 
 #include "snippet/aliases.hpp"
-
 #include "numeric/arithmetic.hpp"
+#include "numeric/bit.hpp"
 
 
 namespace lib {
@@ -139,8 +139,8 @@ struct persistent_queue {
         auto index = to_unsigned(this->_size - 2);
         node_pointer node = this->_tail;
 
-        while(index > 0) {
-            const size_type msb = highest_bit_pos(index);
+        while(index != 0) {
+            const size_type msb = lib::highest_bit_pos(index);
             index -= 1 << msb;
             node = node->prev[msb];
         }
