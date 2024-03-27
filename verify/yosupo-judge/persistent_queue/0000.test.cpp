@@ -20,6 +20,7 @@
 #include "adaptor/io.hpp"
 #include "data_structure/persistent_queue.hpp"
 
+#include <memory_resource>
 
 signed main() {
     int q; input >> q;

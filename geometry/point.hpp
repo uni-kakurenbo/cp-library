@@ -34,13 +34,12 @@ struct point {
     constexpr point(const T& x, const T& y) noexcept(NO_EXCEPT) : _x(x), _y(y) {}
 
     template<class U> constexpr point(const point<U>& p) noexcept(NO_EXCEPT) : _x(p.x()), _y(p.y()) {};
-    template<class U> constexpr point(point<U>&& p) noexcept(NO_EXCEPT) : _x(p.x()), _y(p.y()) {};
 
     template<class U>
-    constexpr point& operator=(const point<U>& p) & noexcept(NO_EXCEPT) { this->_x = p._x, this->_y = p._y; return *this; };
-
-    template<class U>
-    constexpr point& operator=(point<U>&& p) && noexcept(NO_EXCEPT) { this->_x = p._x, this->_y = p._y; return *this; };
+    constexpr point& operator=(const point<U>& p) & noexcept(NO_EXCEPT) {
+        if(&p != this) this->_x = p._x, this->_y = p._y;
+        return *this;
+    };
 
     inline constexpr value_type& x() noexcept(NO_EXCEPT) { return this->_x; }
     inline constexpr value_type& y() noexcept(NO_EXCEPT) { return this->_y; }

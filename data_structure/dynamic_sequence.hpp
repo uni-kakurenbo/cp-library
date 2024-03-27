@@ -77,6 +77,8 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     friend interface;
 
   protected:
+    using node_handler = typename interface::node_handler;
+
     using node_type = typename interface::node_type;
     using node_pointer = typename interface::node_pointer;
 
@@ -89,24 +91,24 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
     inline void push(const node_pointer tree) const noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) return;
+        if(tree == node_handler::nil) return;
 
         if(tree->data.rev) {
             tree->data.rev = false;
 
             std::swap(tree->left, tree->right);
 
-            if(tree->left != node_type::nil) tree->left->data.rev ^= 1;
-            if(tree->right != node_type::nil) tree->right->data.rev ^= 1;
+            if(tree->left != node_handler::nil) tree->left->data.rev ^= 1;
+            if(tree->right != node_handler::nil) tree->right->data.rev ^= 1;
         }
 
         if(tree->data.lazy != operation{}) {
-            if(tree->left != node_type::nil) {
+            if(tree->left != node_handler::nil) {
                 tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
                 tree->left->data.acc = action::map(tree->left->data.acc, action::fold(tree->data.lazy, tree->left->size));
             }
 
-            if(tree->right != node_type::nil) {
+            if(tree->right != node_handler::nil) {
                 tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
                 tree->right->data.acc = action::map(tree->right->data.acc, action::fold(tree->data.lazy, tree->right->size));
             }
@@ -120,7 +122,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
         requires std::convertible_to<std::iter_value_t<I>, operand>
     node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
-        if(first == last) return node_type::nil;
+        if(first == last) return node_handler::nil;
 
         const auto length = std::ranges::distance(first, last);
         const auto middle = std::next(first, length >> 1);
@@ -140,7 +142,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
             std::convertible_to<typename std::iter_value_t<I>::first_type, operand> &&
             std::integral<typename std::iter_value_t<I>::second_type>
     node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
-        if(first == last) return node_type::nil;
+        if(first == last) return node_handler::nil;
 
         const auto length = std::ranges::distance(first, last);
         const auto middle = std::ranges::next(first, length >> 1);
@@ -209,7 +211,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1, t2;
 
         this->split(tree, l, r, t0, t1, t2);
-        this->delete_tree(t1);
+        this->dispose(t1);
         this->merge(tree, t0, t2);
     }
 
@@ -224,7 +226,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
         const auto res = t1->data.acc;
 
-        this->delete_tree(t1);
+        this->dispose(t1);
         this->merge(tree, t0, t2);
 
         return res;
@@ -238,7 +240,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1, t2;
         this->split(tree, l, r, t0, t1, t2);
 
-        this->delete_tree(t1);
+        this->dispose(t1);
         t1 = this->create_node(val, r - l);
 
         this->merge(tree, t0, t1, t2);
@@ -249,7 +251,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1, t2;
 
         this->split(tree, pos, pos + std::ranges::distance(first, last), t0, t1, t2);
-        this->delete_tree(t1);
+        this->dispose(t1);
         this->merge(tree, t0, this->build(first, last), t2);
     }
 
@@ -262,7 +264,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
         this->split(tree, l, r, t0, t1, t2);
 
-        if(t1 == node_type::nil) t1 = this->create_node(data_type{}, r - l);
+        if(t1 == node_handler::nil) t1 = this->create_node(data_type{}, r - l);
         t1->data.lazy = val + t1->data.lazy;
 
         this->merge(tree, t0, t1, t2);
@@ -293,7 +295,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
         this->split(tree, l, r, t0, t1, t2);
 
-        if(t1 != node_type::nil) t1->data.rev ^= 1;
+        if(t1 != node_handler::nil) t1->data.rev ^= 1;
 
         this->merge(tree, t0, t1, t2);
     }
@@ -313,7 +315,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->split(tree, l + count, r, t1, t2, t3);
         this->split(t1, l, t0, t1);
 
-        this->delete_tree(t1);
+        this->dispose(t1);
 
         this->merge(t2, t2, this->create_node({}, r - l - count));
         this->merge(tree, t0, t2, t3);
@@ -333,7 +335,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->split(tree, l, r - count, t1, t2, t3);
         this->split(t1, l, t0, t1);
 
-        this->delete_tree(t2);
+        this->dispose(t2);
 
         this->merge(t1, this->create_node({}, r - l - count), t1);
         this->merge(tree, t0, t1, t3);
@@ -359,7 +361,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         }
 
         if constexpr(LEFT) {
-            if(tree->left != node_type::nil and tree->left->data.acc + val != val) {
+            if(tree->left != node_handler::nil and tree->left->data.acc + val != val) {
                 return this->find<true>(tree->left, val, offset);
             }
             else {
@@ -367,7 +369,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
             }
         }
         else {
-            if(tree->right != node_type::nil and tree->right->data.acc + val != val) {
+            if(tree->right != node_handler::nil and tree->right->data.acc + val != val) {
                 return this->find<false>(tree->right, val, offset + tree->left->size + 1);
             }
             else {
@@ -393,7 +395,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
 
     debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
-        if(!tree || tree == node_type::nil) return prefix + "\n";
+        if(!tree || tree == node_handler::nil) return prefix + "\n";
 
         this->push(tree);
 
@@ -412,7 +414,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
     debugger::debug_t _debug(const node_pointer tree) const {
-        if(!tree || tree == node_type::nil) return "";
+        if(!tree || tree == node_handler::nil) return "";
 
         this->push(tree);
 
@@ -453,6 +455,8 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
 
     using core = internal::dynamic_sequence_impl::core<Action, Context>;
 
+    using node_handler = typename core::node_handler;
+
     using node_type = typename core::node_type;
     using node_pointer = typename core::node_pointer;
 
@@ -463,7 +467,7 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
     using size_type = typename core::size_type;
 
   private:
-    node_pointer _root = node_type::nil;
+    node_pointer _root = node_handler::nil;
 
     size_type _offset = 0;
 
@@ -477,36 +481,36 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
 
 
   public:
-    ~dynamic_sequence() { this->delete_tree(this->_root); }
+    ~dynamic_sequence() { this->dispose(this->_root); }
 
-    dynamic_sequence(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : core(alloc) {};
+    dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_sequence(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(alloc)
+    dynamic_sequence(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : dynamic_sequence(allocator)
     {
         this->assign(first, last);
     }
 
 
-    explicit dynamic_sequence(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(alloc)
+    explicit dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : dynamic_sequence(allocator)
     {
         this->assign(size, val);
     }
 
-    explicit dynamic_sequence(const size_type size, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(size, value_type{}, alloc)
+    explicit dynamic_sequence(const size_type size, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : dynamic_sequence(size, value_type{}, allocator)
     {}
 
     template<std::ranges::input_range R>
-    explicit dynamic_sequence(R&& range, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(ALL(range), alloc)
+    explicit dynamic_sequence(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : dynamic_sequence(ALL(range), allocator)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(values, alloc)
+    dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : dynamic_sequence(values, allocator)
     {}
 
     inline size_type offset() const noexcept(NO_EXCEPT) { return this->_offset; }
@@ -516,8 +520,8 @@ struct dynamic_sequence<Action, Context> : private internal::dynamic_sequence_im
 
 
     inline void clear() noexcept(NO_EXCEPT) {
-        this->delete_tree(this->_root);
-        this->_root = node_type::nil;
+        this->dispose(this->_root);
+        this->_root = node_handler::nil;
         this->_offset = 0;
     }
 

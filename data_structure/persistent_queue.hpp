@@ -5,7 +5,10 @@
 #include <functional>
 #include <memory>
 #include <bit>
+#include <memory_resource>
 
+
+#include "data_structure/internal/node_handler.hpp"
 
 #include "snippet/aliases.hpp"
 #include "numeric/arithmetic.hpp"
@@ -21,11 +24,12 @@ struct persistent_queue {
     using value_type = ValueType;
     using size_type = internal::size_t;
 
-    using allocator_type = Allocator;
-
 
     struct node_type;
-    using node_pointer = std::shared_ptr<node_type>;
+    using node_handler = node_handlers::cloneable<Allocator>::template handler<node_type>;
+
+    using node_pointer = typename node_handler::node_pointer;
+    using allocator_type = typename node_handler::allocator_type;
 
     struct node_type {
         value_type value;
@@ -36,35 +40,19 @@ struct persistent_queue {
     size_type _size = 0;
     node_pointer _head = {}, _tail = {};
 
-    [[no_unique_address]] allocator_type _allocator = {};
+    [[no_unique_address]] node_handler _node_handler = {};
 
   public:
-    explicit persistent_queue(const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : _allocator(allocator)
-    {}
-
-    persistent_queue(const persistent_queue& source) noexcept(NO_EXCEPT) = default;
-    persistent_queue(persistent_queue&& source) noexcept(NO_EXCEPT) = default;
+    explicit persistent_queue(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
 
 
     persistent_queue(const persistent_queue& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
-      : _size(source._size), _head(source._head), _tail(source._tail), _allocator(allocator)
+      : _size(source._size), _head(source._head), _tail(source._tail), _node_handler(allocator)
     {}
 
     persistent_queue(persistent_queue&& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
-      : _size(source._size), _head(source._head), _tail(source._tail), _allocator(allocator)
+      : _size(source._size), _head(source._head), _tail(source._tail), _node_handler(allocator)
     {}
-
-
-    inline persistent_queue& operator=(const persistent_queue& source) noexcept(NO_EXCEPT) {
-        this->_size = source._size;
-        this->_head = source._head, this->_tail = source._tail;
-    };
-
-    inline persistent_queue& operator=(persistent_queue&& source) noexcept(NO_EXCEPT) {
-        this->_size = source._size;
-        this->_head = source._head, this->_tail = source._tail;
-    };
 
 
     inline auto clone() const noexcept(NO_EXCEPT) { return *this; }
@@ -109,7 +97,7 @@ struct persistent_queue {
 
     template<std::convertible_to<value_type> T>
     auto& push(T&& x) noexcept(NO_EXCEPT) {
-        node_pointer node = std::allocate_shared<node_type>(this->_allocator, x);
+        node_pointer node = this->_node_handler.create(x);
 
         node->prev[0] = this->_tail;
 

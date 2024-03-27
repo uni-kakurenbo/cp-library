@@ -21,6 +21,8 @@
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
 
+#include "data_structure/internal/node_handler.hpp"
+
 #include "global/constants.hpp"
 
 #include "random/engine.hpp"
@@ -40,11 +42,11 @@ struct treap_impl : private uncopyable {
     using size_type = SizeType;
     using value_type = ValueType;
 
-    using allocator_type = Allocator;
-
-
     struct node_type;
-    using node_pointer = std::add_pointer_t<node_type>;
+    using node_handler = typename lib::node_handlers::reusing<Allocator>::template handler<node_type>;
+
+    using allocator_type = typename node_handler::allocator_type;
+    using node_pointer = typename node_handler::node_pointer;
 
   private:
     using derived = Derived;
@@ -56,25 +58,16 @@ struct treap_impl : private uncopyable {
         return static_cast<const derived*>(this);
     }
 
-
-    using allocator_traits = std::allocator_traits<allocator_type>;
-
-    using node_allocator_type = allocator_traits::template rebind_alloc<node_type>;
-    using node_allocator_traits = std::allocator_traits<node_allocator_type>;
-
-    [[no_unique_address]] node_allocator_type _allocator;
+    [[no_unique_address]] node_handler _node_handler;
 
 
     static inline random_engine_32bit _rand;
-
-    static inline unsigned _instance_count = 0;
-
 
     using priority_type = random_engine_32bit::result_type;
 
   protected:
     void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) return;
+        if(tree == node_handler::nil) return;
         tree->size = tree->left->size + tree->length + tree->right->size;
         this->_derived()->pull(tree);
     }
@@ -97,34 +90,30 @@ struct treap_impl : private uncopyable {
 
             node->priority = *(itr++);
 
-            if(node->left != node_type::nil) queue.push(node->left);
-            if(node->right != node_type::nil) queue.push(node->right);
+            if(node->left != node_handler::nil) queue.push(node->left);
+            if(node->right != node_handler::nil) queue.push(node->right);
         }
     }
 
 
     node_pointer create_node(const value_type& val, const size_type size) noexcept(NO_EXCEPT) {
-        if(size == 0) return node_type::nil;
-
-        node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
-        node_allocator_traits::construct(this->_allocator, node, node_type{ val, size });
-
-        return node;
+        if(size == 0) return node_handler::nil;
+        return this->_node_handler.create(val, size);
     }
 
-    void delete_tree(node_pointer tree) noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) return;
+    void dispose(node_pointer tree) noexcept(NO_EXCEPT) {
+        if(this->_node_handler.disposable(tree)) {
+            this->dispose(tree->left);
+            this->dispose(tree->right);
 
-        this->delete_tree(tree->left);
-        this->delete_tree(tree->right);
-
-        node_allocator_traits::deallocate(this->_allocator, tree, 1);
+            this->_node_handler.dispose(tree);
+        }
     }
 
 
     void _split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) {
-            left = right = node_type::nil;
+        if(tree == node_handler::nil) {
+            left = right = node_handler::nil;
             return;
         }
 
@@ -151,25 +140,12 @@ struct treap_impl : private uncopyable {
     }
 
   public:
-    treap_impl(const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : _allocator(alloc)
-    {
-        if(treap_impl::_instance_count++ == 0) {
-            node_type::nil = new node_type{};
-        }
-    }
-
-    ~treap_impl() noexcept {
-        if(--treap_impl::_instance_count == 0) {
-            delete node_type::nil;
-        }
-    }
-
+    explicit treap_impl(const allocator_type& allocator= {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
 
     struct node_type {
         priority_type priority = std::numeric_limits<priority_type>::lowest();
 
-        node_pointer left = node_type::nil, right = node_type::nil;
+        node_pointer left = node_handler::nil, right = node_handler::nil;
 
         size_type length, size;
         [[no_unique_address]] value_type data;
@@ -179,15 +155,13 @@ struct treap_impl : private uncopyable {
         node_type(const value_type& _data, const size_type _size) noexcept(NO_EXCEPT)
             : priority(treap_impl::_rand()), length(_size), size(_size), data(_data)
         {}
-
-        static inline node_pointer nil = nullptr;
     };
 
 
     template<bool STRICT = false, bool RETURN_EXISTENCE = false>
     void split(const node_pointer tree, const value_type& val, node_pointer& left, node_pointer& right, bool* exist = nullptr) noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) {
-            left = right = node_type::nil;
+        if(tree == node_handler::nil) {
+            left = right = node_handler::nil;
             return;
         }
 
@@ -208,11 +182,11 @@ struct treap_impl : private uncopyable {
 
     void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
-            left = node_type::nil;
+            left = node_handler::nil;
             this->merge(right, this->create_node(value_type{}, -pos), std::move(tree));
         }
         else if(tree->size <= pos) {
-            right = node_type::nil;
+            right = node_handler::nil;
             this->merge(left, std::move(tree), this->create_node(value_type{}, pos - tree->size));
         }
         else {
@@ -227,8 +201,8 @@ struct treap_impl : private uncopyable {
 
         // debug(left->priority, right->priority);
 
-        if(left == node_type::nil || right == node_type::nil) {
-            tree = left == node_type::nil ? right : left;
+        if(left == node_handler::nil || right == node_handler::nil) {
+            tree = left == node_handler::nil ? right : left;
         }
         else if(left->priority > right->priority) {
             this->merge(left->right, left->right, right), tree = std::move(left);

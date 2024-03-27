@@ -77,6 +77,16 @@ struct core {
         tree->acc = tree->left->acc + tree->val + tree->right->acc;
     }
 
+
+    inline void dispose(const node_pointer& tree) noexcept(NO_EXCEPT) {
+        if(this->_node_handler.disposable(tree)) {
+            this->dispose(tree->left);
+            this->dispose(tree->right);
+
+            this->_node_handler.dispose(tree);
+        }
+    }
+
   public:
     template<std::random_access_iterator I>
     node_pointer build(const size_type lower, const size_type upper, const size_type l, const size_type r, I first) noexcept(NO_EXCEPT) {
@@ -159,7 +169,7 @@ struct core {
         if(tree == node_handler::nil || upper <= l || r <= lower) return;
 
         if(l <= lower && upper <= r) {
-            this->_node_handler.dispose(tree);
+            this->dispose(tree);
             tree = node_handler::nil;
             return;
         }
@@ -273,6 +283,8 @@ struct dynamic_segment_tree<Action, NodeHandler>
     node_pointer _root = node_handler::nil;
 
   public:
+    ~dynamic_segment_tree() { this->dispose(this->_root); }
+
     dynamic_segment_tree(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
 
     dynamic_segment_tree(const dynamic_segment_tree& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
@@ -310,7 +322,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
 
     inline auto& clear() noexcept(NO_EXCEPT) {
-        this->_node_handler.dispose(this->_root);
+        this->dispose(this->_root);
         this->_n = 0;
         this->_root = node_handler::nil;
         return *this;
@@ -470,7 +482,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
 
 template<class Action, class Allocator = std::allocator<Action>>
-using persistent_dynamic_segment_tree = dynamic_segment_tree<Action, node_handlers::copyable<Allocator>>;
+using persistent_dynamic_segment_tree = dynamic_segment_tree<Action, node_handlers::cloneable<Allocator>>;
 
 
 namespace pmr {
