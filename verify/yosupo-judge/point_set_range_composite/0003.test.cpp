@@ -19,6 +19,7 @@
 #include "algebraic/affine.hpp"
 #include "data_structure/dynamic_segment_tree.hpp"
 #include "view/zip.hpp"
+#include "action/helpers.hpp"
 
 using lib::algebraic::affine;
 using mint = atcoder::modint998244353;
@@ -28,7 +29,7 @@ signed main() {
     lib::vector<lib::spair<int>> f(n); input >> f;
 
     // lib::views::zip(std::views::iota(0, n), std::views::iota(0, n))
-    lib::dynamic_segment_tree<affine<mint,true>> data(f);
+    lib::dynamic_segment_tree<lib::actions::make_operatable_t<affine<mint, true>>> data(f);
     // REPD(i, n) data.set(i, std::make_pair(i, i));
     debug(data.dump_rich());
 

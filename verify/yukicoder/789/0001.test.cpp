@@ -14,7 +14,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/persistent_dynamic_segment_tree.hpp"
+#include "data_structure/dynamic_segment_tree.hpp"
 #include "action/range_sum.hpp"
 
 signed main() {

@@ -1,7 +1,9 @@
 #pragma once
 
 
+#include <memory_resource>
 #include <cassert>
+#include <memory>
 #include <algorithm>
 #include <vector>
 #include <type_traits>
@@ -19,76 +21,61 @@
 #include "internal/range_reference.hpp"
 #include "internal/unconstructible.hpp"
 
+#include "data_structure/internal/node_handler.hpp"
+
 #include "algebraic/internal/concepts.hpp"
 #include "action/base.hpp"
 
 #include "debugger/debug.hpp"
 
+
 namespace lib {
 
 namespace internal {
 
+
 namespace dynamic_segment_tree_impl {
 
 
-// Thanks to: https://lorent-kyopro.hatenablog.com/entry/2021/03/12/025644
-template<algebraic::internal::monoid Monoid, class Allocator = std::allocator<Monoid>>
+// Thanks to: atcoder::segtree
+template<algebraic::internal::monoid Monoid, class NodeHandler>
 struct core {
     using size_type = internal::size_t;
     using operand = Monoid;
 
-    using allocator_type = Allocator;
-
     struct node_type;
-    using node_pointer = std::add_pointer_t<node_type>;
+    using node_handler = NodeHandler::template handler<node_type>;
 
-  private:
-    using allocator_traits = std::allocator_traits<allocator_type>;
+    using allocator_type = typename node_handler::allocator_type;
+    using node_pointer = typename node_handler::node_pointer;
 
-    using node_allocator_type = allocator_traits::template rebind_alloc<node_type>;
-    using node_allocator_traits = std::allocator_traits<node_allocator_type>;
-
-    [[no_unique_address]] node_allocator_type _allocator;
+  protected:
+    [[no_unique_address]] node_handler _node_handler;
 
   public:
+    explicit core(const allocator_type& allocator= {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+
+    core(const core&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+    core(core&&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+
+
     struct node_type {
         size_type index;
         operand val, acc;
 
-        node_pointer left = node_type::nil, right = node_type::nil;
+        node_pointer left = node_handler::nil, right = node_handler::nil;
 
         node_type() noexcept = default;
 
         node_type(const size_type _index, const operand& _val) noexcept(NO_EXCEPT)
           : index(_index), val(_val), acc(_val)
         {}
-
-        static inline node_pointer nil = nullptr;
     };
 
   protected:
-    inline void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
+    inline void pull(const node_pointer& tree) const noexcept(NO_EXCEPT) {
         tree->acc = tree->left->acc + tree->val + tree->right->acc;
     }
-
-
-    node_pointer create_node(const size_type pos, const operand& val) noexcept(NO_EXCEPT) {
-        node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
-        node_allocator_traits::construct(this->_allocator, node, pos, val);
-
-        return node;
-    }
-
-    void delete_tree(node_pointer tree) noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) return;
-
-        this->delete_tree(tree->left);
-        this->delete_tree(tree->right);
-
-        node_allocator_traits::deallocate(this->_allocator, tree, 1);
-    }
-
-    static inline unsigned _instance_count = 0;
 
   public:
     template<std::random_access_iterator I>
@@ -96,9 +83,9 @@ struct core {
         const size_type middle = (lower + upper) >> 1;
         const auto itr = std::ranges::next(first, middle);
 
-        if(middle < l || r <= middle) return node_type::nil;
+        if(middle < l || r <= middle) return node_handler::nil;
 
-        node_pointer node = this->create_node(middle, *itr);
+        node_pointer node = this->_node_handler.create(middle, *itr);
 
         node->left = this->build(lower, middle, l, middle, first);
         node->right = this->build(middle, upper, middle + 1, r, first);
@@ -116,10 +103,12 @@ struct core {
 
 
     void set(node_pointer& tree, const size_type lower, const size_type upper, size_type pos, operand val) noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) {
-            tree = this->create_node(pos, val);
+        if(tree == node_handler::nil) {
+            tree = this->_node_handler.create(pos, val);
             return;
         }
+
+        tree = this->_node_handler.clone(tree);
 
         if(tree->index == pos) {
             tree->val = val;
@@ -142,8 +131,8 @@ struct core {
     }
 
 
-    operand get(const node_pointer tree, const size_type lower, const size_type upper, const size_type pos) const noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil) return {};
+    operand get(const node_pointer& tree, const size_type lower, const size_type upper, const size_type pos) const noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil) return {};
         if(tree->index == pos) return tree->val;
 
         const size_type middle = (lower + upper) >> 1;
@@ -153,8 +142,8 @@ struct core {
     }
 
 
-    operand fold(const node_pointer tree, const size_type lower, const size_type upper, const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil || upper <= l || r <= lower) return {};
+    operand fold(const node_pointer& tree, const size_type lower, const size_type upper, const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil || upper <= l || r <= lower) return {};
         if(l <= lower && upper <= r) return tree->acc;
 
         const size_type middle = (lower + upper) >> 1;
@@ -166,12 +155,12 @@ struct core {
     }
 
 
-    void clear(const node_pointer tree, const size_type lower, const size_type upper, const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if(tree == node_type::nil || upper <= l || r <= lower) return;
+    void clear(const node_pointer& tree, const size_type lower, const size_type upper, const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil || upper <= l || r <= lower) return;
 
         if(l <= lower && upper <= r) {
-            this->delete_tree(tree);
-            tree = node_type::nil;
+            this->_node_handler.dispose(tree);
+            tree = node_handler::nil;
             return;
         }
 
@@ -185,8 +174,8 @@ struct core {
 
 
     template<class F>
-    size_type max_right(const node_pointer tree, const size_type lower, const size_type upper, const size_type l, F f, operand& acc) const {
-        if(tree == node_type::nil || upper <= l) return -1;
+    size_type max_right(const node_pointer& tree, const size_type lower, const size_type upper, const size_type l, F f, operand& acc) const {
+        if(tree == node_handler::nil || upper <= l) return -1;
 
         if(f(acc + tree->acc)) {
             acc = acc + tree->acc;
@@ -204,8 +193,8 @@ struct core {
     }
 
     template<class F>
-    size_type min_left(const node_pointer tree, const size_type lower, const size_type upper, const size_type r, F f, operand& acc) const {
-        if(tree == node_type::nil || r <= lower) return 0;
+    size_type min_left(const node_pointer& tree, const size_type lower, const size_type upper, const size_type r, F f, operand& acc) const {
+        if(tree == node_handler::nil || r <= lower) return 0;
 
         if(f(tree->acc + acc)) {
             acc = tree->acc + acc;
@@ -225,25 +214,8 @@ struct core {
     }
 
   public:
-    explicit core(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _allocator(alloc) {
-        if(core::_instance_count++ == 0) {
-            node_type::nil = new node_type{};
-        }
-    }
-
-    ~core() {
-        if(--core::_instance_count == 0) {
-            delete node_type::nil;
-        }
-    }
-
-
-    core(const core&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _allocator(allocator) {}
-    core(core&&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _allocator(allocator) {}
-
-
-    debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix = "   ", const int dir = 0) const {
-        if(!tree || tree == node_type::nil) return prefix + "\n";
+    debugger::debug_t dump_rich(const node_pointer& tree, const std::string prefix = "   ", const int dir = 0) const {
+        if(!tree || tree == node_handler::nil) return prefix + "\n";
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1);
         const auto here = prefix + "--+ " + debugger::dump(tree->index) + " : " + debugger::dump(tree->val) + "\n";
@@ -254,7 +226,7 @@ struct core {
     }
 
     debugger::debug_t _debug(const node_pointer tree) const {
-        if(!tree || tree == node_type::nil) return "";
+        if(!tree || tree == node_handler::nil) return "";
 
         return
             "(" +
@@ -271,88 +243,76 @@ struct core {
 } // namespace internal
 
 
-template<class, class = std::allocator<void>>
+template<class T, class = node_handlers::reusing<std::allocator<T>>>
 struct dynamic_segment_tree : internal::unconstructible {};
 
 
-template<algebraic::internal::monoid Monoid, class Allocator>
-struct dynamic_segment_tree<Monoid, Allocator> : private internal::dynamic_segment_tree_impl::core<Monoid, Allocator> {
+template<actions::internal::operatable_action Action, class NodeHandler>
+struct dynamic_segment_tree<Action, NodeHandler>
+  : private internal::dynamic_segment_tree_impl::core<typename Action::operand, NodeHandler>
+{
   private:
-    using core = typename internal::dynamic_segment_tree_impl::core<Monoid, Allocator>;
+    using core = typename internal::dynamic_segment_tree_impl::core<typename Action::operand, NodeHandler>;
 
   public:
-    using value_type = Monoid;
+    using value_type = typename core::operand;
     using size_type = typename core::size_type;
 
-    using allocator_type = Allocator;
+    using node_handler = typename core::node_handler;
+    using allocator_type = typename core::allocator_type;
+
+    using node_type = typename core::node_type;
+    using node_pointer = typename core::node_pointer;
 
   private:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
         return p < 0 ? this->_n + p : p;
     }
 
-
-    using node_type = typename core::node_type;
-    using node_pointer = typename core::node_pointer;
-
     size_type _n = 0;
-    node_pointer _root = node_type::nil;
+    node_pointer _root = node_handler::nil;
 
   public:
-    dynamic_segment_tree(const allocator_type allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
+    dynamic_segment_tree(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
 
-    ~dynamic_segment_tree() noexcept(NO_EXCEPT) { this->delete_tree(this->_root); }
-
-
-    dynamic_segment_tree(const dynamic_segment_tree& source, const allocator_type allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_segment_tree(const dynamic_segment_tree& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
       : core(allocator), _n(source._n), _root(source._root)
     {}
 
-    dynamic_segment_tree(dynamic_segment_tree&& source, const allocator_type allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_segment_tree(dynamic_segment_tree&& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
       : core(allocator), _n(source._n), _root(source._root)
     {}
 
-
-    inline dynamic_segment_tree& operator=(const dynamic_segment_tree& source) noexcept(NO_EXCEPT) {
-        this->_n = source._n, this->_root = source._root;
-        return *this;
-    }
-
-    inline dynamic_segment_tree& operator=(dynamic_segment_tree&& source) noexcept(NO_EXCEPT) {
-        this->_n = source._n, this->_root = source._root;
-        return *this;
-    }
-
-
-    explicit dynamic_segment_tree(const size_type n, const allocator_type allocator = {}) noexcept(NO_EXCEPT)
-      : core(allocator)
-    {
-        this->_n = n;
-    }
+    explicit dynamic_segment_tree(const size_type n, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : core(allocator), _n(n)
+    {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_segment_tree(const std::initializer_list<T>& init_list, const allocator_type allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_segment_tree(const std::initializer_list<T>& init_list, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
       : dynamic_segment_tree(init_list, allocator)
     {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_segment_tree(I first, S last, const allocator_type allocator = {}) noexcept(NO_EXCEPT) : dynamic_segment_tree(allocator) {
+    dynamic_segment_tree(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : dynamic_segment_tree(allocator) {
         this->assign(first, last);
     }
 
     template<std::ranges::input_range R>
-    explicit dynamic_segment_tree(R&& range, const allocator_type allocator = {}) noexcept(NO_EXCEPT)
+        requires (!std::same_as<std::decay_t<R>, dynamic_segment_tree>)
+    dynamic_segment_tree(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
       : dynamic_segment_tree(ALL(range), allocator)
     {}
 
+
+    auto clone() const noexcept(NO_EXCEPT) { return *this; }
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
 
     inline auto& clear() noexcept(NO_EXCEPT) {
-        this->delete_tree(this->_root);
+        this->_node_handler.dispose(this->_root);
         this->_n = 0;
-        this->_root = node_type::nil;
+        this->_root = node_handler::nil;
         return *this;
     }
 
@@ -362,7 +322,6 @@ struct dynamic_segment_tree<Monoid, Allocator> : private internal::dynamic_segme
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
-        this->delete_tree(this->_root);
         this->_n = std::ranges::distance(first, last);
         this->_root = this->build(first, last);
         return *this;
@@ -510,9 +469,20 @@ struct dynamic_segment_tree<Monoid, Allocator> : private internal::dynamic_segme
 };
 
 
-template<actions::internal::operatable_action Action, class Allocator>
-struct dynamic_segment_tree<Action, Allocator> : dynamic_segment_tree<typename Action::operand, Allocator> {
-    using dynamic_segment_tree<typename Action::operand, Allocator>::dynamic_segment_tree;
-};
+template<class Action, class Allocator = std::allocator<Action>>
+using persistent_dynamic_segment_tree = dynamic_segment_tree<Action, node_handlers::copyable<Allocator>>;
+
+
+namespace pmr {
+
+
+template<class Action>
+using dynamic_segment_tree = lib::dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
+
+template<class Action>
+using persistent_dynamic_segment_tree = lib::persistent_dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
+
+
+}; // namespace pmr
 
 } // namespace lib
