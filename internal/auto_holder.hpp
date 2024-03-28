@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+
 #include "adaptor/valarray.hpp"
 #include "adaptor/map.hpp"
 
@@ -38,8 +39,8 @@ struct holder<T, U, 0> : vector<U> {
 };
 
 template<class T, class U>
-struct holder<T, U, 1> : unordered_map<T, U> {
-    using unordered_map<T, U>::unordered_map;
+struct holder<T, U, 1> : gp_hash_table<T, U> {
+    using gp_hash_table<T, U>::gp_hash_table;
 
     template<class V> inline void assign(const internal::size_t, const V& v) { this->set_default(v); }
 };

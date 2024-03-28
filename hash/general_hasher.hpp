@@ -30,7 +30,7 @@ constexpr R shrink(T x) noexcept(NO_EXCEPT) {
 
 // Thanks to: https://gist.github.com/badboy/6267743
 template<class T>
-u32 hash32(T x) {
+constexpr u32 hash32(T x) {
     if constexpr(std::integral<T>) {
         if constexpr(std::signed_integral<T>) return hash32(to_unsigned(x));
 
@@ -71,7 +71,7 @@ u32 hash32(T x) {
 
 
 template<class T>
-u64 hash64(T x) {
+constexpr u64 hash64(T x) {
     if constexpr(std::integral<T>) {
         if constexpr(std::signed_integral<T>) return hash64(to_unsigned(x));
 
@@ -98,6 +98,14 @@ u64 hash64(T x) {
         return hash64(std::hash<T>{}(x));
     }
 }
+
+
+template<class T>
+struct hash {
+    inline constexpr auto operator()(const T& key) const noexcept(NO_EXCEPT) {
+        return static_cast<std::size_t>(lib::hash64(key));
+    }
+};
 
 
 } // namespace lib

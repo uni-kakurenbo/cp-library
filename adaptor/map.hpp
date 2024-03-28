@@ -9,6 +9,7 @@
 #include "internal/types.hpp"
 #include "internal/exception.hpp"
 
+#include "adaptor/gnu/hash_table.hpp"
 #include "adaptor/set.hpp"
 
 
@@ -65,6 +66,7 @@ template<class Map> struct map_wrapper : map_wrapper_base<Map> {
         return *this;
     }
 
+
     inline auto& operator[](const key_type& key) noexcept(NO_EXCEPT) {
         auto found = this->base::find(key);
         if(found == this->base::end()) return this->base::emplace(key, this->_get_default(key)).first->second;
@@ -74,6 +76,7 @@ template<class Map> struct map_wrapper : map_wrapper_base<Map> {
     inline auto& operator()(const key_type& key) noexcept(NO_EXCEPT) {
         return this->base::operator[](key);
     }
+
 
     inline std::optional<mapped_type> get(const key_type& key) const noexcept(NO_EXCEPT) {
         const auto found = this->base::find(key);
@@ -90,6 +93,9 @@ template<class... Args> using map = internal::map_wrapper<std::map<Args...>>;
 template<class... Args> using unordered_map = internal::map_wrapper<std::unordered_map<Args...>>;
 template<class... Args> using multimap = internal::map_wrapper<std::multimap<Args...>>;
 template<class... Args> using unordered_multimap = internal::map_wrapper<std::unordered_multimap<Args...>>;
+
+template<class... Args> using cc_hash_table = internal::map_wrapper<gnu::cc_hash_table<Args...>>;
+template<class... Args> using gp_hash_table = internal::map_wrapper<gnu::gp_hash_table<Args...>>;
 
 
 } // namespace lib
