@@ -5,10 +5,12 @@ while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
     SOURCE_BRANCH="$(basename "${local_ref}")"
     TEST_BRANCH="test/$(basename "${remote_ref}")"
 
-    git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}"
+    {
+        git switch "${TEST_BRANCH}"
 
-    git pull
-    git merge "${SOURCE_BRANCH}"
+        git pull
+        git merge -X theirs --no-verify "${SOURCE_BRANCH}"
+    } || git switch -c "${TEST_BRANCH}"
 
     git push --no-verify
 
