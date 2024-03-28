@@ -1,7 +1,18 @@
 #! /bin/bash
+set -eu
 
 REF="$(git branch --show-current)"
 
 if [ -n "${REF}" ]; then
-    git push origin "${REF}:test/${REF}" --no-verify --force
+    SOURCE_BRANCH="$(basename "${REF}")"
+    TEST_BRANCH="test/${SOURCE_BRANCH}"
+
+    git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}"
+
+    git pull
+    git merge "${SOURCE_BRANCH}"
+
+    git push --no-verify
+
+    git switch "${SOURCE_BRANCH}"
 fi

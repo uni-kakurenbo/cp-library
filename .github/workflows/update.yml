@@ -28,6 +28,7 @@ jobs:
         secrets: inherit
 
     organize:
+        if: ${{ !cancelled() && !startsWith(github.ref_name, 'test') }}
         uses: ./.github/workflows/organize.yml
 
     prune:
@@ -52,14 +53,11 @@ jobs:
         runs-on: ${{ vars.RUNNER_IMAGE }}
 
         outputs:
-            fail: ${{ env.FAIL }}
             run-analysis: ${{ env.ANALYSIS }}
             run-verify: ${{ env.VERIFY }}
             gen-docs: ${{ env.DOCS }}
 
         env:
-            FAIL: ${{ !inputs.force && needs.cache.outputs.verify-status == 'failure' }}
-
             ANALYSIS: >-
                 ${{
                   (
@@ -74,7 +72,8 @@ jobs:
                   (
                     inputs.force ||
                     needs.cache.outputs.verify-status == '' ||
-                    needs.cache.outputs.verify-status == 'cancelled'
+                    needs.cache.outputs.verify-status == 'cancelled' ||
+                    needs.cache.outputs.verify-status == 'failure'
                   )
                 }}
 
@@ -95,17 +94,9 @@ jobs:
                   set -eu
 
                   echo "Force: ${{ inputs.force }}"
-                  echo "Quit: ${FAIL}"
                   echo "Analysis: ${ANALYSIS}"
                   echo "Verify: ${VERIFY}"
                   echo "Docs: ${DOCS}"
-
-    fail:
-        needs: config
-        if: ${{ !cancelled() && needs.config.outputs.fail == 'true' }}
-        runs-on: ${{ vars.RUNNER_IMAGE }}
-        steps:
-            - run: exit 1
 
     analyze:
         needs: config
