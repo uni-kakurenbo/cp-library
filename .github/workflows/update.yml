@@ -28,6 +28,7 @@ jobs:
         secrets: inherit
 
     organize:
+        if: ${{ !cancelled() && !startsWith(github.ref_name, 'test') }}
         uses: ./.github/workflows/organize.yml
 
     prune:

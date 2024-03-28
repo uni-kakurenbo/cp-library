@@ -21,8 +21,6 @@ jobs:
                   python-version: 3.12.0
 
             - name: Generate headers
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   set -eu
                   python3 ./generate-headers.py
