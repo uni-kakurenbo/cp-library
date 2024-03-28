@@ -1,15 +1,16 @@
 #! /bin/bash
+set -eu
 
 while read -r local_ref __local_sha1 remote_ref __remote_sha1; do
+    SOURCE_BRANCH="$(basename "${local_ref}")"
     TEST_BRANCH="test/$(basename "${remote_ref}")"
-    git stash
 
-    {
-        git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}" &&
-            git pull &&
-            git merge "${local_ref}" &&
-            git push --no-verify --force
-    } || true
+    git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}"
 
-    git switch "${local_ref}" && git stash pop
+    git pull
+    git merge "${SOURCE_BRANCH}"
+
+    git push --no-verify
+
+    git switch "${SOURCE_BRANCH}"
 done

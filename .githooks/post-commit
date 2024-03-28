@@ -1,4 +1,5 @@
 #! /bin/bash
+set -eu
 
 REF="$(git branch --show-current)"
 
@@ -7,8 +8,10 @@ if [ -n "${REF}" ]; then
     TEST_BRANCH="test/${SOURCE_BRANCH}"
 
     git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}"
-    git fetch "${SOURCE_BRANCH}"
+
+    git pull
     git merge "${SOURCE_BRANCH}"
+
     git push --no-verify
 
     git switch "${SOURCE_BRANCH}"
