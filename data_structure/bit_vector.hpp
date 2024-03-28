@@ -46,10 +46,10 @@ struct bit_vector {
       : bit_vector(ALL(init_list))
     {}
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline constexpr size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
-    inline size_type zeros() const noexcept(NO_EXCEPT) { return this->_zeros; }
-    inline size_type ones() const noexcept(NO_EXCEPT) { return this->_n - this->_zeros; }
+    inline constexpr size_type zeros() const noexcept(NO_EXCEPT) { return this->_zeros; }
+    inline constexpr size_type ones() const noexcept(NO_EXCEPT) { return this->_n - this->_zeros; }
 
     inline void set(const size_type k) noexcept(NO_EXCEPT) { this->_block[k / WORDSIZE] |= (1LL << (k % WORDSIZE)); }
     inline bool get(const size_type k) const noexcept(NO_EXCEPT) {

@@ -12,7 +12,7 @@
 
 #include "internal/dev_env.hpp"
 
-#include "hash/integer_hasher.hpp"
+#include "hash/general_hasher.hpp"
 
 
 // Thanks to: https://prng.di.unimi.it/

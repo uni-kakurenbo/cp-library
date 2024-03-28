@@ -20,7 +20,7 @@ signed main() {
     return 0;
 }
 
-#include "hash/integer_hasher.hpp"
+#include "hash/general_hasher.hpp"
 
 void solve() {
     debug(lib::hash64(0));

@@ -11,7 +11,7 @@
 
 #include "numeric/arithmetic.hpp"
 
-#include "hash/integer_hasher.hpp"
+#include "hash/general_hasher.hpp"
 
 
 namespace lib {

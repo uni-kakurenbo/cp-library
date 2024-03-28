@@ -25,6 +25,8 @@
 #include "internal/iterator.hpp"
 #include "internal/range_reference.hpp"
 
+#include "adaptor/gnu/hash_table.hpp"
+
 #include "global/constants.hpp"
 
 #include "iterable/compressed.hpp"
@@ -43,8 +45,8 @@ namespace wavelet_matrix_impl {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
-template<std::unsigned_integral T, class DictType>
-    requires std::same_as<T, typename DictType::key_type>
+template<std::unsigned_integral T, class MapType>
+    requires std::same_as<T, typename MapType::key_type>
 struct base {
     using size_type = internal::size_t;
     using value_type = T;
@@ -56,7 +58,7 @@ struct base {
     std::vector<bit_vector> _index;
     std::vector<std::vector<value_type>> _sum;
 
-    DictType _first_pos;
+    MapType _first_pos;
 
     value_type _max = 0;
 
@@ -89,13 +91,13 @@ struct base {
 
         std::vector<value_type> bit(first, last), nxt(this->_n);
 
-        this->_sum.assign(this->_bits+1, std::vector<value_type>(this->_n+1));
+        this->_sum.assign(this->_bits + 1, std::vector<value_type>(this->_n + 1));
 
         {
             size_type i = 0;
             for(auto itr=first; itr!=last; ++i, ++itr) {
                 assert(*itr >= 0);
-                this->_sum[this->_bits][i+1] = this->_sum[this->_bits][i] + *itr;
+                this->_sum[this->_bits][i + 1] = this->_sum[this->_bits][i] + *itr;
             }
         }
 
@@ -107,23 +109,23 @@ struct base {
             }
             this->_index[h].build();
 
-            std::array<typename std::vector<value_type>::iterator,2> itrs{
+            std::array<typename std::vector<value_type>::iterator, 2> itrs{
                 std::ranges::begin(nxt), std::ranges::next(std::ranges::begin(nxt), this->_index[h].zeros())
             };
 
-            for(size_type i=0; i<this->_n; ++i) *itrs[this->_index[h].get(i)]++ = bit[i];
+            REP(i, this->_n) *itrs[this->_index[h].get(i)]++ = bit[i];
 
-            REP(i, this->_n) this->_sum[h][i+1] = this->_sum[h][i] + nxt[i];
+            REP(i, this->_n) this->_sum[h][i + 1] = this->_sum[h][i] + nxt[i];
 
             std::swap(bit, nxt);
         }
 
-        REPD(i, this->_n) this->_first_pos[bit[i]] = static_cast<DictType::mapped_type>(i);
+        REPD(i, this->_n) this->_first_pos[bit[i]] = static_cast<MapType::mapped_type>(i);
     }
 
   protected:
     inline value_type get(const size_type k) const noexcept(NO_EXCEPT) {
-        return this->_sum[this->_bits][k+1] - this->_sum[this->_bits][k];
+        return this->_sum[this->_bits][k + 1] - this->_sum[this->_bits][k];
     }
 
     size_type select(const value_type& v, const size_type rank) const noexcept(NO_EXCEPT) {
@@ -176,10 +178,10 @@ struct base {
     }
 
     inline value_type kth_largest(const size_type l, const size_type r, const size_type k) const noexcept(NO_EXCEPT) {
-        return this->kth_smallest(l, r, r-l-k-1);
+        return this->kth_smallest(l, r, r - l - k - 1);
     }
     inline size_type kth_largest_index(const size_type l, const size_type r, const size_type k) const noexcept(NO_EXCEPT) {
-        return this->kth_smallest_index(l, r, r-l-k-1);
+        return this->kth_smallest_index(l, r, r - l - k - 1);
     }
 
 
@@ -203,31 +205,33 @@ struct base {
         if(l == r) return 0;
 
         if(bit == -1) {
-            if(x <= cur and cur <= y) return cur * (r - l);
+            if(x <= cur && cur <= y) return cur * (r - l);
             return 0;
         }
 
-        const value_type& nxt = (value_type{1} << bit) | cur;
-        const value_type& ones = ((value_type{1} << bit) - 1) | nxt;
+        const value_type nxt = (value_type{1} << bit) | cur;
+        const value_type ones = ((value_type{1} << bit) - 1) | nxt;
 
-        if(ones < x or y < cur) return 0;
+        if(ones < x || y < cur) return 0;
 
-        if(x <= cur and ones <= y) return this->_sum[bit+1][r] - this->_sum[bit+1][l];
+        if(x <= cur && ones <= y) return this->_sum[bit + 1][r] - this->_sum[bit + 1][l];
 
         const size_type l0 = this->_index[bit].rank0(l), r0 = this->_index[bit].rank0(r);
         const size_type l1 = l - l0, r1 = r - r0;
 
-        return this->sum_in_range(l0, r0, x, y, cur, bit - 1) + this->sum_in_range(this->_index[bit].zeros()+l1, this->_index[bit].zeros()+r1, x, y, nxt, bit - 1);
+        return
+            this->sum_in_range(l0, r0, x, y, cur, bit - 1) +
+            this->sum_in_range(this->_index[bit].zeros() + l1, this->_index[bit].zeros() + r1, x, y, nxt, bit - 1);
     }
 
     inline value_type sum_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, x, y, 0, this->_bits-1);
+        return this->sum_in_range(l, r, x, y, 0, this->_bits - 1);
     }
     inline value_type sum_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, 0, v-1);
+        return this->sum_in_range(l, r, 0, v - 1);
     }
     inline value_type sum_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->sum_in_range(l, r, v+1, std::numeric_limits<value_type>::max());
+        return this->sum_in_range(l, r, v + 1, std::numeric_limits<value_type>::max());
     }
     inline value_type sum_or_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return this->sum_in_range(l, r, 0, v);
@@ -259,13 +263,13 @@ struct base {
     }
 
     inline size_type count_or_under(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->count_under(l, r, v+1);
+        return this->count_under(l, r, v + 1);
     }
     inline size_type count_or_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
         return r - l - this->count_under(l, r, v);
     }
     inline size_type count_over(const size_type l, const size_type r, const value_type& v) const noexcept(NO_EXCEPT) {
-        return this->count_or_over(l, r, v+1);
+        return this->count_or_over(l, r, v + 1);
     }
     inline size_type count_in_range(const size_type l, const size_type r, const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) {
         return this->count_or_under(l, r, y) - this->count_under(l, r, x);
@@ -276,13 +280,13 @@ struct base {
 
     inline std::optional<value_type> next(const size_type l, const size_type r, const value_type& v, const size_type k) const noexcept(NO_EXCEPT) {
         const size_type rank = this->count_under(l, r, v) + k;
-        if(rank < 0 or rank >= r - l) return {};
+        if(rank < 0 || rank >= r - l) return {};
         return { this->kth_smallest(l, r, rank) };
     }
 
     inline std::optional<value_type> prev(const size_type l, const size_type r, const value_type& v, const size_type k) const noexcept(NO_EXCEPT) {
         const size_type rank = this->count_over(l, r, v) + k;
-        if(rank < 0 or rank >= r - l) return {};
+        if(rank < 0 || rank >= r - l) return {};
         return this->kth_largest(l, r, rank);
     }
 };
@@ -293,21 +297,21 @@ struct base {
 } // namespace internal
 
 
-template<std::integral T, template<class...> class DictAbstract = std::unordered_map>
+template<std::integral T, template<class...> class MapTemplate = gnu::gp_hash_table>
 struct compressed_wavelet_matrix;
 
 
-template<std::integral T, template<class...> class DictAbstract = std::unordered_map>
-struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t<T>, DictAbstract<std::make_unsigned_t<T>, u32>> {
+template<std::integral T, template<class...> class MapTemplate = gnu::gp_hash_table>
+struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t<T>, MapTemplate<std::make_unsigned_t<T>, u32>> {
     using value_type = T;
-    using impl_type = std::make_unsigned_t<value_type>;
-    using dict_type = DictAbstract<impl_type, u32>;
+    using impl_type = std::make_unsigned_t<T>;
+    using map_type = MapTemplate<impl_type, u32>;
     using size_type = internal::size_t;
 
-    using compressed = compressed_wavelet_matrix<value_type, DictAbstract>;
+    using compressed = compressed_wavelet_matrix<value_type, MapTemplate>;
 
   private:
-    using base = typename internal::wavelet_matrix_impl::base<impl_type, dict_type>;
+    using base = typename internal::wavelet_matrix_impl::base<impl_type, map_type>;
 
   public:
   protected:
@@ -336,9 +340,9 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
     template<lib::interval_notation rng = lib::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l+1, r+1);
-        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l+1, r);
-        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r+1);
+        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
+        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l + 1, r);
+        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r + 1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
@@ -356,7 +360,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
 
         inline value_type get(const size_type k) const noexcept(NO_EXCEPT) {
             k = this->_super->_positivize_index(k);
-            assert(0 <= k and k < this->size());
+            assert(0 <= k && k < this->size());
 
             return this->_super->get(this->_begin + k);
         }
@@ -503,13 +507,13 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
 };
 
 
-template<std::integral T, template<class...> class DictAbstract>
-struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
+template<std::integral T, template<class...> class MapTemplate>
+struct compressed_wavelet_matrix : protected wavelet_matrix<u32, MapTemplate> {
     using value_type = T;
     using size_type = internal::size_t;
 
   protected:
-    using core = wavelet_matrix<u32, DictAbstract>;
+    using core = wavelet_matrix<u32, MapTemplate>;
     using compresser = compressed<value_type, valarray<u32>>;
 
     compresser _comp;
@@ -541,9 +545,9 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, DictAbstract> {
     template<lib::interval_notation rng = lib::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l+1, r+1);
-        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l+1, r);
-        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r+1);
+        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
+        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l + 1, r);
+        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r + 1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
