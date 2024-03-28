@@ -60,7 +60,7 @@ struct set_adaptor_impl {
     size_type _elem = 0;
 
   public:
-    set_adaptor_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup, impl_data_type{ 0 }) {};
+    set_adaptor_impl(const size_type sup) noexcept(NO_EXCEPT) : _data(sup) {};
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_data.fold(); }
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }

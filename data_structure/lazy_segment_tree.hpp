@@ -35,34 +35,38 @@ namespace internal {
 namespace lazy_segment_tree_impl {
 
 // Thanks to: atcoder::lazy_segtree
-template<
-    algebraic::internal::monoid S, algebraic::internal::monoid F,
-    S (*_map)(const S&, const F&), F (*_fold)(const F&, const internal::size_t)
->
+template<actions::internal::full_action Action>
 struct core {
     using size_type = internal::size_t;
 
-  public:
+    using action = Action;
+    using operand = typename Action::operand;
+    using operation = typename Action::operation;
+
+  protected:
     size_type _n = 0, _size = 0, _depth = 0;
     std::valarray<size_type> _lengths;
-    std::valarray<S> _values;
-    std::valarray<F> _lazy;
+    std::valarray<operand> _values;
+    std::valarray<operation> _lazy;
 
-    inline void update(const size_type p) noexcept(NO_EXCEPT) {
+
+    inline void pull(const size_type p) noexcept(NO_EXCEPT) {
         this->_values[p] = this->_values[p << 1] + this->_values[p << 1 | 1];
     }
-    inline void all_apply(const size_type p, const F& f) noexcept(NO_EXCEPT) {
-        this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
+
+    inline void all_apply(const size_type p, const operation& f) noexcept(NO_EXCEPT) {
+        this->_values[p] = action::map(this->_values[p], action::fold(f, this->_lengths[p]));
         if(p < this->_size) this->_lazy[p] = f + this->_lazy[p];
     }
+
     inline void push(const size_type p) noexcept(NO_EXCEPT) {
         this->all_apply(p << 1, this->_lazy[p]);
         this->all_apply(p << 1 | 1, this->_lazy[p]);
-        this->_lazy[p] = F{};
+        this->_lazy[p] = operation{};
     }
 
-  protected:
-    core() noexcept(NO_EXCEPT) {}
+
+    core() noexcept = default;
 
     explicit core(const size_type n) noexcept(NO_EXCEPT)
       : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
@@ -72,31 +76,31 @@ struct core {
     inline void initialize() noexcept(NO_EXCEPT) {
         REPD(p, 1, this->_size) {
             this->_lengths[p] = this->_lengths[p << 1] + this->_lengths[p << 1 | 1];
-            this->update(p);
+            this->pull(p);
         }
     }
 
-    inline S fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
+    inline operand fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
 
   public:
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
     inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_values.size(); }
     inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
-    inline void set(size_type p, const S& x) noexcept(NO_EXCEPT) {
+    inline void set(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         this->_values[p] = x;
-        FOR(i, 1, this->_depth) this->update(p >> i);
+        FOR(i, 1, this->_depth) this->pull(p >> i);
     }
 
-    inline S get(size_type p) noexcept(NO_EXCEPT) {
+    inline operand get(size_type p) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
         return this->_values[p];
     }
 
-    inline S fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
+    inline operand fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         if(l == r) return {};
 
         l += this->_size;
@@ -107,7 +111,7 @@ struct core {
             if(((r >> i) << i) != r) this->push((r - 1) >> i);
         }
 
-        S sml = S{}, smr = S{};
+        operand sml = operand{}, smr = operand{};
         while(l < r) {
             if(l & 1) sml = sml + this->_values[l++];
             if(r & 1) smr = this->_values[--r] + smr;
@@ -118,13 +122,15 @@ struct core {
         return sml + smr;
     }
 
-    inline void apply(size_type p, const F& f) noexcept(NO_EXCEPT) {
+
+    inline void apply(size_type p, const operation& f) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->push(p >> i);
-        this->_values[p] = _map(this->_values[p], _fold(f, this->_lengths[p]));
-        FOR(i, 1, this->_depth) this->update(p >> i);
+        this->_values[p] = action::map(this->_values[p], action::fold(f, this->_lengths[p]));
+        FOR(i, 1, this->_depth) this->pull(p >> i);
     }
-    inline void apply(size_type l, size_type r, const F& f) noexcept(NO_EXCEPT) {
+
+    inline void apply(size_type l, size_type r, const operation& f) noexcept(NO_EXCEPT) {
         if(l == r) return;
 
         l += this->_size;
@@ -148,13 +154,14 @@ struct core {
         }
 
         FOR(i, 1, this->_depth) {
-            if(((l >> i) << i) != l) this->update(l >> i);
-            if(((r >> i) << i) != r) this->update((r - 1) >> i);
+            if(((l >> i) << i) != l) this->pull(l >> i);
+            if(((r >> i) << i) != r) this->pull((r - 1) >> i);
         }
     }
 
-    template<bool (*g)(S)> inline size_type max_right(size_type l) noexcept(NO_EXCEPT) {
-        return this->max_right(l, [](S x) { return g(x); });
+
+    template<bool (*g)(operand)> inline size_type max_right(size_type l) noexcept(NO_EXCEPT) {
+        return this->max_right(l, [](operand x) { return g(x); });
     }
     template<class G> inline size_type max_right(size_type l, G g) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= _n);
@@ -162,7 +169,7 @@ struct core {
         if(l == _n) return _n;
         l += this->_size;
         FORD(i, 1, this->_depth) this->push(l >> i);
-        S sm = S{};
+        operand sm = operand{};
         do {
             while(l % 2 == 0) l >>= 1;
             if(!g(sm + this->_values[l])) {
@@ -182,8 +189,9 @@ struct core {
         return _n;
     }
 
-    template<bool (*g)(S)> inline size_type min_left(size_type r) noexcept(NO_EXCEPT) {
-        return min_left(r, [](S x) { return g(x); });
+
+    template<bool (*g)(operand)> inline size_type min_left(size_type r) noexcept(NO_EXCEPT) {
+        return min_left(r, [](operand x) { return g(x); });
     }
     template<class G> inline size_type min_left(size_type r, G g) noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= _n);
@@ -191,7 +199,7 @@ struct core {
         if(r == 0) return 0;
         r += this->_size;
         FORD(i, 1, this->_depth) this->push((r - 1) >> i);
-        S sm = S{};
+        operand sm = operand{};
         do {
             r--;
             while(r > 1 && (r % 2)) r >>= 1;
@@ -225,16 +233,14 @@ struct lazy_segment_tree : lazy_segment_tree<actions::make_full_t<T>> {
 
 
 template<actions::internal::full_action Action>
-    requires internal::available<internal::lazy_segment_tree_impl::core<typename Action::operand, typename Action::operation, Action::map, Action::fold>>
-struct lazy_segment_tree<Action> : internal::lazy_segment_tree_impl::core<typename Action::operand, typename Action::operation, Action::map, Action::fold> {
-  public:
+    requires internal::available<internal::lazy_segment_tree_impl::core<Action>>
+struct lazy_segment_tree<Action> : protected internal::lazy_segment_tree_impl::core<Action> {
     using action = Action;
-
-    using operand = typename action::operand;
-    using operation = typename action::operation;
+    using operand = typename Action::operand;
+    using operation = typename Action::operation;
 
   private:
-    using core = internal::lazy_segment_tree_impl::core<operand, operation, action::map, action::fold>;
+    using core = internal::lazy_segment_tree_impl::core<action>;
 
   public:
     using value_type = operand;
@@ -256,7 +262,7 @@ struct lazy_segment_tree<Action> : internal::lazy_segment_tree_impl::core<typena
     lazy_segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : lazy_segment_tree(ALL(init_list)) {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    explicit lazy_segment_tree(I first, S last) noexcept(NO_EXCEPT)
+    lazy_segment_tree(I first, S last) noexcept(NO_EXCEPT)
       : core(static_cast<size_type>(std::ranges::distance(first, last)))
     { this->assign(first, last); }
 
@@ -271,7 +277,7 @@ struct lazy_segment_tree<Action> : internal::lazy_segment_tree_impl::core<typena
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
-        if constexpr(std::sized_sentinel_for<S, I>) {
+        if constexpr(std::sized_sentinel_for<operand, I>) {
             assert(std::ranges::distance(first, last) == this->_n);
         }
         size_type p = 0;
@@ -341,10 +347,6 @@ struct lazy_segment_tree<Action> : internal::lazy_segment_tree_impl::core<typena
         }
 
         inline value_type fold() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
-            return this->_super->fold(this->_begin, this->_end);
-        }
-        inline value_type operator*() noexcept(NO_EXCEPT) {
             if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }

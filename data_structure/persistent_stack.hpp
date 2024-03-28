@@ -3,7 +3,10 @@
 
 #include <memory>
 #include <type_traits>
+#include <memory_resource>
 
+
+#include "data_structure/internal/node_handler.hpp"
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
@@ -17,15 +20,12 @@ struct persistent_stack {
     using value_type = ValueType;
     using size_type = internal::size_t;
 
-    using allocator_type = Allocator;
 
-//   private:
     struct node_type;
+    using node_handler = node_handlers::cloneable<Allocator>::template handler<node_type>;
 
-    using node_allocator = typename std::allocator_traits<allocator_type>::rebind_alloc<node_type>;
-    using node_allocator_traits = std::allocator_traits<node_allocator>;
-
-    using node_pointer = std::shared_ptr<node_type>;
+    using allocator_type = typename node_handler::allocator_type;
+    using node_pointer = typename node_handler::node_pointer;
 
     struct node_type {
         value_type value;
@@ -36,38 +36,23 @@ struct persistent_stack {
         {}
     };
 
+  private:
     size_type _size = 0;
     node_pointer _head = {};
 
-    [[no_unique_address]] allocator_type _allocator = {};
+    [[no_unique_address]] node_handler _node_handler = {};
 
   public:
-    explicit persistent_stack(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _allocator(allocator) {};
+    explicit persistent_stack(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {};
 
 
-    persistent_stack(const persistent_stack& source) noexcept(NO_EXCEPT) = default;
-
-    persistent_stack(persistent_stack&& source) noexcept(NO_EXCEPT) = default;
-
-
-    persistent_stack(const persistent_stack& source, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : _size(source._size), _head(source._head), _allocator(allocator)
+    persistent_stack(const persistent_stack& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
+      : _size(source._size), _head(source._head), _node_handler(allocator)
     {};
 
-    persistent_stack(persistent_stack&& source, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : _size(source._size), _head(source._head), _allocator(allocator)
+    persistent_stack(persistent_stack&& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
+      : _size(source._size), _head(source._head), _node_handler(allocator)
     {};
-
-
-    inline persistent_stack& operator=(const persistent_stack& source) noexcept(NO_EXCEPT) {
-        this->_size = source._size, this->_head = source._head;
-        return *this;
-    };
-
-    inline persistent_stack& operator=(persistent_stack&& source) noexcept(NO_EXCEPT) {
-        this->_size = source._size, this->_head = source._head;
-        return *this;
-    };
 
 
     inline auto clone() const noexcept(NO_EXCEPT) { return *this; }
@@ -98,7 +83,7 @@ struct persistent_stack {
 
     template<std::convertible_to<value_type> T>
     inline auto& push(T&& x) noexcept(NO_EXCEPT) {
-        this->_head = std::allocate_shared<node_type>(this->_allocator, std::forward<T>(x), this->_head);
+        this->_head = this->_node_handler.create(std::forward<T>(x), this->_head);
         ++this->_size;
         return *this;
     }

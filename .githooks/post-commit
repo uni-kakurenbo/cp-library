@@ -1,5 +1,7 @@
 #! /bin/bash
 
-REF="$(git symbolic-ref --short HEAD)"
+REF="$(git branch --show-current)"
 
-git push origin "${REF}:test/${REF}" --no-verify --force
+if [ -n "${REF}" ]; then
+    git push origin "${REF}:test/${REF}" --no-verify --force
+fi

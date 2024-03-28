@@ -5,6 +5,7 @@
 #include "data_structure/bit_vector.hpp"
 #include "data_structure/disjoint_set_union.hpp"
 #include "data_structure/disjoint_sparse_table.hpp"
+#include "data_structure/dynamic_segment_tree.hpp"
 #include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/dynamic_set.hpp"
 #include "data_structure/fenwick_tree.hpp"

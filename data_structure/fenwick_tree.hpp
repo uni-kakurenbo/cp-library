@@ -224,12 +224,6 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
             if(this->_begin == 0) return this->_super->fold(this->_end);
             return this->_super->fold(this->_begin, this->_end);
         }
-
-        inline value_type operator*() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
-            if(this->_begin == 0) return this->_super->fold(this->_end);
-            return this->_super->fold(this->_begin, this->_end);
-        }
     };
 
 
