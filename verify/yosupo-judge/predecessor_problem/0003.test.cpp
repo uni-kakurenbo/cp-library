@@ -8,6 +8,8 @@
 
 #define PROBLEM "https://judge.yosupo.jp/problem/predecessor_problem"
 
+#include "sneaky/enforce_int128_enable.hpp"
+
 #include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
@@ -15,30 +17,26 @@
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/adaptor/set.hpp"
-#include "data_structure/dynamic_segment_tree.hpp"
+#include "data_structure/dynamic_set.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<bool> t(n);
+    lib::dynamic_set<lib::i32, lib::treap_context<lib::i32>> st;
 
     REP(i, n) {
         char v; std::cin >> v;
-        t[i] = v == '1';
+        if(v == '1') st.insert(i);
     }
-
-    lib::set_adaptor<lib::dynamic_segment_tree> st(n);
-    st.build_from_bits(ALL(t));
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int k; std::cin >> k;
-            st.insert(k);
+            st.insert<true>(k);
         }
         if(t == 1) {
             int k; std::cin >> k;
-            st.remove(k);
+            st.erase(k);
         }
         if(t == 2) {
             int k; std::cin >> k;
@@ -46,11 +44,14 @@ signed main() {
         }
         if(t == 3) {
             int k; std::cin >> k;
-            print(st.next(k).value_or(-1));
+            auto itr = st.lower_bound(k);
+            print(itr == st.end() ? -1 : *itr);
         }
         if(t == 4) {
             int k; std::cin >> k;
-            print(st.prev(k).value_or(-1));
+            auto itr = st.upper_bound(k);
+            print(itr == st.begin() ? -1 : *std::ranges::prev(itr));
         }
+        debug(st);
     }
 }

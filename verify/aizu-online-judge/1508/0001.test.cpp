@@ -15,6 +15,7 @@
 #include "adaptor/io.hpp"
 #include "adaptor/vector.hpp"
 #include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/red_black_tree.hpp"
 #include "action/range_min.hpp"
 #include "action/helpers.hpp"
 
@@ -22,7 +23,7 @@ signed main() {
     int n, q; input >> n >> q;
     lib::vector<int> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(a);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>, lib::red_black_tree_context<lib::i32>> data(a);
     debug(data.dump_rich());
 
     REP(q) {

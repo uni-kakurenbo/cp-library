@@ -66,11 +66,34 @@ struct treap_impl : private uncopyable {
     using priority_type = random_engine_32bit::result_type;
 
   protected:
-    void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
+    void pull(const node_pointer tree) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
         tree->size = tree->left->size + tree->length + tree->right->size;
         this->_derived()->pull(tree);
     }
+
+    void push(const node_pointer tree) noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil) return;
+        this->_derived()->push(tree);
+    }
+
+
+    node_pointer create(const value_type& val, const size_type size) noexcept(NO_EXCEPT) {
+        if(size == 0) return node_handler::nil;
+        return this->_node_handler.create(val, size);
+    }
+
+    void dispose(node_pointer tree) noexcept(NO_EXCEPT) {
+        if(this->_node_handler.disposable(tree)) {
+            this->dispose(tree->left);
+            this->dispose(tree->right);
+
+            this->_node_handler.dispose(tree);
+        }
+    }
+
+    template<class... Args>
+    inline void constexpr clone(Args&&...) const noexcept {}
 
 
     void rectify(const node_pointer tree) const noexcept(NO_EXCEPT) {
@@ -96,20 +119,42 @@ struct treap_impl : private uncopyable {
     }
 
 
-    node_pointer create_node(const value_type& val, const size_type size) noexcept(NO_EXCEPT) {
-        if(size == 0) return node_handler::nil;
-        return this->_node_handler.create(val, size);
+    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
+        requires std::constructible_from<value_type, std::iter_value_t<I>>
+    node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
+        if(first == last) return node_handler::nil;
+
+        const auto length = std::ranges::distance(first, last);
+        const auto middle = std::ranges::next(first, length >> 1);
+
+        node_pointer tree = this->create(value_type{ *middle }, 1);
+        tree->left = this->_build(first, middle);
+        tree->right = this->_build(std::ranges::next(middle), last);
+
+        this->pull(tree);
+
+        return tree;
     }
 
-    void dispose(node_pointer tree) noexcept(NO_EXCEPT) {
-        if(this->_node_handler.disposable(tree)) {
-            this->dispose(tree->left);
-            this->dispose(tree->right);
 
-            this->_node_handler.dispose(tree);
-        }
+    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
+        requires
+            std::constructible_from<value_type, typename std::iter_value_t<I>::first_type> &&
+            std::integral<typename std::iter_value_t<I>::second_type>
+    node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
+        if(first == last) return node_handler::nil;
+
+        const auto length = std::ranges::distance(first, last);
+        const auto middle = std::ranges::next(first, length >> 1);
+
+        node_pointer tree = this->create(value_type{ middle->first }, middle->second );
+        tree->left = this->_build(first, middle);
+        tree->right = this->_build(std::ranges::next(middle), last);
+
+        this->pull(tree);
+
+        return tree;
     }
-
 
     void _split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) {
@@ -117,7 +162,7 @@ struct treap_impl : private uncopyable {
             return;
         }
 
-        this->_derived()->push(tree);
+        this->push(tree);
 
         const size_type lower_bound = tree->left->size;
         const size_type upper_bound = tree->size - tree->right->size;
@@ -132,7 +177,7 @@ struct treap_impl : private uncopyable {
         }
         else {
             tree->length = pos - lower_bound;
-            this->merge(tree->right, this->create_node(tree->data, upper_bound - pos), tree->right);
+            this->merge(tree->right, this->create(tree->data, upper_bound - pos), tree->right);
 
             this->split(tree->right, 0, tree->right, right), left = std::move(tree);
             this->pull(left);
@@ -141,6 +186,13 @@ struct treap_impl : private uncopyable {
 
   public:
     explicit treap_impl(const allocator_type& allocator= {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+
+    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
+    node_pointer build(I first, S last) {
+        const auto tree = this->_build(first, last);
+        this->rectify(tree);
+        return tree;
+    }
 
     struct node_type {
         priority_type priority = std::numeric_limits<priority_type>::lowest();
@@ -165,7 +217,7 @@ struct treap_impl : private uncopyable {
             return;
         }
 
-        this->_derived()->push(tree);
+        this->push(tree);
 
         if constexpr(RETURN_EXISTENCE) *exist |= val == tree->data;
 
@@ -183,11 +235,11 @@ struct treap_impl : private uncopyable {
     void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
             left = node_handler::nil;
-            this->merge(right, this->create_node(value_type{}, -pos), std::move(tree));
+            this->merge(right, this->create(value_type{}, -pos), std::move(tree));
         }
         else if(tree->size <= pos) {
             right = node_handler::nil;
-            this->merge(left, std::move(tree), this->create_node(value_type{}, pos - tree->size));
+            this->merge(left, std::move(tree), this->create(value_type{}, pos - tree->size));
         }
         else {
             this->_split(std::move(tree), pos, left, right);
@@ -196,8 +248,8 @@ struct treap_impl : private uncopyable {
 
 
     void merge(node_pointer& tree, const node_pointer left, const node_pointer right) noexcept(NO_EXCEPT) {
-        this->_derived()->push(left);
-        this->_derived()->push(right);
+        this->push(left);
+        this->push(right);
 
         // debug(left->priority, right->priority);
 
@@ -221,6 +273,8 @@ struct treap_impl : private uncopyable {
 
 template<std::integral SizeType = i64, class Allocator = std::allocator<SizeType>, i64 Id = -1>
 struct treap_context {
+    static constexpr bool LEAF_ONLY = false;
+
     template<class Derived, class ValueType = internal::dummy>
     using interface = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
 };
