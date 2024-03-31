@@ -23,7 +23,7 @@ signed main() {
     print("Hello World");
 
     lib::random_adaptor<lib::random_engine_32bit> rng;
-    lib::timer timer(1000);
+    lib::timer timer(10000);
 
     // int i = 0;
     while(not timer.expired()) {

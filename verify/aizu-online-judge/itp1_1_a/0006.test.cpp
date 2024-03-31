@@ -16,7 +16,7 @@
 #include "adaptor/io.hpp"
 #include "adaptor/map.hpp"
 #include "data_structure/dynamic_sequence.hpp"
-#include "data_structure/treap.hpp"
+#include "data_structure/red_black_tree.hpp"
 #include "random/engine.hpp"
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
@@ -26,7 +26,7 @@
 signed main() {
     print("Hello World");
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::i64>> data;
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::i64>, lib::red_black_tree_context<>> data;
     lib::map<lib::i64, lib::i64> corr;
 
     debug(data);

@@ -26,7 +26,7 @@ signed main() {
     print("Hello World");
 
     lib::dynamic_set<lib::i64> data;
-    lib::set<lib::i64> corr;
+    lib::multiset<lib::i64> corr;
 
     debug(data);
 
@@ -39,11 +39,11 @@ signed main() {
 
         if(t == 0) {
             corr.insert(v);
-            data.insert<true>(v);
+            data.insert(v);
         }
 
         if(t == 1) {
-            corr.erase(v);
+            corr.remove(v);
             data.erase(v);
         }
 
