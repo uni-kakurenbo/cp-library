@@ -13,6 +13,7 @@
 #include "data_structure/lazy_segment_tree.hpp"
 #include "data_structure/persistent_queue.hpp"
 #include "data_structure/persistent_stack.hpp"
+#include "data_structure/red_black_tree.hpp"
 #include "data_structure/removable_priority_queue.hpp"
 #include "data_structure/restorable_stack.hpp"
 #include "data_structure/segment_tree.hpp"
