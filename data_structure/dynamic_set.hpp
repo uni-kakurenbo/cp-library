@@ -69,6 +69,7 @@ struct data_type {
 
 
 template<actions::internal::full_action Action, class Context>
+    requires (!Context::LEAF_ONLY)
 struct core : Context::interface<core<Action, Context>, internal::data_type<typename Action::operand>> {
     using action = Action;
     using operand = Action::operand;
@@ -95,45 +96,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
     }
 
-    inline void push(const node_pointer) const noexcept(NO_EXCEPT) { /* do nothing */ }
-
-
-    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
-        requires std::convertible_to<std::iter_value_t<I>, operand>
-    node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
-        if(first == last) return node_handler::nil;
-
-        const auto length = std::ranges::distance(first, last);
-        const auto middle = std::next(first, length >> 1);
-
-        node_pointer tree = this->create_node(operand{ *middle }, 1);
-        tree->left = this->_build(first, middle);
-        tree->right = this->_build(std::next(middle), last);
-
-        this->interface::pull(tree);
-
-        return tree;
-    }
-
-
-    template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
-        requires
-            std::convertible_to<typename std::iter_value_t<I>::first_type, operand> &&
-            std::integral<typename std::iter_value_t<I>::second_type>
-    node_pointer _build(I first, S last) noexcept(NO_EXCEPT) {
-        if(first == last) return node_handler::nil;
-
-        const auto length = std::ranges::distance(first, last);
-        const auto middle = std::ranges::next(first, length >> 1);
-
-        node_pointer tree = this->create_node(operand{ middle->first }, middle->second );
-        tree->left = this->_build(first, middle);
-        tree->right = this->_build(std::next(middle), last);
-
-        this->interface::pull(tree);
-
-        return tree;
-    }
+    inline constexpr void push(const node_pointer) const noexcept(NO_EXCEPT) { /* do nothing */ }
 
   public:
     using interface::interface;
@@ -145,12 +108,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         val.assign(first, last);
         std::ranges::sort(val);
 
-        const auto tree = this->_build(ALL(val));
-        debug(this->dump_rich(tree));
-
-        interface::rectify(tree);
-
-        return tree;
+        return this->interface::build(ALL(val));
     }
 
 
@@ -175,7 +133,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         node_pointer t0, t1;
 
         this->split(tree, { val }, t0, t1);
-        this->merge(tree, t0, this->create_node(val, count), t1);
+        this->merge(tree, t0, this->create(val, count), t1);
     }
 
     void insert_unique(node_pointer& tree, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
@@ -188,7 +146,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         this->template split<false, true>(tree, { val }, t0, t1, &exist);
 
         if(exist) this->merge(tree, t0, t1);
-        else this->merge(tree, t0, this->create_node(val, count), t1);
+        else this->merge(tree, t0, this->create(val, count), t1);
     }
 
 
