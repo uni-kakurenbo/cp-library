@@ -26,6 +26,9 @@
 #include "global/constants.hpp"
 
 #include "data_structure/internal/tree_interface.hpp"
+#include "data_structure/internal/tree_dumper.hpp"
+#include "data_structure/internal/tree_enumerator.hpp"
+
 #include "data_structure/treap.hpp"
 
 #include "algebraic/internal/concepts.hpp"
@@ -40,7 +43,7 @@ namespace lib {
 
 namespace internal {
 
-namespace dynamic_sequence_impl {
+namespace actable_dynamic_sequence_impl {
 
 
 namespace internal {
@@ -65,12 +68,26 @@ struct data_type {
 
 
 template<actions::internal::full_action Action, class Context>
-struct core : Context::interface<core<Action, Context>, internal::data_type<typename Action::operand, typename Action::operation, Context::LEAF_ONLY>> {
+struct core
+  : Context::interface<
+        core<Action, Context>,
+        internal::data_type<typename Action::operand, typename Action::operation, Context::LEAF_ONLY>
+    >,
+    enumerable_tree<
+        core<Action, Context>,
+        typename Context::interface<
+            core<Action, Context>,
+            internal::data_type<typename Action::operand, typename Action::operation, Context::LEAF_ONLY>
+        >,
+        typename Action::operand,
+        Context::LEAF_ONLY
+    >
+{
     using action = Action;
     using operand = Action::operand;
     using operation = Action::operation;
 
-  private:
+
     using data_type = internal::data_type<operand, operation, Context::LEAF_ONLY>;
 
     using interface = typename Context::interface<core, data_type>;
@@ -78,16 +95,16 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
     friend interface;
 
-  protected:
+
     using node_handler = typename interface::node_handler;
 
     using node_type = typename interface::node_type;
     using node_pointer = typename interface::node_pointer;
 
-  public:
+
     using size_type = typename interface::size_type;
 
-  private:
+
     inline operand get(const node_pointer& node) const noexcept(NO_EXCEPT) {
         if constexpr(Context::LEAF_ONLY) {
             if(node->is_leaf()) return node->size * node->data.val;
@@ -113,8 +130,14 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
             std::swap(tree->left, tree->right);
 
-            if(tree->left != node_handler::nil) tree->left->data.rev ^= 1;
-            if(tree->right != node_handler::nil) tree->right->data.rev ^= 1;
+            if(tree->left != node_handler::nil) {
+                this->clone(tree->left);
+                tree->left->data.rev ^= 1;
+            }
+            if(tree->right != node_handler::nil) {
+                this->clone(tree->right);
+                tree->right->data.rev ^= 1;
+            }
         }
 
         if(tree->data.lazy != operation{}) {
@@ -152,14 +175,13 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
 
-  protected:
     inline void update(const node_pointer& tree) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
-        this->push(tree);
-        this->pull(tree);
+        this->interface::push(tree);
+        this->interface::pull(tree);
     }
 
-  public:
+
     using interface::interface;
 
     using interface::split;
@@ -380,53 +402,24 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
         return res;
     }
-
-
-    debugger::debug_t dump_rich(const node_pointer& tree, const std::string prefix, const int dir, size_type& index) {
-        if(!tree || tree == node_handler::nil) return prefix + "\n";
-
-        this->push(tree);
-
-        const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
-        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
-        index += tree->length;
-
-        const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
-
-        return left + here + right;
-    }
-
-    inline debugger::debug_t dump_rich(const node_pointer& tree, const std::string prefix = "   ", const int dir = 0) {
-        size_type index = 0;
-        return this->dump_rich(tree, prefix, dir, index);
-    }
-
-    debugger::debug_t _debug(const node_pointer& tree) {
-        if(!tree || tree == node_handler::nil) return "";
-
-        this->push(tree);
-
-        return
-            "(" +
-            this->_debug(tree->left) + " " +
-            debugger::dump(tree->data) + " [" +
-            debugger::dump(tree->size) + "] " +
-            this->_debug(tree->right) +
-            ")";
-    }
 };
 
 
 
-} // namespace dynamic_sequence_impl
+} // namespace actable_dynamic_sequence_impl
 
 } // namespace internal
 
 
 template<actions::internal::full_action Action, class Context = treap_context<>>
-    requires internal::available_with<internal::dynamic_sequence_impl::core, Action, Context>
-struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, Context> {
-  public:
+    requires internal::available_with<internal::actable_dynamic_sequence_impl::core, Action, Context>
+struct actable_dynamic_sequence
+  : private internal::dumpable_tree<
+        actable_dynamic_sequence<Action, Context>,
+        internal::actable_dynamic_sequence_impl::core<Action, Context>,
+        Context::LEAF_ONLY
+    >
+{
     using action = Action;
 
     using operand = typename action::operand;
@@ -435,20 +428,22 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     using value_type = operand;
     using action_type = typename operation::value_type;
 
-    using core = internal::dynamic_sequence_impl::core<Action, Context>;
+    using core = internal::actable_dynamic_sequence_impl::core<Action, Context>;
 
     using node_handler = typename core::node_handler;
+    using allocator_type = typename core::allocator_type;
 
     using node_type = typename core::node_type;
     using node_pointer = typename core::node_pointer;
 
-  private:
-    using allocator_type = typename core::allocator_type;
-
-  public:
     using size_type = typename core::size_type;
 
   private:
+    using dumper = internal::dumpable_tree<actable_dynamic_sequence, core, Context::LEAF_ONLY>;
+    friend dumper;
+
+    core _impl;
+
     node_pointer _root = node_handler::nil;
 
     size_type _offset = 0;
@@ -463,24 +458,24 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
 
 
   public:
-    ~actable_dynamic_sequence() { this->dispose(this->_root); }
+    ~actable_dynamic_sequence() { this->_impl.dispose(this->_root); }
 
-    actable_dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
+    actable_dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _impl(allocator) {};
 
     actable_dynamic_sequence(const node_pointer& root, const size_type offset = 0, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : core(allocator), _root(root), _offset(offset)
+      : _impl(allocator), _root(root), _offset(offset)
     {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     actable_dynamic_sequence(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : core(allocator)
+      : _impl(allocator)
     {
         this->assign(first, last);
     }
 
 
     explicit actable_dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : core(allocator)
+      : _impl(allocator)
     {
         this->assign(size, val);
     }
@@ -501,13 +496,29 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     {}
 
     inline size_type offset() const noexcept(NO_EXCEPT) { return this->_offset; }
+
+    inline node_pointer& root() noexcept(NO_EXCEPT) { return this->_root; }
+    inline const node_pointer& root() const noexcept(NO_EXCEPT) { return this->_root; }
+
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
+    template<internal::resizable_range Container>
+    inline auto to() noexcept(NO_EXCEPT) {
+        Container res;
+        res.resize(this->size());
+
+        auto itr = std::ranges::begin(res);
+        this->_impl.enumerate(this->_root, itr);
+
+        return res;
+    }
+
+
     inline void clear() noexcept(NO_EXCEPT) {
-        this->dispose(this->_root);
+        this->_impl.dispose(this->_root);
         this->_root = node_handler::nil;
         this->_offset = 0;
     }
@@ -518,44 +529,44 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     inline auto clone(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         node_pointer t0, t1, t2;
-        this->core::split(this->_root, l, r, t0, t1, t2);
-        this->core::merge(this->_root, t0, t1, t2);
+        this->_impl.split(this->_root, l, r, t0, t1, t2);
+        this->_impl.merge(this->_root, t0, t1, t2);
         return actable_dynamic_sequence(t1, this->_offset);
     }
 
     inline auto split(size_type pos) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         node_pointer t0, t1;
-        this->core::split(this->_root, pos, t0, t1);
+        this->_impl.split(this->_root, pos, t0, t1);
         return std::make_pair(actable_dynamic_sequence(t0, this->_offset), actable_dynamic_sequence(t1, this->_offset));
     }
 
     inline auto extract(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         node_pointer t0, t1, t2;
-        this->core::split(this->_root, l, r, t0, t1, t2);
-        this->core::merge(this->_root, t0, t2);
+        this->_impl.split(this->_root, l, r, t0, t1, t2);
+        this->_impl.merge(this->_root, t0, t2);
         return actable_dynamic_sequence(t1, this->_offset);
     }
 
     inline auto& insert(size_type pos, const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         node_pointer t0, t1;
-        this->core::split(this->_root, pos, t0, t1);
-        this->core::merge(this->_root, t0, other._root, t1);
+        this->_impl.split(this->_root, pos, t0, t1);
+        this->_impl.merge(this->_root, t0, other._root, t1);
         return *this;
     }
 
     inline auto& replace(size_type l, size_type r, const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         node_pointer t0, t1, t2;
-        this->core::split(this->_root, l, r, t0, t1, t2);
-        this->core::merge(this->_root, t0, other._root, t2);
+        this->_impl.split(this->_root, l, r, t0, t1, t2);
+        this->_impl.merge(this->_root, t0, other._root, t2);
         return *this;
     }
 
     inline auto& merge(const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
-        this->core::merge(this->_root, this->_root, other._root);
+        this->_impl.merge(this->_root, this->_root, other._root);
         return *this;
     }
 
@@ -563,13 +574,13 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
         this->clear();
-        this->_root = this->build(first, last);
+        this->_root = this->_impl.build(first, last);
         return *this;
     }
 
     inline auto& assign(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
         this->clear();
-        this->core::insert(this->_root, 0, val, size);
+        this->_impl.insert(this->_root, 0, val, size);
         return *this;
     }
 
@@ -585,19 +596,19 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
 
 
     inline auto& resize(const size_type size, const value_type& val = value_type{}) noexcept(NO_EXCEPT) {
-        if(this->size() > size) this->core::erase(this->_root, size, this->size());
+        if(this->size() > size) this->_impl.erase(this->_root, size, this->size());
         if(this->size() < size) this->push_back(val, size - this->size());
         return *this;
     }
 
 
     inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
-        this->core::fill(this->_root, 0, this->size(), val);
+        this->_impl.fill(this->_root, 0, this->size(), val);
         return *this;
     }
 
     inline value_type fold() noexcept(NO_EXCEPT) {
-        return this->core::get(this->_root);
+        return this->_impl.get(this->_root);
     }
 
     inline auto& apply(const action_type& val) noexcept(NO_EXCEPT) {
@@ -607,21 +618,21 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     }
 
     inline value_type front() noexcept(NO_EXCEPT) {
-        return this->core::fold(this->_root, 0, 1);
+        return this->_impl.fold(this->_root, 0, 1);
     }
 
     inline value_type back() noexcept(NO_EXCEPT) {
-        return this->core::fold(this->_root, this->size() - 1, this->size());
+        return this->_impl.fold(this->_root, this->size() - 1, this->size());
     }
 
 
     inline auto& push_front(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::insert(this->_root, 0, val, count);
+        this->_impl.insert(this->_root, 0, val, count);
         return *this;
     }
 
     inline auto& push_back(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::insert(this->_root, this->size(), val, count);
+        this->_impl.insert(this->_root, this->size(), val, count);
         return *this;
     }
 
@@ -632,33 +643,33 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     }
 
     inline auto& shift_left(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::shift_left(this->_root, 0, this->size(), count);
+        this->_impl.shift_left(this->_root, 0, this->size(), count);
         return *this;
     }
 
     inline auto& shift_right(const size_type count = 1) noexcept(NO_EXCEPT) {
-        this->core::shift_right(this->_root, 0, this->size(), count);
+        this->_impl.shift_right(this->_root, 0, this->size(), count);
         return *this;
     }
 
     // Same usage as: std::rotate(:m:)
     inline auto& rotate(size_type m) noexcept(NO_EXCEPT) {
         this->_normalize_index(m);
-        this->core::rotate(this->_root, 0, m, this->size());
+        this->_impl.rotate(this->_root, 0, m, this->size());
         return *this;
     }
 
     // Same usage as: std::rotate(:m:)
     inline auto& rotate_left(const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(!this->empty());
-        this->core::rotate(this->_root, 0, lib::mod(count, this->size()), this->size());
+        this->_impl.rotate(this->_root, 0, lib::mod(count, this->size()), this->size());
         return *this;
     }
 
     // Same usage as: std::rotate(:m:)
     inline auto& rotate_right(const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(!this->empty());
-        this->core::rotate(this->_root, 0, this->size() - lib::mod(count, this->size()), this->size());
+        this->_impl.rotate(this->_root, 0, this->size() - lib::mod(count, this->size()), this->size());
         return *this;
     }
 
@@ -666,19 +677,19 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     inline auto& insert(size_type pos, I first, S last) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
-        this->core::insert(this->_root, pos, first, last);
+        this->_impl.insert(this->_root, pos, first, last);
         return *this;
     }
 
     inline auto& insert(size_type pos, const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
-        this->core::insert(this->_root, pos, val, count);
+        this->_impl.insert(this->_root, pos, val, count);
         return *this;
     }
 
     inline auto& erase(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::erase(this->_root, l, r);
+        this->_impl.erase(this->_root, l, r);
         return *this;
     }
 
@@ -688,47 +699,47 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
 
     inline auto pop(size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
-        return this->core::pop(this->_root, pos, count);
+        return this->_impl.pop(this->_root, pos, count);
     }
 
     inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::fill(this->_root, l, r, val);
+        this->_impl.fill(this->_root, l, r, val);
         return *this;
     }
 
     inline operand fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        return this->core::fold(this->_root, l, r);
+        return this->_impl.fold(this->_root, l, r);
     }
 
     inline auto& apply(size_type l, size_type r, const operation& val) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::apply(this->_root, l, r, val);
+        this->_impl.apply(this->_root, l, r, val);
         return *this;
     }
 
     inline auto& reverse(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::reverse(this->_root, l, r);
+        this->_impl.reverse(this->_root, l, r);
         return *this;
     }
 
     inline auto& rotate(size_type l, size_type m, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, m, r);
-        this->core::rotate(this->_root, l, m, r);
+        this->_impl.rotate(this->_root, l, m, r);
         return *this;
     }
 
     inline auto& shift_left(size_type l, size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::shift_left(this->_root, l, r, count);
+        this->_impl.shift_left(this->_root, l, r, count);
         return *this;
     }
 
     inline auto& shift_right(size_type l, size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
-        this->core::shift_right(this->_root, l, r, count);
+        this->_impl.shift_right(this->_root, l, r, count);
         return *this;
     }
 
@@ -808,12 +819,12 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
         }
 
 
-        inline point_reference& set(const action_type& val) noexcept(NO_EXCEPT) {
+        inline point_reference& set(const value_type& val) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, val);
             return *this;
         }
 
-        inline point_reference& operator=(const action_type& val) noexcept(NO_EXCEPT) {
+        inline point_reference& operator=(const value_type& val) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, val);
             return *this;
         }
@@ -886,8 +897,8 @@ struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<
     inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 
 
-    using core::dump_rich;
-    using core::_debug;
+    using dumper::dump_rich;
+    using dumper::_debug;
 
 
     debugger::debug_t dump_rich(const node_pointer& tree, const std::string prefix = "   ", const int dir = 0) {

@@ -26,6 +26,9 @@
 #include "global/constants.hpp"
 
 #include "data_structure/internal/tree_interface.hpp"
+#include "data_structure/internal/tree_dumper.hpp"
+#include "data_structure/internal/tree_enumerator.hpp"
+
 #include "data_structure/treap.hpp"
 
 #include "algebraic/internal/concepts.hpp"
@@ -40,7 +43,7 @@ namespace lib {
 
 namespace internal {
 
-namespace dynamic_set_impl {
+namespace actable_dynamic_set_impl {
 
 
 namespace internal {
@@ -70,11 +73,25 @@ struct data_type {
 
 template<actions::internal::full_action Action, class Context>
     requires (!Context::LEAF_ONLY)
-struct core : Context::interface<core<Action, Context>, internal::data_type<typename Action::operand>> {
+struct core
+  : Context::interface<
+        core<Action, Context>,
+        internal::data_type<typename Action::operand>
+    >,
+    enumerable_tree<
+        core<Action, Context>,
+        typename Context::interface<
+            core<Action, Context>,
+            internal::data_type<typename Action::operand>
+        >,
+        typename Action::operand,
+        Context::LEAF_ONLY
+    >
+{
     using action = Action;
     using operand = Action::operand;
 
-  private:
+
     using data_type = internal::data_type<operand>;
 
     using interface = typename Context::interface<core, data_type>;
@@ -82,23 +99,23 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
     friend interface;
 
-  protected:
+
     using node_handler = typename interface::node_handler;
 
     using node_type = typename interface::node_type;
     using node_pointer = typename interface::node_pointer;
 
-  public:
+
     using size_type = typename interface::size_type;
 
-  private:
+
     inline void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
         tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
     }
 
     inline constexpr void push(const node_pointer) const noexcept(NO_EXCEPT) { /* do nothing */ }
 
-  public:
+
     using interface::interface;
 
 
@@ -256,10 +273,10 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
     }
 
 
-    debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
+    debugger::debug_t dump_rich(node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
         if(!tree || tree == node_handler::nil) return prefix + "\n";
 
-        this->push(tree);
+        this->interface::push(tree);
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
         const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
@@ -275,10 +292,10 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         return this->dump_rich(tree, prefix, dir, index);
     }
 
-    debugger::debug_t _debug(const node_pointer tree) const {
+    debugger::debug_t _debug(node_pointer tree) const {
         if(!tree || tree == node_handler::nil) return "";
 
-        this->push(tree);
+        this->interface::push(tree);
 
         return
             "(" +
@@ -292,7 +309,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
 
 
-} // namespace dynamic_set_impl
+} // namespace actable_dynamic_set_impl
 
 } // namespace internal
 
@@ -304,48 +321,56 @@ struct actable_dynamic_set : actable_dynamic_set<actions::make_full_t<Value>, Co
 
 
 template<actions::internal::full_action Action, class Context>
-    requires internal::available_with<internal::dynamic_set_impl::core, Action, Context>
-struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<Action, Context> {
+    requires internal::available_with<internal::actable_dynamic_set_impl::core, Action, Context>
+struct actable_dynamic_set<Action, Context>
+  : private internal::dumpable_tree<
+        actable_dynamic_set<Action, Context>,
+        internal::actable_dynamic_set_impl::core<Action, Context>,
+        Context::LEAF_ONLY
+    >
+{
   public:
     using action = Action;
-
     using operand = typename action::operand;
 
     using value_type = operand;
 
-    using core = internal::dynamic_set_impl::core<Action, Context>;
+    using core = internal::actable_dynamic_set_impl::core<Action, Context>;
+
+    using node_handler = typename core::node_handler;
+    using allocator_type = typename core::allocator_type;
 
     using node_type = typename core::node_type;
     using node_pointer = typename core::node_pointer;
 
-  private:
-    using node_handler = typename core::node_handler;
-    using allocator_type = typename core::allocator_type;
-
-  public:
     using size_type = typename core::size_type;
 
   private:
+    using dumper = internal::dumpable_tree<actable_dynamic_set, core, Context::LEAF_ONLY>;
+    friend dumper;
+
+    core _impl;
+
     node_pointer _root = node_handler::nil;
 
     size_type _offset = 0;
 
 
   public:
-    ~actable_dynamic_set() { this->dispose(this->_root); }
+    ~actable_dynamic_set() { this->_impl.dispose(this->_root); }
 
-    actable_dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : core(alloc) {};
+    actable_dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _impl(alloc) {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     actable_dynamic_set(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : actable_dynamic_set(alloc)
+      : _impl(alloc)
     {
         this->assign(first, last);
     }
 
 
     explicit actable_dynamic_set(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : actable_dynamic_set(alloc)
+      : _impl(alloc)
     {
         this->assign(size, val);
     }
@@ -365,13 +390,28 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
     {}
 
 
+    inline node_pointer& root() noexcept(NO_EXCEPT) { return this->_root; }
+    inline const node_pointer& root() const noexcept(NO_EXCEPT) { return this->_root; }
+
     size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
+    template<internal::resizable_range Container>
+    inline auto to() noexcept(NO_EXCEPT) {
+        Container res;
+        res.resize(this->size());
+
+        auto itr = std::ranges::begin(res);
+        this->_impl.enumerate(this->_root, itr);
+
+        return res;
+    }
+
+
     inline void clear() noexcept(NO_EXCEPT) {
-        this->dispose(this->_root);
+        this->_impl.dispose(this->_root);
         this->_root = node_handler::nil;
     }
 
@@ -403,8 +443,8 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
 
     template<bool UNIQUE = false>
     inline auto& insert(const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        if constexpr(UNIQUE) this->core::insert_unique(this->_root, val, count);
-        else this->core::insert(this->_root, val, count);
+        if constexpr(UNIQUE) this->_impl.insert_unique(this->_root, val, count);
+        else this->_impl.insert(this->_root, val, count);
 
         return *this;
     }
@@ -430,20 +470,20 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
 
     template<bool LIMIT = true>
     inline auto& erase(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        if constexpr(LIMIT) this->core::erase_limit(this->_root, val, count);
-        else this->core::erase(this->_root, val, count);
+        if constexpr(LIMIT) this->_impl.erase_limit(this->_root, val, count);
+        else this->_impl.erase(this->_root, val, count);
 
         return *this;
     }
 
     inline auto& erase(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        this->core::erase(this->_root, l, r);
+        this->_impl.erase(this->_root, l, r);
         return *this;
     }
 
 
     inline value_type pop(const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->core::pop(this->_root, pos, count);
+        return this->_impl.pop(this->_root, pos, count);
     }
 
     inline value_type pop_min(const size_type count = 1) noexcept(NO_EXCEPT) {
@@ -456,7 +496,7 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
 
 
     inline operand fold(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        return this->core::fold(this->_root, l, r);
+        return this->_impl.fold(this->_root, l, r);
     }
 
     inline value_type get(const size_type k) noexcept(NO_EXCEPT) {
@@ -497,21 +537,21 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
 
 
     inline auto lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
-        return iterator{ this, this->template find<false>(this->_root, val) };
+        return iterator{ this, this->_impl.template find<false>(this->_root, val) };
     }
 
     inline auto upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
-        return iterator{ this, this->template find<true>(this->_root, val) };
+        return iterator{ this, this->_impl.template find<true>(this->_root, val) };
     }
 
     inline auto equal_range(const value_type& val) noexcept(NO_EXCEPT) {
-        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        const auto [ lower, upper ] = this->_impl.equal_range(this->_root, val);
         return std::make_pair(iterator{ this, lower }, iterator{ this, upper });
     }
 
 
     inline size_type count(const value_type& val) noexcept(NO_EXCEPT) {
-        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        const auto [ lower, upper ] = this->_impl.equal_range(this->_root, val);
         return upper - lower;
     }
 
@@ -544,16 +584,16 @@ struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl
     inline iterator end() noexcept(NO_EXCEPT) { return iterator{ this, this->size() }; }
 
 
-    using core::dump_rich;
-    using core::_debug;
+    using dumper::dump_rich;
+    using dumper::_debug;
 
 
-    debugger::debug_t dump_rich(const std::string prefix = "   ") const {
+    debugger::debug_t dump_rich(const std::string prefix = "   ") {
         return "\n" + this->dump_rich(this->_root, prefix);
     }
 
 
-    debugger::debug_t _debug() const {
+    debugger::debug_t _debug() {
         return "[ " + this->_debug(this->_root) + " ]";
     }
 };
