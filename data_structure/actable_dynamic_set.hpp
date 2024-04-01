@@ -227,6 +227,26 @@ struct core
     }
 
 
+    operand get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil || pos < 0 || pos >= tree->size) return {};
+
+        this->interface::push(tree);
+
+        const auto lower_bound = tree->left->size;
+        const auto upper_bound = tree->size - tree->right->size;
+
+        if(pos < lower_bound) {
+            return this->get(tree->left, pos);
+        }
+        else if(pos >= upper_bound) {
+            return this->get(tree->right, pos - upper_bound);
+        }
+        else {
+            return tree->data.val;
+        }
+    }
+
+
     operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= tree->size);
         if(l == r) return operand{};
@@ -500,7 +520,7 @@ struct actable_dynamic_set<Action, Context>
     }
 
     inline value_type get(const size_type k) noexcept(NO_EXCEPT) {
-        return this->fold(k, k + 1);
+        return this->_impl.get(this->_root, k);
     }
 
     inline operand median(const size_type l, const size_type r) noexcept(NO_EXCEPT) {

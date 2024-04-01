@@ -104,8 +104,7 @@ struct core
 
     using size_type = typename interface::size_type;
 
-
-    inline operand get(const node_pointer& node) const noexcept(NO_EXCEPT) {
+    inline operand val(const node_pointer& node) const noexcept(NO_EXCEPT) {
         if constexpr(Context::LEAF_ONLY) {
             if(node->is_leaf()) return node->size * node->data.val;
             return node->data.val;
@@ -117,7 +116,7 @@ struct core
 
     inline void pull(const node_pointer& tree) const noexcept(NO_EXCEPT) {
         if constexpr(Context::LEAF_ONLY) {
-            tree->data.val = this->get(tree->left) + this->get(tree->right);
+            tree->data.val = this->val(tree->left) + this->val(tree->right);
         }
         else {
             tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
@@ -234,12 +233,32 @@ struct core
         this->split(tree, pos, t0, t1);
         this->split(t1, count, t1, t2);
 
-        const auto res = this->get(t1);
+        const auto res = this->val(t1);
 
         this->dispose(t1);
         this->merge(tree, t0, t2);
 
         return res;
+    }
+
+
+    operand get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil || pos < 0 || pos >= tree->size) return {};
+
+        this->interface::push(tree);
+
+        const auto lower_bound = tree->left->size;
+        const auto upper_bound = tree->size - tree->right->size;
+
+        if(pos < lower_bound) {
+            return this->get(tree->left, pos);
+        }
+        else if(pos >= upper_bound) {
+            return this->get(tree->right, pos - upper_bound);
+        }
+        else {
+            return tree->data.val;
+        }
     }
 
 
@@ -280,7 +299,6 @@ struct core
         this->merge(tree, t0, t1, t2);
     }
 
-
     operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(l <= r);
         if(l == r) return operand{};
@@ -289,7 +307,7 @@ struct core
 
         this->split(tree, l, r, t0, t1, t2);
 
-        const operand res = this->get(t1);
+        const operand res = this->val(t1);
 
         this->merge(tree, t0, t1, t2);
 
@@ -608,7 +626,7 @@ struct actable_dynamic_sequence
     }
 
     inline value_type fold() noexcept(NO_EXCEPT) {
-        return this->_impl.get(this->_root);
+        return this->_impl.val(this->_root);
     }
 
     inline auto& apply(const action_type& val) noexcept(NO_EXCEPT) {
@@ -702,6 +720,11 @@ struct actable_dynamic_sequence
         return this->_impl.pop(this->_root, pos, count);
     }
 
+    inline value_type get( size_type pos) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        return this->_impl.get(this->_root, pos);
+    }
+
     inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         this->_impl.fill(this->_root, l, r, val);
@@ -753,10 +776,6 @@ struct actable_dynamic_sequence
 
     inline auto& set(const size_type pos, const value_type& val) noexcept(NO_EXCEPT) {
         return this->fill(pos, pos + 1, val);
-    }
-
-    inline value_type get(const size_type pos) noexcept(NO_EXCEPT) {
-        return this->fold(pos, pos + 1);
     }
 
 
@@ -890,7 +909,7 @@ struct actable_dynamic_sequence
         iterator() noexcept = default;
         iterator(actable_dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->val(this->pos()); }
     };
 
     inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }

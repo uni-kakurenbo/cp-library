@@ -42,7 +42,7 @@ struct core {
     size_type _n = 0, _size = 0, _depth = 0;
     std::valarray<operand> _data;
 
-    inline void pull(const size_type k) noexcept(NO_EXCEPT) {
+    inline void _pull(const size_type k) noexcept(NO_EXCEPT) {
         this->_data[k] = this->_data[k << 1] + this->_data[k << 1 | 1];
     }
 
@@ -55,6 +55,32 @@ struct core {
     {}
 
 
+    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_values.size(); }
+    inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
+
+
+    inline operand fold_all() const noexcept(NO_EXCEPT) { return this->_data[1]; }
+
+
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline void assign(I first, S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->_n);
+        }
+        {
+            size_type p = 0;
+            for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<operand>(*itr);
+        }
+        REPD(p, 1, this->_size) this->_pull(p);
+    }
+
+    inline void fill(const operand& v = {}) noexcept(NO_EXCEPT) {
+        REP(p, this->_n) this->_data[this->_size + p] = v;
+        REPD(p, 1, this->_size) this->_pull(p);
+    }
+
+
     inline void add(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         this->set(p, this->_data[p + this->_size] + x);
     }
@@ -62,7 +88,7 @@ struct core {
     inline void set(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         p += this->_size;
         this->_data[p] = x;
-        FOR(i, 1, this->_depth) this->pull(p >> i);
+        FOR(i, 1, this->_depth) this->_pull(p >> i);
     }
 
     inline operand get(size_type p) const noexcept(NO_EXCEPT) {
@@ -83,7 +109,71 @@ struct core {
         return sml + smr;
     }
 
-    inline operand fold_all() const noexcept(NO_EXCEPT) { return this->_data[1]; }
+
+    template<class F>
+    inline size_type max_right(size_type l, F&& f) const noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= this->_n);
+        assert(f(operand{}));
+
+        if(l == this->_n) return this->_n;
+
+        l += this->_size;
+        operand acc;
+        do {
+            while((l & 1) == 0) l >>= 1;
+
+            if(!f(acc + this->_data[l])) {
+                while(l < this->_size) {
+                    l <<= 1;
+
+                    if(f(acc + this->_data[l])) {
+                        acc = acc + this->_data[l];
+                        ++l;
+                    }
+                }
+
+                return l - this->_size;
+            }
+
+            acc = acc + this->_data[l];
+            ++l;
+        } while((l & -l) != l);
+
+        return this->_n;
+    }
+
+    template<class F>
+    inline size_type min_left(size_type r, F&& f) const noexcept(NO_EXCEPT) {
+        assert(0 <= r && r <= this->_n);
+        assert(f(operand{}));
+
+        if (r == 0) return 0;
+
+        r += this->_size;
+        operand acc;
+
+        do {
+            --r;
+            while(r > 1 && (r & 1)) r >>= 1;
+
+            if(!f(this->_data[r] + acc)) {
+                while(r < this->_size) {
+
+                    r = (r << 1 | 1);
+                    if(f(this->_data[r] + acc)) {
+                        acc = this->_data[r] + acc;
+                        --r;
+                    }
+                }
+
+                return r + 1 - this->_size;
+            }
+
+            acc = this->_data[r] + acc;
+        } while((r & -r) != r);
+
+        return 0;
+    }
 };
 
 
@@ -98,9 +188,11 @@ struct segment_tree : internal::unconstructible {};
 
 
 template<algebraic::internal::monoid Monoid>
-struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> {
+struct segment_tree<Monoid> {
   private:
     using core = typename internal::segment_tree_impl::core<Monoid>;
+
+    core _impl;
 
   public:
     using value_type = Monoid;
@@ -108,12 +200,12 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
 
   private:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
-        return p < 0 ? this->_n + p : p;
+        return p < 0 ? this->_impl.size() + p : p;
     }
 
   public:
-    segment_tree() noexcept(NO_EXCEPT) : core() {};
-    explicit segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : core(n) { this->fill(v); }
+    segment_tree() noexcept(NO_EXCEPT) : _impl() {};
+    explicit segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
 
     template<std::convertible_to<value_type> T>
     segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : segment_tree(ALL(init_list)) {}
@@ -127,9 +219,9 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
     explicit segment_tree(R&& range) noexcept(NO_EXCEPT) : segment_tree(ALL(range)) {}
 
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_data.size(); }
-    inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
+    inline auto allocated() const noexcept(NO_EXCEPT) { return this->_impl.allocated(); }
+    inline auto depth() const noexcept(NO_EXCEPT) { return this->_impl.depth(); }
 
 
     template<std::convertible_to<value_type> T>
@@ -137,14 +229,7 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
-        if constexpr(std::sized_sentinel_for<S, I>) {
-            assert(std::ranges::distance(first, last) == this->_n);
-        }
-        {
-            size_type p = 0;
-            for(auto itr=first; itr!=last; ++itr, ++p) this->_data[this->_size + p] = static_cast<value_type>(*itr);
-        }
-        REPD(p, 1, this->_size) this->pull(p);
+        this->_impl.assign(first, last);
         return *this;
     }
 
@@ -152,18 +237,17 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
-        REP(p, this->_n) this->_data[this->_size + p] = v;
-        REPD(p, 1, this->_size) this->pull(p);
+        this->_impl.fill(v);
         return *this;
     }
 
-    bool empty() const noexcept(NO_EXCEPT) { return this->_n == 0; }
+    bool empty() const noexcept(NO_EXCEPT) { return this->_impl.size() == 0; }
 
     struct point_reference : internal::point_reference<segment_tree> {
         point_reference(segment_tree *const super, const size_type p) noexcept(NO_EXCEPT)
           : internal::point_reference<segment_tree>(super, super->_positivize_index(p))
         {
-            assert(0 <= this->_pos && this->_pos < this->_super->_n);
+            assert(0 <= this->_pos && this->_pos < this->_super->size());
         }
 
         operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
@@ -192,123 +276,68 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
         range_reference(segment_tree *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
           : internal::range_reference<segment_tree>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
-            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->_n);
+            assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
         inline value_type fold() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->_n) return this->_super->fold();
+            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
     inline auto& add(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->_n);
-        this->core::add(p, x);
+        assert(0 <= p && p < this->_impl.size());
+        this->_impl.add(p, x);
          return *this;
     }
 
     inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->_n);
-        this->core::set(p, x);
+        assert(0 <= p && p < this->_impl.size());
+        this->_impl.set(p, x);
          return *this;
     }
 
     inline value_type get(const size_type p) const noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->_n);
-        return this->core::fold(p, p+1);
+        assert(0 <= p && p < this->_impl.size());
+        return this->_impl.fold(p, p+1);
     }
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
     inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
     inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r && r <= this->_n);
-        return this->core::fold(l, r);
+        assert(0 <= l && l <= r && r <= this->_impl.size());
+        return this->_impl.fold(l, r);
     }
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
-        assert(0 <= r && r <= this->_n);
-        return this->core::fold(0, r);
+        assert(0 <= r && r <= this->_impl.size());
+        return this->_impl.fold(0, r);
     }
     inline value_type fold() const noexcept(NO_EXCEPT) {
-        return this->core::fold_all();
+        return this->_impl.fold_all();
     }
 
 
     template<bool (*f)(value_type)>
     inline size_type max_right(const size_type l) const noexcept(NO_EXCEPT) {
-        return this->max_right(l, [](value_type x) { return f(x); });
+        return this->_impl.max_right(l, [](value_type x) { return f(x); });
     }
 
     template<class F>
-    inline size_type max_right(size_type l, F f) const noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= this->_n);
-        assert(f(value_type{}));
-
-        if(l == this->_n) return this->_n;
-
-        l += this->_size;
-        value_type sm;
-        do {
-            while((l & 1) == 0) l >>= 1;
-
-            if(!f(sm + this->_data[l])) {
-                while(l < this->_size) {
-                    l <<= 1;
-
-                    if(f(sm + this->_data[l])) {
-                        sm = sm + this->_data[l];
-                        ++l;
-                    }
-                }
-
-                return l - this->_size;
-            }
-
-            sm = sm + this->_data[l];
-            ++l;
-        } while((l & -l) != l);
-
-        return this->_n;
+    inline size_type max_right(const size_type l, F&& f) const noexcept(NO_EXCEPT) {
+        return this->_impl.max_right(l, std::forward<F>(f));
     }
 
 
     template<bool (*f)(value_type)>
     inline size_type min_left(const size_type r) const noexcept(NO_EXCEPT) {
-        return this->min_left(r, [](value_type x) { return f(x); });
+        return this->_impl.min_left(r, [](value_type x) { return f(x); });
     }
 
     template<class F>
-    inline size_type min_left(size_type r, F f) const noexcept(NO_EXCEPT) {
-        assert(0 <= r && r <= this->_n);
-        assert(f(value_type{}));
-
-        if (r == 0) return 0;
-
-        r += this->_size;
-        value_type sm;
-
-        do {
-            --r;
-            while(r > 1 && (r & 1)) r >>= 1;
-
-            if(!f(this->_data[r] + sm)) {
-                while(r < this->_size) {
-
-                    r = (r << 1 | 1);
-                    if(f(this->_data[r] + sm)) {
-                        sm = this->_data[r] + sm;
-                        --r;
-                    }
-                }
-
-                return r + 1 - this->_size;
-            }
-
-            sm = this->_data[r] + sm;
-        } while((r & -r) != r);
-
-        return 0;
+    inline size_type min_left(const size_type r, F&& f) const noexcept(NO_EXCEPT) {
+        return this->_impl.min_left(r, std::forward<F>(f));
     }
 
 
@@ -323,7 +352,7 @@ struct segment_tree<Monoid> : private internal::segment_tree_impl::core<Monoid> 
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->_n); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
 };
 
 

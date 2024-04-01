@@ -34,83 +34,98 @@ namespace fenwick_tree_impl {
 
 
 // Thanks to: atcoder::fenwick_tree
-template<algebraic::internal::monoid S>
+template<algebraic::internal::monoid Operand>
 struct core {
+    using operand = Operand;
     using size_type = internal::size_t;
 
   private:
     size_type _n = 0, _bit_ceil = 0;
-    std::valarray<S> _data;
+    std::vector<operand> _data;
 
-  protected:
-    core() noexcept(NO_EXCEPT) {}
-
-    inline void initialize() noexcept(NO_EXCEPT) {
+    inline void _init() noexcept(NO_EXCEPT) {
         FOR(i, 1, this->_n) {
             size_type j = i + (i & -i);
             if(j <= this->_n) this->_data[j-1] = this->_data[j-1] + this->_data[i-1];
         }
     }
 
+  public:
+    core() noexcept(NO_EXCEPT) {}
+
     explicit core(const size_type n) noexcept(NO_EXCEPT)
-      : _n(n), _bit_ceil(std::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(S{}, n)
+      : _n(n), _bit_ceil(std::bit_ceil<std::make_unsigned_t<size_type>>(n)), _data(n, operand{})
     {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
-    inline S* data() noexcept(NO_EXCEPT) { return std::ranges::begin(this->_data); }
-    inline const S* data() const noexcept(NO_EXCEPT) { return std::ranges::begin(this->_data); }
 
-    inline void apply(size_type p, const S& x) noexcept(NO_EXCEPT) {
+    template<std::input_iterator I, std::sentinel_for<I> S>
+    inline void assign(I first, S last) noexcept(NO_EXCEPT) {
+        if constexpr(std::sized_sentinel_for<S, I>) {
+            assert(std::ranges::distance(first, last) == this->size());
+        }
+        std::ranges::copy(first, last, std::ranges::begin(this->_data));
+        this->_init();
+    }
+
+
+    inline void apply(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
     }
 
-    inline void set(const size_type p, const S& x) noexcept(NO_EXCEPT) {
+    inline void set(const size_type p, const operand& x) noexcept(NO_EXCEPT) {
         assert(this->get(p) == this->fold(p, p+1));
         this->apply(p, x + -this->get(p));
     }
 
-    inline S fold(size_type r) const noexcept(NO_EXCEPT) {
-        S s = S{};
+    inline operand fold(size_type r) const noexcept(NO_EXCEPT) {
+        operand s = operand{};
         for(; r>0; r -= r & -r) s = s + this->_data[r-1];
         return s;
     }
-    inline S fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
-        S s = S{};
+    inline operand fold(size_type l, size_type r) const noexcept(NO_EXCEPT) {
+        operand s = operand{};
         for(; l < r; r -= r & -r) s = s + this->_data[r-1];
         for(; r < l; l -= l & -l) s = s + -this->_data[l-1];
         return s;
     }
 
-    inline S get(size_type p) const noexcept(NO_EXCEPT) { return this->fold(p, p+1); }
+    inline operand get(size_type p) const noexcept(NO_EXCEPT) {
+        return this->fold(p, p+1);
+    }
 
-  public:
-    template<class F> inline size_type max_right(size_type l, const F& f) const noexcept(NO_EXCEPT) {
+    template<class F>
+    inline size_type max_right(size_type l, const F& f) const noexcept(NO_EXCEPT)
+        requires algebraic::internal::invertible<operand>
+    {
         assert(0 <= l && l <= this->_n);
-        assert(f(S{}));
+        assert(f(operand{}));
         if(l == this->_n) return this->_n;
-        S fold_l_inv = -this->fold(l);
+        operand inv = -this->fold(l);
         size_type p = 0, q = this->_bit_ceil;
         for(size_type k=q; k>0; k >>= 1) {
-            if(p+k <= this->_n and f(this->_data[p+k-1] + fold_l_inv)) {
-                fold_l_inv = fold_l_inv + this->_data[(p+=k)-1];
+            if(p+k <= this->_n and f(this->_data[p+k-1] + inv)) {
+                inv = inv + this->_data[(p+=k)-1];
             }
         }
         return p;
     }
 
-    template<class F> inline size_type min_left(size_type r, const F& f) const noexcept(NO_EXCEPT) {
+    template<class F> inline size_type min_left(size_type r, const F& f) const noexcept(NO_EXCEPT)
+        requires algebraic::internal::invertible<operand>
+    {
         assert(0 <= r && r <= this->_n);
-        assert(f(S{}));
+        assert(f(operand{}));
         if(r == 0) return 0;
-        S fold_r = this->fold(r);
+        operand acc = this->fold(r);
         size_type p = 0, q = std::bit_ceil<std::make_unsigned_t<size_type>>(r);
         for(size_type k=q; k>0; k >>= 1) {
-            if(p+k < r and !f(fold_r + -this->_data[p+k-1])) {
-                fold_r = fold_r + -this->_data[(p+=k)-1];
+            if(p+k < r and !f(acc + -this->_data[p+k-1])) {
+                acc = acc + -this->_data[(p+=k)-1];
             }
         }
-        if(p == 0 and f(fold_r)) return 0;
+        if(p == 0 and f(acc)) return 0;
         return p + 1;
     }
 };
@@ -131,20 +146,22 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
   private:
     using core = typename internal::fenwick_tree_impl::core<Monoid>;
 
+    core _impl;
+
   public:
-    using value_type = Monoid;
+    using value_type = typename core::operand;
     using size_type = typename core::size_type;
 
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
-        return p < 0 ? this->size() + p : p;
+        return p < 0 ? this->_impl.size() + p : p;
     }
 
   public:
-    fenwick_tree() noexcept(NO_EXCEPT) : core() {}
+    fenwick_tree() noexcept(NO_EXCEPT) : _impl() {}
 
-    explicit fenwick_tree(const size_type n) noexcept(NO_EXCEPT) : core(n) {}
-    explicit fenwick_tree(const size_type n, const value_type& v) noexcept(NO_EXCEPT) : core(n) { this->fill(v); }
+    explicit fenwick_tree(const size_type n) noexcept(NO_EXCEPT) : _impl(n) {}
+    explicit fenwick_tree(const size_type n, const value_type& v) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
 
     template<std::convertible_to<value_type> T>
     fenwick_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : fenwick_tree(ALL(init_list)) {}
@@ -163,11 +180,7 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto& assign(I first, S last) noexcept(NO_EXCEPT) {
-        if constexpr(std::sized_sentinel_for<S, I>) {
-            assert(std::ranges::distance(first, last) == this->size());
-        }
-        std::copy(first, last, this->data());
-        this->initialize();
+        this->_impl.assign(first, last);
         return *this;
     }
 
@@ -175,13 +188,13 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
-        std::fill(this->data(), this->data() + this->size(), v);
-        this->initialize();
+        std::fill(this->data(), this->data() + this->_impl.size(), v);
+        this->_init();
         return *this;
     }
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->core::size(); }
-    inline bool empty() const noexcept(NO_EXCEPT) { return this->core::size() == 0; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
+    inline bool empty() const noexcept(NO_EXCEPT) { return this->_impl.size() == 0; }
 
     struct point_reference : internal::point_reference<fenwick_tree> {
         point_reference(fenwick_tree *const super, const size_type p) noexcept(NO_EXCEPT)
@@ -228,24 +241,24 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
 
 
     inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
-        assert(0 <= p && p < this->size());
-        this->core::apply(p, x);
+        assert(0 <= p && p < this->_impl.size());
+        this->_impl.apply(p, x);
          return *this;
     }
 
     inline auto& set(const size_type p, const value_type& x) noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<value_type>
     {
-        assert(0 <= p && p < this->size());
-        this->core::set(p, x);
+        assert(0 <= p && p < this->_impl.size());
+        this->_impl.set(p, x);
          return *this;
     }
 
     inline value_type get(const size_type p) const noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<value_type>
     {
-        assert(0 <= p && p < this->size());
-        return this->core::get(p);
+        assert(0 <= p && p < this->_impl.size());
+        return this->_impl.get(p);
     }
 
     inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
@@ -261,17 +274,17 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
     inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<value_type>
     {
-        assert(0 <= l && l <= r && r <= this->size());
-        return this->core::fold(l, r);
+        assert(0 <= l && l <= r && r <= this->_impl.size());
+        return this->_impl.fold(l, r);
     }
 
     inline value_type fold(const size_type r) const noexcept(NO_EXCEPT) {
-        assert(0 <= r && r <= this->size());
-        return this->core::fold(r);
+        assert(0 <= r && r <= this->_impl.size());
+        return this->_impl.fold(r);
     }
 
     inline value_type fold() const noexcept(NO_EXCEPT) {
-        return this->core::fold(this->size());
+        return this->_impl.fold(this->_impl.size());
     }
 
     struct iterator;
@@ -288,7 +301,7 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
     };
 
     inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
 };
 
 
