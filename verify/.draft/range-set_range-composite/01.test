@@ -27,7 +27,7 @@ signed main() {
     return 0;
 }
 
-#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/actable_dynamic_sequence.hpp"
 #include "action/range_set_range_sum.hpp"
 
 using mint = lib::modint998244353;
@@ -72,7 +72,7 @@ void solve() {
         one[i+1] = one[i] + ten[i];
     }
 
-    lib::dynamic_sequence<action<mint>> data(n, mint{1});
+    lib::actable_dynamic_sequence<action<mint>> data(n, mint{1});
 
     valarray<monoid<mint>> a(n, mint{1});
     REP(q) {

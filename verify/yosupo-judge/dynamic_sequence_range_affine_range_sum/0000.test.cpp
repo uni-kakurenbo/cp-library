@@ -17,7 +17,7 @@
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adaptor/vector.hpp"
-#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/actable_dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
 #include "action/range_affine_range_sum.hpp"
 
@@ -32,7 +32,7 @@ signed main() {
     std::pmr::monotonic_buffer_resource mr{ &buffer, sizeof(buffer) };
 
 
-    lib::dynamic_sequence<
+    lib::actable_dynamic_sequence<
         lib::actions::range_affine_range_sum<mint>,
         lib::pmr::treap_context<lib::i64>
     > data(a, &mr);

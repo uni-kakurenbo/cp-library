@@ -425,7 +425,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
 template<actions::internal::full_action Action, class Context = treap_context<>>
     requires internal::available_with<internal::dynamic_sequence_impl::core, Action, Context>
-struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, Context> {
+struct actable_dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, Context> {
   public:
     using action = Action;
 
@@ -463,41 +463,41 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
 
 
   public:
-    ~dynamic_sequence() { this->dispose(this->_root); }
+    ~actable_dynamic_sequence() { this->dispose(this->_root); }
 
-    dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
+    actable_dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
 
-    dynamic_sequence(const node_pointer& root, const size_type offset = 0, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    actable_dynamic_sequence(const node_pointer& root, const size_type offset = 0, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
       : core(allocator), _root(root), _offset(offset)
     {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_sequence(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    actable_dynamic_sequence(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
       : core(allocator)
     {
         this->assign(first, last);
     }
 
 
-    explicit dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    explicit actable_dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
       : core(allocator)
     {
         this->assign(size, val);
     }
 
-    explicit dynamic_sequence(const size_type size, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(size, value_type{}, allocator)
+    explicit actable_dynamic_sequence(const size_type size, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_sequence(size, value_type{}, allocator)
     {}
 
     template<std::ranges::input_range R>
-        requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
-    explicit dynamic_sequence(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(ALL(range), allocator)
+        requires (!std::same_as<std::decay_t<R>, actable_dynamic_sequence>)
+    explicit actable_dynamic_sequence(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_sequence(ALL(range), allocator)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
-      : dynamic_sequence(values, allocator)
+    actable_dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_sequence(values, allocator)
     {}
 
     inline size_type offset() const noexcept(NO_EXCEPT) { return this->_offset; }
@@ -520,14 +520,14 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
         node_pointer t0, t1, t2;
         this->core::split(this->_root, l, r, t0, t1, t2);
         this->core::merge(this->_root, t0, t1, t2);
-        return dynamic_sequence(t1, this->_offset);
+        return actable_dynamic_sequence(t1, this->_offset);
     }
 
     inline auto split(size_type pos) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         node_pointer t0, t1;
         this->core::split(this->_root, pos, t0, t1);
-        return std::make_pair(dynamic_sequence(t0, this->_offset), dynamic_sequence(t1, this->_offset));
+        return std::make_pair(actable_dynamic_sequence(t0, this->_offset), actable_dynamic_sequence(t1, this->_offset));
     }
 
     inline auto extract(size_type l, size_type r) noexcept(NO_EXCEPT) {
@@ -535,10 +535,10 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
         node_pointer t0, t1, t2;
         this->core::split(this->_root, l, r, t0, t1, t2);
         this->core::merge(this->_root, t0, t2);
-        return dynamic_sequence(t1, this->_offset);
+        return actable_dynamic_sequence(t1, this->_offset);
     }
 
-    inline auto& insert(size_type pos, const dynamic_sequence& other) noexcept(NO_EXCEPT) {
+    inline auto& insert(size_type pos, const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         node_pointer t0, t1;
         this->core::split(this->_root, pos, t0, t1);
@@ -546,7 +546,7 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
         return *this;
     }
 
-    inline auto& replace(size_type l, size_type r, const dynamic_sequence& other) noexcept(NO_EXCEPT) {
+    inline auto& replace(size_type l, size_type r, const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         node_pointer t0, t1, t2;
         this->core::split(this->_root, l, r, t0, t1, t2);
@@ -554,7 +554,7 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
         return *this;
     }
 
-    inline auto& merge(const dynamic_sequence& other) noexcept(NO_EXCEPT) {
+    inline auto& merge(const actable_dynamic_sequence& other) noexcept(NO_EXCEPT) {
         this->core::merge(this->_root, this->_root, other._root);
         return *this;
     }
@@ -734,7 +734,7 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
 
 
     template<std::ranges::input_range R>
-        requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
+        requires (!std::same_as<std::decay_t<R>, actable_dynamic_sequence>)
     inline auto& insert(const size_type pos, R&& range) noexcept(NO_EXCEPT) {
         return this->insert(pos, ALL(range));
     }
@@ -789,9 +789,9 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
     }
 
 
-    struct point_reference : internal::point_reference<dynamic_sequence, size_type> {
-        point_reference(dynamic_sequence *const super, const size_type pos) noexcept(NO_EXCEPT)
-          : internal::point_reference<dynamic_sequence, size_type>(super, pos)
+    struct point_reference : internal::point_reference<actable_dynamic_sequence, size_type> {
+        point_reference(actable_dynamic_sequence *const super, const size_type pos) noexcept(NO_EXCEPT)
+          : internal::point_reference<actable_dynamic_sequence, size_type>(super, pos)
         {}
 
         operator value_type() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
@@ -820,9 +820,9 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
     };
 
 
-    struct range_reference : internal::range_reference<dynamic_sequence, size_type> {
-        range_reference(dynamic_sequence *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
-          : internal::range_reference<dynamic_sequence, size_type>(super, l, r)
+    struct range_reference : internal::range_reference<actable_dynamic_sequence, size_type> {
+        range_reference(actable_dynamic_sequence *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<actable_dynamic_sequence, size_type>(super, l, r)
         {}
 
         inline auto clone() noexcept(NO_EXCEPT) {
@@ -872,12 +872,12 @@ struct dynamic_sequence : private internal::dynamic_sequence_impl::core<Action, 
     struct iterator;
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type, dynamic_sequence, iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type, actable_dynamic_sequence, iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
-        iterator(dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
+        iterator(actable_dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };

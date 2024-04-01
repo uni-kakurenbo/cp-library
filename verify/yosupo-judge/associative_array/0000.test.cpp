@@ -17,14 +17,14 @@
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adaptor/vector.hpp"
-#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/actable_dynamic_sequence.hpp"
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
 
 using mint = lib::modint998244353;
 
 signed main() {
-    lib::dynamic_sequence<lib::actions::null<lib::i64>> data;
+    lib::actable_dynamic_sequence<lib::actions::null<lib::i64>> data;
 
     int q; input >> q;
     REP(q) {

@@ -16,12 +16,12 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/vector.hpp"
-#include "data_structure/dynamic_set.hpp"
+#include "data_structure/actable_dynamic_set.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_set<lib::i32> set(({
+    lib::actable_dynamic_set<lib::i32> set(({
         lib::vector<lib::i32> v(n); input >> v;
         v;
     }));

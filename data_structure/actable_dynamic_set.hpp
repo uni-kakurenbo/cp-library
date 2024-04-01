@@ -298,14 +298,14 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
 
 template<class Value, class Context = treap_context<>>
-struct dynamic_set : dynamic_set<actions::make_full_t<Value>, Context> {
-    using dynamic_set<actions::make_full_t<Value>, Context>::dynamic_set;
+struct actable_dynamic_set : actable_dynamic_set<actions::make_full_t<Value>, Context> {
+    using actable_dynamic_set<actions::make_full_t<Value>, Context>::actable_dynamic_set;
 };
 
 
 template<actions::internal::full_action Action, class Context>
     requires internal::available_with<internal::dynamic_set_impl::core, Action, Context>
-struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<Action, Context> {
+struct actable_dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<Action, Context> {
   public:
     using action = Action;
 
@@ -332,36 +332,36 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
 
   public:
-    ~dynamic_set() { this->dispose(this->_root); }
+    ~actable_dynamic_set() { this->dispose(this->_root); }
 
-    dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : core(alloc) {};
+    actable_dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : core(alloc) {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_set(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(alloc)
+    actable_dynamic_set(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_set(alloc)
     {
         this->assign(first, last);
     }
 
 
-    explicit dynamic_set(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(alloc)
+    explicit actable_dynamic_set(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_set(alloc)
     {
         this->assign(size, val);
     }
 
-    explicit dynamic_set(const size_type size, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(size, value_type{}, alloc)
+    explicit actable_dynamic_set(const size_type size, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_set(size, value_type{}, alloc)
     {}
 
     template<std::ranges::input_range R>
-    explicit dynamic_set(R&& range, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(ALL(range), alloc)
+    explicit actable_dynamic_set(R&& range, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_set(ALL(range), alloc)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_set(const std::initializer_list<T>& values, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(values, alloc)
+    actable_dynamic_set(const std::initializer_list<T>& values, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
+      : actable_dynamic_set(values, alloc)
     {}
 
 
@@ -530,12 +530,12 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
 
   protected:
-    using iterator_interface = internal::container_iterator_interface<value_type,dynamic_set,iterator>;
+    using iterator_interface = internal::container_iterator_interface<value_type,actable_dynamic_set,iterator>;
 
   public:
     struct iterator : iterator_interface {
         iterator() noexcept = default;
-        iterator(dynamic_set *const ref, const size_type k) noexcept(NO_EXCEPT) : iterator_interface(ref, k) {}
+        iterator(actable_dynamic_set *const ref, const size_type k) noexcept(NO_EXCEPT) : iterator_interface(ref, k) {}
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
