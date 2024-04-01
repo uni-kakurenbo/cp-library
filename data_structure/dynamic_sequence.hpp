@@ -196,6 +196,26 @@ struct core
     }
 
 
+    value_type get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
+        if(tree == node_handler::nil || pos < 0 || pos >= tree->size) return value_type{};
+
+        this->interface::push(tree);
+
+        const auto lower_bound = tree->left->size;
+        const auto upper_bound = tree->size - tree->right->size;
+
+        if(pos < lower_bound) {
+            return this->get(tree->left, pos);
+        }
+        else if(pos >= upper_bound) {
+            return this->get(tree->right, pos - upper_bound);
+        }
+        else {
+            return tree->data.val;
+        }
+    }
+
+
     void fill(node_pointer& tree, const size_type l, const size_type r, const value_type& val) noexcept(NO_EXCEPT) {
         assert(l <= r);
         if(l == r) return;
@@ -216,26 +236,6 @@ struct core
         this->split(tree, pos, pos + std::ranges::distance(first, last), t0, t1, t2);
         this->dispose(t1);
         this->merge(tree, t0, this->build(first, last), t2);
-    }
-
-
-    value_type get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
-        if(tree == node_handler::nil || pos < 0 || pos >= tree->size) return value_type{};
-
-        this->interface::push(tree);
-
-        const auto lower_bound = tree->left->size;
-        const auto upper_bound = tree->size - tree->right->size;
-
-        if(pos < lower_bound) {
-            return this->get(tree->left, pos);
-        }
-        else if(pos >= upper_bound) {
-            return this->get(tree->right, pos - upper_bound);
-        }
-        else {
-            return tree->data.val;
-        }
     }
 
 
