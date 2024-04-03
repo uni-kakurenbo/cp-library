@@ -13,14 +13,14 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_min.hpp"
 #include "action/helpers.hpp"
 
 signed main() {
     int n, q; input >> n >> q;
 
-    lib::actable_dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(n);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;

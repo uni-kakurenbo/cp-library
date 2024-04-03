@@ -17,11 +17,11 @@
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
 #include "data_structure/fenwick_tree.hpp"
-#include "data_structure/actable_dynamic_set.hpp"
+#include "data_structure/dynamic_set.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::actable_dynamic_set<lib::i32, lib::treap_context<lib::i32>> st;
+    lib::dynamic_set<lib::i32, lib::treap_context<lib::i32>> st;
 
     REP(i, n) {
         char v; std::cin >> v;

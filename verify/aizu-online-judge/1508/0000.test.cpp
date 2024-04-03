@@ -14,7 +14,7 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/vector.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_min.hpp"
 #include "action/helpers.hpp"
 
@@ -22,7 +22,7 @@ signed main() {
     int n, q; input >> n >> q;
     lib::vector<int> a(n); input >> a;
 
-    lib::actable_dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(a);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(a);
     debug(data.dump_rich());
 
     REP(q) {

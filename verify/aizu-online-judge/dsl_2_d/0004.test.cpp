@@ -13,7 +13,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_set.hpp"
 #include "action/helpers.hpp"
 #include "algebraic/addition.hpp"
@@ -22,7 +22,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::actable_dynamic_sequence<lib::actions::make_full_t<lib::i32>> data(n, (1U << 31) - 1);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::i32>> data(n, (1U << 31) - 1);
 
     REP(q) {
         int t; std::cin >> t;

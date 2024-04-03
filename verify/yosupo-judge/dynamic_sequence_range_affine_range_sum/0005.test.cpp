@@ -17,7 +17,7 @@
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adaptor/vector.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/red_black_tree.hpp"
 #include "action/range_affine_range_sum.hpp"
 
@@ -27,7 +27,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<mint> a(n); input >> a;
 
-    lib::actable_dynamic_sequence<
+    lib::dynamic_sequence<
         lib::actions::range_affine_range_sum<mint>,
         lib::persistent_red_black_tree_context<lib::i32>
     > data(a);

@@ -13,12 +13,12 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::actable_dynamic_sequence<lib::actions::range_add_range_sum<long>> data(n);
+    lib::dynamic_sequence<lib::actions::range_add_range_sum<long>> data(n);
     debug(data.dump_rich());
 
     while(q--) {

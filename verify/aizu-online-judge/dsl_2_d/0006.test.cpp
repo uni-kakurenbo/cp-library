@@ -13,7 +13,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "data_structure/red_black_tree.hpp"
 #include "action/range_set.hpp"
 #include "action/helpers.hpp"
@@ -23,7 +23,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::actable_dynamic_sequence<
+    lib::dynamic_sequence<
         lib::actions::make_full_t<lib::i32>,
         lib::persistent_red_black_tree_context<lib::i32>
     > data(n, (1U << 31) - 1);

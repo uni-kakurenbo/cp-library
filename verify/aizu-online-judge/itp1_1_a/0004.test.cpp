@@ -16,7 +16,7 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/set.hpp"
-#include "data_structure/actable_dynamic_set.hpp"
+#include "data_structure/dynamic_set.hpp"
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
 #include "random/engine.hpp"
@@ -25,7 +25,7 @@
 signed main() {
     print("Hello World");
 
-    lib::actable_dynamic_set<lib::i64> data;
+    lib::dynamic_set<lib::i64> data;
     lib::multiset<lib::i64> corr;
 
     debug(data);

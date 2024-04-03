@@ -46,8 +46,8 @@ struct dumpable_tree {
         requires
             (
                 LEAF_ONLY &&
-                requires () {
-                    typename Derived::node_colors;
+                requires {
+                    typename Core::node_colors;
                 }
             )
     {
@@ -59,9 +59,9 @@ struct dumpable_tree {
         const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
 
 
-        const auto color = tree->color == Derived::node_colors::BLACK ? "<->" : "<+>";
+        const auto color = tree->color == Core::node_colors::BLACK ? "<->" : "<+>";
 
-        const auto here = [&]{
+        const auto here = [&]() -> std::string {
             if(tree->is_leaf()) {
                 index += tree->size;
 
@@ -71,6 +71,7 @@ struct dumpable_tree {
                     debugger::COLOR_STRING + color + debugger::COLOR_INIT + " " +
                     debugger::dump(tree->data) + "\n";
             }
+            return "";
         }();
 
         return left + here + right;

@@ -15,14 +15,14 @@
 #include "adaptor/io.hpp"
 #include "adaptor/valarray.hpp"
 #include "iterable/accumulation.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/helpers.hpp"
 #include "action/range_sum.hpp"
 
 signed main() {
     int n, q; std::cin >> n >> q;
     lib::valarray<lib::i64> a(n); input >> a;
-    lib::actable_dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> sum(a);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

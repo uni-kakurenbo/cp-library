@@ -14,14 +14,14 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_sum.hpp"
 #include "action/helpers.hpp"
 
 int main() {
     int n, q; std::cin >> n >> q;
     lib::valarray<lib::i64> a(n); input >> a;
-    lib::actable_dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> data(a);
+    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> data(a);
 
     REP(q) {
         int t, l, r; std::cin >> t >> l >> r;

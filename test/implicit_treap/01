@@ -5,11 +5,11 @@
 #include <atcoder/modint>
 #include "template/standard.hpp"
 
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
-    lib::actable_dynamic_sequence<lib::actions::range_add_range_sum<int>> data;
+    lib::dynamic_sequence<lib::actions::range_add_range_sum<int>> data;
 
     {
         data.push_back(1);

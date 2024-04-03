@@ -16,7 +16,7 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/vector.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/actable_dynamic_sequence.hpp"
+#include "data_structure/dynamic_sequence.hpp"
 #include "action/range_add_range_sum.hpp"
 
 
@@ -24,7 +24,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     lib::vector<lib::ll> a(n); input >> a;
 
-    lib::actable_dynamic_sequence<lib::actions::range_add_range_sum<lib::ll>> data(a);
+    lib::dynamic_sequence<lib::actions::range_add_range_sum<lib::ll>> data(a);
     // debug(data._root->rank);
     debug(data.size());
     // debug(data.dump_rich());
