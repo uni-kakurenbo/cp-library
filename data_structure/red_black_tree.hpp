@@ -327,7 +327,7 @@ struct red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType>;
 };
 
 template<std::integral SizeType = i64, class Allocator = std::allocator<SizeType>>
@@ -335,7 +335,7 @@ struct persistent_red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::red_black_tree_impl<lib::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<lib::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
 };
 
 

@@ -276,7 +276,7 @@ struct treap_context {
     static constexpr bool LEAF_ONLY = false;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
+    using substance = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
 };
 
 

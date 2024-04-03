@@ -26,7 +26,7 @@
 
 #include "global/constants.hpp"
 
-#include "data_structure/internal/tree_interface.hpp"
+#include "data_structure/internal/basic_tree_concept.hpp"
 #include "data_structure/internal/tree_dumper.hpp"
 #include "data_structure/internal/tree_enumerator.hpp"
 
@@ -69,13 +69,13 @@ struct data_type {
 
 template<class ValueType, class Context>
 struct core
-  : Context::interface<
+  : Context::substance<
         core<ValueType, Context>,
         internal::data_type<ValueType>
     >,
     enumerable_tree<
         core<ValueType, Context>,
-        typename Context::interface<core<ValueType, Context>, internal::data_type<ValueType>>,
+        typename Context::substance<core<ValueType, Context>, internal::data_type<ValueType>>,
         ValueType,
         Context::LEAF_ONLY
     >
@@ -85,19 +85,19 @@ struct core
     using data_type = internal::data_type<value_type>;
 
 
-    using interface = typename Context::interface<core, data_type>;
-    static_assert(tree_interface<interface>);
+    using base = typename Context::substance<core, data_type>;
+    static_assert(basic_tree<base>);
 
-    friend interface;
-
-
-    using node_handler = typename interface::node_handler;
-
-    using node_type = typename interface::node_type;
-    using node_pointer = typename interface::node_pointer;
+    friend base;
 
 
-    using size_type = typename interface::size_type;
+    using node_handler = typename base::node_handler;
+
+    using node_type = typename base::node_type;
+    using node_pointer = typename base::node_pointer;
+
+
+    using size_type = typename base::size_type;
 
 
     inline value_type get(const node_pointer& node) const noexcept(NO_EXCEPT) {
@@ -135,10 +135,10 @@ struct core
     template<class... Args>
     inline void update(Args&&...) const noexcept(NO_EXCEPT) {}
 
-    using interface::interface;
+    using base::base;
 
-    using interface::split;
-    using interface::merge;
+    using base::split;
+    using base::merge;
 
     inline void split(const node_pointer& tree, const size_type l, const size_type r, node_pointer& t0, node_pointer& t1, node_pointer& t2) noexcept(NO_EXCEPT) {
         this->split(tree, r, t1, t2);
@@ -199,7 +199,7 @@ struct core
     value_type get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil || pos < 0 || pos >= tree->size) return value_type{};
 
-        this->interface::push(tree);
+        this->base::push(tree);
 
         const auto lower_bound = tree->left->size;
         const auto upper_bound = tree->size - tree->right->size;
