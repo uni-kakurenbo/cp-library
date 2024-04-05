@@ -40,6 +40,7 @@ namespace internal {
 template<class NodeHandler, class Derived, std::integral SizeType, class ValueType>
 struct red_black_tree_impl {
     using size_type = SizeType;
+    using rank_type = int;
     using value_type = ValueType;
 
     enum class node_colors : std::int8_t { RED, BLACK };
@@ -54,7 +55,8 @@ struct red_black_tree_impl {
         node_pointer left = node_handler::nil, right = node_handler::nil;
 
         node_colors color = node_colors::BLACK;
-        size_type size = 0, rank = 0;
+        size_type size = 0;
+        rank_type rank = 0;
 
         inline constexpr bool is_leaf() const noexcept(NO_EXCEPT) {
             return this->left == node_handler::nil && this->right == node_handler::nil;
@@ -85,7 +87,7 @@ struct red_black_tree_impl {
 
     [[no_unique_address]] node_handler _node_handler;
 
-  protected:
+  public:
     void pull(const node_pointer& tree) const noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
         if(tree->is_leaf()) return;
@@ -114,7 +116,7 @@ struct red_black_tree_impl {
     node_pointer create(const node_colors color, node_pointer left, node_pointer right) noexcept(NO_EXCEPT) {
         this->push(left);
         this->push(right);
-        return this->_node_handler.create(color, left, right);
+        return this->_node_handler.create(color, std::move(left), std::move(right));
     }
 
 
@@ -127,8 +129,8 @@ struct red_black_tree_impl {
         }
     }
 
-
-    void as_root(node_pointer& node) {
+  private:
+    void _as_root(node_pointer& node) {
         this->clone(node);
         if(node->color == node_colors::RED) node->color = node_colors::BLACK;
         this->push(node);
@@ -229,21 +231,21 @@ struct red_black_tree_impl {
 
         if(pos < l->size) {
             this->_split(std::move(l), pos, left, right);
-            this->as_root(r);
+            this->_as_root(r);
             this->merge(right, right, std::move(r));
-            this->as_root(left);
+            this->_as_root(left);
             return;
         }
         if(pos > l->size) {
             this->_split(std::move(r), pos - l->size, left, right);
-            this->as_root(l);
+            this->_as_root(l);
             this->merge(left, std::move(l), left);
-            this->as_root(right);
+            this->_as_root(right);
             return;
         }
 
         left = std::move(l), right = std::move(r);
-        this->as_root(left), this->as_root(right);
+        this->_as_root(left), this->_as_root(right);
     }
 
   public:
@@ -260,7 +262,7 @@ struct red_black_tree_impl {
         const auto middle = std::ranges::next(first,  std::bit_floor(to_unsigned(length - 1)));
 
         node_pointer tree;
-        this->merge(tree, this->build(first, middle), this->build(middle, last));
+        this->merge(tree, this->build(std::move(first), middle), this->build(middle, std::move(last)));
 
         return tree;
     }
@@ -278,40 +280,40 @@ struct red_black_tree_impl {
         const auto middle = std::ranges::next(first, std::bit_floor(to_unsigned(length - 1)));
 
         node_pointer tree;
-        this->merge(tree, this->build(first, middle), this->build(middle, last));
+        this->merge(tree, this->build(std::move(first), middle), this->build(middle, std::move(last)));
 
         return tree;
     }
 
-    void split(node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
+    void split(const node_pointer& tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
             left = node_handler::nil;
-            this->merge(right, this->create(value_type{}, -pos), std::move(tree));
+            this->merge(right, this->create(value_type{}, -pos), tree);
         }
         else if(tree->size <= pos) {
             right = node_handler::nil;
-            this->merge(left, std::move(tree), this->create(value_type{}, pos - tree->size));
+            this->merge(left, tree, this->create(value_type{}, pos - tree->size));
         }
         else {
-            this->_split(std::move(tree), pos, left, right);
+            this->_split(tree, pos, left, right);
         }
     }
 
 
-    void merge(node_pointer& tree, node_pointer left, node_pointer right) noexcept(NO_EXCEPT) {
+    void merge(node_pointer& tree, const node_pointer& left, const node_pointer& right) noexcept(NO_EXCEPT) {
         if(left == node_handler::nil) {
-            this->push(right);
             tree = right;
-            return;
+            this->push(tree);
         }
-        if(right == node_handler::nil) {
-            this->push(left);
+        else if(right == node_handler::nil) {
             tree = left;
-            return;
+            this->push(tree);
+        }
+        else {
+            this->_merge(tree, left, right);
+            tree->color = node_colors::BLACK;
         }
 
-        this->_merge(tree, left, right);
-        tree->color = node_colors::BLACK;
         this->pull(tree);
     }
 };
@@ -325,7 +327,7 @@ struct red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType>;
 };
 
 template<std::integral SizeType = i64, class Allocator = std::allocator<SizeType>>
@@ -333,7 +335,7 @@ struct persistent_red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::red_black_tree_impl<lib::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<lib::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
 };
 
 

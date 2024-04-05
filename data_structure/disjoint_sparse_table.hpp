@@ -31,23 +31,33 @@ namespace disjoint_sparse_table_impl {
 
 
 // Thanks to: https://noshi91.hatenablog.com/entry/2018/05/08/183946
-template<algebraic::internal::semigroup S>
-struct base {
+template<algebraic::internal::semigroup Operand>
+struct core {
     using size_type = internal::size_t;
-    using iterator = std::vector<std::vector<S>>;
+    using operand = Operand;
 
-  private:
+    using iterator = std::vector<std::vector<Operand>>;
+
     size_type _n = 0, _depth = 0;
     bool _built = false;
 
   protected:
-    std::vector<std::vector<S>> _table = {};
+    std::vector<std::vector<operand>> _table = {};
 
   public:
-    explicit base(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
+    explicit core(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         this->_depth = std::bit_width<std::make_unsigned_t<size_type>>(n);
-        this->_table.resize(this->_depth+1, std::vector<S>(n));
+        this->_table.resize(this->_depth+1, std::vector<operand>(n));
     }
+
+
+    template<std::input_iterator I, std::sized_sentinel_for<I> S>
+    core(I first, S last) noexcept(NO_EXCEPT)
+      : core(static_cast<size_type>(std::ranges::distance(first, last)))
+    {
+        std::ranges::copy(first, last, this->_table.begin()->begin());
+    }
+
 
     template<bool FORCE = false>
     inline auto& build() noexcept(NO_EXCEPT) {
@@ -83,8 +93,8 @@ struct base {
 
     size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
-    S fold(const size_type l, size_type r) {
-        if(l == r) return S{};
+    operand fold(const size_type l, size_type r) {
+        if(l == r) return operand{};
         if(l == --r) return this->_table.front()[l];
 
         this->build();
@@ -95,43 +105,55 @@ struct base {
 };
 
 
-template<class> struct core : unconstructible {};
+} // namespace disjoint_sparse_table_impl
+
+} // namespace internal
+
+
+
+
+template<class> struct disjoint_sparse_table : internal::unconstructible {};
+
 
 template<algebraic::internal::semigroup Semigroup>
-struct core<Semigroup> : base<Semigroup> {
-    using value_type = Semigroup;
-    using size_type = internal::size_t;
-
+struct disjoint_sparse_table<Semigroup> {
   private:
-    using base = internal::disjoint_sparse_table_impl::base<Semigroup>;
+    using core = internal::disjoint_sparse_table_impl::core<Semigroup>;
+    using iterator = typename core::iterator;
+
+    core _impl;
+
+  public:
+    using value_type = typename core::operand;
+    using size_type = typename core::size_type;
 
   protected:
     inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
-        return p < 0 ? this->size() + p : p;
+        return p < 0 ? this->_impl.size() + p : p;
     }
 
   public:
-    using base::base;
-
-    explicit core(const size_type n, const Semigroup& val) noexcept(NO_EXCEPT) : core(n) {
+    explicit disjoint_sparse_table(const size_type n, const Semigroup& val) noexcept(NO_EXCEPT) : _impl(n) {
         this->_table.begin()->assign(n, val);
     }
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    core(I first, S last) noexcept(NO_EXCEPT)
-      : core(static_cast<size_type>(std::ranges::distance(first, last)))
-    {
-        std::ranges::copy(first, last, this->_table.begin()->begin());
-    }
+    disjoint_sparse_table(I first, S last) noexcept(NO_EXCEPT) : _impl(first, last) {}
 
     template<std::ranges::input_range R>
-    explicit core(R&& range) noexcept(NO_EXCEPT)
-      : core(std::ranges::begin(range), std::ranges::end(range))
+    explicit disjoint_sparse_table(R&& range) noexcept(NO_EXCEPT)
+      : _impl(std::ranges::begin(range), std::ranges::end(range))
     {}
 
-    struct range_reference : internal::range_reference<core> {
-        range_reference(core *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
-          : internal::range_reference<core>(super, super->_positivize_index(l), super->_positivize_index(r))
+
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
+
+
+    friend internal::range_reference<disjoint_sparse_table>;
+
+    struct range_reference : internal::range_reference<disjoint_sparse_table> {
+        range_reference(disjoint_sparse_table *const super, const size_type l, const size_type r) noexcept(NO_EXCEPT)
+          : internal::range_reference<disjoint_sparse_table>(super, super->_positivize_index(l), super->_positivize_index(r))
         {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
@@ -141,10 +163,11 @@ struct core<Semigroup> : base<Semigroup> {
         }
     };
 
+
     inline value_type fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
-        return this->base::fold(l, r);
+        return this->_impl.fold(l, r);
     }
     inline value_type fold() noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
 
@@ -156,22 +179,9 @@ struct core<Semigroup> : base<Semigroup> {
 };
 
 
-template<actions::internal::operand_only_action Action>
-struct core<Action> : core<typename Action::operand> {
-    using action = Action;
-    using core<typename action::operand>::core;
-};
-
-
-} // namespace disjoint_sparse_table_impl
-
-} // namespace internal
-
-
-template<class SemigroupOrAction>
-    requires internal::available_with<internal::disjoint_sparse_table_impl::core, SemigroupOrAction>
-struct disjoint_sparse_table : internal::disjoint_sparse_table_impl::core<SemigroupOrAction> {
-    using internal::disjoint_sparse_table_impl::core<SemigroupOrAction>::core;
+template<actions::internal::operatable_action Action>
+struct disjoint_sparse_table<Action> : disjoint_sparse_table<typename Action::operand> {
+    using disjoint_sparse_table<typename Action::operand>::disjoint_sparse_table;
 };
 
 

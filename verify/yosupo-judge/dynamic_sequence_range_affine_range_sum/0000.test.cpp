@@ -28,13 +28,13 @@ signed main() {
     lib::vector<mint> a(n); input >> a;
 
 
-    static std::array<std::byte, 64U * 2000000> buffer;
+    static std::array<std::byte, 56U * 2000000> buffer;
     std::pmr::monotonic_buffer_resource mr{ &buffer, sizeof(buffer) };
 
 
     lib::dynamic_sequence<
         lib::actions::range_affine_range_sum<mint>,
-        lib::pmr::treap_context<lib::i64>
+        lib::pmr::treap_context<lib::i32>
     > data(a, &mr);
 
 

@@ -25,7 +25,10 @@
 
 #include "global/constants.hpp"
 
-#include "data_structure/internal/tree_interface.hpp"
+#include "data_structure/internal/basic_tree_concept.hpp"
+#include "data_structure/internal/tree_dumper.hpp"
+#include "data_structure/internal/dynamic_tree.hpp"
+
 #include "data_structure/treap.hpp"
 
 #include "algebraic/internal/concepts.hpp"
@@ -40,66 +43,39 @@ namespace lib {
 
 namespace internal {
 
-namespace dynamic_set_impl {
+namespace dynamic_tree_impl {
 
 
-namespace internal {
 
-
-template<class Operand>
-struct data_type {
-    Operand val, acc;
-
-    data_type() noexcept = default;
-    data_type(const Operand& _val) noexcept(NO_EXCEPT) : val(_val) {}
-
-    friend bool operator==(const data_type& lhs, const data_type& rhs) noexcept(NO_EXCEPT) {
-        return lhs.val == rhs.val;
-    }
-
-    friend auto operator<=>(const data_type& lhs, const data_type& rhs) noexcept(NO_EXCEPT) {
-        return lhs.val <=> rhs.val;
-    }
-
-    auto _debug() const { return this->val; }
-};
-
-
-} // namespace internal
-
-
-template<actions::internal::full_action Action, class Context>
+template<class ActionOrValue, class Context>
     requires (!Context::LEAF_ONLY)
-struct core : Context::interface<core<Action, Context>, internal::data_type<typename Action::operand>> {
-    using action = Action;
-    using operand = Action::operand;
-
+struct set_core :  internal::basic_core<ActionOrValue, set_core<ActionOrValue, Context>, Context> {
   private:
-    using data_type = internal::data_type<operand>;
-
-    using interface = typename Context::interface<core, data_type>;
-    static_assert(tree_interface<interface>);
-
-    friend interface;
-
-  protected:
-    using node_handler = typename interface::node_handler;
-
-    using node_type = typename interface::node_type;
-    using node_pointer = typename interface::node_pointer;
+    using base = internal::basic_core<ActionOrValue, set_core, Context>;
 
   public:
-    using size_type = typename interface::size_type;
+    using base::base;
 
-  private:
+
+    using data_type = base::data_type;
+
+    using operand = base::operand;
+
+
+    using node_handler = typename base::node_handler;
+
+    using node_type = typename base::node_type;
+    using node_pointer = typename base::node_pointer;
+
+
+    using size_type = typename base::size_type;
+
+
     inline void pull(const node_pointer tree) const noexcept(NO_EXCEPT) {
         tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
     }
 
     inline constexpr void push(const node_pointer) const noexcept(NO_EXCEPT) { /* do nothing */ }
-
-  public:
-    using interface::interface;
 
 
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
@@ -108,21 +84,7 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
         val.assign(first, last);
         std::ranges::sort(val);
 
-        return this->interface::build(ALL(val));
-    }
-
-
-    using interface::split;
-    using interface::merge;
-
-    inline void split(const node_pointer tree, const size_type l, const size_type r, node_pointer& t0, node_pointer& t1, node_pointer& t2) noexcept(NO_EXCEPT) {
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
-    }
-
-    inline void merge(node_pointer& tree, node_pointer t0, const node_pointer t1, const node_pointer t2) noexcept(NO_EXCEPT) {
-        this->merge(t0, t0, t1);
-        this->merge(tree, t0, t2);
+        return this->base::build(ALL(val));
     }
 
 
@@ -183,47 +145,20 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
     void erase(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= tree->size);
-        node_pointer t0, t1, t2;
-
-        this->split(tree, l, r, t0, t1, t2);
-
-        this->dispose(t1);
-        this->merge(tree, t0, t1, t2);
+        this->base::erase(tree, l, r);
     }
 
 
     auto pop(node_pointer& tree, const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
-        assert(0 <= pos && pos + count <= tree->size);
-        if(count == 0) return operand{};
-
-        node_pointer t0, t1, t2;
-
-        this->split(tree, pos, t0, t1);
-        this->split(t1, count, t1, t2);
-
-        const auto res = t1->data.acc;
-
-        this->dispose(t1);
-        this->merge(tree, t0, t2);
-
-        return res;
+        assert(0 <= pos && 0 <= count && pos + count <= tree->size);
+        return this->base::pop(tree, pos, count);
     }
 
-
-    operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r && r <= tree->size);
-        if(l == r) return operand{};
-
-        node_pointer t0, t1, t2;
-
-        this->split(tree, l, r, t0, t1, t2);
-
-        const operand res = t1 ? t1->data.acc : operand{};
-
-        this->merge(tree, t0, t1, t2);
-
-        return res;
+    operand get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
+        assert(0 <= pos && pos < tree->size);
+        return this->base::get(tree, pos);
     }
+
 
     template<bool STRICT = false>
     size_type find(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
@@ -254,45 +189,11 @@ struct core : Context::interface<core<Action, Context>, internal::data_type<type
 
         return { lower, upper };
     }
-
-
-    debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix, const int dir, size_type& index) const {
-        if(!tree || tree == node_handler::nil) return prefix + "\n";
-
-        this->push(tree);
-
-        const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
-        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
-        index += tree->length;
-
-        const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
-
-        return left + here + right;
-    }
-
-    inline debugger::debug_t dump_rich(const node_pointer tree, const std::string prefix = "   ", const int dir = 0) const {
-        size_type index = 0;
-        return this->dump_rich(tree, prefix, dir, index);
-    }
-
-    debugger::debug_t _debug(const node_pointer tree) const {
-        if(!tree || tree == node_handler::nil) return "";
-
-        this->push(tree);
-
-        return
-            "(" +
-            this->_debug(tree->left) + " " +
-            debugger::dump(tree->data) + " [" +
-            debugger::dump(tree->length) + "] " +
-            this->_debug(tree->right) +
-            ")";
-    }
 };
 
 
 
-} // namespace dynamic_set_impl
+} // namespace dynamic_tree_impl
 
 } // namespace internal
 
@@ -303,49 +204,57 @@ struct dynamic_set : dynamic_set<actions::make_full_t<Value>, Context> {
 };
 
 
-template<actions::internal::full_action Action, class Context>
-    requires internal::available_with<internal::dynamic_set_impl::core, Action, Context>
-struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<Action, Context> {
+template<actions::internal::full_action ActionOrValue, class Context>
+    requires internal::available_with<internal::dynamic_tree_impl::set_core, ActionOrValue, Context>
+struct dynamic_set<ActionOrValue, Context>
+  : private internal::dumpable_tree<
+        dynamic_set<ActionOrValue, Context>,
+        internal::dynamic_tree_impl::set_core<ActionOrValue, Context>,
+        Context::LEAF_ONLY
+    >
+{
   public:
-    using action = Action;
-
+    using action = ActionOrValue;
     using operand = typename action::operand;
 
     using value_type = operand;
 
-    using core = internal::dynamic_set_impl::core<Action, Context>;
+    using set_core = internal::dynamic_tree_impl::set_core<ActionOrValue, Context>;
 
-    using node_type = typename core::node_type;
-    using node_pointer = typename core::node_pointer;
+    using node_handler = typename set_core::node_handler;
+    using allocator_type = typename set_core::allocator_type;
 
-  private:
-    using node_handler = typename core::node_handler;
-    using allocator_type = typename core::allocator_type;
+    using node_type = typename set_core::node_type;
+    using node_pointer = typename set_core::node_pointer;
 
-  public:
-    using size_type = typename core::size_type;
+    using size_type = typename set_core::size_type;
 
   private:
+    using dumper = internal::dumpable_tree<dynamic_set, set_core, Context::LEAF_ONLY>;
+    friend dumper;
+
+    set_core _impl;
+
     node_pointer _root = node_handler::nil;
 
     size_type _offset = 0;
 
 
   public:
-    ~dynamic_set() { this->dispose(this->_root); }
+    ~dynamic_set() { this->_impl.dispose(this->_root); }
 
-    dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : core(alloc) {};
+    dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _impl(alloc) {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
     dynamic_set(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(alloc)
+      : _impl(alloc)
     {
         this->assign(first, last);
     }
 
 
     explicit dynamic_set(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(alloc)
+      : _impl(alloc)
     {
         this->assign(size, val);
     }
@@ -365,13 +274,28 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     {}
 
 
+    inline node_pointer& root() noexcept(NO_EXCEPT) { return this->_root; }
+    inline const node_pointer& root() const noexcept(NO_EXCEPT) { return this->_root; }
+
     size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
     bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
 
+    template<internal::resizable_range Container>
+    inline auto to() noexcept(NO_EXCEPT) {
+        Container res;
+        res.resize(this->size());
+
+        auto itr = std::ranges::begin(res);
+        this->_impl.enumerate(this->_root, itr);
+
+        return res;
+    }
+
+
     inline void clear() noexcept(NO_EXCEPT) {
-        this->dispose(this->_root);
+        this->_impl.dispose(this->_root);
         this->_root = node_handler::nil;
     }
 
@@ -403,8 +327,8 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
     template<bool UNIQUE = false>
     inline auto& insert(const operand& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        if constexpr(UNIQUE) this->core::insert_unique(this->_root, val, count);
-        else this->core::insert(this->_root, val, count);
+        if constexpr(UNIQUE) this->_impl.insert_unique(this->_root, val, count);
+        else this->_impl.insert(this->_root, val, count);
 
         return *this;
     }
@@ -430,20 +354,20 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
     template<bool LIMIT = true>
     inline auto& erase(const value_type& val, const size_type count = 1) noexcept(NO_EXCEPT) {
-        if constexpr(LIMIT) this->core::erase_limit(this->_root, val, count);
-        else this->core::erase(this->_root, val, count);
+        if constexpr(LIMIT) this->_impl.erase_limit(this->_root, val, count);
+        else this->_impl.erase(this->_root, val, count);
 
         return *this;
     }
 
     inline auto& erase(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        this->core::erase(this->_root, l, r);
+        this->_impl.erase(this->_root, l, r);
         return *this;
     }
 
 
     inline value_type pop(const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->core::pop(this->_root, pos, count);
+        return this->_impl.pop(this->_root, pos, count);
     }
 
     inline value_type pop_min(const size_type count = 1) noexcept(NO_EXCEPT) {
@@ -456,11 +380,11 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
 
     inline operand fold(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        return this->core::fold(this->_root, l, r);
+        return this->_impl.fold(this->_root, l, r);
     }
 
     inline value_type get(const size_type k) noexcept(NO_EXCEPT) {
-        return this->fold(k, k + 1);
+        return this->_impl.get(this->_root, k);
     }
 
     inline operand median(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
@@ -497,21 +421,21 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
 
 
     inline auto lower_bound(const value_type& val) noexcept(NO_EXCEPT) {
-        return iterator{ this, this->template find<false>(this->_root, val) };
+        return iterator{ this, this->_impl.template find<false>(this->_root, val) };
     }
 
     inline auto upper_bound(const value_type& val) noexcept(NO_EXCEPT) {
-        return iterator{ this, this->template find<true>(this->_root, val) };
+        return iterator{ this, this->_impl.template find<true>(this->_root, val) };
     }
 
     inline auto equal_range(const value_type& val) noexcept(NO_EXCEPT) {
-        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        const auto [ lower, upper ] = this->_impl.equal_range(this->_root, val);
         return std::make_pair(iterator{ this, lower }, iterator{ this, upper });
     }
 
 
     inline size_type count(const value_type& val) noexcept(NO_EXCEPT) {
-        const auto [ lower, upper ] = this->core::equal_range(this->_root, val);
+        const auto [ lower, upper ] = this->_impl.equal_range(this->_root, val);
         return upper - lower;
     }
 
@@ -544,16 +468,16 @@ struct dynamic_set<Action, Context> : private internal::dynamic_set_impl::core<A
     inline iterator end() noexcept(NO_EXCEPT) { return iterator{ this, this->size() }; }
 
 
-    using core::dump_rich;
-    using core::_debug;
+    using dumper::dump_rich;
+    using dumper::_debug;
 
 
-    debugger::debug_t dump_rich(const std::string prefix = "   ") const {
+    debugger::debug_t dump_rich(const std::string prefix = "   ") {
         return "\n" + this->dump_rich(this->_root, prefix);
     }
 
 
-    debugger::debug_t _debug() const {
+    debugger::debug_t _debug() {
         return "[ " + this->_debug(this->_root) + " ]";
     }
 };

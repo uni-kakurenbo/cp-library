@@ -65,7 +65,7 @@ struct treap_impl : private uncopyable {
 
     using priority_type = random_engine_32bit::result_type;
 
-  protected:
+  public:
     void pull(const node_pointer tree) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
         tree->size = tree->left->size + tree->length + tree->right->size;
@@ -95,8 +95,8 @@ struct treap_impl : private uncopyable {
     template<class... Args>
     inline void constexpr clone(Args&&...) const noexcept {}
 
-
-    void rectify(const node_pointer tree) const noexcept(NO_EXCEPT) {
+  private:
+    void _rectify(const node_pointer tree) const noexcept(NO_EXCEPT) {
         if(tree->size == 0) return;
 
         std::vector<priority_type> priorities(tree->size);
@@ -190,7 +190,7 @@ struct treap_impl : private uncopyable {
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
     node_pointer build(I first, S last) {
         const auto tree = this->_build(first, last);
-        this->rectify(tree);
+        this->_rectify(tree);
         return tree;
     }
 
@@ -276,7 +276,7 @@ struct treap_context {
     static constexpr bool LEAF_ONLY = false;
 
     template<class Derived, class ValueType = internal::dummy>
-    using interface = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
+    using substance = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
 };
 
 

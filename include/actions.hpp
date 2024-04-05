@@ -14,6 +14,7 @@
 #include "action/range_max.hpp"
 #include "action/range_min.hpp"
 #include "action/range_sequence_hash.hpp"
+#include "action/range_set.hpp"
 #include "action/range_set_range_max.hpp"
 #include "action/range_set_range_min.hpp"
 #include "action/range_set_range_sum.hpp"
