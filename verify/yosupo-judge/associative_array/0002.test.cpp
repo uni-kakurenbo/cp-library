@@ -15,7 +15,7 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "adaptor/map.hpp"
+#include "adaptor/gnu/hash_table.hpp"
 #include "numeric/modular/modint.hpp"
 #include "adaptor/vector.hpp"
 #include "action/null.hpp"
@@ -23,7 +23,7 @@
 using mint = lib::modint998244353;
 
 signed main() {
-    lib::gp_hash_table<lib::i64, lib::i64, lib::hash<lib::i64>> data;
+    lib::gnu::gp_hash_table<lib::i64, lib::i64, lib::hash<lib::i64>> data;
 
     int q; input >> q;
     REP(q) {
