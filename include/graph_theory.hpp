@@ -12,3 +12,5 @@
 #include "graph/shortest_path.hpp"
 #include "graph/spanning_tree.hpp"
 #include "graph/topological_sort.hpp"
+#include "graph/tree_diamiter.hpp"
+#include "graph/tree_hash.hpp"
