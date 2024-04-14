@@ -88,8 +88,11 @@ struct core {
         this->_built = false;
         return this->_table.front();
     }
+
     inline const auto& raw() const noexcept(NO_EXCEPT) { return this->_table.front(); }
-    inline const auto& data() const noexcept(NO_EXCEPT) { return this->_table.front(); }
+
+    inline auto& data() noexcept(NO_EXCEPT) { return this->_table; }
+    inline const auto& data() const noexcept(NO_EXCEPT) { return this->_table; }
 
     size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 
@@ -133,8 +136,8 @@ struct disjoint_sparse_table<Semigroup> {
     }
 
   public:
-    explicit disjoint_sparse_table(const size_type n, const Semigroup& val) noexcept(NO_EXCEPT) : _impl(n) {
-        this->_table.begin()->assign(n, val);
+    explicit disjoint_sparse_table(const size_type n, const Semigroup& val = {}) noexcept(NO_EXCEPT) : _impl(n) {
+        this->_impl.data().begin()->assign(n, val);
     }
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
@@ -145,6 +148,10 @@ struct disjoint_sparse_table<Semigroup> {
       : _impl(std::ranges::begin(range), std::ranges::end(range))
     {}
 
+
+    inline auto& raw() noexcept(NO_EXCEPT) { return this->_impl.raw(); }
+    inline const auto& raw() const noexcept(NO_EXCEPT) { return this->_impl.raw(); }
+    inline const auto& data() const noexcept(NO_EXCEPT) { return this->impl.data(); }
 
     inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
 
@@ -171,11 +178,11 @@ struct disjoint_sparse_table<Semigroup> {
     }
     inline value_type fold() noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
 
-    inline auto operator[](const size_type index) const noexcept(NO_EXCEPT) { return this->_table.front()[index]; }
+    inline auto operator[](const size_type index) const noexcept(NO_EXCEPT) { return this->_impl.data().front()[index]; }
     inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
-    inline auto begin() const noexcept(NO_EXCEPT) { return this->_table.begin()->begin(); }
-    inline auto end() const noexcept(NO_EXCEPT) { return this->_table.begin()->end(); }
+    inline auto begin() const noexcept(NO_EXCEPT) { return this->_impl.data().begin()->begin(); }
+    inline auto end() const noexcept(NO_EXCEPT) { return this->_impl.data().begin()->end(); }
 };
 
 

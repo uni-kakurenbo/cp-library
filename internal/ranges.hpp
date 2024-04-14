@@ -102,112 +102,132 @@ using iterator_concept = decltype(_iterator_concept<Range>());
 namespace views::adaptor {
 
 
-template<class Adapter, class... Args>
-concept adaptor_invocable = requires { std::declval<Adapter>()(std::declval<Args>()...); };
+template<class Adaptor, class... Args>
+concept adaptor_invocable = requires { std::declval<Adaptor>()(std::declval<Args>()...); };
 
-template<class Adapter, class... Args>
+template<class Adaptor, class... Args>
 concept adaptor_partial_app_viable =
-    (Adapter::arity > 1) && (sizeof...(Args) == Adapter::arity - 1) &&
+    (Adaptor::arity > 1) && (sizeof...(Args) == Adaptor::arity - 1) &&
     (std::constructible_from<std::decay_t<Args>, Args> && ...);
 
-template<class Adapter, class... Args> struct partial;
+template<class Adaptor, class... Args> struct partial;
 
 template<class, class> struct pipe;
 
-struct range_adaptor_closure {
-    template<class Self, class Range>
-        requires std::derived_from<std::remove_cvref_t<Self>, range_adaptor_closure> && adaptor_invocable<Self, Range>
-    friend inline constexpr auto operator|(Range &&range, Self &&self) noexcept(NO_EXCEPT) {
-        return std::forward<Self>(self)(std::forward<Range>(range));
-    }
 
-    template<class Lhs, class Rhs>
-        requires std::derived_from<Lhs, range_adaptor_closure> && std::derived_from<Rhs, range_adaptor_closure>
-    friend inline constexpr auto operator|(Lhs lhs, Rhs rhs) noexcept(NO_EXCEPT) {
-        return pipe<Lhs, Rhs>{ std::move(lhs), std::move(rhs) };
-    }
-};
+template <class Derived> struct range_adaptor_closure {};
+
+
+template <class T, class U>
+    requires(!std::same_as<T, range_adaptor_closure<U>>)
+void is_range_adaptor_closure_fn(const T &, const range_adaptor_closure<U> &);
+
+
+template <class T>
+concept is_range_adaptor_closure = requires(T t) { adaptor::is_range_adaptor_closure_fn(t, t); };
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-reference"
+
+
+template <class Self, class Range>
+    requires is_range_adaptor_closure<Self> && adaptor_invocable<Self, Range>
+constexpr auto operator|(Range&& range, Self&& self) {
+    return std::forward<Self>(self)(std::forward<Range>(range));
+}
+
+
+template <class Lhs, class Rhs>
+    requires is_range_adaptor_closure<Lhs> && is_range_adaptor_closure<Rhs>
+constexpr auto operator|(Lhs&& lhs, Rhs&& rhs) {
+    return pipe<std::decay_t<Lhs>, std::decay_t<Rhs>>{ std::forward<Lhs>(lhs), std::forward<Rhs>(rhs)};
+}
+
+
+#pragma GCC diagnostic pop
+
 
 template<class Derived> struct range_adaptor {
     template<class... Args>
         requires adaptor_partial_app_viable<Derived, Args...>
-    inline constexpr auto operator()(Args &&..._args) const noexcept(NO_EXCEPT) {
+    inline constexpr auto operator()(Args&& ..._args) const noexcept(NO_EXCEPT) {
         return partial<Derived, std::decay_t<Args>...>{
             std::forward<Args>(_args)...
         };
     }
 };
 
-template<class Adapter>
-concept closure_has_simple_call_op = Adapter::has_simple_call_op;
+template<class Adaptor>
+concept closure_has_simple_call_op = Adaptor::has_simple_call_op;
 
-template<class Adapter, class... Args>
+template<class Adaptor, class... Args>
 concept adaptor_has_simple_extra_args =
-    Adapter::has_simple_extra_args ||
-    Adapter::template has_simple_extra_args<Args...>;
+    Adaptor::has_simple_extra_args ||
+    Adaptor::template has_simple_extra_args<Args...>;
 
-template<class Adapter, class... Args>
-struct partial : range_adaptor_closure {
+template<class Adaptor, class... Args>
+struct partial : range_adaptor_closure<partial<Adaptor, Args...>> {
     std::tuple<Args...> args;
 
     constexpr partial(Args... _args) noexcept(NO_EXCEPT) : args(std::move(_args)...) {}
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, const Args &...>
-    inline constexpr auto operator()(Range &&range) const & noexcept(NO_EXCEPT) {
+        requires adaptor_invocable<Adaptor, Range, const Args &...>
+    inline constexpr auto operator()(Range&& range) const & noexcept(NO_EXCEPT) {
         const auto forwarder = [&range](const auto &..._args) constexpr noexcept(NO_EXCEPT) {
-            return Adapter{}(std::forward<Range>(range), _args...);
+            return Adaptor{}(std::forward<Range>(range), _args...);
         };
         return std::apply(forwarder, this->args);
     }
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, Args...>
-    inline constexpr auto operator()(Range &&range) && noexcept(NO_EXCEPT) {
+        requires adaptor_invocable<Adaptor, Range, Args...>
+    inline constexpr auto operator()(Range&& range) && noexcept(NO_EXCEPT) {
         const auto forwarder = [&range](auto &..._args) constexpr noexcept(NO_EXCEPT) {
-            return Adapter{}(std::forward<Range>(range), std::move(_args)...);
+            return Adaptor{}(std::forward<Range>(range), std::move(_args)...);
         };
         return std::apply(forwarder, this->args);
     }
 
     template<class Range>
-    inline constexpr auto operator()(Range &&range) const && = delete;
+    inline constexpr auto operator()(Range&& range) const && = delete;
 };
 
-template<class Adapter, typename Arg>
-struct partial<Adapter, Arg> : range_adaptor_closure {
+template<class Adaptor, class Arg>
+struct partial<Adaptor, Arg> : range_adaptor_closure<partial<Adaptor, Arg>> {
     Arg arg;
 
     constexpr partial(Arg _arg) noexcept(NO_EXCEPT) : arg(std::move(_arg)) {}
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, const Arg &>
-    inline constexpr auto operator()(Range &&range) const & noexcept(NO_EXCEPT) {
-        return Adapter{}(std::forward<Range>(range), this->arg);
+        requires adaptor_invocable<Adaptor, Range, const Arg &>
+    inline constexpr auto operator()(Range&& range) const & noexcept(NO_EXCEPT) {
+        return Adaptor{}(std::forward<Range>(range), this->arg);
     }
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, Arg>
-    inline constexpr auto operator()(Range &&range) && noexcept(NO_EXCEPT) {
-        return Adapter{}(std::forward<Range>(range), std::move(this->arg));
+        requires adaptor_invocable<Adaptor, Range, Arg>
+    inline constexpr auto operator()(Range&& range) && noexcept(NO_EXCEPT) {
+        return Adaptor{}(std::forward<Range>(range), std::move(this->arg));
     }
 
     template<class Range>
-    inline constexpr auto operator()(Range &&range) const && = delete;
+    inline constexpr auto operator()(Range&& range) const && = delete;
 };
 
-template<class Adapter, class... Args>
-    requires adaptor_has_simple_extra_args<Adapter, Args...> && (std::is_trivially_copyable_v<Args> && ...)
-struct partial<Adapter, Args...> : range_adaptor_closure {
+template<class Adaptor, class... Args>
+    requires adaptor_has_simple_extra_args<Adaptor, Args...> && (std::is_trivially_copyable_v<Args> && ...)
+struct partial<Adaptor, Args...> : range_adaptor_closure<partial<Adaptor, Args...>> {
     std::tuple<Args...> args;
 
     constexpr partial(Args... _args) noexcept(NO_EXCEPT) : args(std::move(_args)...) {}
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, const Args &...>
-    inline constexpr auto operator()(Range &&range) const noexcept(NO_EXCEPT) {
+        requires adaptor_invocable<Adaptor, Range, const Args &...>
+    inline constexpr auto operator()(Range&& range) const noexcept(NO_EXCEPT) {
         const auto forwarder = [&range](const auto &..._args) constexpr noexcept(NO_EXCEPT) {
-            return Adapter{}(std::forward<Range>(range), _args...);
+            return Adaptor{}(std::forward<Range>(range), _args...);
         };
         return std::apply(forwarder, this->args);
     }
@@ -215,29 +235,29 @@ struct partial<Adapter, Args...> : range_adaptor_closure {
     static constexpr bool has_simple_call_op = true;
 };
 
-template<class Adapter, typename Arg>
-    requires adaptor_has_simple_extra_args<Adapter, Arg> &&
+template<class Adaptor, class Arg>
+    requires adaptor_has_simple_extra_args<Adaptor, Arg> &&
              std::is_trivially_copyable_v<Arg>
-struct partial<Adapter, Arg> : range_adaptor_closure {
+struct partial<Adaptor, Arg> : range_adaptor_closure<partial<Adaptor, Arg>> {
     Arg arg;
 
     constexpr partial(Arg _arg) noexcept(NO_EXCEPT) : arg(std::move(_arg)) {}
 
     template<class Range>
-        requires adaptor_invocable<Adapter, Range, const Arg &>
-    inline constexpr auto operator()(Range &&range) const noexcept(NO_EXCEPT) {
-        return Adapter{}(std::forward<Range>(range), this->arg);
+        requires adaptor_invocable<Adaptor, Range, const Arg &>
+    inline constexpr auto operator()(Range&& range) const noexcept(NO_EXCEPT) {
+        return Adaptor{}(std::forward<Range>(range), this->arg);
     }
 
     static constexpr bool has_simple_call_op = true;
 };
 
-template<class Lhs, typename Rhs, typename Range>
+template<class Lhs, class Rhs, class Range>
 concept pipe_invocable = requires {
     std::declval<Rhs>()(std::declval<Lhs>()(std::declval<Range>()));
 };
 
-template<class Lhs, typename Rhs> struct pipe : range_adaptor_closure {
+template<class Lhs, class Rhs> struct pipe : range_adaptor_closure<pipe<Lhs, Rhs>> {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
@@ -245,23 +265,24 @@ template<class Lhs, typename Rhs> struct pipe : range_adaptor_closure {
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
-    inline constexpr auto operator()(Range &&range) const & noexcept(NO_EXCEPT) {
+    inline constexpr auto operator()(Range&& range) const & noexcept(NO_EXCEPT) {
         return rhs(lhs(std::forward<Range>(range)));
     }
 
     template<class Range>
         requires pipe_invocable<Lhs, Rhs, Range>
-    inline constexpr auto operator()(Range &&range) && noexcept(NO_EXCEPT) {
+    inline constexpr auto operator()(Range&& range) && noexcept(NO_EXCEPT) {
         return std::move(rhs)(std::move(lhs)(std::forward<Range>(range)));
     }
 
     template<class Range>
-    inline constexpr auto operator()(Range &&range) const && = delete;
+    inline constexpr auto operator()(Range&& range) const && = delete;
 };
 
-template<class Lhs, typename Rhs>
+
+template<class Lhs, class Rhs>
     requires closure_has_simple_call_op<Lhs> && closure_has_simple_call_op<Rhs>
-struct pipe<Lhs, Rhs> : range_adaptor_closure {
+struct pipe<Lhs, Rhs> : range_adaptor_closure<pipe<Lhs, Rhs>> {
     [[no_unique_address]] Lhs lhs;
     [[no_unique_address]] Rhs rhs;
 
@@ -269,7 +290,7 @@ struct pipe<Lhs, Rhs> : range_adaptor_closure {
 
     template<class Range>
         requires pipe_invocable<const Lhs &, const Rhs &, Range>
-    inline constexpr auto operator()(Range &&range) const noexcept(NO_EXCEPT) {
+    inline constexpr auto operator()(Range&& range) const noexcept(NO_EXCEPT) {
         return rhs(lhs(std::forward<Range>(range)));
     }
 

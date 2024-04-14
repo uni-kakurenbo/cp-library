@@ -256,6 +256,10 @@ struct mixin : Graph {
     // graph/connected_components.hpp
     inline bool is_bipartite() const noexcept(NO_EXCEPT);
 
+    // graph/connected_components.hpp
+    template<class Colors>
+    inline bool is_bipartite(Colors *const) const noexcept(NO_EXCEPT);
+
     // graph/parse_grid.hpp
     template<bool = false, class G, class U = char>
     inline void parse_grid(const G&, U = '.') noexcept(NO_EXCEPT);

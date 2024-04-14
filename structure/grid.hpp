@@ -93,7 +93,7 @@ template<class T> struct container_base : virtual interface<T> {
 template<class T, class Row, class base>
 struct container : base, container_base<T>, virtual interface<T> {
 
-    container(const size_t n = 0) noexcept(NO_EXCEPT) : container(n, n) {}
+    explicit container(const size_t n = 0) noexcept(NO_EXCEPT) : container(n, n) {}
     container(const size_t h, const size_t w, const T &val = T{}) noexcept(NO_EXCEPT) : base(h, Row(w, val)), container_base<T>(h, w) {}
 
     container(const std::initializer_list<Row> init_list) noexcept(NO_EXCEPT) : base(init_list) {
@@ -148,7 +148,7 @@ struct container : base, container_base<T>, virtual interface<T> {
 template<class T, class base = std::vector<T>>
 struct unfolded_container : base, container_base<T>, virtual interface<T> {
 
-    unfolded_container(size_t n = 0) noexcept(NO_EXCEPT) : unfolded_container(n, n) {}
+    explicit unfolded_container(size_t n = 0) noexcept(NO_EXCEPT) : unfolded_container(n, n) {}
     unfolded_container(const size_t h, const size_t w, const T &val = T{}) noexcept(NO_EXCEPT) : base(h*w, val), container_base<T>(h, w) {}
 
     unfolded_container(std::initializer_list<std::initializer_list<T>> init_list) noexcept(NO_EXCEPT) {

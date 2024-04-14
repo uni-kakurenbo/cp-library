@@ -34,6 +34,7 @@ struct set_wrapper : Set {
         return this->erase(itr);
     }
 
+    inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
 
     inline auto min_element() const noexcept(NO_EXCEPT) { return this->begin(); }
     inline auto max_element() const noexcept(NO_EXCEPT) { return std::prev(this->end()); }

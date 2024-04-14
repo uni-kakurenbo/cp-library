@@ -78,7 +78,10 @@ struct builtin_reduction {
 
         if(std::is_constant_evaluated()) {
             v %= mod;
-            if(v < 0) v += mod;
+
+            if constexpr(std::signed_integral<T>) {
+                if(v < 0) v += mod;
+            }
         }
         else {
             if(v > 0 && static_cast<common_type>(v) >= mod) {

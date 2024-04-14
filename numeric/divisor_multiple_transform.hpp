@@ -19,28 +19,30 @@ using size_type = internal::size_t;
 
 
 template<std::ranges::sized_range R>
-auto zeta(R& v) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(v);
+    requires (!requires { typename R::mapped_type; })
+auto zeta(R& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) v[k*p-1] += v[k-1];
+        for(size_type k=1; k*p <= n; ++k) range[k*p] += range[k];
     }
 }
 
 template<std::ranges::sized_range R>
-auto mobius(R& v) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(v);
+    requires (!requires { typename R::mapped_type; })
+auto mobius(R& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) v[k*p-1] -= v[k-1];
+        for(size_type k=n/p; k>0; --k) range[k*p] -= range[k];
     }
 }
 
 
 template<std::ranges::input_range R>
-    requires requires () { typename R::mapped_type; }
-auto zeta(R& v) noexcept(NO_EXCEPT) {
-    const auto begin = std::ranges::begin(v);
-    const auto end = std::ranges::end(v);
-    for(auto itr1 = begin; itr1-- != begin; ) {
+    requires requires { typename R::mapped_type; }
+auto zeta(R& range) noexcept(NO_EXCEPT) {
+    auto begin = std::ranges::begin(range);
+    auto end = std::ranges::end(range);
+    for(auto itr1 = end; itr1-- != begin; ) {
         for(auto itr2 = begin; itr2 != end; ++itr2) {
             if(itr1->first == itr2->first) break;
             if(itr1->first % itr2->first == 0) itr1->second += itr2->second;
@@ -49,12 +51,12 @@ auto zeta(R& v) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R>
-    requires requires () { typename R::mapped_type; }
-auto mobius(R& v) noexcept(NO_EXCEPT) {
-    const auto begin = std::ranges::begin(v);
-    const auto end = std::ranges::end(v);
+    requires requires { typename R::mapped_type; }
+auto mobius(R& range) noexcept(NO_EXCEPT) {
+    auto begin = std::ranges::begin(range);
+    auto end = std::ranges::end(range);
     for(auto itr2 = begin; itr2 != end; ++itr2) {
-        for(auto itr1 = end; (itr1--) != v; ) {
+        for(auto itr1 = end; (itr1--) != begin; ) {
             if(itr1->first == itr2->first) break;
             if(itr1->first % itr2->first == 0) itr1->second -= itr2->second;
         }
@@ -72,27 +74,29 @@ using size_type = internal::size_t;
 
 
 template<std::ranges::sized_range R>
-auto zeta(R& v) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(v);
+    requires (!requires { typename R::mapped_type; })
+auto zeta(R& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) v[k-1] += v[k*p-1];
+        for(size_type k=n/p; k>0; --k) range[k] += range[k*p];
     }
 }
 
 template<std::ranges::sized_range R>
-auto mobius(R& v) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(v);
+    requires (!requires { typename R::mapped_type; })
+auto mobius(R& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) v[k-1] -= v[k*p-1];
+        for(size_type k=1; k*p <= n; ++k) range[k] -= range[k*p];
     }
 }
 
 
 template<std::ranges::input_range R>
-    requires requires () { typename R::mapped_type; }
-auto zeta(R& v) noexcept(NO_EXCEPT) {
-    const auto begin = std::ranges::begin(v);
-    const auto end = std::ranges::end(v);
+    requires requires { typename R::mapped_type; }
+auto zeta(R& range) noexcept(NO_EXCEPT) {
+    auto begin = std::ranges::begin(range);
+    auto end = std::ranges::end(range);
     for(auto itr2 = begin; itr2 != end; ++itr2) {
         for(auto itr1 = end; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second += itr1->second;
@@ -101,10 +105,10 @@ auto zeta(R& v) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R>
-    requires requires () { typename R::mapped_type; }
-auto mobius(R& v) noexcept(NO_EXCEPT) {
-    const auto begin = std::ranges::begin(v);
-    const auto end = std::ranges::end(v);
+    requires requires { typename R::mapped_type; }
+auto mobius(R& range) noexcept(NO_EXCEPT) {
+    auto begin = std::ranges::begin(range);
+    auto end = std::ranges::end(range);
     for(auto itr2 = end; itr2-- != begin; ) {
         for(auto itr1 = end; --itr1 != itr2; ) {
             if(itr1->first % itr2->first == 0) itr2->second -= itr1->second;

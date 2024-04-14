@@ -54,19 +54,6 @@ R concat(R&& range, Rs&&... tails) noexcept(NO_EXCEPT) {
 }
 
 
-template<class I, class T = std::iter_value_t<I>>
-    requires std::sentinel_for<I, I>
-T sum(I first, I last, const T& base = {}) noexcept(NO_EXCEPT) {
-    return std::accumulate(first, last, base);
-}
-
-template<std::ranges::input_range R, class T = std::ranges::range_value_t<R>>
-auto sum(R&& range, T base = {}) noexcept(NO_EXCEPT) {
-    auto&& r = range | std::views::common;
-    return sum(ALL(r), base);
-}
-
-
 template<std::ranges::input_range R>
     requires
         requires(R r) {

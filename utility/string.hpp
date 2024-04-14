@@ -31,12 +31,12 @@ Res to_uppwer(I first, S last) noexcept(NO_EXCEPT) {
 
 template<class Res = std::string>
 Res to_lower(const std::string str) noexcept(NO_EXCEPT) {
-    return to_lower<std::string::const_iterator,Res>(std::begin(str), std::end(str));
+    return to_lower<std::string::const_iterator, std::string::const_iterator, Res>(std::begin(str), std::end(str));
 }
 
 template<class Res = std::string>
 Res to_uppwer(const std::string str) noexcept(NO_EXCEPT) {
-    return to_uppwer<std::string::const_iterator,Res>(std::begin(str), std::end(str));
+    return to_uppwer<std::string::const_iterator, std::string::const_iterator, Res>(std::begin(str), std::end(str));
 }
 
 

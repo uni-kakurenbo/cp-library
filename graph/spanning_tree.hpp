@@ -55,7 +55,7 @@ inline auto lib::internal::graph_impl::mixin<Graph>::minimum_spanning_tree(inter
     return
         lib::internal::graph_impl::kruskal<
             lib::internal::graph_impl::mixin<Graph>,
-            std::less<std::tuple<cost_type, size_type, size_type>>
+            std::less, cost_type, size_type
         >(*this, {}, mst);
 }
 
@@ -64,6 +64,6 @@ inline auto lib::internal::graph_impl::mixin<Graph>::maximum_spanning_tree(inter
     return
         lib::internal::graph_impl::kruskal<
             lib::internal::graph_impl::mixin<Graph>,
-            std::greater<std::tuple<cost_type, size_type, size_type>>
+            std::less, cost_type, size_type
         >(*this, {}, mst);
 }

@@ -10,6 +10,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "template/debug.hpp"
 
 namespace lib {
 
@@ -58,7 +59,7 @@ class centroid_path_decomposition {
     centroid_path_decomposition(const Graph& _graph, const size_type root = 0) noexcept(NO_EXCEPT)
       : graph(_graph.size()), in(_graph.size(), -1), out(_graph.size(), -1), size(_graph.size(), 1), head(_graph.size()), parent(_graph.size(), -1)
     {
-        REP(v, this->graph.size()) ITR(nv, this->graph[v]) this->graph[v].push_back(nv);
+        REP(v, _graph.size()) ITR(nv, _graph[v]) { this->graph[v].push_back(nv); }
         this->build(root);
     }
 
@@ -84,7 +85,7 @@ class centroid_path_decomposition {
         while(true) {
             if(this->in[u] > this->in[v]) std::swap(u, v);
             if(this->head[u] != this->head[v]) {
-                f(this->in[head[v]] - 1, this->in[v]);
+                f(this->in[this->head[v]] - 1, this->in[v]);
                 v = this->parent[this->head[v]];
             } else {
                 if(u != v) f(this->in[u], this->in[v]);
@@ -94,10 +95,10 @@ class centroid_path_decomposition {
     }
 
     template<class F>
-    void nodes_on_path(int u, int v, const F&& f) noexcept(NO_EXCEPT) {
+    void nodes_on_path(size_type u, size_type v, const F&& f) noexcept(NO_EXCEPT) {
         while (true) {
             if (this->in[u] > this->in[v]) std::swap(u, v);
-            f(std::max(this->in[this->head[v]] - 1, this->in[u]), this->in[v]);
+            f(std::max(this->in[this->head[v]], this->in[u]), this->in[v]);
             if (this->head[u] != this->head[v])
                 v = this->parent[this->head[v]];
             else {

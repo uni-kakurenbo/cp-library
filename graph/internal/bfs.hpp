@@ -44,6 +44,6 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(
 template<class Graph>
 auto lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(const node_type& s) const noexcept(NO_EXCEPT) {
     lib::auto_holder<node_type, cost_type> dist;
-    this->shortest_path_without_cost<cost_type>(s, &dist);
+    this->shortest_path_without_cost(s, &dist);
     return dist;
 }

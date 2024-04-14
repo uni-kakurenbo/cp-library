@@ -37,7 +37,7 @@ struct extended_container : Base {
     using size_type = decltype(std::ranges::size(std::declval<Base>()));
     using value_type = typename Base::value_type;
 
-    inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
+    inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this->_base()); }
 
 
     inline const auto& operator[](internal::size_t p) const noexcept(NO_EXCEPT) {
@@ -138,6 +138,8 @@ struct extended_container : Base {
     inline auto join(const char* sep = "") noexcept(NO_EXCEPT) {
         return lib::join(*this->_base(), sep);
     }
+
+    inline auto sum() noexcept(NO_EXCEPT) { return lib::sum(*this->_base()); }
 };
 
 
