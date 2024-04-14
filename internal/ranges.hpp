@@ -127,10 +127,6 @@ template <class T>
 concept is_range_adaptor_closure = requires(T t) { adaptor::is_range_adaptor_closure_fn(t, t); };
 
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdangling-reference"
-
-
 template <class Self, class Range>
     requires is_range_adaptor_closure<Self> && adaptor_invocable<Self, Range>
 constexpr auto operator|(Range&& range, Self&& self) {
@@ -143,9 +139,6 @@ template <class Lhs, class Rhs>
 constexpr auto operator|(Lhs&& lhs, Rhs&& rhs) {
     return pipe<std::decay_t<Lhs>, std::decay_t<Rhs>>{ std::forward<Lhs>(lhs), std::forward<Rhs>(rhs)};
 }
-
-
-#pragma GCC diagnostic pop
 
 
 template<class Derived> struct range_adaptor {

@@ -4,6 +4,7 @@
 #include <concepts>
 #include <iterator>
 #include <sstream>
+#include <numeric>
 
 
 #include "snippet/aliases.hpp"
