@@ -18,23 +18,30 @@ namespace divisor_transform {
 using size_type = internal::size_t;
 
 
-template<std::ranges::sized_range R>
+template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto zeta(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) range[k*p] += range[k];
+        for(size_type k=1; k*p <= n; ++k) range[k*p - OFFSET] += range[k - OFFSET];
     }
 }
 
-template<std::ranges::sized_range R>
+template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto mobius(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) range[k*p] -= range[k];
+        for(size_type k=n/p; k>0; --k) range[k*p - OFFSET] -= range[k - OFFSET];
     }
 }
+
+
+template<std::ranges::sized_range R>
+auto zeta(R& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
+
+template<std::ranges::sized_range R>
+auto mobius(R& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
 
 
 template<std::ranges::input_range R>
@@ -73,23 +80,30 @@ namespace multiple_transform  {
 using size_type = internal::size_t;
 
 
-template<std::ranges::sized_range R>
+template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto zeta(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=n/p; k>0; --k) range[k] += range[k*p];
+        for(size_type k=n/p; k>0; --k) range[k - OFFSET] += range[k*p - OFFSET];
     }
 }
 
-template<std::ranges::sized_range R>
+template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto mobius(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
     ITR(p, lib::prime_enumerator(n)) {
-        for(size_type k=1; k*p <= n; ++k) range[k] -= range[k*p];
+        for(size_type k=1; k*p <= n; ++k) range[k - OFFSET] -= range[k*p - OFFSET];
     }
 }
+
+
+template<std::ranges::sized_range R>
+auto zeta(R& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
+
+template<std::ranges::sized_range R>
+auto mobius(R& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
 
 
 template<std::ranges::input_range R>

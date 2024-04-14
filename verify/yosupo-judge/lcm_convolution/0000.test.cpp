@@ -23,5 +23,5 @@ using mint = lib::modint998244353;
 signed main() {
     int n; std::cin >> n;
     lib::vector<mint> a(n), b(n); input >> a >> b;
-    print(lib::lcm_convolution<lib::vector<mint>>(a, b));
+    print(lib::lcm_convolution<lib::vector<mint>, 1>(a, b));
 }
