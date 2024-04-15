@@ -113,10 +113,11 @@ jobs:
               env:
                   ROOT: ${{ github.workspace }}
               run: |
-                touch ./original/all.expanded.hpp
+                touch ./original/expanded/all.hpp
+                touch ./original/expanded/standard.hpp
 
-                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/template/standard.hpp" "${ROOT}/original/standard.expanded.hpp" --root "${ROOT}" &> /dev/null &
-                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/all.expanded.hpp" --root "${ROOT}" &> /dev/null &
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/template/standard.hpp" "${ROOT}/original/expanded/standard.hpp" --root "${ROOT}" &> /dev/null &
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/expanded/all.hpp" --root "${ROOT}" &> /dev/null &
 
                 wait
 
@@ -133,7 +134,7 @@ jobs:
                   git config --global user.name "GitHub"
                   git config --global user.email "noreply@github.com"
 
-                  git add .
+                  git add ./expanded/
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] expander commit ${GITHUB_SHA}"
