@@ -28,5 +28,6 @@
 #include "numeric/prime_enumerator.hpp"
 #include "numeric/prime_sieve.hpp"
 #include "numeric/quotient_enumerator.hpp"
+#include "numeric/repeater.hpp"
 #include "numeric/stern_brocot_tree.hpp"
 #include "numeric/subset_superset_transform.hpp"
