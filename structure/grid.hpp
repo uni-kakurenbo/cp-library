@@ -203,14 +203,19 @@ struct grid_core : container, virtual grid_impl::interface<T> {
     enum class invert_direction { vertical, horizontal };
     enum class rotate_direction { counter_clockwise, clockwise };
 
+
     inline bool is_valid(const size_type i, const size_type j) const noexcept(NO_EXCEPT) {
         return 0 <= i and i < this->height() and 0 <= j and j < this->width();
+    }
+
+    inline bool is_valid(const std::pair<size_type, size_type>& p) const noexcept(NO_EXCEPT) {
+        return this->is_valid(p.first, p.second);
     }
 
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline auto vicinities(const size_type i, const size_type j, I dirs_first, S dirs_last) const noexcept(NO_EXCEPT) {
-        std::vector<std::pair<size_type,size_type>> res;
+        std::vector<std::pair<size_type, size_type>> res;
         REP(itr, dirs_first, dirs_last) {
             const size_type ii = i + itr->first, jj = j + itr->second;
             if(this->is_valid(ii, jj)) res.emplace_back(ii, jj);
@@ -219,15 +224,15 @@ struct grid_core : container, virtual grid_impl::interface<T> {
     }
 
     template<class I, class C>
-    inline auto vicinities(const std::pair<size_type,size_type>& p, const C dirs) const noexcept(NO_EXCEPT) {
+    inline auto vicinities(const std::pair<size_type, size_type>& p, const C dirs) const noexcept(NO_EXCEPT) {
         return this->vicinities(p.first, p.second, ALL(dirs));
     }
 
     inline auto vicinities4(const size_type i, const size_type j) const noexcept(NO_EXCEPT) { return this->vicinities(i, j, ALL(DIRS4)); }
-    inline auto vicinities4(const std::pair<size_type,size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS4)); }
+    inline auto vicinities4(const std::pair<size_type, size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS4)); }
 
     inline auto vicinities8(const size_type i, const size_type j) const noexcept(NO_EXCEPT) { return this->vicinities(i, j, ALL(DIRS8)); }
-    inline auto vicinities8(const std::pair<size_type,size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS8)); }
+    inline auto vicinities8(const std::pair<size_type, size_type>& p) const noexcept(NO_EXCEPT) { return this->vicinities(p.first, p.second, ALL(DIRS8)); }
 
 
     template<invert_direction DIRECTION = invert_direction::vertical>
