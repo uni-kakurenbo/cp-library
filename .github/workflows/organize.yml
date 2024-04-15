@@ -115,10 +115,17 @@ jobs:
               run: |
                 touch ./original/all.expanded.hpp
 
-                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/all.expanded.hpp" --root "${ROOT}"
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/template/standard.hpp" "${ROOT}/original/standard.expanded.hpp" --root "${ROOT}" &> /dev/null &
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/all.expanded.hpp" --root "${ROOT}" &> /dev/null &
+
+                wait
 
                 {
-                    echo '```cpp'
+                    echo '```cpp:standard.expanded.hpp'
+                    cat ./original/standard.expanded.hpp
+                    echo '```'
+
+                    echo '```cpp:all.expanded.hpp'
                     cat ./original/all.expanded.hpp
                     echo '```'
                 } >> ${GITHUB_STEP_SUMMARY}
@@ -136,7 +143,7 @@ jobs:
                   git config --global user.name "GitHub"
                   git config --global user.email "noreply@github.com"
 
-                  git add ./include/all.expanded.hpp
+                  git add .
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
                     git commit -m "[auto-verifier] expander commit ${GITHUB_SHA}"
