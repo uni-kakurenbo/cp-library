@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <iterator>
+#include <string_view>
 #include <sstream>
 #include <array>
 #include <string>
@@ -391,7 +392,7 @@ template<class T> void debug(T&& val, const std::string& endl) {
 }
 
 
-constexpr std::string WHITESPACES = " \n\r\t\f\v";
+constexpr std::string_view WHITESPACES = " \n\r\t\f\v";
 
 std::string ltrim(const std::string &s)
 {
@@ -412,9 +413,9 @@ std::string trim(const std::string &s) {
 std::vector<std::string> split(const std::string& str) {
     static constexpr char SEPARATOR = ',';
     static constexpr char ESCAPE = '\\';
-    static constexpr char QUOTATIONS[] = "\"\'";
-    static constexpr char PARENTHESES[] = "()[]{}<>";
-    static constexpr auto PARENTHESES_KINDS = std::char_traits<char>::length(PARENTHESES);
+    static constexpr std::string_view QUOTATIONS = "\"\'";
+    static constexpr std::string_view PARENTHESES = "()[]{}<>";
+    static constexpr auto PARENTHESES_KINDS = std::ranges::size(PARENTHESES);
     static_assert(PARENTHESES_KINDS % 2 == 0);
 
     std::vector<std::string> res = { "" };

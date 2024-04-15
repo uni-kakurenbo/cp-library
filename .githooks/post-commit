@@ -7,10 +7,12 @@ if [ -n "${REF}" ]; then
     SOURCE_BRANCH="$(basename "${REF}")"
     TEST_BRANCH="test/${SOURCE_BRANCH}"
 
-    git switch "${TEST_BRANCH}" || git switch -c "${TEST_BRANCH}"
+    (
+        git switch "${TEST_BRANCH}"
 
-    git pull
-    git merge -X theirs --no-verify "${SOURCE_BRANCH}"
+        git pull
+        git merge -X theirs --no-verify "${SOURCE_BRANCH}"
+    ) || git switch -c "${TEST_BRANCH}"
 
     git push --no-verify
 

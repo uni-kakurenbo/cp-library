@@ -28,7 +28,7 @@ struct set_wrapper : Set {
     using size_type = internal::size_t;
 
     template<class Key>
-    auto&& remove(Key&& key) noexcept(NO_EXCEPT) { return this->extract(std::forward<Key>(key)); }
+    auto remove(Key&& key) noexcept(NO_EXCEPT) { return this->extract(std::forward<Key>(key)); }
 
     inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
 
