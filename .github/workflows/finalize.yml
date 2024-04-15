@@ -17,6 +17,13 @@ jobs:
                   path: original
                   fetch-depth: 0
 
+            - name: Clone AC-Library
+              uses: actions/checkout@v4
+              with:
+                  repository: atcoder/ac-library
+                  path: ac-library
+                  sparse-checkout: atcoder
+
             - name: Clone Expander
               uses: actions/checkout@v4
               with:
@@ -27,15 +34,24 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: "3.11.x"
+                  python-version: "pypy3.10"
 
             - name: Expand
+              env:
+                  ROOT: ${{ github.workspace }}
               run: |
-                python3 original/includes/all.hpp apps/core/expander.py --lib "${{ github.workspace }}" --root "${{ github.workspace }}"
-                cp ./apps/combined.cpp ./original/all.expanded.cpp
+                touch ./original/all.expanded.cpp
+
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/all.expanded.cpp" --root "${ROOT}"
+
+                {
+                    echo '```cpp'
+                    cat ./original/all.expanded.cpp
+                    echo '```'
+                } >> ${GITHUB_STEP_SUMMARY}
 
             - name: Push
-              # if: ${{ github.ref_name == github.event.repository.default_branch }}
+              if: ${{ github.ref_name == github.event.repository.default_branch }}
               working-directory: original
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
