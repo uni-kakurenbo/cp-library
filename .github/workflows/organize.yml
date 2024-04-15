@@ -113,6 +113,8 @@ jobs:
               env:
                   ROOT: ${{ github.workspace }}
               run: |
+                mkdir -p ./original/expanded/
+
                 touch ./original/expanded/all.hpp
                 touch ./original/expanded/standard.hpp
 
