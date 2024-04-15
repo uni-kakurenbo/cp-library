@@ -8,7 +8,7 @@
 
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ITP1_1_A"
 
-#include "template/standard.hpp"
+#include "standard.expanded.hpp"
 
 signed main() {
     print("Hello World");
