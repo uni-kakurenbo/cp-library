@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 #include <string>
@@ -24,8 +25,8 @@ namespace lib {
 
 template<std::size_t B, class T>
 lib::string to_base_n_string(T v) noexcept(NO_EXCEPT) {
-    constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    static_assert(0 < B and B <= std::char_traits<char>::length(CHARS));
+    constexpr std::string_view CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static_assert(0 < B and B <= std::ranges::size(CHARS));
     assert(0 <= v);
 
     lib::string res;
@@ -41,8 +42,8 @@ lib::string to_base_n_string(T v) noexcept(NO_EXCEPT) {
 
 template<class T>
 lib::string to_base_n_string(T v, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
-    constexpr char CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    assert(1 < b && b <= static_cast<lib::internal::size_t>(std::char_traits<char>::length(CHARS)));
+    constexpr std::string_view CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    assert(1 < b && b <= std::ranges::ssize(CHARS));
     assert(0 <= v);
 
     if(v == 0) return "0";
