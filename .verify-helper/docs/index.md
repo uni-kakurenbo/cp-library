@@ -8,7 +8,7 @@
 - `convolution/`: 畳み込み．
 - `data_structure/`: データ構造．
   - `adaptor/`: Fenwick Tree を Set 風に使うためのアダプターなど．
-- `debugger/`: デバッガー．展開されて提出に含まれることはない．
+- `debugger/`: デバッガー．
 - `geometry/`: 初等幾何．
 - `global/`: 主に各種の定数．
 - `graph/`: グラフ理論全般．木に関するものも含まれる．
@@ -27,4 +27,7 @@
 - `**/internal/`: 主に内部実装．concepts やメタ関数も含まれる．コンテスト中に個別で `#include` することは想定していない．
 
 ---
-[**Lint Report**](./lint)
+[**Extended header (standard)**](./extended/standard.hpp)  
+[**Extended header (whole)**](./extended/all.hpp)  
+
+[**Lint report**](./lint)
