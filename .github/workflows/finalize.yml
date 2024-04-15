@@ -20,7 +20,7 @@ jobs:
             - name: Clone Expander
               uses: actions/checkout@v4
               with:
-                  repository: uni_kakurenbo/command-line-applications-for-atcoder
+                  repository: uni-kakurenbo/command-line-applications-for-atcoder
                   sparse-checkout: ./core/expander.py
                   path: apps
 
