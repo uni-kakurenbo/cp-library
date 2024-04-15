@@ -27,12 +27,8 @@ struct set_wrapper : Set {
     using value_type = typename Set::value_type;
     using size_type = internal::size_t;
 
-    inline std::optional<typename Set::iterator>
-    remove(const typename Set::key_type& key) noexcept(NO_EXCEPT) {
-        const auto itr = this->Set::find(key);
-        if(itr == this->Set::end()) return {};
-        return this->erase(itr);
-    }
+    template<class Key>
+    auto&& remove(Key&& key) noexcept(NO_EXCEPT) { return this->extract(std::forward<Key>(key)); }
 
     inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
 
