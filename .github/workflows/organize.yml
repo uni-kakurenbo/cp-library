@@ -84,3 +84,66 @@ jobs:
                   else
                     echo "No updated files."
                   fi
+
+    gen-expanded:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.head_ref || github.ref_name }}
+                  path: original
+                  fetch-depth: 0
+
+            - name: Clone Expander
+              uses: actions/checkout@v4
+              with:
+                  repository: uni-kakurenbo/command-line-applications-for-atcoder
+                  sparse-checkout: ./core/expander.py
+                  path: apps
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "pypy3.10"
+
+            - name: Expand
+              env:
+                  ROOT: ${{ github.workspace }}
+              run: |
+                touch ./original/all.expanded.cpp
+
+                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/all.expanded.cpp" --root "${ROOT}"
+
+                {
+                    echo '```cpp'
+                    cat ./original/all.expanded.cpp
+                    echo '```'
+                } >> ${GITHUB_STEP_SUMMARY}
+
+            - name: Push
+              if: ${{ github.ref_name == github.event.repository.default_branch }}
+              working-directory: original
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -eu
+
+                  git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+
+                  git config --global user.name "GitHub"
+                  git config --global user.email "noreply@github.com"
+
+                  git add ./cppcheck_report.xml
+
+                  if (git diff --cached --shortstat | grep '[0-9]'); then
+                    git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
+
+                    REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
+
+                    git pull --rebase origin "${REPOSITORY_NAME}"
+                    git push origin "HEAD:${REPOSITORY_NAME}"
+                  else
+                    echo "No updated reports."
+                  fi
