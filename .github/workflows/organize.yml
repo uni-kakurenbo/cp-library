@@ -120,16 +120,6 @@ jobs:
 
                 wait
 
-                {
-                    echo '```cpp:standard.expanded.hpp'
-                    cat ./original/standard.expanded.hpp
-                    echo '```'
-
-                    echo '```cpp:all.expanded.hpp'
-                    cat ./original/all.expanded.hpp
-                    echo '```'
-                } >> ${GITHUB_STEP_SUMMARY}
-
             - name: Push
               if: ${{ github.ref_name == github.event.repository.default_branch }}
               working-directory: original
