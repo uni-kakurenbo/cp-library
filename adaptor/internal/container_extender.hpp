@@ -69,8 +69,8 @@ struct extended_container : Base {
     }
 
     template<class F>
-    inline auto& sort(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::sort(*this->_base(), f);
+    inline auto& sort(F&& f) noexcept(NO_EXCEPT) {
+        std::ranges::sort(*this->_base(), std::forward<F>(f));
         return *this;
     }
 
@@ -80,8 +80,8 @@ struct extended_container : Base {
     }
 
     template<class F>
-    inline auto& stable_sort(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::stable_sort(*this->_base(), f);
+    inline auto& stable_sort(F&& f) noexcept(NO_EXCEPT) {
+        std::ranges::stable_sort(*this->_base(), std::forward<F>(f));
         return *this;
     }
 
@@ -95,8 +95,8 @@ struct extended_container : Base {
     }
 
     template<class F>
-    inline auto count_if(F& f) const noexcept(NO_EXCEPT) {
-        return std::ranges::count_if(*this->_base(), f);
+    inline auto count_if(F&& f) const noexcept(NO_EXCEPT) {
+        return std::ranges::count_if(*this->_base(), std::forward<F>(f));
     }
 
     inline auto& resize(const size_type k) noexcept(NO_EXCEPT) {
@@ -109,8 +109,8 @@ struct extended_container : Base {
     }
 
     template<class F>
-    inline auto& shuffle(const F& f) noexcept(NO_EXCEPT) {
-        std::ranges::shuffle(*this->_base(), f);
+    inline auto& shuffle(F&& f) noexcept(NO_EXCEPT) {
+        std::ranges::shuffle(*this->_base(), std::forward<F>(f));
         return *this;
     }
 

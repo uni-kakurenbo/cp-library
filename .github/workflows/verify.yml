@@ -100,9 +100,9 @@ jobs:
                           savedCaches
                           .filter(({ ref }) =>
                             ref === '${{ github.ref }}' ||
-                            ref === '${{ github.event.repository.default_branch }}' ||
-                            ref === '${{ github.head_ref }}' ||
-                            ref === '${{ github.base_ref }}'
+                            ref === 'refs/heads/${{ github.event.repository.default_branch }}' ||
+                            ref === 'refs/heads/${{ github.head_ref }}' ||
+                            ref === 'refs/heads/${{ github.base_ref }}'
                           )
                           .map(({ key }) => key )
                         );

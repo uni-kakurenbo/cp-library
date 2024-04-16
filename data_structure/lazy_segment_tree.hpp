@@ -193,7 +193,7 @@ struct core {
 
 
     template<class F>
-    inline size_type max_right(size_type l, F f) noexcept(NO_EXCEPT) {
+    inline size_type max_right(size_type l, F&& f) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= _n);
         assert(f(operand{}));
         if(l == _n) return _n;
@@ -221,7 +221,7 @@ struct core {
 
 
     template<class F>
-    inline size_type min_left(size_type r, F f) noexcept(NO_EXCEPT) {
+    inline size_type min_left(size_type r, F&& f) noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= _n);
         assert(f(operand{}));
         if(r == 0) return 0;
@@ -429,7 +429,7 @@ struct lazy_segment_tree<Action> {
     }
 
     template<class F>
-    inline size_type max_right(const size_type l, F f) noexcept(NO_EXCEPT) {
+    inline size_type max_right(const size_type l, F&& f) noexcept(NO_EXCEPT) {
         return this->_impl.max_right(l, std::forward<F>(f));
     }
 

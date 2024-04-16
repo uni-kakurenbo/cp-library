@@ -184,7 +184,7 @@ struct core {
 
 
     template<class F>
-    size_type max_right(const node_pointer& tree, const size_type lower, const size_type upper, const size_type l, F f, operand& acc) const {
+    size_type max_right(const node_pointer& tree, const size_type lower, const size_type upper, const size_type l, F&& f, operand& acc) const {
         if(tree == node_handler::nil || upper <= l) return -1;
 
         if(f(acc + tree->acc)) {
@@ -199,11 +199,11 @@ struct core {
 
         if(l <= tree->index && !f(acc = acc + tree->val)) return tree->index;
 
-        return this->max_right(tree->right, middle, upper, l, f, acc);
+        return this->max_right(tree->right, middle, upper, l, std::forward<F>(f), acc);
     }
 
     template<class F>
-    size_type min_left(const node_pointer& tree, const size_type lower, const size_type upper, const size_type r, F f, operand& acc) const {
+    size_type min_left(const node_pointer& tree, const size_type lower, const size_type upper, const size_type r, F&& f, operand& acc) const {
         if(tree == node_handler::nil || r <= lower) return 0;
 
         if(f(tree->acc + acc)) {
@@ -220,7 +220,7 @@ struct core {
             return tree->index + 1;
         }
 
-        return this->min_left(tree->left, lower, middle, r, f, acc);
+        return this->min_left(tree->left, lower, middle, r, std::forward<F>(f), acc);
     }
 
   public:

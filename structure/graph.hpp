@@ -86,7 +86,9 @@ struct virtual_base : Map {
 
   public:
     template<class F>
-    explicit virtual_base(const size_type n, const F f) noexcept(NO_EXCEPT) : Map(f), _n(n) {}
+    explicit virtual_base(const size_type n, F&& f) noexcept(NO_EXCEPT)
+      : Map(std::forward<F>(f)), _n(n)
+    {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
 };
@@ -305,7 +307,9 @@ struct virtual_graph : internal::graph_impl::mixin<internal::graph_impl::virtual
 
   public:
     template<class F>
-    explicit virtual_graph(const F f, const size_type n = 0) noexcept(NO_EXCEPT) : base(n, f), _n(n) {}
+    explicit virtual_graph(F&& f, const size_type n = 0) noexcept(NO_EXCEPT)
+      : base(n, std::forward<F>(f)), _n(n)
+    {}
 };
 
 
