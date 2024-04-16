@@ -11,50 +11,42 @@
 #include "sneaky/enforce_int128_enable.hpp"
 
 #include <iostream>
+
+#include "action/null.hpp"
+#include "adaptor/io.hpp"
+#include "adaptor/map.hpp"
+#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/treap.hpp"
+#include "random/engine.hpp"
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
-#include "adaptor/io.hpp"
-#include "adaptor/set.hpp"
-#include "data_structure/dynamic_set.hpp"
-#include "data_structure/treap.hpp"
-#include "action/null.hpp"
-#include "random/engine.hpp"
 #include "utility/timer.hpp"
 
 signed main() {
     print("Hello World");
 
-    uni::dynamic_set<uni::i64> data;
-    uni::set<uni::i64> corr;
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::i64>> data;
+    uni::map<uni::i64, uni::i64> corr;
 
     debug(data);
 
     uni::timer timer(10000);
 
     while(not timer.expired()) {
-        int t = uni::randi64() % 2;
-        uni::i64 v = (uni::randi64() % 2) || data.empty() ? uni::randi64() : data[uni::randi64() % data.size()].val();
-        debug(t, v);
+        uni::i64 i = uni::randi64();
+        uni::i64 v = uni::randi64();
+        i /= 2;
+        debug(i, v);
 
-        if(t == 0) {
-            corr.insert(v);
-            data.insert<true>(v);
-        }
-
-        if(t == 1) {
-            corr.erase(v);
-            data.erase(v);
-        }
+        corr[i] = v;
+        data[i] = v;
 
         debug(corr, data);
 
         bool ok = true;
-        {
-            int i = 0;
-            ITR(v, corr) {
-                ok &= data[i++].val() == v;
-            }
+        ITR(i, v, corr) {
+            ok &= data[i].val() == v;
         }
         if(!ok) {
             assert(false);
