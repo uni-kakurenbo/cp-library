@@ -8,11 +8,11 @@
 #include "adaptor/internal/container_extender.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, int N>
 using array = internal::extended_container<std::array<T,N>>;
 
 
-} // namespace lib
+} // namespace uni

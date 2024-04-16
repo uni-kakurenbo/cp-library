@@ -10,7 +10,7 @@
 #include "hash/general_hasher.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace gnu {
 
@@ -68,4 +68,4 @@ struct gp_hash_table<Key, T, void> : hash_table<__gnu_pbds::gp_hash_table<Key, T
 
 } // namespace gnu
 
-} // namespace lib
+} // namespace uni

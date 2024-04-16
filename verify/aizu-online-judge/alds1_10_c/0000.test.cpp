@@ -19,7 +19,7 @@
 signed main() {
     int q; std::cin >> q;
     REP(q) {
-        lib::string x, y; std::cin >> x >> y;
-        print(lib::lcs_sizes(ALL(x), ALL(y)).back().back());
+        uni::string x, y; std::cin >> x >> y;
+        print(uni::lcs_sizes(ALL(x), ALL(y)).back().back());
     }
 }

@@ -18,10 +18,10 @@
 #include "numeric/modular/modint.hpp"
 #include "convolution/lcm.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
     int n; std::cin >> n;
-    lib::vector<mint> a(n), b(n); input >> a >> b;
-    print(lib::lcm_convolution<lib::vector<mint>, 1>(a, b));
+    uni::vector<mint> a(n), b(n); input >> a >> b;
+    print(uni::lcm_convolution<uni::vector<mint>, 1>(a, b));
 }

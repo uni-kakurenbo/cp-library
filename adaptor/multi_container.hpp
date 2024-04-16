@@ -17,7 +17,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -109,4 +109,4 @@ struct multi_container<T, 0, Holder, Container> {
 };
 
 
-} // namespace lib
+} // namespace uni

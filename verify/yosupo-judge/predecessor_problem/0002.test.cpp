@@ -20,14 +20,14 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<bool> t(n);
+    uni::valarray<bool> t(n);
 
     REP(i, n) {
         char v; std::cin >> v;
         t[i] = v == '1';
     }
 
-    lib::set_adaptor<lib::dynamic_segment_tree> st(n);
+    uni::set_adaptor<uni::dynamic_segment_tree> st(n);
     st.build_from_bits(ALL(t));
 
     REP(q) {

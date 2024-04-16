@@ -19,13 +19,13 @@
 
 signed main() {
     int n; std::cin >> n;
-    lib::valarray<int> a(n); input >> a;
+    uni::valarray<int> a(n); input >> a;
 
-    lib::wavelet_matrix<unsigned> data(a);
+    uni::wavelet_matrix<unsigned> data(a);
 
     int q; std::cin >> q;
     REP(q) {
         int l, r, x; std::cin >> l >> r >> x; --l, --r;
-        print(data.range<lib::interval_notation::closed>(l, r).count(x));
+        print(data.range<uni::interval_notation::closed>(l, r).count(x));
     }
 }

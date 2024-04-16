@@ -19,14 +19,14 @@
 
 signed main() {
     int n; std::cin >> n;
-    lib::valarray<lib::i64> a(n); input >> a; a -= 1;
+    uni::valarray<uni::i64> a(n); input >> a; a -= 1;
 
     int q; std::cin >> q;
-    lib::valarray<lib::spair<int>> qs(q); input >> qs;
+    uni::valarray<uni::spair<int>> qs(q); input >> qs;
     REP(i, q) qs[i].first--;
 
-    lib::valarray<lib::i64> cnt(n);
-    lib::i64 ans = 0;
+    uni::valarray<uni::i64> cnt(n);
+    uni::i64 ans = 0;
 
     auto expand = [&](int p) {
         int v = a[p];
@@ -40,6 +40,6 @@ signed main() {
     };
     auto eval = [&]() { return ans; };
 
-    lib::interval_plannner planner(expand, contract, eval);
-    print(lib::join(planner.scan(qs), "\n"));
+    uni::interval_plannner planner(expand, contract, eval);
+    print(uni::join(planner.scan(qs), "\n"));
 }

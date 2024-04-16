@@ -22,9 +22,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::ll> a(n); input >> a;
+    uni::vector<uni::ll> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_add_range_sum<lib::ll>> data(a);
+    uni::dynamic_sequence<uni::actions::range_add_range_sum<uni::ll>> data(a);
     // debug(data._root->rank);
     debug(data.size());
     // debug(data.dump_rich());
@@ -32,7 +32,7 @@ signed main() {
     REP(i, q) {
         int t; std::cin >> t;
         if(t == 0) {
-            lib::ll p, x; std::cin >> p >> x;
+            uni::ll p, x; std::cin >> p >> x;
             data[p] += x;
         }
         if(t == 1) {

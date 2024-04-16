@@ -16,7 +16,7 @@
 #include "utility/functional.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -181,4 +181,4 @@ template<class... Args> using multiset = internal::set_wrapper<std::multiset<Arg
 template<class... Args> using unordered_multiset = internal::set_wrapper<std::unordered_multiset<Args...>>;
 
 
-} // namespace lib
+} // namespace uni

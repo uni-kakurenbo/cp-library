@@ -4,7 +4,7 @@
 #include "internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 
@@ -21,4 +21,4 @@ inline T mod(T x, const R& r) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

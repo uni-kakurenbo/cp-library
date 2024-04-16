@@ -18,7 +18,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::lazy_segment_tree<lib::actions::range_add_range_sum<lib::ll>> data(n);
+    uni::lazy_segment_tree<uni::actions::range_add_range_sum<uni::ll>> data(n);
 
     for(;q--;) {
         int t; std::cin >> t;

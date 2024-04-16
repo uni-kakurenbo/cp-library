@@ -12,15 +12,15 @@
 #include "algebraic/internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
-template<class operation = lib::internal::dummy>
-    requires algebraic::internal::monoid<operation> || std::same_as<operation, lib::internal::dummy>
+template<class operation = uni::internal::dummy>
+    requires algebraic::internal::monoid<operation> || std::same_as<operation, uni::internal::dummy>
 struct base {
-    static operation fold(const operation& x, const lib::internal::size_t) noexcept(NO_EXCEPT) { return x; }
+    static operation fold(const operation& x, const uni::internal::size_t) noexcept(NO_EXCEPT) { return x; }
 };
 
 
@@ -33,7 +33,7 @@ concept operatable_action = algebraic::internal::magma<typename T::operand>;
 template<class T>
 concept effective_action =
     algebraic::internal::magma<typename T::operation> &&
-    requires (const typename T::operation& f, const lib::internal::size_t length) {
+    requires (const typename T::operation& f, const uni::internal::size_t length) {
         { T::fold(f, length) } -> std::same_as<typename T::operation>;
     };
 
@@ -58,4 +58,4 @@ concept action = operatable_action<T> || effective_action<T>;
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

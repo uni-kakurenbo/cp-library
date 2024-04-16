@@ -22,13 +22,13 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
 
 // Thanks to: atocder/convolution
-template<lib::internal::modint_family mint>
+template<uni::internal::modint_family mint>
 struct fft_info {
     static constexpr mint g = primitive_root<mint>(mint::mod());
     static constexpr auto rank2 = std::countr_zero(mint::mod() - 1);
@@ -258,4 +258,4 @@ Res convolution_fft(R0 v0, R1 v1) {
 }
 
 
-}  // namespace lib
+}  // namespace uni

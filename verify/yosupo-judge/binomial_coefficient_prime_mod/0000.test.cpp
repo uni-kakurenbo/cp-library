@@ -21,12 +21,12 @@
 
 signed main() {
     int t; std::cin >> t;
-    lib::i32 m; std::cin >> m;
+    uni::i32 m; std::cin >> m;
 
-    lib::binomial_coefficient<lib::i32> binom(m, 10'000'000);
+    uni::binomial_coefficient<uni::i32> binom(m, 10'000'000);
 
     REP(t) {
-        lib::i32 n, k; std::cin >> n >> k;
+        uni::i32 n, k; std::cin >> n >> k;
         print(binom.comb(n, k));
     }
 }

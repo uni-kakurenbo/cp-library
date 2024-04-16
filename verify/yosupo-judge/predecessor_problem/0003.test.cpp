@@ -21,7 +21,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::dynamic_set<lib::i32, lib::treap_context<lib::i32>> st;
+    uni::dynamic_set<uni::i32, uni::treap_context<uni::i32>> st;
 
     REP(i, n) {
         char v; std::cin >> v;

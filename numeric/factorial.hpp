@@ -10,7 +10,7 @@
 #include "numeric/modular/modint.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -64,7 +64,7 @@ struct factorial<T> : internal::factorial_base<T> {
 };
 
 
-template<lib::internal::modint_family T>
+template<uni::internal::modint_family T>
 struct factorial<T> : internal::factorial_base<T> {
     using value_type = T;
     using size_type = internal::size_t;
@@ -116,4 +116,4 @@ struct factorial<T> : internal::factorial_base<T> {
 };
 
 
-} // namespace lib
+} // namespace uni

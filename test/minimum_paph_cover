@@ -19,7 +19,7 @@ output_adaptor _print;
 
 #include "structure/graph.hpp"
 #include "graph/minimum_paph_cover.hpp"
-using namespace lib;
+using namespace uni;
 
 struct Solver {
     int n, k;

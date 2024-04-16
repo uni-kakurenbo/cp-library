@@ -10,7 +10,7 @@
 #include "algebraic/null.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -26,4 +26,4 @@ struct null : base<algebraic::null<T>> {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

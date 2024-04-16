@@ -7,7 +7,7 @@
 #include <functional>
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -241,4 +241,4 @@ concept numeric =
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

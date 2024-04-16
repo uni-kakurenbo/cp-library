@@ -15,7 +15,7 @@
 #include "numeric/bit.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://tk0-math.hatenablog.com/entry/2020/03/27/194150
@@ -128,7 +128,7 @@ struct persistent_queue {
         node_pointer node = this->_tail;
 
         while(index != 0) {
-            const size_type msb = lib::highest_bit_pos(index);
+            const size_type msb = uni::highest_bit_pos(index);
             index -= 1 << msb;
             node = node->prev[msb];
         }
@@ -145,10 +145,10 @@ namespace pmr {
 
 
 template<class T, u32 BUFFER_DEPTH = 20>
-using persistent_queue = lib::persistent_queue<T, BUFFER_DEPTH, std::pmr::polymorphic_allocator<T>>;
+using persistent_queue = uni::persistent_queue<T, BUFFER_DEPTH, std::pmr::polymorphic_allocator<T>>;
 
 
 } // namesapce pmr
 
 
-} // namespace lib
+} // namespace uni

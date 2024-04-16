@@ -16,16 +16,16 @@
 #include "numeric/modular/modint.hpp"
 #include "numeric/numerical_sequence.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
-namespace ns = lib::numerical_sequence;
+namespace ns = uni::numerical_sequence;
 using row = ns::arithmetic<mint>;
 using cdiff = ns::common_difference<mint>;
 using zeroth = ns::static_term<mint,0>;
 
 
 signed main() {
-    lib::i64 n, m; std::cin >> n >> m;
+    uni::i64 n, m; std::cin >> n >> m;
 
     auto f = [&](mint i, mint j) { return i * m + j + 1; };
 
@@ -34,7 +34,7 @@ signed main() {
         int a, b, c, d; std::cin >> a >> b >> c >> d; --a, --c;
 
         row line0, line1;
-        lib::i64 m0, m1; m0 = m1 = (d - c) / 2;
+        uni::i64 m0, m1; m0 = m1 = (d - c) / 2;
 
         if((a + c) % 2 == 0) {
             line0 = row(zeroth(f(a, c)), cdiff(2));

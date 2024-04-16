@@ -15,6 +15,6 @@
 #include "numeric/prime_counter.hpp"
 
 signed main() {
-    lib::i64 n; std::cin >> n;
-    print(lib::count_primes(n));
+    uni::i64 n; std::cin >> n;
+    print(uni::count_primes(n));
 }

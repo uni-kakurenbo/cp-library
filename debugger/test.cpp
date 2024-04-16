@@ -105,10 +105,10 @@ signed main() {
     // debug(MyString{"abcdefg"});
     debug(string{string{"abcdefg"}});
 
-    static_assert(!lib::internal::is_loggable_v<int>);
-    static_assert(!lib::internal::is_loggable_v<vector<int>>);
-    static_assert(lib::internal::is_loggable_v<MyStructure0>);
-    static_assert(lib::internal::is_loggable_v<MyStructure1>);
+    static_assert(!uni::internal::is_loggable_v<int>);
+    static_assert(!uni::internal::is_loggable_v<vector<int>>);
+    static_assert(uni::internal::is_loggable_v<MyStructure0>);
+    static_assert(uni::internal::is_loggable_v<MyStructure1>);
 
     MyStructure0 my_structure0 = { 1, 2, 3, 4 };
     debug(my_structure0);
@@ -131,7 +131,7 @@ signed main() {
     map<vector<string>,set<pair<int,tuple<string,char,unsigned>>>> complexed = {
         { { "str0", "str1" }, { { 1, { "str2", 'c', 1124 } } } }
     };
-    // static_assert(!lib::internal::wrapping_type_of<map<vector<string>,, std::basic_string>);
+    // static_assert(!uni::internal::wrapping_type_of<map<vector<string>,, std::basic_string>);
     debug(complexed);
 
     debug(

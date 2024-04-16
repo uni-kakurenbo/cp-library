@@ -6,7 +6,7 @@
 #include "internal/dev_env.hpp"
 #include "adaptor/vector.hpp"
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -26,4 +26,4 @@ vector<T> divisors_sieve(const T k) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

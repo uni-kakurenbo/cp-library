@@ -11,8 +11,8 @@
 
 
 template<class Graph>
-typename lib::internal::graph_impl::mixin<Graph>::size_type lib::internal::graph_impl::mixin<Graph>::minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT) {
-    lib::maximum_bipartite_matching bm(this->size());
+typename uni::internal::graph_impl::mixin<Graph>::size_type uni::internal::graph_impl::mixin<Graph>::minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT) {
+    uni::maximum_bipartite_matching bm(this->size());
 
     REP(i, this->size()) ITR(j, (*this)[i]) {
         bm.add(i, j.to);

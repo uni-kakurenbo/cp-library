@@ -14,7 +14,7 @@
 #include "internal/resolving_rank.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Destination = std::ostream>
@@ -27,7 +27,7 @@ struct output_adaptor {
             requires (destination_type& out, T& val) {
                 out << val;
             }
-    int _put(lib::internal::resolving_rank<5>, T&& val) noexcept(NO_EXCEPT) {
+    int _put(uni::internal::resolving_rank<5>, T&& val) noexcept(NO_EXCEPT) {
         *this->out << std::forward<T>(val);
         return 0;
     }
@@ -37,13 +37,13 @@ struct output_adaptor {
             requires (T&& val) {
                 val.val();
             }
-    int _put(lib::internal::resolving_rank<4>, T&& val) noexcept(NO_EXCEPT) {
+    int _put(uni::internal::resolving_rank<4>, T&& val) noexcept(NO_EXCEPT) {
         this->put(val.val());
         return 0;
     }
 
     template<std::ranges::input_range T>
-    int _put(lib::internal::resolving_rank<3>, T&& val) noexcept(NO_EXCEPT) {
+    int _put(uni::internal::resolving_rank<3>, T&& val) noexcept(NO_EXCEPT) {
         (*this)(std::ranges::begin(val), std::ranges::end(val), false);
         return 0;
     }
@@ -54,7 +54,7 @@ struct output_adaptor {
                 val.first;
                 val.second;
             }
-    int _put(lib::internal::resolving_rank<2>, T&& val) noexcept(NO_EXCEPT) {
+    int _put(uni::internal::resolving_rank<2>, T&& val) noexcept(NO_EXCEPT) {
         *this << val.first, this->put_separator();
         *this << val.second;
         return 0;
@@ -64,13 +64,13 @@ struct output_adaptor {
             requires (T&& val) {
                 std::get<0>(val);
             }
-    auto _put(lib::internal::resolving_rank<1>, T&& val) noexcept(NO_EXCEPT) {
+    auto _put(uni::internal::resolving_rank<1>, T&& val) noexcept(NO_EXCEPT) {
         std::apply([this](const auto&... args) constexpr { ((*this << args, this->put_separator()), ...); }, std::forward<T>(val));
         return 0;
     }
 
     template<std::input_or_output_iterator T>
-    int _put(lib::internal::resolving_rank<0>, T&& val) noexcept(NO_EXCEPT) {
+    int _put(uni::internal::resolving_rank<0>, T&& val) noexcept(NO_EXCEPT) {
         (*this)(*std::forward<T>(val));
         return 0;
     }
@@ -78,7 +78,7 @@ struct output_adaptor {
   protected:
     template<class T>
     destination_type* put(T&& val) noexcept(NO_EXCEPT){
-        this->_put(lib::internal::resolving_rank<10>{}, std::forward<T>(val));
+        this->_put(uni::internal::resolving_rank<10>{}, std::forward<T>(val));
         return this->out;
     }
 
@@ -185,4 +185,4 @@ struct output_adaptor {
 };
 
 
-} // namespace lib
+} // namespace uni

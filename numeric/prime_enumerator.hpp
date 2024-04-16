@@ -21,7 +21,7 @@
 #include "numeric/limits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://qiita.com/peria/items/e0ab38f95d16a5f7cc58
@@ -334,12 +334,12 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
 };
 
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std::ranges {
 
 template<class T>
-inline constexpr bool enable_borrowed_range<lib::prime_enumerator<T>> = true;
+inline constexpr bool enable_borrowed_range<uni::prime_enumerator<T>> = true;
 
 } // namespace std::ranges

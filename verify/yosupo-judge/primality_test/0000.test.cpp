@@ -19,7 +19,7 @@
 int main() {
     int q; std::cin >> q;
     REP(q) {
-        lib::i64 n; std::cin >> n;
-        print.yesno(lib::is_prime(n));
+        uni::i64 n; std::cin >> n;
+        print.yesno(uni::is_prime(n));
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -15,4 +15,4 @@ struct uncopyable {
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

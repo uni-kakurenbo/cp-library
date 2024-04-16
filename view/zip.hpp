@@ -13,7 +13,7 @@
 #include <iterator>
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::input_range... Views> requires(std::ranges::view<Views> && ...) && (sizeof...(Views) > 0)
@@ -65,7 +65,7 @@ struct zip_view : std::ranges::view_interface<zip_view<Views...>> {
             [](auto... sizes)
             {
                 using size_type = std::make_unsigned_t<std::common_type_t<decltype(sizes)...>>;
-                return lib::min(size_type(sizes)...);
+                return uni::min(size_type(sizes)...);
             },
            tuple_transform(std::ranges::size, _views)
         );
@@ -77,7 +77,7 @@ struct zip_view : std::ranges::view_interface<zip_view<Views...>> {
             [](auto... sizes)
             {
                 using size_type = std::make_unsigned_t<std::common_type_t<decltype(sizes)...>>;
-                return lib::min(size_type(sizes)...);
+                return uni::min(size_type(sizes)...);
             },
            tuple_transform(std::ranges::size, _views)
         );
@@ -393,14 +393,14 @@ inline constexpr Zip zip;
 
 } // namespace views
 
-} // namespace lib.
+} // namespace uni.
 
 
 namespace std::ranges {
 
 
 template<class... Views>
-inline constexpr bool enable_borrowed_range<lib::zip_view<Views...>> = (enable_borrowed_range<Views> && ...);
+inline constexpr bool enable_borrowed_range<uni::zip_view<Views...>> = (enable_borrowed_range<Views> && ...);
 
 
 }

@@ -25,7 +25,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::derived_from<std::ios_base> Source = std::istream>
@@ -35,7 +35,7 @@ struct input_adaptor {
   private:
     template<class T>
         requires std::derived_from<T, std::valarray<typename T::value_type>>
-    auto _set(lib::internal::resolving_rank<6>, T& val) noexcept(NO_EXCEPT) -> int {
+    auto _set(uni::internal::resolving_rank<6>, T& val) noexcept(NO_EXCEPT) -> int {
         this->operator()(ALL(val));
         return 0;
     }
@@ -45,13 +45,13 @@ struct input_adaptor {
             requires (source_type& in, T& val) {
                 in >> val;
             }
-    int _set(lib::internal::resolving_rank<5>, T& val) noexcept(NO_EXCEPT) {
+    int _set(uni::internal::resolving_rank<5>, T& val) noexcept(NO_EXCEPT) {
         *this->in >> val;
         return 0;
     }
 
     template<std::ranges::range T>
-    int _set(lib::internal::resolving_rank<4>, T& val) noexcept(NO_EXCEPT) {
+    int _set(uni::internal::resolving_rank<4>, T& val) noexcept(NO_EXCEPT) {
         this->operator()(std::ranges::begin(val), std::ranges::end(val));
         return 0;
     }
@@ -62,7 +62,7 @@ struct input_adaptor {
                 val.first;
                 val.second;
             }
-    int _set(lib::internal::resolving_rank<3>, T& val) noexcept(NO_EXCEPT) {
+    int _set(uni::internal::resolving_rank<3>, T& val) noexcept(NO_EXCEPT) {
         *this >> val.first >> val.second;
         return 0;
     }
@@ -72,13 +72,13 @@ struct input_adaptor {
             requires (T& val) {
                 std::get<0>(val);
             }
-    int _set(lib::internal::resolving_rank<2>, T& val) noexcept(NO_EXCEPT) {
+    int _set(uni::internal::resolving_rank<2>, T& val) noexcept(NO_EXCEPT) {
         tuple_for_each([this](auto&& v) { *this >> v; }, val);
         return 0;
     }
 
-    template<lib::internal::modint_family T>
-    int _set(lib::internal::resolving_rank<1>, T& val) noexcept(NO_EXCEPT) {
+    template<uni::internal::modint_family T>
+    int _set(uni::internal::resolving_rank<1>, T& val) noexcept(NO_EXCEPT) {
         std::int64_t v; std::cin >> v;
         val = { v };
         return 0;
@@ -89,7 +89,7 @@ struct input_adaptor {
             requires {
                 typename T::value_type;
             }
-    int _set(lib::internal::resolving_rank<0>, T& val) noexcept(NO_EXCEPT) {
+    int _set(uni::internal::resolving_rank<0>, T& val) noexcept(NO_EXCEPT) {
         typename T::value_type v; *this >> v;
         val = { v };
         return 0;
@@ -98,14 +98,14 @@ struct input_adaptor {
   protected:
     template<class T>
     source_type *set(T& val) noexcept(NO_EXCEPT) {
-        this->_set(lib::internal::resolving_rank<10>{}, val);
+        this->_set(uni::internal::resolving_rank<10>{}, val);
         return this->in;
     }
 
     template<class T>
     source_type *set(T&& _val) noexcept(NO_EXCEPT) {
         T val = _val;
-        this->_set(lib::internal::resolving_rank<10>{}, val);
+        this->_set(uni::internal::resolving_rank<10>{}, val);
         return this->in;
     }
 
@@ -149,4 +149,4 @@ struct input_adaptor {
 };
 
 
-} // namespace lib
+} // namespace uni

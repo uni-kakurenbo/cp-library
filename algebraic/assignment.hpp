@@ -5,7 +5,7 @@
 #include "internal/dev_env.hpp"
 #include "algebraic/base.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -23,4 +23,4 @@ struct assignment : base<std::optional<T>>, scalar_multipliable<assignment<T>>::
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

@@ -6,7 +6,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: atcoder::z_algorithm
@@ -29,4 +29,4 @@ struct z_array : Container {
 };
 
 
-} // namespace lib
+} // namespace uni

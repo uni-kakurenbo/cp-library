@@ -19,7 +19,7 @@
 signed main() {
     int q; std::cin >> q;
     REP(q) {
-        lib::u64 p; std::cin >> p;
-        print(lib::primitive_root(p));
+        uni::u64 p; std::cin >> p;
+        print(uni::primitive_root(p));
     }
 }

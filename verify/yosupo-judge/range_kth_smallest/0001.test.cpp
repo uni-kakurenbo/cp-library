@@ -20,9 +20,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::u32> a(n); input >> a;
+    uni::valarray<uni::u32> a(n); input >> a;
 
-    lib::wavelet_matrix data(a);
+    uni::wavelet_matrix data(a);
 
     REP(q) {
         int l, r, k; std::cin >> l >> r >> k;

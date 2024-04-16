@@ -20,9 +20,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<int> a(n); input >> a;
+    uni::valarray<int> a(n); input >> a;
 
-    lib::disjoint_sparse_table<lib::actions::range_min<int>> min(a);
+    uni::disjoint_sparse_table<uni::actions::range_min<int>> min(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

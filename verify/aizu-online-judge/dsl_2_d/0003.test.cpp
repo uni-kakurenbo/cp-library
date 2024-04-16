@@ -23,11 +23,11 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_sequence<
-        lib::actions::make_full_t<
-            lib::actions::range_set<lib::i32>
+    uni::dynamic_sequence<
+        uni::actions::make_full_t<
+            uni::actions::range_set<uni::i32>
         >,
-        lib::persistent_red_black_tree_context<lib::i32>
+        uni::persistent_red_black_tree_context<uni::i32>
     > data(n, (1U << 31) - 1);
 
     REP(q) {

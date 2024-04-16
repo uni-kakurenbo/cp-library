@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lib {
+namespace uni {
 
 
 template<class P>
@@ -15,4 +15,4 @@ inline P swapped(P& pair) {
 }
 
 
-} // namespace lib
+} // namespace uni

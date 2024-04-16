@@ -10,7 +10,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -24,7 +24,7 @@ struct range_affine_range_sum {
         return y->first * x.val() + y->second;
     }
 
-    static operation fold(const operation& x, const lib::internal::size_t length) noexcept(NO_EXCEPT) {
+    static operation fold(const operation& x, const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         return operation({ x->first, x->second * length });
     }
 };
@@ -32,4 +32,4 @@ struct range_affine_range_sum {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

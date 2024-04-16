@@ -15,7 +15,7 @@
 #include "data_structure/fenwick_tree.hpp"
 #include "action/range_sum.hpp"
 
-namespace lib {
+namespace uni {
 
 template<const bool STRICT = true, class T = std::int64_t>
 struct inversion {
@@ -58,4 +58,4 @@ struct inversion {
 };
 
 
-} // namespace lib
+} // namespace uni

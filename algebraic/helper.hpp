@@ -6,14 +6,14 @@
 #include "algebraic/internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
 
 template<class T, T (*op)(T, T), T (*e)(), class... Tags>
-struct helper : lib::algebraic::base<T>, lib::algebraic::scalar_multipliable<helper<T, op, e, Tags...>>::automatic, Tags... {
-    using lib::algebraic::base<T>::base;
+struct helper : uni::algebraic::base<T>, uni::algebraic::scalar_multipliable<helper<T, op, e, Tags...>>::automatic, Tags... {
+    using uni::algebraic::base<T>::base;
 
     helper() : helper(e()) {}
 
@@ -46,4 +46,4 @@ using make_magma_t = typename make_magma<T>::type;
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

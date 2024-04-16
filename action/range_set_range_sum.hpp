@@ -9,7 +9,7 @@
 #include "algebraic/assignment.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -23,7 +23,7 @@ struct range_set_range_sum {
         return y->value_or(x.val());
     }
 
-    static operation fold(const operation& x, const lib::internal::size_t length) noexcept(NO_EXCEPT) {
+    static operation fold(const operation& x, const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         if(x->has_value()) return operation(x->operator*() * length);
         return x;
     }
@@ -32,4 +32,4 @@ struct range_set_range_sum {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

@@ -8,8 +8,8 @@ signed main() {
     int n; std::cin >> n;
     std::string s; std::cin >> s;
 
-    lib::sequence_hasher hash(ALL(s));
-    debug(lib::sequence_hasher<>::base);
+    uni::sequence_hasher hash(ALL(s));
+    debug(uni::sequence_hasher<>::base);
 
     int ans = 0;
     REP(i, s.size()) REP(j, i, (int)s.size()) {

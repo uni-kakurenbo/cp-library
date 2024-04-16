@@ -19,9 +19,9 @@
 
 signed main() {
     int n, m, s; input >> n >> m >> s;
-    lib::graph<lib::i64> graph(n); graph.read<true, false>(m);
+    uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
 
     auto dists = graph.shortest_path_with_cost(s);
 
-    print(lib::join(dists | std::views::transform([](auto x) { return x >= lib::INF64 ? "INF" : std::to_string(x); }), "\n"));
+    print(uni::join(dists | std::views::transform([](auto x) { return x >= uni::INF64 ? "INF" : std::to_string(x); }), "\n"));
 }

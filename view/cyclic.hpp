@@ -14,7 +14,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::input_range View>
@@ -289,14 +289,14 @@ inline constexpr Cyclic cyclic;
 
 } // namespace views
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std::ranges {
 
 
 template<class View>
-inline constexpr bool enable_borrowed_range<lib::cyclic_view<View>> = enable_borrowed_range<View>;
+inline constexpr bool enable_borrowed_range<uni::cyclic_view<View>> = enable_borrowed_range<View>;
 
 
 } // namespace std::ranges

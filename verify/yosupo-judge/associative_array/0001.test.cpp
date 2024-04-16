@@ -21,21 +21,21 @@
 #include "data_structure/treap.hpp"
 #include "action/null.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
-    lib::dynamic_sequence<lib::i64> data;
+    uni::dynamic_sequence<uni::i64> data;
 
     int q; input >> q;
     REP(q) {
         int t; input >> t;
         if(t == 0) {
-            lib::i64 i, v; input >> i >> v;
+            uni::i64 i, v; input >> i >> v;
             data[i] = v;
             debug(data, data.size());
         }
         if(t == 1) {
-            lib::i64 i; input >> i;
+            uni::i64 i; input >> i;
             print(data[i]);
         }
     }

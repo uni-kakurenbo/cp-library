@@ -13,7 +13,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 //Thanks to: atcoder::dsu
 struct dsu {
@@ -92,4 +92,4 @@ struct dsu {
 };
 
 
-} // namespace lib
+} // namespace uni

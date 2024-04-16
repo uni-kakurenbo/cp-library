@@ -4,12 +4,12 @@
 // #include "template/standard.hpp"
 
 // #include "data_structure/range_operations.hpp"
-// using namespace lib;
+// using namespace uni;
 
 // #include <vector>
 
 // signed main() {
-//     lib::RangeUpdateRangeMin<int,int> data;
+//     uni::RangeUpdateRangeMin<int,int> data;
 
 //     debug(data);
 //     {

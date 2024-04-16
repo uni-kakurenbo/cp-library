@@ -17,22 +17,22 @@
 #include "data_structure/segment_tree.hpp"
 
 template<class T>
-struct monoid : lib::algebraic::base<lib::spair<T>>, lib::algebraic::associative/*, lib::algebraic::invertible, lib::algebraic::commutative*/ {
-    using base = lib::algebraic::base<lib::spair<T>>;
+struct monoid : uni::algebraic::base<uni::spair<T>>, uni::algebraic::associative/*, uni::algebraic::invertible, uni::algebraic::commutative*/ {
+    using base = uni::algebraic::base<uni::spair<T>>;
     using base::base;
     // monoid() : base() {}
     monoid(const T& v) : base({ v, v }) {}
     friend inline monoid operator+(const monoid& lhs, const monoid& rhs) noexcept(NO_EXCEPT) {
-        return monoid({ lib::min(lhs->first, lhs->second + rhs->first), lhs->second + rhs->second });
+        return monoid({ uni::min(lhs->first, lhs->second + rhs->first), lhs->second + rhs->second });
     }
     // inline bit_xor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
 };
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::string s; std::cin >> s;
+    uni::string s; std::cin >> s;
 
-    lib::segment_tree<monoid<int>> data(n);
+    uni::segment_tree<monoid<int>> data(n);
     REP(i, n) data[i] = s[i] == '(' ? 1 : -1;
 
     REP(q) {

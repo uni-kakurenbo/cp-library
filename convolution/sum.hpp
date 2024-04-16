@@ -11,7 +11,7 @@
 #include "numeric/modular/modint.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Res, std::ranges::sized_range R0, std::ranges::sized_range R1>
@@ -30,7 +30,7 @@ Res convolution(R0&& v0, R1&& v1) {
     const auto z = to_signed(std::bit_ceil(to_unsigned(n + m - 1)));
     assert((mint::mod() - 1) % z == 0);
 
-    // if(lib::min(n, m) <= 60) return convolution_naive<Res>(v0, v1);
+    // if(uni::min(n, m) <= 60) return convolution_naive<Res>(v0, v1);
     return convolution_fft<Res>(v0, v1);
 }
 
@@ -133,7 +133,7 @@ Res convolution(R0&& v0, R1&& v1) {
             x += (c1[i] * r1) % MOD1 * M0M2;
             x += (c2[i] * r2) % MOD2 * M0M1;
 
-            auto diff = c2[i] - lib::mod(to_signed(x), to_signed(MOD2));
+            auto diff = c2[i] - uni::mod(to_signed(x), to_signed(MOD2));
             if (diff < 0) diff += MOD2;
 
             static constexpr res_value_type offset[5] = { 0, 0, M0M1M2, 2 * M0M1M2, 3 * M0M1M2 };
@@ -171,4 +171,4 @@ auto convolution(R0&& v0, R1&& v1) {
 }
 
 
-} // namespace lib
+} // namespace uni

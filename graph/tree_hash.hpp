@@ -8,7 +8,7 @@
 #include "graph/tree_diamiter.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Graph>
@@ -57,4 +57,4 @@ std::size_t tree_hash(const Graph& tree, typename Graph::node_type v, typename G
 }
 
 
-} // namespace lib
+} // namespace uni

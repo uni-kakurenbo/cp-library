@@ -6,7 +6,7 @@
 #include "algebraic/internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -34,4 +34,4 @@ struct addition : base<T>, associative, commutative {
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

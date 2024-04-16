@@ -9,7 +9,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Container>

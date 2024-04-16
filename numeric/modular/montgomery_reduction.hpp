@@ -15,7 +15,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -87,7 +87,7 @@ struct montgomery_reduction {
 
     inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
-        return lib::pow(
+        return uni::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
             static_cast<large_type>(this->one)
@@ -237,7 +237,7 @@ struct arbitrary_montgomery_reduction {
 
     inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
-        return lib::pow(
+        return uni::pow(
             v, p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); },
             static_cast<large_type>(this->one)
@@ -297,4 +297,4 @@ using montgomery_reduction_64bit = internal::montgomery_reduction<u64, u128>;
 using arbitrary_montgomery_reduction_32bit = internal::arbitrary_montgomery_reduction<u32, u64>;
 using arbitrary_montgomery_reduction_64bit = internal::arbitrary_montgomery_reduction<u64, u128>;
 
-} // namespace lib
+} // namespace uni

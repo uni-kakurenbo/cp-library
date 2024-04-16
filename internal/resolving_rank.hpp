@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -12,4 +12,4 @@ template<> struct resolving_rank<0> {};
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

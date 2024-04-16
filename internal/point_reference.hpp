@@ -10,7 +10,7 @@
 #include "global/constants.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -30,4 +30,4 @@ struct point_reference {
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

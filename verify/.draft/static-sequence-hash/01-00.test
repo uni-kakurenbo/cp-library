@@ -18,10 +18,10 @@
 
 signed main() {
     int n; std::cin >> n;
-    lib::string s; std::cin >> s;
-    lib::string t = s; t.reverse();
+    uni::string s; std::cin >> s;
+    uni::string t = s; t.reverse();
 
-    lib::sequence_hasher hash0(ALL(s)), hash1(ALL(t));
+    uni::sequence_hasher hash0(ALL(s)), hash1(ALL(t));
 
     int ans_i = -1;
 

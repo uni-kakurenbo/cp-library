@@ -9,7 +9,7 @@
 #include "internal/auto_holder.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, class container = dynamic_auto_holder<T,internal::size_t>>
@@ -33,4 +33,4 @@ template<std::ranges::input_range R>
 explicit counter(R) -> counter<std::ranges::range_value_t<R>>;
 
 
-} // namespace lib
+} // namespace uni

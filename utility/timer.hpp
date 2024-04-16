@@ -6,7 +6,7 @@
 #include <algorithm>
 
 
-namespace lib {
+namespace uni {
 
 
 struct timer {
@@ -55,4 +55,4 @@ struct timer {
 };
 
 
-} // namespace lib
+} // namespace uni

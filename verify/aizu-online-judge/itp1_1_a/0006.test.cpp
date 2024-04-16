@@ -25,16 +25,16 @@
 signed main() {
     print("Hello World");
 
-    lib::dynamic_set<lib::i64> data;
-    lib::multiset<lib::i64> corr;
+    uni::dynamic_set<uni::i64> data;
+    uni::multiset<uni::i64> corr;
 
     debug(data);
 
-    lib::timer timer(10000);
+    uni::timer timer(10000);
 
     while(not timer.expired()) {
-        int t = lib::randi64() % 2;
-        lib::i64 v = (lib::randi64() % 2) || data.empty() ? lib::randi64() : data[lib::randi64() % data.size()].val();
+        int t = uni::randi64() % 2;
+        uni::i64 v = (uni::randi64() % 2) || data.empty() ? uni::randi64() : data[uni::randi64() % data.size()].val();
         debug(t, v);
 
         if(t == 0) {

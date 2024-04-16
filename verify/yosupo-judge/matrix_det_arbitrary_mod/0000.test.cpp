@@ -16,11 +16,11 @@
 #include "numeric/modular/modint.hpp"
 #include "numeric/matrix.hpp"
 
-using mint = lib::dynamic_barrett_modint_32bit<-1>;
+using mint = uni::dynamic_barrett_modint_32bit<-1>;
 
 signed main() {
     int n, m; input >> n >> m;
     mint::set_mod(m);
-    lib::matrix<mint> a(n, n); input >> a;
+    uni::matrix<mint> a(n, n); input >> a;
     print(a.determinant());
 }

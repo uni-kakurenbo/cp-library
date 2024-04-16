@@ -20,7 +20,7 @@
 #include "graph/spanning_tree.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // TODO: Vector View
@@ -119,4 +119,4 @@ typename Graph::cost_type internal::graph_impl::mixin<Graph>::build_manhattan_ms
 }
 
 
-} // namespace lib
+} // namespace uni

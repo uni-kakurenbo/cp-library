@@ -12,7 +12,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::range Res, std::size_t OFFSET, std::ranges::sized_range R0, std::ranges::sized_range R1>
@@ -46,4 +46,4 @@ template<std::ranges::sized_range R0, std::ranges::sized_range R1>
 auto lcm_convolution(R0&& v0, R1&& v1) { return lcm_convolution<0>(v0, v1); }
 
 
-} // namespace lib
+} // namespace uni

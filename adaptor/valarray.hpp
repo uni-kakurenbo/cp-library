@@ -15,7 +15,7 @@
 #include "adaptor/internal/container_extender.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T> struct valarray : internal::extended_container<std::valarray<T>> {
@@ -112,4 +112,4 @@ template<class T> struct valarray : internal::extended_container<std::valarray<T
 };
 
 
-} // namespace lib
+} // namespace uni

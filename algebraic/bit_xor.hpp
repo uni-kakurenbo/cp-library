@@ -3,7 +3,7 @@
 #include "internal/dev_env.hpp"
 #include "algebraic/base.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -29,4 +29,4 @@ struct bit_xor : base<T>, associative, commutative {
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

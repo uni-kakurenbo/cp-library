@@ -7,7 +7,7 @@
 
 template<class Graph>
 template<bool REV, class G, class U>
-void lib::internal::graph_impl::mixin<Graph>::parse_grid(const G &grid, U available) noexcept(NO_EXCEPT) {
+void uni::internal::graph_impl::mixin<Graph>::parse_grid(const G &grid, U available) noexcept(NO_EXCEPT) {
     this->clear();
     this->resize(grid.height() * grid.width());
 

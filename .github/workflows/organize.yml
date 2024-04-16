@@ -94,7 +94,7 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
-                  path: original
+                  path: uni
                   fetch-depth: 0
 
             - name: Clone Expander
@@ -113,19 +113,19 @@ jobs:
               env:
                   ROOT: ${{ github.workspace }}
               run: |
-                mkdir -p ./original/expanded/
+                  mkdir -p ./uni/expanded/
 
-                touch ./original/expanded/all.hpp
-                touch ./original/expanded/standard.hpp
+                  touch ./uni/expanded/all.hpp
+                  touch ./uni/expanded/standard.hpp
 
-                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/template/standard.hpp" "${ROOT}/original/expanded/standard.hpp" --root "${ROOT}" &> /dev/null &
-                ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/original/include/all.hpp" "${ROOT}/original/expanded/all.hpp" --root "${ROOT}" &> /dev/null &
+                  ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" &> /dev/null &
+                  ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/include/all.hpp" "${ROOT}/uni/expanded/all.hpp" --root "${ROOT}" &> /dev/null &
 
-                wait
+                  wait
 
             - name: Push
               if: ${{ github.ref_name == github.event.repository.default_branch }}
-              working-directory: original
+              working-directory: uni
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |

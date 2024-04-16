@@ -20,8 +20,8 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<int> a(n); input >> a;
-    lib::disjoint_sparse_table<lib::algebraic::minimum<int>> min(a);
+    uni::valarray<int> a(n); input >> a;
+    uni::disjoint_sparse_table<uni::algebraic::minimum<int>> min(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

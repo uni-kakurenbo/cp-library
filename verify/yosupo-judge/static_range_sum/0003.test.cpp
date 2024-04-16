@@ -20,8 +20,8 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::i64> a(n); input >> a;
-    lib::segment_tree<lib::algebraic::addition<lib::i64>> sum(a);
+    uni::valarray<uni::i64> a(n); input >> a;
+    uni::segment_tree<uni::algebraic::addition<uni::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

@@ -4,7 +4,7 @@ using namespace std;
 #include "data_structure/bit_vector.hpp"
 
 signed main() {
-    lib::bit_vector data(100);
+    uni::bit_vector data(100);
     data.build();
     debug(data.size());
     debug(data);

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -15,4 +15,4 @@ using uint128_t = __uint128_t;
 
 } // namesapce internal
 
-} // namespace lib
+} // namespace uni

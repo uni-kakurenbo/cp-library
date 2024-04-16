@@ -17,7 +17,7 @@ namespace std {
 
 
 template<class C, class S>
-basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) noexcept(NO_EXCEPT) {
+basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, uni::i128& v) noexcept(NO_EXCEPT) {
     std::string str; in >> str;
     v = 0;
     bool negative = (str[0] == '-');
@@ -31,7 +31,7 @@ basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::i128& v) noexce
 
 
 template<class C, class S>
-basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::u128& v) noexcept(NO_EXCEPT) {
+basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, uni::u128& v) noexcept(NO_EXCEPT) {
     std::string str; in >> str;
     v = 0U;
     assert(str[0] != '-');
@@ -43,7 +43,7 @@ basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, lib::u128& v) noexce
 }
 
 template<class C, class S>
-basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexcept(NO_EXCEPT) {
+basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, uni::i128 v) noexcept(NO_EXCEPT) {
     if(v == 0) return out << 0;
     if(v < 0) out << '-', v *= -1;
     std::string str;
@@ -53,7 +53,7 @@ basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::i128 v) noexce
 }
 
 template<class C, class S>
-basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, lib::u128 v) noexcept(NO_EXCEPT) {
+basic_ostream<C,S>& operator<<(std::basic_ostream<C,S>& out, uni::u128 v) noexcept(NO_EXCEPT) {
     if(v == 0) return out << 0U;
     std::string str;
     while(v > 0) str += static_cast<char>(v%10U) + '0', v /= 10U;

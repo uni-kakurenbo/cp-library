@@ -6,7 +6,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class> struct virtual_combined_map {};
@@ -54,4 +54,4 @@ struct virtual_map : virtual_combined_map<Mapped(Key)> {
     }
 };
 
-}; // namesapce lib
+}; // namesapce uni

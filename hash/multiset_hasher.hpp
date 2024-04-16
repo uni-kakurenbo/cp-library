@@ -14,7 +14,7 @@
 #include "hash/general_hasher.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, std::uint64_t MOD = 0x1fffffffffffffff, int hasher_id = -1>
@@ -31,7 +31,7 @@ struct multiset_hasher {
 
   protected:
     static inline hash_type _id(const T& v) noexcept(NO_EXCEPT) {
-        return lib::hash64(v);
+        return uni::hash64(v);
     }
 
     static constexpr hash_type mask(const size_type a) noexcept(NO_EXCEPT) { return (1ULL << a) - 1; }
@@ -102,4 +102,4 @@ struct multiset_hasher {
 };
 
 
-} // namespace lib
+} // namespace uni

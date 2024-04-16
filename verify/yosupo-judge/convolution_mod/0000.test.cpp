@@ -17,10 +17,10 @@
 #include "adaptor/vector.hpp"
 #include "convolution/sum.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
     int n, m; std::cin >> n >> m;
-    lib::vector<mint> a(n), b(m); input >> a >> b;
-    print(lib::convolution<lib::vector<mint>>(a, b));
+    uni::vector<mint> a(n), b(m); input >> a >> b;
+    print(uni::convolution<uni::vector<mint>>(a, b));
 }

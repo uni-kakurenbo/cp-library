@@ -18,7 +18,7 @@
 
 
 // Thanks to: https://nyaannyaan.github.io/library/modulo/arbitrary-mod-binomial.hpp
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -268,4 +268,4 @@ struct binomial_coefficient {
 };
 
 
-} // namespace lib
+} // namespace uni

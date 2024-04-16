@@ -29,7 +29,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -489,12 +489,12 @@ namespace pmr {
 
 
 template<class Action>
-using dynamic_segment_tree = lib::dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
+using dynamic_segment_tree = uni::dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
 
 template<class Action>
-using persistent_dynamic_segment_tree = lib::persistent_dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
+using persistent_dynamic_segment_tree = uni::persistent_dynamic_segment_tree<Action, std::pmr::polymorphic_allocator<Action>>;
 
 
 }; // namespace pmr
 
-} // namespace lib
+} // namespace uni

@@ -7,7 +7,7 @@
 #include "snippet/aliases.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 namespace superset_transform {
@@ -84,4 +84,4 @@ void mobius(R& range) {
 } // namespace subset_transform
 
 
-} // namespace lib
+} // namespace uni

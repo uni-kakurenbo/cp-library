@@ -25,7 +25,7 @@
 #include "algebraic/minimum.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -111,7 +111,7 @@ struct set_adaptor_impl {
 };
 
 
-template<template<class...> class Tree = lib::segment_tree>
+template<template<class...> class Tree = uni::segment_tree>
 struct set_adaptor : internal::set_adaptor_impl<Tree, actions::range_set_range_sum> {
     using size_type = internal::size_t;
     using key_type = internal::size_t;
@@ -169,7 +169,7 @@ struct set_adaptor : internal::set_adaptor_impl<Tree, actions::range_set_range_s
 };
 
 
-template<template<class...> class Tree = lib::segment_tree, std::integral Size = std::int64_t>
+template<template<class...> class Tree = uni::segment_tree, std::integral Size = std::int64_t>
 struct multiset_adaptor : internal::set_adaptor_impl<Tree, actions::range_add_range_sum> {
     using size_type = Size;
     using key_type = internal::size_t;
@@ -230,4 +230,4 @@ struct multiset_adaptor : internal::set_adaptor_impl<Tree, actions::range_add_ra
 };
 
 
-} // namespace lib
+} // namespace uni

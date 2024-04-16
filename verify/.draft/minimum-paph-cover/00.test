@@ -19,23 +19,23 @@
 #include "graph/minimum_paph_cover.hpp"
 
 signed main() {
-    lib::string s; std::cin >> s;
-    lib::i32 n = s.size();
+    uni::string s; std::cin >> s;
+    uni::i32 n = s.size();
 
-    lib::vector<lib::string> sub;
+    uni::vector<uni::string> sub;
     REP(i, n) FOR(j, n) {
-        lib::string t = s.substr(i, j);
-        lib::string u = t;
+        uni::string t = s.substr(i, j);
+        uni::string u = t;
         u.reverse();
         if(t != u) continue;
         sub.push_back(t);
     }
     sub.unique();
 
-    lib::i32 m = sub.size();
-    lib::graph G(m);
+    uni::i32 m = sub.size();
+    uni::graph G(m);
     REP(i, m) REP(j, m) {
-        if(i != j and sub[i].find(sub[j]) != lib::string::npos) {
+        if(i != j and sub[i].find(sub[j]) != uni::string::npos) {
             G.add_edge(i, j);
         }
     }

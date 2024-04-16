@@ -22,9 +22,9 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::lazy_segment_tree<
-        lib::actions::make_full_t<
-            lib::actions::range_add<lib::ll>
+    uni::lazy_segment_tree<
+        uni::actions::make_full_t<
+            uni::actions::range_add<uni::ll>
         >
     > data(n);
 

@@ -9,7 +9,7 @@
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
-    lib::dynamic_sequence<lib::actions::range_add_range_sum<int>> data;
+    uni::dynamic_sequence<uni::actions::range_add_range_sum<int>> data;
 
     {
         data.push_back(1);

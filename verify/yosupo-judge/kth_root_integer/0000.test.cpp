@@ -17,7 +17,7 @@
 signed main() {
     int t; std::cin >> t;
     REP(t) {
-        lib::u64 a, k; std::cin >> a >> k;
-        print(lib::kth_root_floor(a, k));
+        uni::u64 a, k; std::cin >> a >> k;
+        print(uni::kth_root_floor(a, k));
     }
 }

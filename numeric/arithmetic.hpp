@@ -30,7 +30,7 @@
 #include "iterable/operation.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -332,4 +332,4 @@ std::optional<spair<T>> inline constexpr bezout_equation(const T& a, const T& b,
 };
 
 
-} // namespace lib
+} // namespace uni

@@ -14,7 +14,7 @@
 #include "internal/exception.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -179,4 +179,4 @@ struct inclusive_interval_scanner : internal::interval_scanner_impl::base<T> {
 };
 
 
-} // namespace lib
+} // namespace uni

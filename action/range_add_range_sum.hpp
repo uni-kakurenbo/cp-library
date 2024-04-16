@@ -8,7 +8,7 @@
 #include "algebraic/addition.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -22,7 +22,7 @@ struct range_add_range_sum {
         return x.val() + y.val();
     }
 
-    static operation fold(const operation& x, const lib::internal::size_t length) noexcept(NO_EXCEPT) {
+    static operation fold(const operation& x, const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         return x.val() * length;
     }
 };
@@ -30,4 +30,4 @@ struct range_add_range_sum {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

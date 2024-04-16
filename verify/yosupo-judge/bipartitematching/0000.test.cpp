@@ -18,7 +18,7 @@
 signed main() {
     int l, r, n; input >> l >> r >> n;
 
-    lib::maximum_bipartite_matching matching(l, r);
+    uni::maximum_bipartite_matching matching(l, r);
     REP(n) {
         int a, b; input >> a >> b;
         matching.add(a, b);

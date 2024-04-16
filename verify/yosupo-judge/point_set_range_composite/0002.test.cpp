@@ -19,16 +19,16 @@
 #include "numeric/modular/modint.hpp"
 
 
-using lib::algebraic::affine;
-using mint = lib::modint998244353;
+using uni::algebraic::affine;
+using mint = uni::modint998244353;
 
 
 struct action {
     using operand = affine<mint,true>;
-    using operation = lib::algebraic::assignment<std::pair<mint,mint>>;
+    using operation = uni::algebraic::assignment<std::pair<mint,mint>>;
 
     static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
-    static operation fold(const operation& x, const lib::internal::size_t) { return x; }
+    static operation fold(const operation& x, const uni::internal::size_t) { return x; }
 };
 
 
@@ -36,13 +36,13 @@ signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<std::pair<mint,mint>> f(n); input >> f;
 
-    lib::dynamic_sequence<action> data(ALL(f));
+    uni::dynamic_sequence<action> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int p, a, b; std::cin >> p >> a >> b;
-            data.apply(p, lib::spair<int>{ a, b });
+            data.apply(p, uni::spair<int>{ a, b });
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;

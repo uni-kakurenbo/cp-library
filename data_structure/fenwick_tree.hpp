@@ -26,7 +26,7 @@
 #include "algebraic/internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -311,4 +311,4 @@ struct fenwick_tree<Action> : fenwick_tree<typename Action::operand> {
 };
 
 
-} // namespace lib
+} // namespace uni

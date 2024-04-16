@@ -34,7 +34,7 @@
 #include "global/constants.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::input_range R0, std::ranges::input_range R1>
@@ -50,7 +50,7 @@ R0 concat(R0&& r0, R1&& r1) noexcept(NO_EXCEPT) {
 
 template<std::ranges::input_range R, std::ranges::input_range... Rs>
 R concat(R&& range, Rs&&... tails) noexcept(NO_EXCEPT) {
-    return lib::concat(range, lib::concat(tails...));
+    return uni::concat(range, uni::concat(tails...));
 }
 
 
@@ -235,7 +235,7 @@ auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO
         R left, right;
         left = source;
         right.resize(size - std::size(left), v);
-        return R(ALL(lib::views::concat(left, right)));
+        return R(ALL(uni::views::concat(left, right)));
     }
 
     if(ALIGNMENT == alignment::center) {
@@ -243,14 +243,14 @@ auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO
         center = source;
         left.resize((size - std::size(center)) / 2, v);
         right.resize(size - std::size(center) - std::size(left), v);
-        return R(ALL(lib::views::concat(left, center, right)));
+        return R(ALL(uni::views::concat(left, center, right)));
     }
 
     if(ALIGNMENT == alignment::right) {
         R left, right;
         right = source;
         left.resize(size - std::size(right), v);
-        return R(ALL(lib::views::concat(left, right)));
+        return R(ALL(uni::views::concat(left, right)));
     }
     assert(false);
 }
@@ -305,4 +305,4 @@ auto order_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

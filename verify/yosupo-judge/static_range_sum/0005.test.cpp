@@ -21,8 +21,8 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::i64> a(n); input >> a;
-    lib::lazy_segment_tree<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> sum(a);
+    uni::valarray<uni::i64> a(n); input >> a;
+    uni::lazy_segment_tree<uni::actions::make_full_t<uni::actions::range_sum<uni::i64>>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

@@ -28,7 +28,7 @@
 #include "action/helpers.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -79,7 +79,7 @@ struct core {
     core() noexcept = default;
 
     explicit core(const size_type n) noexcept(NO_EXCEPT)
-      : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
+      : _n(n), _size(std::bit_ceil(uni::to_unsigned(n))), _depth(std::countr_zero(uni::to_unsigned(this->_size))),
         _lengths(this->_size << 1), _values(this->_size << 1), _lazy(this->_size)
     {}
 
@@ -460,4 +460,4 @@ struct lazy_segment_tree<Action> {
 };
 
 
-} // namespace lib
+} // namespace uni

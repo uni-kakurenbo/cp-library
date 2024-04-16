@@ -10,7 +10,7 @@
 #include "snippet/aliases.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::input_iterator I, std::sentinel_for<I> S>
@@ -46,4 +46,4 @@ auto sum(R&& range, T base = {}) noexcept(NO_EXCEPT) {
 }
 
 
-} // namesapce lib
+} // namesapce uni

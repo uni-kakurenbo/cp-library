@@ -8,15 +8,15 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
 template<class T>
-using range_gcd = make_operatable_t<lib::algebraic::gcd<T>>;
+using range_gcd = make_operatable_t<uni::algebraic::gcd<T>>;
 
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

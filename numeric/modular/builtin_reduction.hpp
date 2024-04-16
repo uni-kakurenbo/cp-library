@@ -11,7 +11,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -60,7 +60,7 @@ struct builtin_reduction {
 
     inline constexpr value_type pow(const value_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 0) return 0;
-        return lib::pow(v, p, [this](const value_type x, const value_type y) { return this->multiply(x, y); });
+        return uni::pow(v, p, [this](const value_type x, const value_type y) { return this->multiply(x, y); });
     }
 
 
@@ -113,4 +113,4 @@ using builtin_reduction_32bit = internal::builtin_reduction<u32, u64>;
 using builtin_reduction_64bit = internal::builtin_reduction<u64, u128>;
 
 
-} // namespace lib
+} // namespace uni

@@ -7,7 +7,7 @@
 
 #include "internal/dev_env.hpp"
 
-namespace lib {
+namespace uni {
 
 template<class T, class ID = int, template<class,class> class storage = std::unordered_map>
 struct restorable_stack {
@@ -87,4 +87,4 @@ struct restorable_stack {
     }
 };
 
-} // namespace lib
+} // namespace uni

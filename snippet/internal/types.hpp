@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace lib {
+namespace uni {
 
 
 using i16 = std::int16_t;
@@ -25,4 +25,4 @@ using ull = unsigned long long;
 using ld = long double;
 
 
-} // namespace lib
+} // namespace uni

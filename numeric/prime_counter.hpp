@@ -13,7 +13,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 static inline i64 float_div(const i64 n, const i64 p) {
@@ -25,7 +25,7 @@ __attribute__((target("avx2"), optimize("O3", "unroll-loops")))
 i64 count_primes(const u64 n) noexcept(NO_EXCEPT) {
     if(n == 0 || n == 1) return 0;
 
-    const i64 sqrt_n = lib::sqrt_floor(n);
+    const i64 sqrt_n = uni::sqrt_floor(n);
     const i64 m = float_div(n, sqrt_n);
 
     std::vector<i64> hl(m);
@@ -59,4 +59,4 @@ inline i64 count_primes(const i64 l, const i64 r) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

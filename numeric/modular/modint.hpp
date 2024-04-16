@@ -18,7 +18,7 @@
 #include "template/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -181,4 +181,4 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
 };
 
 
-} // namespace lib
+} // namespace uni

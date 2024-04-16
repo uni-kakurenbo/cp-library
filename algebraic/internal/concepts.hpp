@@ -10,7 +10,7 @@
 #include "algebraic/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -19,7 +19,7 @@ namespace internal {
 
 template<class T>
 concept magma =
-    lib::internal::addable<T> && std::same_as<std::common_type_t<T>, T> &&
+    uni::internal::addable<T> && std::same_as<std::common_type_t<T>, T> &&
     requires () {
         typename T::value_type;
     };
@@ -32,7 +32,7 @@ template<class T>
 concept commutative = std::is_base_of_v<algebraic::commutative, T>;
 
 template<class T>
-concept invertible = lib::internal::unary_subtractable<T>;
+concept invertible = uni::internal::unary_subtractable<T>;
 
 
 template<class T>
@@ -49,4 +49,4 @@ concept group = monoid<T> && invertible<T>;
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

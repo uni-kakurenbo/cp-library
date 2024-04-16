@@ -29,7 +29,7 @@ signed main() {
 
 void solve() {
     long n; cin >> n;
-    debug(lib::prime_enumerator(n).size());
-    // debug(lib::prime_enumerator(n));
-    // debug(lib::prime_enumerator(n) | boost::adaptors::reversed);
+    debug(uni::prime_enumerator(n).size());
+    // debug(uni::prime_enumerator(n));
+    // debug(uni::prime_enumerator(n) | boost::adaptors::reversed);
 }

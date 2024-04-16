@@ -20,21 +20,21 @@
 #include "adaptor/vector.hpp"
 #include "action/null.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
-    lib::gp_hash_table<lib::i64, lib::i64, lib::hash<lib::i64>> data;
+    uni::gp_hash_table<uni::i64, uni::i64, uni::hash<uni::i64>> data;
 
     int q; input >> q;
     REP(q) {
         int t; input >> t;
         if(t == 0) {
-            lib::i64 i, v; input >> i >> v;
+            uni::i64 i, v; input >> i >> v;
             data[i] = v;
             debug(data, data.size());
         }
         if(t == 1) {
-            lib::i64 i; input >> i;
+            uni::i64 i; input >> i;
             print(data[i]);
         }
     }

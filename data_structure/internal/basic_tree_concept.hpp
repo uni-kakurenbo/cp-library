@@ -7,7 +7,7 @@
 #include "internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 

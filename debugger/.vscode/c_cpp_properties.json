@@ -6,7 +6,7 @@
                 "${workspaceFolder}/../..",
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
                 "~/boost",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/original",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/uni",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++-13",

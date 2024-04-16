@@ -12,7 +12,7 @@
 #include "numeric/bit.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -76,4 +76,4 @@ using fast_factorize_impl::internal::is_prime;
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

@@ -20,7 +20,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -43,7 +43,7 @@ struct concat_view : std::ranges::view_interface<concat_view<V0, V1>> {
         requires std::ranges::forward_range<B0<Const>> && std::ranges::forward_range<B1<Const>>
     struct iterator_tag<Const> {
       public:
-        using iterator_category = lib::internal::most_primitive_iterator_tag<
+        using iterator_category = uni::internal::most_primitive_iterator_tag<
             typename std::iterator_traits<std::ranges::iterator_t<B0<Const>>>::iterator_category,
             typename std::iterator_traits<std::ranges::iterator_t<B1<Const>>>::iterator_category
         >;
@@ -467,14 +467,14 @@ inline constexpr Concat concat;
 
 } // namespace views
 
-} // namespace lib.
+} // namespace uni.
 
 
 namespace std::ranges {
 
 
 template<class... Views>
-inline constexpr bool enable_borrowed_range<lib::concat_view<Views...>> = (enable_borrowed_range<Views> && ...);
+inline constexpr bool enable_borrowed_range<uni::concat_view<Views...>> = (enable_borrowed_range<Views> && ...);
 
 
 }

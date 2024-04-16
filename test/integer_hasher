@@ -23,5 +23,5 @@ signed main() {
 #include "hash/general_hasher.hpp"
 
 void solve() {
-    debug(lib::hash64(0));
+    debug(uni::hash64(0));
 }

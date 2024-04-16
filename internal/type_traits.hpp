@@ -11,7 +11,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -238,4 +238,4 @@ template<class T> concept can_reference = requires { typename with_ref<T>; };
 
 } // namespace internal
 
-}  // namespace lib
+}  // namespace uni

@@ -27,5 +27,5 @@ signed main() {
 #include "view/stride.hpp"
 
 void solve() {
-    debug(lib::prime_enumerator(10) | lib::views::stride(2));
+    debug(uni::prime_enumerator(10) | uni::views::stride(2));
 }

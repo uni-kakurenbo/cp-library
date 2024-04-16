@@ -16,7 +16,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::unsigned_integral T>
@@ -107,7 +107,7 @@ inline constexpr T bit(const T x, const int p) {
 
 template<std::unsigned_integral T>
 inline constexpr T lower_bits(const T x, const int digits = (std::numeric_limits<T>::digits >> 1)) {
-    return x & (lib::shiftl(x, digits) - 1);
+    return x & (uni::shiftl(x, digits) - 1);
 }
 
 
@@ -178,4 +178,4 @@ inline constexpr auto binary_gcd(T0 v0, T1 v1) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

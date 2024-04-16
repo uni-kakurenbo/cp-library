@@ -25,7 +25,7 @@
 #include "internal/auto_holder.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -309,4 +309,4 @@ struct virtual_graph : internal::graph_impl::mixin<internal::graph_impl::virtual
 };
 
 
-} // namespace lib
+} // namespace uni

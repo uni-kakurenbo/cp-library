@@ -8,15 +8,15 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
 template<class T>
-using range_min = make_operatable_t<lib::algebraic::minimum<T>>;
+using range_min = make_operatable_t<uni::algebraic::minimum<T>>;
 
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

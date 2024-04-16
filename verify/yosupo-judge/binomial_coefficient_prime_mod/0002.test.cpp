@@ -21,12 +21,12 @@
 
 signed main() {
     int t; std::cin >> t;
-    lib::i32 m; std::cin >> m;
+    uni::i32 m; std::cin >> m;
 
-    lib::binomial_coefficient_prime_power_mod<lib::i32, lib::i32, lib::arbitrary_montgomery_reduction_32bit> binom(m, 1, 10'000'000);
+    uni::binomial_coefficient_prime_power_mod<uni::i32, uni::i32, uni::arbitrary_montgomery_reduction_32bit> binom(m, 1, 10'000'000);
 
     REP(t) {
-        lib::i32 n, k; std::cin >> n >> k;
+        uni::i32 n, k; std::cin >> n >> k;
         print(binom.comb(n, k));
     }
 }

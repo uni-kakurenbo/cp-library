@@ -17,7 +17,7 @@
 signed main() {
     int t; std::cin >> t;
     REP(t) {
-        lib::i128 a, b; std::cin >> a >> b;
+        uni::i128 a, b; std::cin >> a >> b;
         print(a + b);
     }
 }

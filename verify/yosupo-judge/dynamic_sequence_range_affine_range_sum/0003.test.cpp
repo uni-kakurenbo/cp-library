@@ -20,13 +20,13 @@
 #include "data_structure/dynamic_sequence.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-using mint = lib::static_arbitrary_montgomery_modint_32bit<998244353>;
+using mint = uni::static_arbitrary_montgomery_modint_32bit<998244353>;
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<mint> a(n); input >> a;
+    uni::vector<mint> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_sum<mint>> data(a);
+    uni::dynamic_sequence<uni::actions::range_affine_range_sum<mint>> data(a);
 
     REP(q) {
         int t; std::cin >> t;

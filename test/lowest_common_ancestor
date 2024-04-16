@@ -24,7 +24,7 @@ output_adaptor _print;
 
 signed main() {
     int n; cin >> n;
-    lib::graph<> G(n);
+    uni::graph<> G(n);
 
     REP(i, n) {
         int k; cin >> k;
@@ -34,7 +34,7 @@ signed main() {
         }
     }
 
-    lib::lowest_common_ancestor lca(G, 0);
+    uni::lowest_common_ancestor lca(G, 0);
 
     int q; cin >> q;
     LOOP(q) {

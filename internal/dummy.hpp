@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -11,4 +11,4 @@ struct dummy {};
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

@@ -23,7 +23,7 @@
 #include "action/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -192,4 +192,4 @@ struct disjoint_sparse_table<Action> : disjoint_sparse_table<typename Action::op
 };
 
 
-} // namespace lib
+} // namespace uni

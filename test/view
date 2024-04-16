@@ -8,55 +8,55 @@ signed main() {
     vector<int> c = { 3, 6, 9, 12, 15 };
 
     {
-        debug(lib::views::zip());
-        debug(lib::views::zip(a));
-        debug(lib::views::zip(a, b));
-        debug(lib::views::zip(a, b, c));
-        // lib::zip(a): [ <tuple> ( 1 ), <tuple> ( 2 ), <tuple> ( 3 ), <tuple> ( 4 ), <tuple> ( 5 ) ]
-        // lib::zip(a, b): [ <tuple> ( 1, 2 ), <tuple> ( 2, 4 ), <tuple> ( 3, 6 ), <tuple> ( 4, 8 ), <tuple> ( 5, 10 ) ]
-        // lib::zip(a, b, c): [ <tuple> ( 1, 2, 3 ), <tuple> ( 2, 4, 6 ), <tuple> ( 3, 6, 9 ), <tuple> ( 4, 8, 12 ), <tuple> ( 5, 10, 15 ) ]
+        debug(uni::views::zip());
+        debug(uni::views::zip(a));
+        debug(uni::views::zip(a, b));
+        debug(uni::views::zip(a, b, c));
+        // uni::zip(a): [ <tuple> ( 1 ), <tuple> ( 2 ), <tuple> ( 3 ), <tuple> ( 4 ), <tuple> ( 5 ) ]
+        // uni::zip(a, b): [ <tuple> ( 1, 2 ), <tuple> ( 2, 4 ), <tuple> ( 3, 6 ), <tuple> ( 4, 8 ), <tuple> ( 5, 10 ) ]
+        // uni::zip(a, b, c): [ <tuple> ( 1, 2, 3 ), <tuple> ( 2, 4, 6 ), <tuple> ( 3, 6, 9 ), <tuple> ( 4, 8, 12 ), <tuple> ( 5, 10, 15 ) ]
     }
     {
-        debug(lib::views::concat());
-        debug(lib::views::concat(a));
-        debug(lib::views::concat(a, b));
-        debug(lib::views::concat(a, b, c));
-        // lib::concat(a): [ 1, 2, 3, 4, 5 ]
-        // lib::concat(a, b): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10 ]
-        // lib::concat(a, b, c): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10, 3, 6, 9, 12, 15 ]
+        debug(uni::views::concat());
+        debug(uni::views::concat(a));
+        debug(uni::views::concat(a, b));
+        debug(uni::views::concat(a, b, c));
+        // uni::concat(a): [ 1, 2, 3, 4, 5 ]
+        // uni::concat(a, b): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10 ]
+        // uni::concat(a, b, c): [ 1, 2, 3, 4, 5, 2, 4, 6, 8, 10, 3, 6, 9, 12, 15 ]
     }
     {
-        // debug(lib::views::zip(lib::views::concat(a, b), lib::views::concat(b, c), lib::views::concat(c, a)));
-        // debug(lib::views::concat(lib::views::zip(a, b), lib::views::zip(b, c), lib::views::zip(c, a)));
+        // debug(uni::views::zip(uni::views::concat(a, b), uni::views::concat(b, c), uni::views::concat(c, a)));
+        // debug(uni::views::concat(uni::views::zip(a, b), uni::views::zip(b, c), uni::views::zip(c, a)));
     }
     {
-        debug(lib::views::cyclic(a) | std::views::take(22));
-        debug(lib::views::cyclic(b) | std::views::take(22) | std::views::reverse);
+        debug(uni::views::cyclic(a) | std::views::take(22));
+        debug(uni::views::cyclic(b) | std::views::take(22) | std::views::reverse);
     }
     {
-        for(auto& x : lib::views::concat(a, b, c)) x = 1;
+        for(auto& x : uni::views::concat(a, b, c)) x = 1;
         debug(a, b, c);
         // a: [ 1, 1, 1, 1, 1 ], b: [ 1, 1, 1, 1, 1 ], c: [ 1, 1, 1, 1, 1 ]
 
-        for(auto [ x, y, z ] : lib::views::zip(a, b, c)) x = 1, y = 2, z = 3;
+        for(auto [ x, y, z ] : uni::views::zip(a, b, c)) x = 1, y = 2, z = 3;
         debug(a, b, c);
     }
     {
-        static_assert(std::ranges::random_access_range<decltype(lib::views::cyclic(b))>);
-        static_assert(std::ranges::random_access_range<decltype(lib::views::concat(a, b))>);
-        static_assert(std::ranges::random_access_range<decltype(lib::views::concat(a, lib::views::cyclic(b)))>);
-        assert(lib::views::cyclic(a).begin() != lib::views::cyclic(a).end());
+        static_assert(std::ranges::random_access_range<decltype(uni::views::cyclic(b))>);
+        static_assert(std::ranges::random_access_range<decltype(uni::views::concat(a, b))>);
+        static_assert(std::ranges::random_access_range<decltype(uni::views::concat(a, uni::views::cyclic(b)))>);
+        assert(uni::views::cyclic(a).begin() != uni::views::cyclic(a).end());
         // std::views::iota(0);
-        // for(int v : lib::views::concat(lib::views::cyclic(a), lib::views::cyclic(b)) | std::views::take(13)) {
+        // for(int v : uni::views::concat(uni::views::cyclic(a), uni::views::cyclic(b)) | std::views::take(13)) {
         //     debug(v);
         // }
-        debug(lib::views::concat(lib::views::cyclic(a), lib::views::cyclic(b)) | std::views::take(13));
-        debug(lib::views::concat(a, lib::views::cyclic(b)) | std::views::take(13));
-        debug(lib::views::concat(a | std::views::take(3), lib::views::cyclic(b)) | std::views::take(13));
+        debug(uni::views::concat(uni::views::cyclic(a), uni::views::cyclic(b)) | std::views::take(13));
+        debug(uni::views::concat(a, uni::views::cyclic(b)) | std::views::take(13));
+        debug(uni::views::concat(a | std::views::take(3), uni::views::cyclic(b)) | std::views::take(13));
     }
 
     // {
-    //     lib::cyclic_view cyc_view_vec1d(vec1d);
+    //     uni::cyclic_view cyc_view_vec1d(vec1d);
     //     debug(cyc_view_vec1d);
 
     //     cyc_view_vec1d.drop(50).take(vec1d.size());
@@ -78,7 +78,7 @@ signed main() {
     debug(vec2d);
 
     // {
-    //     lib::multi_view<decltype(vec2d),2> view_vec2d(&vec2d);
+    //     uni::multi_view<decltype(vec2d),2> view_vec2d(&vec2d);
 
     //     debug(view_vec2d[{0, 0}]);
     //     view_vec2d[{0, 0}]++;

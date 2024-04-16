@@ -23,7 +23,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -297,4 +297,4 @@ using unfolded_grid = internal::grid_core<T,internal::grid_impl::unfolded_contai
 template<class T, class base = valarray<T>>
 using unfolded_valgrid = internal::grid_core<T,internal::grid_impl::unfolded_container<T,base>>;
 
-} // namespace lib
+} // namespace uni

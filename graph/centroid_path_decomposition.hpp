@@ -12,7 +12,7 @@
 
 #include "template/debug.hpp"
 
-namespace lib {
+namespace uni {
 
 // Thanks to: https://kazuma8128.hatenablog.com/entry/2018/07/16/010500#fn-96e76557
 class centroid_path_decomposition {
@@ -112,4 +112,4 @@ class centroid_path_decomposition {
 };
 
 
-} // namespace lib
+} // namespace uni

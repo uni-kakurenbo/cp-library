@@ -8,7 +8,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Stack>
@@ -74,4 +74,4 @@ struct queue_by_stack {
 
 
 
-} // namespace lib
+} // namespace uni

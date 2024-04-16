@@ -22,14 +22,14 @@ constexpr std::string_view DIRS = "NESW";
 
 signed main() {
     while(true) {
-        lib::i32 h, w; lib::i64 l;
+        uni::i32 h, w; uni::i64 l;
         input >> h >> w >> l;
         if(h == 0) break;
 
-        lib::grid<char, lib::string> grid(h, w); input >> grid;
+        uni::grid<char, uni::string> grid(h, w); input >> grid;
         debug(grid);
 
-        lib::i32 sid = 0;
+        uni::i32 sid = 0;
         REP(i, h) REP(j, w) {
             if(const auto d = DIRS.find(grid(i, j)); d != std::string_view::npos) {
                 sid = grid.id(i, j) * 4 + d;
@@ -37,29 +37,29 @@ signed main() {
             }
         }
 
-        auto f = [&](lib::i64 id) -> lib::i64 {
+        auto f = [&](uni::i64 id) -> uni::i64 {
             if(!grid.is_valid(grid.pos(id / 4))) return 0;
             if(grid(grid.pos(id / 4)) == '#') return 0;
 
-            lib::i32 i, j, d = id % 4 - 1;
+            uni::i32 i, j, d = id % 4 - 1;
 
             int cnt = 0;
             do {
                 if(++cnt > 4) return 0;
 
                 std::tie(i, j) = grid.pos(id / 4);
-                d = lib::mod(d + 1, 4);
+                d = uni::mod(d + 1, 4);
                 debug(i, j, d);
 
-                i += lib::DIRS4[d].first, j += lib::DIRS4[d].second;
+                i += uni::DIRS4[d].first, j += uni::DIRS4[d].second;
             } while(!grid.is_valid(i, j) || grid(i, j) == '#');
 
             return grid.id(i, j) * 4 + d;
         };
 
-        lib::repeater<lib::i64, 40000> repeater(f);
+        uni::repeater<uni::i64, 40000> repeater(f);
         {
-            const lib::i64 tid = repeater[l](sid);
+            const uni::i64 tid = repeater[l](sid);
             const auto [ i, j ] = grid.pos(tid / 4);
             print(i + 1, j + 1, DIRS[tid % 4]);
         }

@@ -15,7 +15,7 @@
 #include "numeric/bit.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://github.com/NyaanNyaan/library/blob/master/data-structure-2d/wavelet-matrix.hpp
@@ -74,7 +74,7 @@ struct bit_vector {
     inline size_type rank1(const size_type k) const noexcept(NO_EXCEPT) {
         return
             this->_count[k / WORDSIZE] +
-            static_cast<size_type>(std::popcount(lib::clear_higher_bits(this->_block[k / WORDSIZE], k % WORDSIZE)));
+            static_cast<size_type>(std::popcount(uni::clear_higher_bits(this->_block[k / WORDSIZE], k % WORDSIZE)));
     }
 
     inline size_type rank0(const size_type k) const noexcept(NO_EXCEPT) { return k - this->rank1(k); }
@@ -140,4 +140,4 @@ struct bit_vector {
 };
 
 
-} // namespace lib
+} // namespace uni

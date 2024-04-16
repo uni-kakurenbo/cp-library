@@ -6,7 +6,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -68,4 +68,4 @@ template<class Flag> struct base {
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

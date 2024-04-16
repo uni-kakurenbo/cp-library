@@ -20,11 +20,11 @@
 
 signed main() {
     int n, m, s, t; input >> n >> m >> s >> t;
-    lib::graph<lib::i64> graph(n); graph.read<true, false>(m);
+    uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
 
-    lib::removable_priority_queue<std::pair<lib::i64, int>, std::vector<std::pair<lib::i64, int>>, std::greater<std::pair<lib::i64, int>>> que;
-    lib::vector<lib::i64> dists(n, lib::INF64);
-    lib::vector<int> prev(n, -1);
+    uni::removable_priority_queue<std::pair<uni::i64, int>, std::vector<std::pair<uni::i64, int>>, std::greater<std::pair<uni::i64, int>>> que;
+    uni::vector<uni::i64> dists(n, uni::INF64);
+    uni::vector<int> prev(n, -1);
 
     que.emplace(dists[s] = 0, s);
 
@@ -35,7 +35,7 @@ signed main() {
             auto nd = d + e.cost;
             if(nd >= dists[e]) continue;
 
-            if(dists[e] < lib::INF64) que.eliminate(dists[e], e);
+            if(dists[e] < uni::INF64) que.eliminate(dists[e], e);
 
             dists[e] = nd;
             prev[e] = v;
@@ -44,12 +44,12 @@ signed main() {
         }
     }
 
-    if(dists[t] >= lib::INF64) {
+    if(dists[t] >= uni::INF64) {
         print(-1);
         return 0;
     }
 
-    auto path = lib::restore_path(t, prev);
+    auto path = uni::restore_path(t, prev);
 
     print(dists[t], path.size() - 1);
     REP(i, 1, path.size()) print(path[i - 1], path[i]);

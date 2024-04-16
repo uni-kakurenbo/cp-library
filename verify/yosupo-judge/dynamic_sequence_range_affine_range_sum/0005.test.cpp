@@ -21,15 +21,15 @@
 #include "data_structure/red_black_tree.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<mint> a(n); input >> a;
+    uni::vector<mint> a(n); input >> a;
 
-    lib::dynamic_sequence<
-        lib::actions::range_affine_range_sum<mint>,
-        lib::persistent_red_black_tree_context<lib::i32>
+    uni::dynamic_sequence<
+        uni::actions::range_affine_range_sum<mint>,
+        uni::persistent_red_black_tree_context<uni::i32>
     > data(a);
 
     REP(q) {

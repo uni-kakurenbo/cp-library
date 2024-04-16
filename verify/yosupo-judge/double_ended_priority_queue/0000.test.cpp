@@ -21,15 +21,15 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_set<lib::i32> set(({
-        lib::vector<lib::i32> v(n); input >> v;
+    uni::dynamic_set<uni::i32> set(({
+        uni::vector<uni::i32> v(n); input >> v;
         v;
     }));
 
     REP(q) {
         int t; input >> t;
         if(t == 0) {
-            lib::i32 x; input >> x;
+            uni::i32 x; input >> x;
             set.insert(x);
         }
         if(t == 1) print(set.pop_min());

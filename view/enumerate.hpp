@@ -9,7 +9,7 @@
 #include "internal/ranges.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -320,14 +320,14 @@ inline constexpr Enumerate enumerate;
 
 } // namespace views
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std::ranges {
 
 
 template<class T>
-inline constexpr bool enable_borrowed_range<lib::enumerate_view<T>> = enable_borrowed_range<T>;
+inline constexpr bool enable_borrowed_range<uni::enumerate_view<T>> = enable_borrowed_range<T>;
 
 
 } // namespace std

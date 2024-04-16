@@ -16,9 +16,9 @@
 #include "numeric/quotient_enumerator.hpp"
 
 signed main() {
-    lib::i64 n; std::cin >> n;
+    uni::i64 n; std::cin >> n;
 
-    lib::quotient_enumerator qe(n);
+    uni::quotient_enumerator qe(n);
 
     print(qe.size());
     for(auto itr = qe.rbegin(); itr != qe.rend(); ++itr) {

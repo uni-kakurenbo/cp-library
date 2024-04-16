@@ -16,7 +16,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 template<class T, class Container = vector<internal::size_t>>
 struct compressed : Container {
@@ -74,4 +74,4 @@ template<std::ranges::input_range R>
 explicit compressed(R&&) -> compressed<typename std::ranges::range_value_t<R>>;
 
 
-} // namespace lib
+} // namespace uni

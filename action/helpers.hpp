@@ -9,7 +9,7 @@
 #include "action/base.hpp"
 #include "action/null.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -22,7 +22,7 @@ struct helper {
     static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
         return mapping(y.val(), x.val());
     }
-    static operation fold(const operation& x, [[maybe_unused]] const lib::internal::size_t length) noexcept(NO_EXCEPT) {
+    static operation fold(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         if constexpr(folding == nullptr) return x;
         return folding(x.val(), length);
     }
@@ -110,4 +110,4 @@ using make_full_t = typename make_full<T>::type;
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

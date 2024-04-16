@@ -20,14 +20,14 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::i64> d(n);
+    uni::valarray<uni::i64> d(n);
     REP(i, n) {
         char c; std::cin >> c;
         d[i] = (c == '(') ? 1 : -1;
     }
-    lib::accumulation cum(d);
+    uni::accumulation cum(d);
 
-    lib::lazy_segment_tree<lib::actions::range_add_range_min<int>> v(cum);
+    uni::lazy_segment_tree<uni::actions::range_add_range_min<int>> v(cum);
 
     REP(q) {
         int t; std::cin >> t;

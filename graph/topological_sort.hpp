@@ -11,7 +11,7 @@
 
 template<class Graph>
 template<class comparer>
-bool lib::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority(lib::vector<node_type> *const sorted) const noexcept(NO_EXCEPT) {
+bool uni::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority(uni::vector<node_type> *const sorted) const noexcept(NO_EXCEPT) {
     sorted->clear();
 
     std::vector<size_type> in_degs(this->size());
@@ -31,14 +31,14 @@ bool lib::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority(l
 
 template<class Graph>
 template<class comparer>
-bool lib::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority() const noexcept(NO_EXCEPT) {
-    lib::vector<node_type> vs;
+bool uni::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority() const noexcept(NO_EXCEPT) {
+    uni::vector<node_type> vs;
     return this->sort_topologically_with_priority<comparer>(&vs);
 }
 
 
 template<class Graph>
-bool lib::internal::graph_impl::mixin<Graph>::sort_topologically(lib::vector<node_type> *const sorted) const noexcept(NO_EXCEPT) {
+bool uni::internal::graph_impl::mixin<Graph>::sort_topologically(uni::vector<node_type> *const sorted) const noexcept(NO_EXCEPT) {
     sorted->clear();
 
     std::vector<size_type> in_degs(this->size());
@@ -57,7 +57,7 @@ bool lib::internal::graph_impl::mixin<Graph>::sort_topologically(lib::vector<nod
 }
 
 template<class Graph>
-bool lib::internal::graph_impl::mixin<Graph>::sort_topologically() const noexcept(NO_EXCEPT) {
+bool uni::internal::graph_impl::mixin<Graph>::sort_topologically() const noexcept(NO_EXCEPT) {
     std::vector<node_type> vs;
     return this->sort_topologically(&vs);
 }

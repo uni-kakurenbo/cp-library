@@ -13,7 +13,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 struct maximum_bipartite_matching {
     // using size_type = internal::size_t;
@@ -65,4 +65,4 @@ struct maximum_bipartite_matching {
     }
 };
 
-} // namespace lib
+} // namespace uni
