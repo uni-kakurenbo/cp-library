@@ -8,34 +8,56 @@
 
 #define PROBLEM "https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=ITP1_1_A"
 
-#include <cassert>
-#include <ranges>
+#include "sneaky/enforce_int128_enable.hpp"
+
+#include <iostream>
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
+#include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "utility/timer.hpp"
+#include "adaptor/set.hpp"
+#include "data_structure/dynamic_set.hpp"
+#include "data_structure/treap.hpp"
+#include "action/null.hpp"
 #include "random/engine.hpp"
-#include "random/adaptor.hpp"
-#include "numeric/prime_sieve.hpp"
-#include "numeric/prime_enumerator.hpp"
+#include "utility/timer.hpp"
 
 signed main() {
     print("Hello World");
 
-    uni::random_adaptor<uni::random_engine_32bit> rng;
+    uni::dynamic_set<uni::i64> data;
+    uni::multiset<uni::i64> corr;
+
+    debug(data);
+
     uni::timer timer(10000);
 
-    // int i = 0;
     while(not timer.expired()) {
-        const int n = rng(1'000'000) + 1;
-        // debug(i, n);
+        int t = uni::randi64() % 2;
+        uni::i64 v = (uni::randi64() % 2) || data.empty() ? uni::randi64() : data[uni::randi64() % data.size()].val();
+        debug(t, v);
 
-        auto p = uni::prime_sieve(n);
-        auto q = uni::prime_enumerator(n);
+        if(t == 0) {
+            corr.insert(v);
+            data.insert(v);
+        }
 
-        // debug(p, q);
+        if(t == 1) {
+            corr.remove(v);
+            data.erase(v);
+        }
 
-        assert(std::ranges::equal(p, q));
-        assert(std::ranges::equal(p | std::views::reverse, q | std::views::reverse));
+        debug(corr, data);
+
+        bool ok = true;
+        {
+            int i = 0;
+            ITR(v, corr) {
+                ok &= data[i++].val() == v;
+            }
+        }
+        if(!ok) {
+            assert(false);
+        }
     }
 }
