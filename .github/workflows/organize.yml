@@ -124,7 +124,6 @@ jobs:
                   wait
 
             - name: Push
-              if: ${{ github.ref_name == github.event.repository.default_branch }}
               working-directory: uni
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
