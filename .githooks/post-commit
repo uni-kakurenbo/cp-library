@@ -10,7 +10,7 @@ if [ -n "${REF}" ]; then
     (
         git switch "${TEST_BRANCH}" || exit 1
 
-        git pull
+        git pull origin "${TEST_BRANCH}"
         git merge -X theirs --no-verify "${SOURCE_BRANCH}"
     ) || git switch -c "${TEST_BRANCH}"
 
