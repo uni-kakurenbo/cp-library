@@ -12,7 +12,7 @@
 #include "numeric/bit.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::unsigned_integral R, std::integral T>
@@ -21,7 +21,7 @@ constexpr R shrink(T x) noexcept(NO_EXCEPT) {
     constexpr int DIGITS_T = std::numeric_limits<R>::digits;
 
     REPD(digits, DIGITS_R, DIGITS_T, DIGITS_R) {
-        x = (x >> digits) ^ lib::lower_bits(x, digits);
+        x = (x >> digits) ^ uni::lower_bits(x, digits);
     }
 
     return x;
@@ -103,9 +103,9 @@ constexpr u64 hash64(T x) {
 template<class T>
 struct hash {
     inline constexpr auto operator()(const T& key) const noexcept(NO_EXCEPT) {
-        return static_cast<std::size_t>(lib::hash64(key));
+        return static_cast<std::size_t>(uni::hash64(key));
     }
 };
 
 
-} // namespace lib
+} // namespace uni

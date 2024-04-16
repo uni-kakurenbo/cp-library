@@ -20,8 +20,8 @@
 
 int main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::i64> a(n); input >> a;
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>> data(a);
+    uni::valarray<uni::i64> a(n); input >> a;
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_sum<uni::i64>>> data(a);
 
     REP(q) {
         int t, l, r; std::cin >> t >> l >> r;

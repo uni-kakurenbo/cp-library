@@ -6,11 +6,11 @@ signed main() {
     string s; cin >> s;
 
     int m; cin >> m;
-    debug(lib::ljust(a, m));
-    debug(lib::cjust(a, m));
-    debug(lib::rjust(a, m));
+    debug(uni::ljust(a, m));
+    debug(uni::cjust(a, m));
+    debug(uni::rjust(a, m));
 
-    debug(lib::ljust(s, m, ' '));
-    debug(lib::cjust(s, m, ' '));
-    debug(lib::rjust(s, m, ' '));
+    debug(uni::ljust(s, m, ' '));
+    debug(uni::cjust(s, m, ' '));
+    debug(uni::rjust(s, m, ' '));
 }

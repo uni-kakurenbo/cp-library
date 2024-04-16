@@ -10,7 +10,7 @@
 #include "internal/type_traits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -294,4 +294,4 @@ struct pipe<Lhs, Rhs> : range_adaptor_closure<pipe<Lhs, Rhs>> {
 } // namespace views::adaptor
 
 
-} // namespace lib
+} // namespace uni

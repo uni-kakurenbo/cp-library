@@ -15,7 +15,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::input_range View>
@@ -340,14 +340,14 @@ inline constexpr Stride stride;
 
 } // namespace views
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std::ranges {
 
 
 template<class View>
-inline constexpr bool enable_borrowed_range<lib::stride_view<View>> = enable_borrowed_range<View>;
+inline constexpr bool enable_borrowed_range<uni::stride_view<View>> = enable_borrowed_range<View>;
 
 
 } // namespace std::ranges

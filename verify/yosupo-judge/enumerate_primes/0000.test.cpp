@@ -22,7 +22,7 @@
 signed main() {
     int n, a, b; std::cin >> n >> a >> b;
     assert(a > 0);
-    auto sieve = lib::prime_enumerator(n);
+    auto sieve = uni::prime_enumerator(n);
     print(sieve.size(), (sieve.size() + a - b - 1) / a);
-    print(sieve | std::views::drop(b) | lib::views::stride(a));
+    print(sieve | std::views::drop(b) | uni::views::stride(a));
 }

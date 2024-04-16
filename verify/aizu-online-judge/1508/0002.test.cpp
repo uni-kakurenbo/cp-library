@@ -21,9 +21,9 @@
 
 signed main() {
     int n, q; input >> n >> q;
-    lib::vector<int> a(n); input >> a;
+    uni::vector<int> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>, lib::persistent_red_black_tree_context<lib::i32>> data(a);
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>, uni::persistent_red_black_tree_context<uni::i32>> data(a);
     debug(data.dump_rich());
 
     REP(q) {

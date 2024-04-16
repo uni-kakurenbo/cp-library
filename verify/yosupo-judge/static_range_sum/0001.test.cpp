@@ -20,7 +20,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<int> a(n); REP(i, n) std::cin >> a[i];
-    lib::disjoint_sparse_table<lib::algebraic::addition<lib::i64>> sum(a);
+    uni::disjoint_sparse_table<uni::algebraic::addition<uni::i64>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

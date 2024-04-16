@@ -13,7 +13,7 @@
 #include "adaptor/set.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -98,4 +98,4 @@ template<class... Args> using cc_hash_table = internal::map_wrapper<gnu::cc_hash
 template<class... Args> using gp_hash_table = internal::map_wrapper<gnu::gp_hash_table<Args...>>;
 
 
-} // namespace lib
+} // namespace uni

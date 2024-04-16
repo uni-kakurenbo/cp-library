@@ -37,7 +37,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -134,7 +134,7 @@ struct base {
 
         size_type pos = this->_first_pos.at(v) + rank;
         REP(h, this->_bits) {
-            if(lib::bit(v, h)) pos = this->_index[h].select1(pos - this->_index[h].zeros());
+            if(uni::bit(v, h)) pos = this->_index[h].select1(pos - this->_index[h].zeros());
             else pos = this->_index[h].select0(pos);
         }
 
@@ -170,7 +170,7 @@ struct base {
 
         size_type left = 0;
         REPD(h, this->_bits) {
-            if(lib::bit(val, h)) left = this->_index[h].rank1(left) + this->_index[h].zeros();
+            if(uni::bit(val, h)) left = this->_index[h].rank1(left) + this->_index[h].zeros();
             else  left = this->_index[h].rank0(left);
         }
 
@@ -337,12 +337,12 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
     struct iterator;
     struct range_reference;
 
-    template<lib::interval_notation rng = lib::interval_notation::right_open>
+    template<uni::interval_notation rng = uni::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
-        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l + 1, r);
-        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r + 1);
+        if constexpr(rng == uni::interval_notation::right_open) return range_reference(this, l, r);
+        if constexpr(rng == uni::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
+        if constexpr(rng == uni::interval_notation::open) return range_reference(this, l + 1, r);
+        if constexpr(rng == uni::interval_notation::closed) return range_reference(this, l, r + 1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
@@ -542,12 +542,12 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, MapTemplate> {
     struct iterator;
     struct range_reference;
 
-    template<lib::interval_notation rng = lib::interval_notation::right_open>
+    template<uni::interval_notation rng = uni::interval_notation::right_open>
     inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
-        if constexpr(rng == lib::interval_notation::right_open) return range_reference(this, l, r);
-        if constexpr(rng == lib::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
-        if constexpr(rng == lib::interval_notation::open) return range_reference(this, l + 1, r);
-        if constexpr(rng == lib::interval_notation::closed) return range_reference(this, l, r + 1);
+        if constexpr(rng == uni::interval_notation::right_open) return range_reference(this, l, r);
+        if constexpr(rng == uni::interval_notation::left_open) return range_reference(this, l + 1, r + 1);
+        if constexpr(rng == uni::interval_notation::open) return range_reference(this, l + 1, r);
+        if constexpr(rng == uni::interval_notation::closed) return range_reference(this, l, r + 1);
     }
     inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this, 0, this->size()); }
     inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
@@ -695,4 +695,4 @@ template<std::input_iterator I, std::sentinel_for<I> S>
 explicit compressed_wavelet_matrix(I, S) -> compressed_wavelet_matrix<std::iter_value_t<I>>;
 
 
-} // namespace lib
+} // namespace uni

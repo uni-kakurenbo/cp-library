@@ -9,7 +9,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::input_iterator I, std::sentinel_for<I> S, class Res = std::string>
@@ -40,4 +40,4 @@ Res to_uppwer(const std::string str) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

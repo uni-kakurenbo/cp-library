@@ -16,8 +16,8 @@
 
 signed main() {
     int n; std::cin >> n;
-    lib::vector<int> a(n); input >> a;
-    lib::lis<true,int> lis(ALL(a));
+    uni::vector<int> a(n); input >> a;
+    uni::lis<true,int> lis(ALL(a));
 
     print(lis.size(), lis.indices);
 }

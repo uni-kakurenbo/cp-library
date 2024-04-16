@@ -8,7 +8,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -127,4 +127,4 @@ struct dumpable_tree {
 } // namespace internal
 
 
-} // namespace lib
+} // namespace uni

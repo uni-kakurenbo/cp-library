@@ -21,20 +21,20 @@
 #include "data_structure/treap.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<mint> a(n); input >> a;
+    uni::vector<mint> a(n); input >> a;
 
 
     static std::array<std::byte, 56U * 2000000> buffer;
     std::pmr::monotonic_buffer_resource mr{ &buffer, sizeof(buffer) };
 
 
-    lib::dynamic_sequence<
-        lib::actions::range_affine_range_sum<mint>,
-        lib::pmr::treap_context<lib::i32>
+    uni::dynamic_sequence<
+        uni::actions::range_affine_range_sum<mint>,
+        uni::pmr::treap_context<uni::i32>
     > data(a, &mr);
 
 

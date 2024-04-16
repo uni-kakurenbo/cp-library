@@ -10,7 +10,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 
 namespace actions {
@@ -31,4 +31,4 @@ struct range_affine_range_minmax : base<algebraic::affine<T, REVERSE>> {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

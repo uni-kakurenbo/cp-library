@@ -13,7 +13,7 @@
 #include "internal/auto_holder.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, class V = vector<internal::size_t>, class container = dynamic_auto_holder<T, V>>
@@ -37,4 +37,4 @@ template<std::ranges::input_range R>
 explicit inverse(R&&) -> inverse<std::ranges::range_value_t<R>>;
 
 
-} // namespace lib
+} // namespace uni

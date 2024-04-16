@@ -11,7 +11,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://maspypy.github.io/library/nt/stern_brocot_tree.hpp
@@ -19,7 +19,7 @@ template<
     class Value = i32,
     class Middle = i64,
     class Large = i128,
-    class Fraction = spair<Value>, std::ranges::range Path = lib::vector<Value>
+    class Fraction = spair<Value>, std::ranges::range Path = uni::vector<Value>
 >
 struct stern_brocot_tree {
     using value_type = Value;
@@ -37,14 +37,14 @@ struct stern_brocot_tree {
         middle_type det_m = det_l + det_r;
         while(true) {
             if(det_m == 0) break;
-            middle_type k = lib::div_ceil(-det_m, det_r);
+            middle_type k = uni::div_ceil(-det_m, det_r);
             path.emplace_back(k);
             l = { l.first + k * r.first, l.second + k * r.second };
             m = { l.first + r.first, l.second + r.second };
             det_l += k * det_r;
             det_m += k * det_r;
             if(det_m == 0) break;
-            k = lib::div_ceil(det_m, -det_l);
+            k = uni::div_ceil(det_m, -det_l);
             path.emplace_back(k);
             r = { r.first + k * l.first, r.second + k * l.second };
             m = { l.first + r.first, l.second + r.second };
@@ -100,8 +100,8 @@ struct stern_brocot_tree {
         const auto px = path(x);
         const auto py = path(y);
         path_type path;
-        FOR(i, lib::min(std::ranges::ssize(px), std::ranges::ssize(py))) {
-            middle_type k = lib::min(px[i], py[i]);
+        FOR(i, uni::min(std::ranges::ssize(px), std::ranges::ssize(py))) {
+            middle_type k = uni::min(px[i], py[i]);
             path.emplace_back(k);
             if(k < px[i] || k < py[i]) break;
         }
@@ -116,14 +116,14 @@ struct stern_brocot_tree {
         middle_type det_m = det_l + det_r;
         while(true) {
             if(det_m == 0 || dep == 0) break;
-            middle_type k = lib::min(dep, lib::div_ceil(-det_m, det_r));
+            middle_type k = uni::min(dep, uni::div_ceil(-det_m, det_r));
             l = { l.first + k * r.first, l.second + k * r.second };
             m = { l.first + r.first, l.second + r.second };
             det_l += k * det_r;
             det_m += k * det_r;
             dep -= k;
             if(det_m == 0 || dep == 0) break;
-            k = lib::min(dep, lib::div_ceil(det_m, -det_l));
+            k = uni::min(dep, uni::div_ceil(det_m, -det_l));
             r = {r.first + k * l.first, r.second + k * l.second };
             m = { l.first + r.first, l.second + r.second };
             det_r += k * det_l;
@@ -148,4 +148,4 @@ struct stern_brocot_tree {
 };
 
 
-} // namespace lib
+} // namespace uni

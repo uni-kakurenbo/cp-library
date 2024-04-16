@@ -13,7 +13,7 @@
 #include "geometry/circle.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -32,7 +32,7 @@ inline constexpr point<T> reflected(const point<T>& p, const line<point<T>>& ln)
 
 template<class T>
 inline constexpr positional_relation relation(const point<T>& p, const circle<T>& o) noexcept(NO_EXCEPT) {
-    const T dist = lib::squared_distance(o.center(), p);
+    const T dist = uni::squared_distance(o.center(), p);
     const auto comp = compare(dist, o.squared_radius());
     if(comp > 0) return positional_relation::out;
     if(comp < 0) return positional_relation::in;
@@ -91,4 +91,4 @@ inline constexpr positional_relation relation(const point<T>& p, const segment<p
 }
 
 
-} // namespace lib
+} // namespace uni

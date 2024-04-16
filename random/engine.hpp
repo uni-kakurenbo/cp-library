@@ -16,7 +16,7 @@
 
 
 // Thanks to: https://prng.di.unimi.it/
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -267,4 +267,4 @@ double randd() {
 }
 
 
-} // namespace lib
+} // namespace uni

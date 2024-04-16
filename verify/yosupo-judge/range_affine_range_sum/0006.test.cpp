@@ -19,9 +19,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint998244353> a(n); input >> a;
+    std::vector<uni::modint998244353> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_sum<lib::modint998244353>> data(a);
+    uni::dynamic_sequence<uni::actions::range_affine_range_sum<uni::modint998244353>> data(a);
 
     LOOP(q) {
         int t; std::cin >> t;

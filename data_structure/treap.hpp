@@ -31,7 +31,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -43,7 +43,7 @@ struct treap_impl : private uncopyable {
     using value_type = ValueType;
 
     struct node_type;
-    using node_handler = typename lib::node_handlers::reusing<Allocator>::template handler<node_type>;
+    using node_handler = typename uni::node_handlers::reusing<Allocator>::template handler<node_type>;
 
     using allocator_type = typename node_handler::allocator_type;
     using node_pointer = typename node_handler::node_pointer;
@@ -284,10 +284,10 @@ namespace pmr {
 
 
 template<std::integral SizeType = i64, i64 Id = -1>
-using treap_context = lib::treap_context<SizeType, std::pmr::polymorphic_allocator<SizeType>, Id>;
+using treap_context = uni::treap_context<SizeType, std::pmr::polymorphic_allocator<SizeType>, Id>;
 
 
 } // namespace pmr
 
 
-} // namespace lib
+} // namespace uni

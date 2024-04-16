@@ -18,11 +18,11 @@
 
 signed main() {
     int n; input >> n;
-    lib::valarray<lib::i32> a(n); input >> a;
+    uni::valarray<uni::i32> a(n); input >> a;
 
-    lib::disjoint_sparse_table<lib::actions::range_gcd<lib::i32>> data(a);
+    uni::disjoint_sparse_table<uni::actions::range_gcd<uni::i32>> data(a);
 
-    lib::maximum<lib::i32> ans = 0;
+    uni::maximum<uni::i32> ans = 0;
     REP(i, n) {
         ans <<= (data(0, i).fold() + data(i + 1, n).fold()).val();
     }

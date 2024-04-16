@@ -5,15 +5,15 @@
 #include "adaptor/internal/output.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
-lib::input_adaptor _input;
-lib::output_adaptor _print;
+uni::input_adaptor _input;
+uni::output_adaptor _print;
 
 
 }
 
 
-#define input lib::_input
-#define print lib::_print
+#define input uni::_input
+#define print uni::_print

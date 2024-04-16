@@ -10,7 +10,7 @@
 
 
 // Thanks to: https://nyaannyaan.github.io/library/multiplicative-function/divisor-multiple-transform.hpp.html
-namespace lib {
+namespace uni {
 
 namespace divisor_transform {
 
@@ -22,7 +22,7 @@ template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto zeta(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
-    ITR(p, lib::prime_enumerator(n)) {
+    ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) range[k*p - OFFSET] += range[k - OFFSET];
     }
 }
@@ -31,7 +31,7 @@ template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto mobius(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
-    ITR(p, lib::prime_enumerator(n)) {
+    ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) range[k*p - OFFSET] -= range[k - OFFSET];
     }
 }
@@ -84,7 +84,7 @@ template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto zeta(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
-    ITR(p, lib::prime_enumerator(n)) {
+    ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) range[k - OFFSET] += range[k*p - OFFSET];
     }
 }
@@ -93,7 +93,7 @@ template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
 auto mobius(R& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::ssize(range);
-    ITR(p, lib::prime_enumerator(n)) {
+    ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) range[k - OFFSET] -= range[k*p - OFFSET];
     }
 }
@@ -133,4 +133,4 @@ auto mobius(R& range) noexcept(NO_EXCEPT) {
 
 } // namespace multiple_transform
 
-} // namespace lib
+} // namespace uni

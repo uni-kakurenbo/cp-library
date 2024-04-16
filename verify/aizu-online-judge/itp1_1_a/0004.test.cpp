@@ -22,16 +22,16 @@
 signed main() {
     print("Hello World");
 
-    lib::random_adaptor<lib::random_engine_32bit> rng;
-    lib::timer timer(10000);
+    uni::random_adaptor<uni::random_engine_32bit> rng;
+    uni::timer timer(10000);
 
     // int i = 0;
     while(not timer.expired()) {
         const int n = rng(1'000'000) + 1;
         // debug(i, n);
 
-        auto p = lib::prime_sieve(n);
-        auto q = lib::prime_enumerator(n);
+        auto p = uni::prime_sieve(n);
+        auto q = uni::prime_enumerator(n);
 
         // debug(p, q);
 

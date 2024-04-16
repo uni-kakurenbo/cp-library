@@ -20,16 +20,16 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::size_t B, class T>
-lib::string to_base_n_string(T v) noexcept(NO_EXCEPT) {
+uni::string to_base_n_string(T v) noexcept(NO_EXCEPT) {
     constexpr std::string_view CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     static_assert(0 < B and B <= std::ranges::size(CHARS));
     assert(0 <= v);
 
-    lib::string res;
+    uni::string res;
     while(v > 0) {
         res += CHARS[v%B];
         v /= B;
@@ -41,14 +41,14 @@ lib::string to_base_n_string(T v) noexcept(NO_EXCEPT) {
 
 
 template<class T>
-lib::string to_base_n_string(T v, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+uni::string to_base_n_string(T v, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     constexpr std::string_view CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     assert(1 < b && b <= std::ranges::ssize(CHARS));
     assert(0 <= v);
 
     if(v == 0) return "0";
 
-    lib::string res;
+    uni::string res;
 
     while(v > 0) {
         res += CHARS[v % b];
@@ -60,11 +60,11 @@ lib::string to_base_n_string(T v, const lib::internal::size_t b) noexcept(NO_EXC
 }
 
 template<class T>
-lib::vector<T> to_base_n_vector(T v, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+uni::vector<T> to_base_n_vector(T v, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     assert(1 < b);
     assert(0 <= v);
 
-    lib::vector<T> res;
+    uni::vector<T> res;
 
     while(v > 0) {
         res.push_back(v%b);
@@ -76,7 +76,7 @@ lib::vector<T> to_base_n_vector(T v, const lib::internal::size_t b) noexcept(NO_
 }
 
 template<std::bidirectional_iterator I, class T = typename std::iterator_traits<I>::value_type>
-T from_base_n_sequence(I begin, I end, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+T from_base_n_sequence(I begin, I end, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     assert(1 < b);
 
     if(begin == end) return 0;
@@ -91,7 +91,7 @@ T from_base_n_sequence(I begin, I end, const lib::internal::size_t b) noexcept(N
 }
 
 template<class T, std::forward_iterator I>
-T from_base_n_string(I begin, I end, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+T from_base_n_string(I begin, I end, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     assert(1 < b);
 
     if(begin == end) return 0;
@@ -125,16 +125,16 @@ T from_base_n_string(I begin, I end, const lib::internal::size_t b) noexcept(NO_
 
 template<std::ranges::bidirectional_range R, class T = std::ranges::range_value_t<R>>
     requires std::ranges::common_range<R>
-T from_base_n_sequence(R range, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+T from_base_n_sequence(R range, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     return from_base_n_sequence(std::ranges::begin(range), std::ranges::end(range), b);
 }
 
 template<class T, std::ranges::bidirectional_range R>
     requires std::ranges::common_range<R>
-T from_base_n_string(R range, const lib::internal::size_t b) noexcept(NO_EXCEPT) {
+T from_base_n_string(R range, const uni::internal::size_t b) noexcept(NO_EXCEPT) {
     return from_base_n_string<T>(std::ranges::begin(range), std::ranges::end(range), b);
 }
 
 
 
-} // namespace lib
+} // namespace uni

@@ -20,9 +20,9 @@
 
 signed main() {
     int n, q; input >> n >> q;
-    lib::vector<int> a(n); input >> a;
+    uni::vector<int> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(a);
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>> data(a);
     debug(data.dump_rich());
 
     REP(q) {

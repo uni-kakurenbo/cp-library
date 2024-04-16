@@ -13,12 +13,12 @@
 #include "numeric/modular/modint.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
 
-template<lib::internal::modint_family ValueType, typename ValueType::value_type BASE>
+template<uni::internal::modint_family ValueType, typename ValueType::value_type BASE>
 struct rolling_hash_impl {
     using value_type = ValueType;
     inline static value_type base;
@@ -32,10 +32,10 @@ struct rolling_hash_impl {
     {
         if(rolling_hash_impl::base == 0) {
             if constexpr(BASE == 0) {
-                rolling_hash_impl::base = lib::primitive_root(value_type::mod());
+                rolling_hash_impl::base = uni::primitive_root(value_type::mod());
             }
             else if constexpr(BASE < 0) {
-                rolling_hash_impl::base = static_cast<value_type>(lib::primitive_root(rolling_hash_impl::mod));
+                rolling_hash_impl::base = static_cast<value_type>(uni::primitive_root(rolling_hash_impl::mod));
             }
             else {
                 rolling_hash_impl::base = BASE;
@@ -68,7 +68,7 @@ struct rolling_hash_impl {
 
 template<
     bool REVERSE = false,
-    lib::internal::modint_family T = lib::static_modint_64bit<(1UL << 61) - 1>,
+    uni::internal::modint_family T = uni::static_modint_64bit<(1UL << 61) - 1>,
     typename T::value_type BASE = 0
 >
 struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<rolling_hash<REVERSE, T, BASE>>::automatic, associative {
@@ -92,4 +92,4 @@ struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<roll
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

@@ -13,7 +13,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class container = valarray<bool>> struct prime_flags : container {
@@ -46,4 +46,4 @@ template<class T, class container = vector<T>> struct prime_sieve : container {
 };
 
 
-} // namespace lib
+} // namespace uni

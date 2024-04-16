@@ -12,7 +12,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, class container = valarray<T>>
@@ -37,4 +37,4 @@ template<std::input_iterator I, std::sentinel_for<I> S>
 explicit adjacent_difference(I, S) -> adjacent_difference<typename std::iterator_traits<I>::value_type>;
 
 
-} // namespace lib
+} // namespace uni

@@ -8,7 +8,7 @@
 #include "internal/types.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::integral SizeType>

@@ -20,7 +20,7 @@
 //     int n, m, k; cin >> n >> m >> k;
 //     vector<int> a(n); REP(i, n) cin >> a[i];
 
-//     lib::PrioritySum<ll> data;
+//     uni::PrioritySum<ll> data;
 
 //     REP(i, m) data.add(a[i]);
 

@@ -18,12 +18,12 @@
 signed main() {
     int q, k; input >> q >> k, --k;
 
-    lib::kth_element<lib::i64> data(k);
+    uni::kth_element<uni::i64> data(k);
 
     REP(q) {
         int t; input >> t;
         if(t == 1) {
-            lib::i64 v; input >> v;
+            uni::i64 v; input >> v;
             data.push(v);
         }
         if(t == 2) {

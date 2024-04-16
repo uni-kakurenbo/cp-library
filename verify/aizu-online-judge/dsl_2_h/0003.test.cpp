@@ -19,7 +19,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_minmax<lib::ll>> data(n, lib::spair<lib::ll>{ 0, 0 });
+    uni::dynamic_sequence<uni::actions::range_affine_range_minmax<uni::ll>> data(n, uni::spair<uni::ll>{ 0, 0 });
 
     REP(q) {
         int t; std::cin >> t;

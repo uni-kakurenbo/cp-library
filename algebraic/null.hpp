@@ -11,12 +11,12 @@
 #include "algebraic/internal/concepts.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
 
-template<class T = lib::internal::dummy>
+template<class T = uni::internal::dummy>
 struct null : base<T>, scalar_multipliable<null<T>>::identity, associative, commutative {
     using base<T>::base;
 
@@ -35,4 +35,4 @@ struct null : base<T>, scalar_multipliable<null<T>>::identity, associative, comm
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

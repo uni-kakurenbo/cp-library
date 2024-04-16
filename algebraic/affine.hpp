@@ -5,7 +5,7 @@
 #include "internal/dev_env.hpp"
 #include "algebraic/base.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -25,4 +25,4 @@ struct affine : base<std::pair<T,T>>, scalar_multipliable<affine<T, REVERSE>>::a
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

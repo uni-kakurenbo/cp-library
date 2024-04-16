@@ -16,7 +16,7 @@
 #include "iterable/operation.hpp"
 
 signed main() {
-    lib::multi_container<int, 3> cnt(4, 3, 10);
+    uni::multi_container<int, 3> cnt(4, 3, 10);
 
     int n; input >> n;
 
@@ -27,6 +27,6 @@ signed main() {
 
     REP(i, 4) {
         ITR(v, cnt[i]) print << " ", print(v);
-        if(i < 3) print(lib::join(lib::views::repeat('#') | std::views::take(20)));
+        if(i < 3) print(uni::join(uni::views::repeat('#') | std::views::take(20)));
     }
 }

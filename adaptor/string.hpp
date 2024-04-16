@@ -7,10 +7,10 @@
 #include "adaptor/internal/container_extender.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 using string = internal::extended_container<std::string>;
 
 
-} // namespace lib
+} // namespace uni

@@ -19,7 +19,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, class Container = valarray<T>>
@@ -132,7 +132,7 @@ explicit accumulation_2d(I, S) ->
 template<std::input_iterator I, std::sentinel_for<I> S>
 explicit accumulation_2d(I, S) ->
     accumulation_2d<
-        typename std::iterator_traits<typename lib::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
+        typename std::iterator_traits<typename uni::internal::iterator_t<typename std::iterator_traits<I>::value_type>>::value_type
     >;
 
 template<std::ranges::input_range R>
@@ -143,4 +143,4 @@ explicit accumulation_2d(R&&) ->
     >;
 
 
-} // namespace lib
+} // namespace uni

@@ -14,7 +14,7 @@
 #include "iterable/internal/operation_base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -136,13 +136,13 @@ struct extended_container : Base {
     }
 
     inline auto join(const char* sep = "") noexcept(NO_EXCEPT) {
-        return lib::join(*this->_base(), sep);
+        return uni::join(*this->_base(), sep);
     }
 
-    inline auto sum() noexcept(NO_EXCEPT) { return lib::sum(*this->_base()); }
+    inline auto sum() noexcept(NO_EXCEPT) { return uni::sum(*this->_base()); }
 };
 
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

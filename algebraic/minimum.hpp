@@ -8,7 +8,7 @@
 #include "algebraic/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -27,4 +27,4 @@ struct minimum : base<T>, scalar_multipliable<minimum<T>>::identity, associative
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

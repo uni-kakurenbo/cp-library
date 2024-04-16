@@ -17,7 +17,7 @@
 #include <ranges>
 
 
-namespace lib {
+namespace uni {
 
 
 template <std::move_constructible T, std::semiregular Bound = std::unreachable_sentinel_t>
@@ -257,4 +257,4 @@ constexpr auto drop_of_repeat_view(Range&& range, std::ranges::range_difference_
 
 } // namespace views
 
-} // namespace lib
+} // namespace uni

@@ -10,7 +10,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -46,4 +46,4 @@ template<class T>
 constexpr T EPSILON = numeric_limits<T>::arithmetic_epsilon();
 
 
-} // namespace lib
+} // namespace uni

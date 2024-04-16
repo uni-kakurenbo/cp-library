@@ -15,7 +15,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -57,7 +57,7 @@ struct binary_reduction {
 
     inline constexpr value_type pow(const value_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mask == 0) return 0;
-        return lib::pow(v, p);
+        return uni::pow(v, p);
     }
 
 
@@ -90,4 +90,4 @@ using binary_reduction_64bit = internal::binary_reduction<u64>;
 using binary_reduction_128bit = internal::binary_reduction<u128>;
 
 
-} // namespace lib
+} // namespace uni

@@ -24,7 +24,7 @@
 #define $S second
 
 
-namespace lib {
+namespace uni {
 
 
 constexpr char LN = '\n';
@@ -40,7 +40,7 @@ constexpr std::pair<int,int> DIRS8P[] = { { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1
 template<class T> using spair = std::pair<T,T>;
 
 
-}  // namespace lib
+}  // namespace uni
 
 
 namespace std {

@@ -13,14 +13,14 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::graph<> G(n);
+    uni::graph<> G(n);
 
     REP(i, 1, n) {
         int p; std::cin >> p;
         G.add_edge_bidirectionally(i, p);
     }
 
-    lib::lowest_common_ancestor lca(G, 0);
+    uni::lowest_common_ancestor lca(G, 0);
 
     LOOP(q) {
         int u, v; std::cin >> u >> v;

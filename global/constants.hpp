@@ -12,7 +12,7 @@
 #include "numeric/limits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 enum class comparison : std::uint8_t {
@@ -86,4 +86,4 @@ enum class alignment : std::int8_t {
 };
 
 
-} // namespace lib
+} // namespace uni

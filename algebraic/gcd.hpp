@@ -6,7 +6,7 @@
 #include "algebraic/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -25,4 +25,4 @@ struct gcd : base<T>, scalar_multipliable<gcd<T>>::identity, associative, commut
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

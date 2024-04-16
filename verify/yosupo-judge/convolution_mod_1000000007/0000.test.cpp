@@ -18,10 +18,10 @@
 #include "numeric/modular/modint.hpp"
 #include "convolution/sum.hpp"
 
-using mint = lib::modint1000000007;
+using mint = uni::modint1000000007;
 
 signed main() {
     int n, m; std::cin >> n >> m;
-    lib::vector<lib::u64> a(n), b(m); input >> a >> b;
-    print(lib::convolution<lib::vector<mint>>(a, b));
+    uni::vector<uni::u64> a(n), b(m); input >> a >> b;
+    print(uni::convolution<uni::vector<mint>>(a, b));
 }

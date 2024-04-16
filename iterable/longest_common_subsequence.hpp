@@ -13,7 +13,7 @@
 #include "structure/grid.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class container = valgrid<internal::size_t>>
@@ -38,4 +38,4 @@ struct lcs_sizes : container {
 };
 
 
-} // namespace lib
+} // namespace uni

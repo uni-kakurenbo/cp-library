@@ -17,5 +17,5 @@
 signed main() {
     int n; std::cin >> n;
     print << n << ": ";
-    print(lib::factorize(n));
+    print(uni::factorize(n));
 }

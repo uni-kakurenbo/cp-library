@@ -19,8 +19,8 @@
 signed main() {
     int n; std::cin >> n;
 
-    lib::set_hasher<int> hash_a, hash_b;
-    lib::vector<lib::set_hasher<int>::hash_type> a(n), b(n);
+    uni::set_hasher<int> hash_a, hash_b;
+    uni::vector<uni::set_hasher<int>::hash_type> a(n), b(n);
 
     REP(i, n) {
         int v; std::cin >> v; hash_a.insert(v);

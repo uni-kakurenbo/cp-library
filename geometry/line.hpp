@@ -8,7 +8,7 @@
 #include "geometry/point.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class P>
@@ -48,8 +48,8 @@ struct line {
 
     inline constexpr const point_type to_vector() const noexcept(NO_EXCEPT) { return this->p1() - this->p0(); }
 
-    inline constexpr const value_type length() const noexcept(NO_EXCEPT) { return lib::distance(this->p0(), this->p1()); }
-    inline constexpr const value_type squared_length() const noexcept(NO_EXCEPT) { return lib::squared_distance(this->p0(), this->p1()); }
+    inline constexpr const value_type length() const noexcept(NO_EXCEPT) { return uni::distance(this->p0(), this->p1()); }
+    inline constexpr const value_type squared_length() const noexcept(NO_EXCEPT) { return uni::squared_distance(this->p0(), this->p1()); }
 
     inline constexpr const point_type midpoint() const noexcept(NO_EXCEPT) { return tuple_sum(this->vertices()) / 2; }
 
@@ -61,40 +61,40 @@ template<size_t I, class T>
 inline const typename line<T>::value_type& get(const line<T>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return ln.p0(); }
     else if constexpr(I == 1) { return ln.p1(); }
-    else { static_assert(lib::internal::EXCEPTION<I>); }
+    else { static_assert(uni::internal::EXCEPTION<I>); }
 }
 
 template<size_t I, class T>
 inline typename line<T>::value_type& get(line<T>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return ln.p0();
     else if constexpr(I == 1) return ln.p1();
-    else static_assert(lib::internal::EXCEPTION<I>);
+    else static_assert(uni::internal::EXCEPTION<I>);
 }
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std {
 
 
 template<class T>
-struct tuple_size<lib::line<T>> : integral_constant<size_t,2> {};
+struct tuple_size<uni::line<T>> : integral_constant<size_t,2> {};
 
 template<size_t I, class T>
-struct tuple_element<I,lib::line<T>> {
-    using type = typename lib::line<T>::value_type;
+struct tuple_element<I,uni::line<T>> {
+    using type = typename uni::line<T>::value_type;
 };
 
 
 template<class P, class C, class S>
-inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::line<P>& v) noexcept(NO_EXCEPT) {
+inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, uni::line<P>& v) noexcept(NO_EXCEPT) {
     P x, y; in >> x >> y;
     v = { x, y };
     return in;
 }
 
 template<class P, class C, class S>
-inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const lib::line<P>& v) noexcept(NO_EXCEPT) {
+inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const uni::line<P>& v) noexcept(NO_EXCEPT) {
     out << v.p0() << " " << v.p1();
     return out;
 }
@@ -103,7 +103,7 @@ inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const lib::line<P
 } // namespace std
 
 
-namespace lib {
+namespace uni {
 
 
 template<class P>
@@ -132,4 +132,4 @@ inline constexpr std::optional<P> intersection(const line<P>& s, const line<P>& 
 }
 
 
-} // namespace lib
+} // namespace uni

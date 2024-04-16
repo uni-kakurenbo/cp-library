@@ -8,7 +8,7 @@
 #include "geometry/line.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Point>
@@ -32,7 +32,7 @@ bool is_intersecting(const segment<P>& p, const segment<P>& q) noexcept(NO_EXCEP
     const value_type cp3 = cross(q.p1(), p.p1(), q.p0());
 
     if(compare(cp0) == 0 and compare(cp1) == 0 and compare(cp2) == 0 and compare(cp3) == 0) {
-        return lib::max(p.p0(), q.p0()) <= lib::min(p.p1(), q.p1());
+        return uni::max(p.p0(), q.p0()) <= uni::min(p.p1(), q.p1());
     }
 
     if constexpr(ALLOW_END_POINT) return compare(cp0 * cp1) <= 0 and compare(cp2 * cp3) <= 0;
@@ -52,4 +52,4 @@ inline constexpr std::optional<P> intersection(const segment<P>& p, const segmen
 }
 
 
-} // namespace lib
+} // namespace uni

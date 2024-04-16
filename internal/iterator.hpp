@@ -15,7 +15,7 @@
 #include "internal/type_traits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -183,4 +183,4 @@ using iota_diff_t = std::make_signed_t<T>;
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

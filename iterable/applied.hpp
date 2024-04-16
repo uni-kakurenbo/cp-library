@@ -11,7 +11,7 @@
 #include "adaptor/valarray.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<std::ranges::input_range R, class F>
@@ -31,4 +31,4 @@ inline auto reversed(R v) noexcept(NO_EXCEPT) {
 }
 
 
-} // namespace lib
+} // namespace uni

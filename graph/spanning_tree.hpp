@@ -8,7 +8,7 @@
 #include "structure/graph.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -47,23 +47,23 @@ auto kruskal(const G& graph, const Compare<std::tuple<Cost, Size, Size>> compare
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni
 
 
 template<class Graph>
-inline auto lib::internal::graph_impl::mixin<Graph>::minimum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
+inline auto uni::internal::graph_impl::mixin<Graph>::minimum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
     return
-        lib::internal::graph_impl::kruskal<
-            lib::internal::graph_impl::mixin<Graph>,
+        uni::internal::graph_impl::kruskal<
+            uni::internal::graph_impl::mixin<Graph>,
             std::less, cost_type, size_type
         >(*this, {}, mst);
 }
 
 template<class Graph>
-inline auto lib::internal::graph_impl::mixin<Graph>::maximum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
+inline auto uni::internal::graph_impl::mixin<Graph>::maximum_spanning_tree(internal::graph_impl::mixin<Graph> *const mst) const noexcept(NO_EXCEPT) {
     return
-        lib::internal::graph_impl::kruskal<
-            lib::internal::graph_impl::mixin<Graph>,
+        uni::internal::graph_impl::kruskal<
+            uni::internal::graph_impl::mixin<Graph>,
             std::less, cost_type, size_type
         >(*this, {}, mst);
 }

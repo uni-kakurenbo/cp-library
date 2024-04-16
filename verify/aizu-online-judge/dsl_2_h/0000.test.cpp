@@ -19,7 +19,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::lazy_segment_tree<lib::actions::range_add_range_min<lib::ll>> data(n, 0);
+    uni::lazy_segment_tree<uni::actions::range_add_range_min<uni::ll>> data(n, 0);
     // debug(data);
 
     REP(q) {

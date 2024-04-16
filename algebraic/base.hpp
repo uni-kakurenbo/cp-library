@@ -9,7 +9,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -27,7 +27,7 @@ struct scalar_multipliable {
     struct automatic {
         template<std::integral Scalar>
         friend inline Derived operator*(const Scalar k, const Derived& val) noexcept(NO_EXCEPT) {
-            return lib::pow<Derived, Scalar, std::plus<Derived>>(val, k, {}, {});
+            return uni::pow<Derived, Scalar, std::plus<Derived>>(val, k, {}, {});
         }
     };
 };
@@ -69,4 +69,4 @@ struct commutative {};
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

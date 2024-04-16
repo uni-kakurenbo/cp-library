@@ -11,7 +11,7 @@
 #include "hash/general_hasher.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, int hasher_id = -1, template<class...> class Set = std::unordered_set>
@@ -81,4 +81,4 @@ struct set_hasher : protected Set<T> {
 };
 
 
-} // namespace lib
+} // namespace uni

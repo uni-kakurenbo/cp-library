@@ -23,7 +23,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
 
-    lib::dynamic_sequence<lib::i32, lib::persistent_red_black_tree_context<lib::i32>> data(n, (1U << 31) - 1);
+    uni::dynamic_sequence<uni::i32, uni::persistent_red_black_tree_context<uni::i32>> data(n, (1U << 31) - 1);
 
     REP(q) {
         int t; std::cin >> t;

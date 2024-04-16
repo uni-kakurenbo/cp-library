@@ -9,7 +9,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -33,4 +33,4 @@ inline std::int32_t compare(const T x, const T y = 0) {
 }
 
 
-} // namespace lib
+} // namespace uni

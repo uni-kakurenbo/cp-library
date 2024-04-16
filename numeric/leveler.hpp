@@ -17,7 +17,7 @@
 #include <ranges>
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T = internal::size_t>
@@ -26,7 +26,7 @@ struct leveler {
     using size_type = internal::size_t;
 
   private:
-    lib::valarray<value_type> _bases;
+    uni::valarray<value_type> _bases;
     size_type _dim;
     value_type _max;
 
@@ -81,10 +81,10 @@ struct leveler {
         return this->convert({ inds... });
     }
 
-    inline lib::valarray<value_type> revert(value_type id) const noexcept(NO_EXCEPT) {
+    inline uni::valarray<value_type> revert(value_type id) const noexcept(NO_EXCEPT) {
         assert(0 <= id and id < this->sup());
 
-        lib::valarray<value_type> res(std::size(this->_bases));
+        uni::valarray<value_type> res(std::size(this->_bases));
 
         REPD(i, std::size(this->_bases)) {
             res[i] = id % this->_bases[i];

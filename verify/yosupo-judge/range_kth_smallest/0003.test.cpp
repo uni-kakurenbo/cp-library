@@ -22,7 +22,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<int> a(n); input >> a;
 
-    lib::wavelet_matrix<lib::u32>::compressed data(a);
+    uni::wavelet_matrix<uni::u32>::compressed data(a);
 
     REP(q) {
         int l, r, k; std::cin >> l >> r >> k;

@@ -6,7 +6,7 @@
 #include "internal/type_traits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -31,4 +31,4 @@ template<class T> using is_view_iterator_t = std::enable_if_t<is_view_iterator_v
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

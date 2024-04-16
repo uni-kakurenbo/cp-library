@@ -7,7 +7,7 @@ signed main() {
     int m; cin >> m;
     valarray<i64> p(m); input >> p;
 
-    lib::leveler<int> leveler(p);
+    uni::leveler<int> leveler(p);
 
     debug(leveler.max(), leveler.dimension());
     REP(i, n) {

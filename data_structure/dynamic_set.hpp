@@ -39,7 +39,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -483,4 +483,4 @@ struct dynamic_set<ActionOrValue, Context>
 };
 
 
-} // namespace lib
+} // namespace uni

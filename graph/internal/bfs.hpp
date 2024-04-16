@@ -17,11 +17,11 @@
 
 template<class Graph>
 template<class Dist, class Prev>
-void lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(
+void uni::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(
     const node_type& s, Dist *const dist, Prev *const prev,
     const node_type& unreachable, const node_type& root
 ) const noexcept(NO_EXCEPT) {
-    dist->assign(this->size(), lib::numeric_limits<cost_type>::arithmetic_infinity());
+    dist->assign(this->size(), uni::numeric_limits<cost_type>::arithmetic_infinity());
     if constexpr(not std::is_same_v<Prev, std::nullptr_t>) prev->assign(this->size(), unreachable);
 
     std::queue<node_type> que;
@@ -31,7 +31,7 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(
     while(not que.empty()) {
         const node_type v = que.front(); que.pop();
         ITR(nv, this->operator[](v)) {
-            if(dist->operator[](nv.to) < lib::numeric_limits<cost_type>::arithmetic_infinity()) { continue; }
+            if(dist->operator[](nv.to) < uni::numeric_limits<cost_type>::arithmetic_infinity()) { continue; }
 
             dist->operator[](nv.to) = dist->operator[](v) + 1;
             if constexpr(not std::is_same_v<Prev, std::nullptr_t>) prev->operator[](nv.to) = v;
@@ -42,8 +42,8 @@ void lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(
 }
 
 template<class Graph>
-auto lib::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(const node_type& s) const noexcept(NO_EXCEPT) {
-    lib::auto_holder<node_type, cost_type> dist;
+auto uni::internal::graph_impl::mixin<Graph>::shortest_path_without_cost(const node_type& s) const noexcept(NO_EXCEPT) {
+    uni::auto_holder<node_type, cost_type> dist;
     this->shortest_path_without_cost(s, &dist);
     return dist;
 }

@@ -16,13 +16,13 @@
 #include "numeric/extremum_seeker.hpp"
 
 signed main() {
-    lib::i64 a, b; std::cin >> a >> b;
+    uni::i64 a, b; std::cin >> a >> b;
 
-    auto f = [&](lib::i64 t) -> lib::ld {
+    auto f = [&](uni::i64 t) -> uni::ld {
         return a / std::sqrt(t + 1) + 1.0 * b * t;
     };
 
-    lib::extremum_seeker<lib::ld,lib::i64> seeker(f);
+    uni::extremum_seeker<uni::ld,uni::i64> seeker(f);
     // debug(seeker.arg_min());
     print(seeker.min());
     return 0;

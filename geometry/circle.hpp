@@ -10,7 +10,7 @@
 #include "geometry/triangle.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Point, class Radius = typename Point::value_type>
@@ -45,11 +45,11 @@ struct circle {
     {};
 
     template<class P> constexpr circle(const triangle<P>& t) noexcept(NO_EXCEPT)
-      : _c(t.circum_center()), _r2(lib::squared_distance(this->_c, t.p0()))
+      : _c(t.circum_center()), _r2(uni::squared_distance(this->_c, t.p0()))
     {}
 
     constexpr circle(const triangle<point_type>& t) noexcept(NO_EXCEPT)
-      : _c(t.circum_center()), _r2(lib::squared_distance(this->_c, t.p0()))
+      : _c(t.circum_center()), _r2(uni::squared_distance(this->_c, t.p0()))
     {}
 
     inline constexpr point_type& center() noexcept(NO_EXCEPT) { return this->_c; }
@@ -64,4 +64,4 @@ struct circle {
 };
 
 
-} // namespace lib
+} // namespace uni

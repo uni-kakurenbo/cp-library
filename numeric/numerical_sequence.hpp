@@ -7,7 +7,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace numerical_sequence {
 
@@ -126,12 +126,12 @@ struct geometric {
     constexpr geometric(const static_term<value_type,0> begin, const common_ratio<T> ratio) noexcept(NO_EXCEPT) : _begin(begin), _ratio(ratio) {};
 
     inline constexpr term<value_type> operator[](const size_type k) const noexcept(NO_EXCEPT) {
-        return term(k, this->_begin * lib::pow(this->_diff, k));
+        return term(k, this->_begin * uni::pow(this->_diff, k));
     }
     inline constexpr value_type sum(const size_type k) const noexcept(NO_EXCEPT) {
         if(this->_ratio == 1) return this->_begin * this->k;
         else {
-            return this->_begin * (lib::pow(this->_ratio, k) - 1) / (this->_ratio - 1);
+            return this->_begin * (uni::pow(this->_ratio, k) - 1) / (this->_ratio - 1);
         }
         return ;
     }
@@ -143,4 +143,4 @@ struct geometric {
 
 } // namespace numerical_sequence
 
-} // namespace lib
+} // namespace uni

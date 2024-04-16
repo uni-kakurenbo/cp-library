@@ -39,7 +39,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -571,14 +571,14 @@ struct dynamic_sequence
     // Same usage as: std::rotate(:m:)
     inline auto& rotate_left(const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(!this->empty());
-        this->_impl.rotate(this->_root, 0, lib::mod(count, this->size()), this->size());
+        this->_impl.rotate(this->_root, 0, uni::mod(count, this->size()), this->size());
         return *this;
     }
 
     // Same usage as: std::rotate(:m:)
     inline auto& rotate_right(const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(!this->empty());
-        this->_impl.rotate(this->_root, 0, this->size() - lib::mod(count, this->size()), this->size());
+        this->_impl.rotate(this->_root, 0, this->size() - uni::mod(count, this->size()), this->size());
         return *this;
     }
 
@@ -686,12 +686,12 @@ struct dynamic_sequence
 
     inline auto& rotate_left(const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(l < r);
-        return this->rotate(l, l + lib::mod(count, r - l), r);
+        return this->rotate(l, l + uni::mod(count, r - l), r);
     }
 
     inline auto& rotate_right(const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(l < r);
-        return this->rotate(l, r - lib::mod(count, r - l), r);
+        return this->rotate(l, r - uni::mod(count, r - l), r);
     }
 
 
@@ -823,4 +823,4 @@ struct dynamic_sequence
 };
 
 
-} // namespace lib
+} // namespace uni

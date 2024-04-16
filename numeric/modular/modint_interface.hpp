@@ -16,7 +16,7 @@
 #include "numeric/modular/montgomery_reduction.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -210,13 +210,13 @@ using modint_64 = dynamic_barrett_modint_64bit<-1>;
 
 
 template<const unsigned Val, const unsigned Mod = 998244353>
-const lib::static_modint_32bit<Mod> MINT = Val;
+const uni::static_modint_32bit<Mod> MINT = Val;
 
 template<const unsigned Val, const unsigned Mod = 998244353>
-const unsigned INV = lib::static_modint_32bit<Mod>{ Val }.inv().val();
+const unsigned INV = uni::static_modint_32bit<Mod>{ Val }.inv().val();
 
 template<const unsigned Val, const unsigned Mod = 998244353>
-const int SINV = lib::static_modint_32bit<Mod>{ Val }.inv().val();
+const int SINV = uni::static_modint_32bit<Mod>{ Val }.inv().val();
 
 
-} // namespace lib
+} // namespace uni

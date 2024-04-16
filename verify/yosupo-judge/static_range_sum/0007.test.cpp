@@ -22,8 +22,8 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<lib::i64> a(n); input >> a;
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_sum<lib::i64>>, lib::red_black_tree_context<lib::i32>> sum(a);
+    uni::valarray<uni::i64> a(n); input >> a;
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_sum<uni::i64>>, uni::red_black_tree_context<uni::i32>> sum(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

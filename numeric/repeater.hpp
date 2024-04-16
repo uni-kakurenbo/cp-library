@@ -12,7 +12,7 @@
 #include "numeric/bit.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, internal::size_t SUP, internal::size_t DEFAULT_DEPTH = 64>
@@ -50,7 +50,7 @@ struct repeater {
 
         inline value_type operator()(value_type val) const noexcept(NO_EXCEPT) {
             REP(d, this->_super->_app.size()) {
-                if(lib::bit(this->_k, d)) val = this->_super->_app[d][val];
+                if(uni::bit(this->_k, d)) val = this->_super->_app[d][val];
             }
             return val;
         }
@@ -83,4 +83,4 @@ struct repeater {
 };
 
 
-} // namespace lib
+} // namespace uni

@@ -21,7 +21,7 @@
 #include "hash/general_hasher.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://github.com/tatyam-prime/kyopro_library/blob/master/RollingHash.cpp
@@ -114,7 +114,7 @@ struct sequence_hasher {
     sequence_hasher(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         if(sequence_hasher::base <= 0) {
             if constexpr(BASE == 0) {
-                sequence_hasher::base = static_cast<hash_type>(lib::primitive_root(sequence_hasher::mod));
+                sequence_hasher::base = static_cast<hash_type>(uni::primitive_root(sequence_hasher::mod));
             }
             else if constexpr(BASE < 0) {
                 random_engine_64bit random(std::random_device{}());
@@ -216,4 +216,4 @@ struct sequence_hasher {
 };
 
 
-} // namespace lib
+} // namespace uni

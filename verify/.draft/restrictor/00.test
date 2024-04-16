@@ -26,26 +26,26 @@ signed main() {
 }
 
 void solve() {
-    lib::i64 n; std::cin >> n;
+    uni::i64 n; std::cin >> n;
 
-    auto ok = [&](lib::i64 b, lib::i64 d) {
-        auto s = lib::to_base_n_vector(n, b);
+    auto ok = [&](uni::i64 b, uni::i64 d) {
+        auto s = uni::to_base_n_vector(n, b);
         if((long)s.size() != d) return false;
         return std::count(ALL(s), 0) + std::count(ALL(s), 1) == (long)s.size();
     };
 
-    lib::i64 ans = 1;
+    uni::i64 ans = 1;
     ans += (n >= 3);
 
-    int d = lib::bit_width(lib::to_unsigned(n));
+    int d = uni::bit_width(uni::to_unsigned(n));
 
-    constexpr lib::i64 SUP = 2'000'000'000'000'000'000L;
+    constexpr uni::i64 SUP = 2'000'000'000'000'000'000L;
 
     FOR(i, 3, d) {
-        lib::boundary_seeker<lib::i64> seeker(
-            [&](auto x) { return lib::pow(lib::static_restrictor<lib::i64, 0, SUP>{x}, i-1) <= n; }
+        uni::boundary_seeker<uni::i64> seeker(
+            [&](auto x) { return uni::pow(uni::static_restrictor<uni::i64, 0, SUP>{x}, i-1) <= n; }
         );
-        lib::i64 b = seeker.bound(2);
+        uni::i64 b = seeker.bound(2);
         ans += ok(b, i);
     }
 

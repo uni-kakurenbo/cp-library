@@ -12,7 +12,7 @@
 #include "internal/types.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class ValueType, class Allocator = std::allocator<ValueType>>
@@ -102,10 +102,10 @@ namespace pmr {
 
 
 template<class T>
-using persistent_stack = lib::persistent_stack<T, std::pmr::polymorphic_allocator<T>>;
+using persistent_stack = uni::persistent_stack<T, std::pmr::polymorphic_allocator<T>>;
 
 
 } // namesapce pmr
 
 
-} // namespace lib
+} // namespace uni

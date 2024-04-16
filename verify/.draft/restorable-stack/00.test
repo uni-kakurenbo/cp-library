@@ -20,10 +20,10 @@
 signed main() {
     int q; input >> q;
 
-    lib::restorable_stack<int> data;
+    uni::restorable_stack<int> data;
 
     REP(i, q) {
-        lib::string t; input >> t;
+        uni::string t; input >> t;
         if(t == "ADD") {
             int x; input >> x;
             data.push(x);

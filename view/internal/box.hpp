@@ -8,7 +8,7 @@
 #include <concepts>
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -144,4 +144,4 @@ struct box<T> {
 
 }  // namespace internal
 
-} // namespace lib
+} // namespace uni

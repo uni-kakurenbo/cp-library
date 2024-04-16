@@ -10,15 +10,15 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
 template<class T>
-using range_bitxor = make_operatable_t<lib::algebraic::bit_xor<T>>;
+using range_bitxor = make_operatable_t<uni::algebraic::bit_xor<T>>;
 
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

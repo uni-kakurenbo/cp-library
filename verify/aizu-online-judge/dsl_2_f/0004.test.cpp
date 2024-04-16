@@ -20,7 +20,7 @@
 signed main() {
     int n, q; input >> n >> q;
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::actions::range_min<int>>> data(n);
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;

@@ -13,7 +13,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<bool STRICT, class T = i64, class container = vector<T>>
@@ -56,4 +56,4 @@ struct lis : container {
 };
 
 
-} // namespace lib
+} // namespace uni

@@ -13,7 +13,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 
 template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::input_iterator I, std::sentinel_for<I> S>
@@ -62,4 +62,4 @@ template<std::ranges::input_range V>
 inline auto convex_hull(V&& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
 
 
-} // namespace lib
+} // namespace uni

@@ -24,7 +24,7 @@
 #include "action/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -50,7 +50,7 @@ struct core {
     core() noexcept = default;
 
     explicit core(const size_type n) noexcept(NO_EXCEPT)
-      : _n(n), _size(std::bit_ceil(lib::to_unsigned(n))), _depth(std::countr_zero(lib::to_unsigned(this->_size))),
+      : _n(n), _size(std::bit_ceil(uni::to_unsigned(n))), _depth(std::countr_zero(uni::to_unsigned(this->_size))),
         _data(this->_size << 1)
     {}
 
@@ -362,4 +362,4 @@ struct segment_tree<Action> : segment_tree<typename Action::operand> {
 };
 
 
-} // namespace lib
+} // namespace uni

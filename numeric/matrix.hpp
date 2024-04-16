@@ -16,7 +16,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -158,4 +158,4 @@ using valmatrix = internal::matrix_core<T,unfolded_grid<T,valarray<T>>>;
 template<class T>
 using unfolded_matrix = internal::matrix_core<T,unfolded_grid<T>>;
 
-} // namespace lib
+} // namespace uni

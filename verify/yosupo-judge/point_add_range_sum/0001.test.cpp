@@ -20,14 +20,14 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::ll> a(n); input >> a;
+    uni::vector<uni::ll> a(n); input >> a;
 
-    lib::segment_tree<lib::actions::range_sum<lib::ll>> data(a);
+    uni::segment_tree<uni::actions::range_sum<uni::ll>> data(a);
 
     REP(q) {
         int t; std::cin >> t;
         if(t == 0) {
-            lib::ll p, x; std::cin >> p >> x;
+            uni::ll p, x; std::cin >> p >> x;
             data.set(p, data[p].val() + x);
         }
         if(t == 1) {

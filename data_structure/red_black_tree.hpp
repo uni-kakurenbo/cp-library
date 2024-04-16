@@ -31,7 +31,7 @@
 #include "debugger/debug.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -322,7 +322,7 @@ struct red_black_tree_impl {
 } // namespace internal
 
 
-template<std::integral SizeType = i64, class NodeHandler = lib::node_handlers::reusing<std::allocator<SizeType>>>
+template<std::integral SizeType = i64, class NodeHandler = uni::node_handlers::reusing<std::allocator<SizeType>>>
 struct red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
@@ -335,7 +335,7 @@ struct persistent_red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
 
     template<class Derived, class ValueType = internal::dummy>
-    using substance = internal::red_black_tree_impl<lib::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<uni::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
 };
 
 
@@ -343,14 +343,14 @@ namespace pmr {
 
 
 template<std::integral SizeType = i64>
-using red_black_tree_context = lib::red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
+using red_black_tree_context = uni::red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
 
 
 template<std::integral SizeType = i64>
-using persistent_red_black_tree_context = lib::persistent_red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
+using persistent_red_black_tree_context = uni::persistent_red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
 
 
 } // namespace pmr
 
 
-} // namespace lib
+} // namespace uni

@@ -19,14 +19,14 @@
 #include "algebraic/affine.hpp"
 #include "data_structure/segment_tree.hpp"
 
-using lib::algebraic::affine;
+using uni::algebraic::affine;
 using mint = atcoder::modint998244353;
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::spair<int>> f(n); input >> f;
+    uni::vector<uni::spair<int>> f(n); input >> f;
 
-    lib::segment_tree<affine<mint,true>> data(ALL(f));
+    uni::segment_tree<affine<mint,true>> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;

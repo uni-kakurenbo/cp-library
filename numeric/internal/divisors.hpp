@@ -11,7 +11,7 @@
 #include "numeric/modular/modint_interface.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -53,4 +53,4 @@ void divisors(const u64 n, R *const res) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

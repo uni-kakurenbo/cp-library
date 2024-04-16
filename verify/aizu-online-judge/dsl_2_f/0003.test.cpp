@@ -19,7 +19,7 @@
 signed main() {
     int n, q; input >> n >> q;
 
-    lib::dynamic_sequence<lib::actions::range_set_range_max<int>> data(n);
+    uni::dynamic_sequence<uni::actions::range_set_range_max<int>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;

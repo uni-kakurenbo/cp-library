@@ -9,7 +9,7 @@
 #include "algebraic/addition.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -27,4 +27,4 @@ struct range_add_range_min : base<algebraic::addition<T>> {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

@@ -27,26 +27,26 @@
 
 signed main() {
     int n, q; input >> n >> q;
-    lib::vector<lib::i32> x(n), y(n), w(n), inds(n);
+    uni::vector<uni::i32> x(n), y(n), w(n), inds(n);
 
-    input >> lib::views::zip(x, y, w);
+    input >> uni::views::zip(x, y, w);
     std::iota(ALL(inds), 0);
 
     debug(inds, x, y, w);
 
     inds.sort([&](int i, int j) { return x[i] < x[j]; });
-    x = lib::order_by(x, inds), y = lib::order_by(y, inds), w = lib::order_by(w, inds);
+    x = uni::order_by(x, inds), y = uni::order_by(y, inds), w = uni::order_by(w, inds);
     debug(inds, x, y, w);
 
-    lib::compressed comp_y(y);
+    uni::compressed comp_y(y);
 
-    using segtree = lib::persistent_dynamic_segment_tree<lib::actions::range_sum<lib::i64>>;
+    using segtree = uni::persistent_dynamic_segment_tree<uni::actions::range_sum<uni::i64>>;
 
     std::vector<segtree> storage;
     segtree data(n);
 
     storage.push_back(data);
-    ITR(y, w, lib::views::zip(comp_y, w)) {
+    ITR(y, w, uni::views::zip(comp_y, w)) {
         storage.emplace_back(data.add(y, w));
         debug(data);
     }

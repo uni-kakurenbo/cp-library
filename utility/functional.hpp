@@ -17,7 +17,7 @@
 #include "global/constants.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -108,4 +108,4 @@ constexpr auto tuple_transform(F&& f, Tuple&& tuple) {
 }
 
 
-} // namespace lib
+} // namespace uni

@@ -7,7 +7,7 @@
 #include "structure/graph.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -43,4 +43,4 @@ auto tree_diamiter(const Graph& tree, std::vector<typename Graph::node_type> *co
 
 
 
-} // namespace lib
+} // namespace uni

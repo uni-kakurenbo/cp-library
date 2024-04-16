@@ -22,70 +22,70 @@ using std::min_element;
 using std::max_element;
 
 
-using lib::i32;
-using lib::u32;
-using lib::i64;
-using lib::u64;
+using uni::i32;
+using uni::u32;
+using uni::i64;
+using uni::u64;
 
 #ifdef __GNUC__
-using lib::i128;
-using lib::u128;
+using uni::i128;
+using uni::u128;
 #endif
 
-using lib::uint;
-using lib::ll;
-using lib::ull;
-using lib::ld;
+using uni::uint;
+using uni::ll;
+using uni::ull;
+using uni::ld;
 
-using lib::INF32;
-using lib::INF64;
-using lib::INF;
+using uni::INF32;
+using uni::INF64;
+using uni::INF;
 
-using lib::MINT;
-using lib::INV;
-using lib::SINV;
+using uni::MINT;
+using uni::INV;
+using uni::SINV;
 
-using lib::LN;
-using lib::SPC;
+using uni::LN;
+using uni::SPC;
 
-using lib::DIRS4;
-using lib::DIRS8;
-using lib::DIRS4P;
-using lib::DIRS8P;
+using uni::DIRS4;
+using uni::DIRS8;
+using uni::DIRS4P;
+using uni::DIRS8P;
 
-using lib::input_adaptor;
-using lib::output_adaptor;
+using uni::input_adaptor;
+using uni::output_adaptor;
 
-using lib::pow_mod;
-using lib::inv_mod;
+using uni::pow_mod;
+using uni::inv_mod;
 
-using lib::spair;
+using uni::spair;
 
-using lib::multi_container;
+using uni::multi_container;
 
-using lib::modint998244353;
-using lib::modint1000000007;
-using lib::modint_32;
-using lib::modint_64;
+using uni::modint998244353;
+using uni::modint1000000007;
+using uni::modint_32;
+using uni::modint_64;
 
-using lib::sorted;
-using lib::reversed;
+using uni::sorted;
+using uni::reversed;
 
-using lib::chmin;
-using lib::chmax;
+using uni::chmin;
+using uni::chmax;
 
-using lib::matrix;
+using uni::matrix;
 
-using lib::multiset;
-using lib::unordered_set;
-using lib::unordered_multiset;
+using uni::multiset;
+using uni::unordered_set;
+using uni::unordered_multiset;
 
-using lib::map;
-using lib::multimap;
-using lib::unordered_map;
-using lib::unordered_multimap;
+using uni::map;
+using uni::multimap;
+using uni::unordered_map;
+using uni::unordered_multimap;
 
-using lib::valarray;
-using lib::vector;
-using lib::string;
-using lib::array;
+using uni::valarray;
+using uni::vector;
+using uni::string;
+using uni::array;

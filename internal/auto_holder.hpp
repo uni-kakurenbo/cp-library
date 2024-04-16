@@ -10,7 +10,7 @@
 #include "internal/resolving_rank.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -67,4 +67,4 @@ template<class T, class U> struct dynamic_auto_holder : internal::auto_holder_im
 };
 
 
-} // namespace lib
+} // namespace uni

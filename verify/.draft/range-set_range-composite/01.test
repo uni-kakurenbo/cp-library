@@ -30,12 +30,12 @@ signed main() {
 #include "data_structure/dynamic_sequence.hpp"
 #include "action/range_set_range_sum.hpp"
 
-using mint = lib::modint998244353;
+using mint = uni::modint998244353;
 valarray<mint> ten, one;
 
 template<class T>
-struct monoid : lib::algebraic::base<pair<T,int>>, lib::algebraic::associative/*, internal::group, internal::commutative*/ {
-    using base = lib::algebraic::base<pair<T,int>>;
+struct monoid : uni::algebraic::base<pair<T,int>>, uni::algebraic::associative/*, internal::group, internal::commutative*/ {
+    using base = uni::algebraic::base<pair<T,int>>;
     using base::base;
     monoid() : base({ 0, 0 }) {}
     monoid(const T& v) : base({ v, 1 }) {}
@@ -49,11 +49,11 @@ struct monoid : lib::algebraic::base<pair<T,int>>, lib::algebraic::associative/*
     // inline bit_xor operator-() const noexcept(NO_EXCEPT) { return -this->val(); }
 };
 
-template<class T> struct action : lib::actions::base<lib::algebraic::assignment<T>> {
-    static constexpr lib::actions::flags tags{};
+template<class T> struct action : uni::actions::base<uni::algebraic::assignment<T>> {
+    static constexpr uni::actions::flags tags{};
 
     using operand = monoid<T>;
-    using operation = lib::algebraic::assignment<T>;
+    using operation = uni::algebraic::assignment<T>;
 
     static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
         if(y->has_value()) return operand({ y->value() * one[x->second], x->second });
@@ -72,7 +72,7 @@ void solve() {
         one[i+1] = one[i] + ten[i];
     }
 
-    lib::dynamic_sequence<action<mint>> data(n, mint{1});
+    uni::dynamic_sequence<action<mint>> data(n, mint{1});
 
     valarray<monoid<mint>> a(n, mint{1});
     REP(q) {

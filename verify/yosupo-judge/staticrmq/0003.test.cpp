@@ -19,8 +19,8 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<int> a(n); input >> a; a *= -1;
-    lib::segment_tree<lib::actions::range_max<int>> max(a);
+    uni::valarray<int> a(n); input >> a; a *= -1;
+    uni::segment_tree<uni::actions::range_max<int>> max(a);
 
     REP(q) {
         int l, r; std::cin >> l >> r;

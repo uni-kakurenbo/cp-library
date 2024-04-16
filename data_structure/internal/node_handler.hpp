@@ -6,7 +6,7 @@
 #include "internal/dev_env.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace node_handlers {
 
@@ -144,4 +144,4 @@ struct reusing {
 
 } // namespace node_handlers
 
-} // namespace lib
+} // namespace uni

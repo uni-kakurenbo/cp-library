@@ -11,7 +11,7 @@
 
 
 template<class Graph>
-bool lib::internal::graph_impl::mixin<Graph>::is_bipartite() const noexcept(NO_EXCEPT) {
+bool uni::internal::graph_impl::mixin<Graph>::is_bipartite() const noexcept(NO_EXCEPT) {
     valarray<std::int8_t> color(0, this->vertices());
     this->is_bipartite(&color);
     return true;
@@ -20,7 +20,7 @@ bool lib::internal::graph_impl::mixin<Graph>::is_bipartite() const noexcept(NO_E
 
 template<class Graph>
 template<class Colors>
-bool lib::internal::graph_impl::mixin<Graph>::is_bipartite(Colors *const color) const noexcept(NO_EXCEPT) {
+bool uni::internal::graph_impl::mixin<Graph>::is_bipartite(Colors *const color) const noexcept(NO_EXCEPT) {
     color->assign(this->vertices(), 0);
 
     REP(s, this->vertices()) {

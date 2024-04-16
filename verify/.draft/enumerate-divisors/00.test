@@ -16,6 +16,6 @@
 #include "numeric/divisors.hpp"
 
 signed main() {
-    lib::i64 n; std::cin >> n;
-    print(lib::join(lib::divisors_sieve(n), "\n"));
+    uni::i64 n; std::cin >> n;
+    print(uni::join(uni::divisors_sieve(n), "\n"));
 }

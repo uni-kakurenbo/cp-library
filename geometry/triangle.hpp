@@ -10,7 +10,7 @@
 #include "geometry/point.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Point>
@@ -63,17 +63,17 @@ struct triangle {
 
     inline constexpr std::tuple<value_type,value_type,value_type> distances() const noexcept(NO_EXCEPT) {
         return {
-            lib::distance(this->p1(), this->p2()),
-            lib::distance(this->p2(), this->p0()),
-            lib::distance(this->p0(), this->p1())
+            uni::distance(this->p1(), this->p2()),
+            uni::distance(this->p2(), this->p0()),
+            uni::distance(this->p0(), this->p1())
         };
     }
 
     inline constexpr std::tuple<value_type,value_type,value_type> squared_distances() const noexcept(NO_EXCEPT) {
         return {
-            lib::squared_distance(this->p1(), this->p2()),
-            lib::squared_distance(this->p2(), this->p0()),
-            lib::squared_distance(this->p0(), this->p1())
+            uni::squared_distance(this->p1(), this->p2()),
+            uni::squared_distance(this->p2(), this->p0()),
+            uni::squared_distance(this->p0(), this->p1())
         };
     }
 
@@ -137,24 +137,24 @@ inline typename triangle<T>::value_type& get(triangle<T>& t) noexcept(NO_EXCEPT)
 }
 
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std {
 
 
 template<class T>
-struct tuple_size<lib::triangle<T>> : integral_constant<size_t,3> {};
+struct tuple_size<uni::triangle<T>> : integral_constant<size_t,3> {};
 
 template<size_t I, class T>
-struct tuple_element<I,lib::triangle<T>> {
-    using type = typename lib::triangle<T>::value_type;
+struct tuple_element<I,uni::triangle<T>> {
+    using type = typename uni::triangle<T>::value_type;
 };
 
 
 template<class T, class C, class S>
-inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::triangle<T>& v) noexcept(NO_EXCEPT) {
-    typename lib::triangle<T>::point_type p, q, r; in >> p >> q >> r;
+inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, uni::triangle<T>& v) noexcept(NO_EXCEPT) {
+    typename uni::triangle<T>::point_type p, q, r; in >> p >> q >> r;
     v = { p, q, r };
     return in;
 }

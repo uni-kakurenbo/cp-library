@@ -25,11 +25,11 @@
 
 signed main() {
     int t; std::cin >> t;
-    lib::i32 m; std::cin >> m;
-    lib::binomial_coefficient<lib::i64> binom(m);
+    uni::i32 m; std::cin >> m;
+    uni::binomial_coefficient<uni::i64> binom(m);
 
     REP(t) {
-        lib::i64 n, k; std::cin >> n >> k;
+        uni::i64 n, k; std::cin >> n >> k;
         print(binom.comb(n, k));
     }
 }

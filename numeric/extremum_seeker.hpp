@@ -13,7 +13,7 @@
 #include "numeric/limits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Res, class Arg>
@@ -26,8 +26,8 @@ struct extremum_seeker {
 
     template<const internal::size_t ITERATIONS = 100'000>
     std::pair<Arg,Arg> arg_min(
-        Arg low = lib::numeric_limits<Arg>::arithmetic_negative_infinity(),
-        Arg high = lib::numeric_limits<Arg>::arithmetic_infinity()
+        Arg low = uni::numeric_limits<Arg>::arithmetic_negative_infinity(),
+        Arg high = uni::numeric_limits<Arg>::arithmetic_infinity()
     ) const noexcept(NO_EXCEPT) {
         REP(ITERATIONS) {
             const Arg p = low + (high - low) / 3;
@@ -45,8 +45,8 @@ struct extremum_seeker {
 
     template<const internal::size_t ITERATIONS = 100'000>
     std::pair<Arg,Arg> arg_max(
-        Arg low = lib::numeric_limits<Arg>::arithmetic_negative_infinity(),
-        Arg high = lib::numeric_limits<Arg>::arithmetic_infinity()
+        Arg low = uni::numeric_limits<Arg>::arithmetic_negative_infinity(),
+        Arg high = uni::numeric_limits<Arg>::arithmetic_infinity()
     ) const noexcept(NO_EXCEPT) {
         REP(ITERATIONS) {
             const Arg p = low + (high - low) / 3;
@@ -65,8 +65,8 @@ struct extremum_seeker {
 
     template<const internal::size_t ITERATIONS = 100'000>
     Res min(
-        const Arg _low = lib::numeric_limits<Arg>::arithmetic_negative_infinity(),
-        const Arg _high = lib::numeric_limits<Arg>::arithmetic_infinity()
+        const Arg _low = uni::numeric_limits<Arg>::arithmetic_negative_infinity(),
+        const Arg _high = uni::numeric_limits<Arg>::arithmetic_infinity()
     ) const noexcept(NO_EXCEPT) {
         auto [ low, high ] = this->arg_min<ITERATIONS>(_low, _high);
         Res res = std::min(this->_func(low), this->_func(high));
@@ -76,8 +76,8 @@ struct extremum_seeker {
 
     template<const internal::size_t ITERATIONS = 100'000>
     Res max(
-        const Arg _low = lib::numeric_limits<Arg>::arithmetic_negative_infinity(),
-        const Arg _high = lib::numeric_limits<Arg>::arithmetic_infinity()
+        const Arg _low = uni::numeric_limits<Arg>::arithmetic_negative_infinity(),
+        const Arg _high = uni::numeric_limits<Arg>::arithmetic_infinity()
     ) const noexcept(NO_EXCEPT) {
         auto [ low, high ] = this->arg_max<ITERATIONS>(_low, _high);
         Res res = std::max(this->_func(low), this->_func(high));
@@ -87,4 +87,4 @@ struct extremum_seeker {
 };
 
 
-} // namespace lib
+} // namespace uni

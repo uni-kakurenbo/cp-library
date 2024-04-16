@@ -20,9 +20,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    std::vector<lib::modint998244353> a(n); input >> a;
+    std::vector<uni::modint998244353> a(n); input >> a;
 
-    lib::dynamic_sequence<lib::actions::range_affine_range_sum<lib::modint998244353>, lib::red_black_tree_context<lib::i32>> data(a);
+    uni::dynamic_sequence<uni::actions::range_affine_range_sum<uni::modint998244353>, uni::red_black_tree_context<uni::i32>> data(a);
 
     LOOP(q) {
         int t; std::cin >> t;

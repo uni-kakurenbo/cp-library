@@ -9,7 +9,7 @@
 #include "algebraic/assignment.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
@@ -27,4 +27,4 @@ struct range_set_range_max : base<algebraic::assignment<T>>  {
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

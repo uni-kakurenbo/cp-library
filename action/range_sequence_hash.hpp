@@ -10,19 +10,19 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
 template<
     bool REVERSE = false,
-    lib::internal::modint_family T = lib::static_modint_64bit<(1UL << 61) - 1>,
+    uni::internal::modint_family T = uni::static_modint_64bit<(1UL << 61) - 1>,
     typename T::value_type BASE = 0
 >
-using range_sequence_hash = make_operatable_t<lib::algebraic::rolling_hash<REVERSE, T, BASE>>;
+using range_sequence_hash = make_operatable_t<uni::algebraic::rolling_hash<REVERSE, T, BASE>>;
 
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

@@ -11,7 +11,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Node, class Prev, class Res>
@@ -26,9 +26,9 @@ void restore_path(Node back, const Prev& prev, Res *const res) {
 }
 
 
-template<class Node, class Prev, class Res = lib::vector<Node>>
-lib::vector<Node> restore_path(Node back, const Prev& prev) {
-    lib::vector<Node> res;
+template<class Node, class Prev, class Res = uni::vector<Node>>
+uni::vector<Node> restore_path(Node back, const Prev& prev) {
+    uni::vector<Node> res;
     restore_path(back, prev, &res);
     return res;
 }

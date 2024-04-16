@@ -17,7 +17,7 @@
 #include "random/engine.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -118,4 +118,4 @@ constexpr Res primitive_root(const u64 p) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

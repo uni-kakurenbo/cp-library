@@ -3,7 +3,7 @@
 #include "internal/dev_env.hpp"
 #include "algebraic/base.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -20,4 +20,4 @@ struct bit_or : base<T>, scalar_multipliable<bit_or<T>>::identity, associative, 
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

@@ -19,7 +19,7 @@
 #include "numeric/float.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template <class T>
@@ -91,7 +91,7 @@ template<size_t I, class T>
 inline const typename point<T>::value_type& get(const point<T>& p) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return p.x(); }
     else if constexpr(I == 1) { return p.y(); }
-    else { static_assert(lib::internal::EXCEPTION<I>); }
+    else { static_assert(uni::internal::EXCEPTION<I>); }
 }
 
 template<size_t I, class T>
@@ -101,26 +101,26 @@ inline typename point<T>::value_type& get(point<T>& p) noexcept(NO_EXCEPT) {
     else static_assert(internal::EXCEPTION<I>);
 }
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std {
 
 
 template<class T>
-struct tuple_size<lib::point<T>> : integral_constant<size_t,2> {};
+struct tuple_size<uni::point<T>> : integral_constant<size_t,2> {};
 
 template<size_t I, class T>
-struct tuple_element<I,lib::point<T>> {
-    using type = typename lib::point<T>::value_type;
+struct tuple_element<I,uni::point<T>> {
+    using type = typename uni::point<T>::value_type;
 };
 
 
 template<class T>
-inline constexpr T norm(const lib::point<T>& v) noexcept(NO_EXCEPT) { return v.x() * v.x() + v.y() * v.y(); }
+inline constexpr T norm(const uni::point<T>& v) noexcept(NO_EXCEPT) { return v.x() * v.x() + v.y() * v.y(); }
 
 template<class T>
-inline constexpr T abs(const lib::point<T>& v) noexcept(NO_EXCEPT) {
+inline constexpr T abs(const uni::point<T>& v) noexcept(NO_EXCEPT) {
     if constexpr(is_floating_point_v<T>) {
         return static_cast<T>(std::abs(std::complex<T>(v.x(), v.y())));
     }
@@ -130,14 +130,14 @@ inline constexpr T abs(const lib::point<T>& v) noexcept(NO_EXCEPT) {
 }
 
 template<class T, class C, class S>
-inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, lib::point<T>& v) noexcept(NO_EXCEPT) {
+inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, uni::point<T>& v) noexcept(NO_EXCEPT) {
     T x, y; in >> x >> y;
     v = { x, y };
     return in;
 }
 
 template<class T, class C, class S>
-inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const lib::point<T>& v) noexcept(NO_EXCEPT) {
+inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const uni::point<T>& v) noexcept(NO_EXCEPT) {
     out << v.x() << " " << v.y();
     return out;
 }
@@ -146,7 +146,7 @@ inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const lib::point<
 } // namespace std
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T>
@@ -199,7 +199,7 @@ inline bool is_convex(R&& range) noexcept(NO_EXCEPT) {
     const auto n = std::ranges::size(range);
 
     REP(i, n) {
-        const positional_relation r = relation(range[i], range[lib::mod(i+1,n)], range[lib::mod(i+2,n)]);
+        const positional_relation r = relation(range[i], range[uni::mod(i+1,n)], range[uni::mod(i+2,n)]);
 
         if constexpr(ALLOW_LINE) {
             if(r == positional_relation::clockwise) return false;
@@ -216,4 +216,4 @@ template<std::ranges::random_access_range R>
 inline bool is_convex(R&& range) noexcept(NO_EXCEPT) { return is_convex<true>(range); }
 
 
-} // namespace lib
+} // namespace uni

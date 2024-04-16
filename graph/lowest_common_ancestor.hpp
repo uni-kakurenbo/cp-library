@@ -15,7 +15,7 @@
 #include "structure/graph.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class Graph>
@@ -93,4 +93,4 @@ struct lowest_common_ancestor {
 };
 
 
-} // namespace lib
+} // namespace uni

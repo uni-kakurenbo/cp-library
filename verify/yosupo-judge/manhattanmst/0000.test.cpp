@@ -9,11 +9,11 @@
 
 signed main() {
     int n; std::cin >> n;
-    lib::vector<lib::ll> xs(n), ys(n);
+    uni::vector<uni::ll> xs(n), ys(n);
     REP(i, n) std::cin >> xs[i] >> ys[i];
 
-    lib::ll cost = 0;
-    auto edges = lib::manhattan_mst_edges(ALL(xs), ALL(ys), &cost);
+    uni::ll cost = 0;
+    auto edges = uni::manhattan_mst_edges(ALL(xs), ALL(ys), &cost);
 
     print(cost);
     ITR(u, v, w, edges) print(u, v);

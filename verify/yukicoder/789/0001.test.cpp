@@ -20,9 +20,9 @@
 signed main() {
     int n; input >> n;
 
-    lib::persistent_dynamic_segment_tree<lib::actions::range_sum<lib::i64>> sum(1'000'000'001);
+    uni::persistent_dynamic_segment_tree<uni::actions::range_sum<uni::i64>> sum(1'000'000'001);
 
-    lib::i64 ans = 0;
+    uni::i64 ans = 0;
 
     REP(n) {
         int t; input >> t;

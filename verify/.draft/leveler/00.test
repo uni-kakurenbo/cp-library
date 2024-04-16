@@ -23,21 +23,21 @@
 
 signed main() {
     int n, k, p; std::cin >> n >> k >> p;
-    lib::valarray<int> c(n);
-    lib::valgrid<int> A(n, k);
-    input >> lib::views::zip(c, A);
+    uni::valarray<int> c(n);
+    uni::valgrid<int> A(n, k);
+    input >> uni::views::zip(c, A);
 
-    lib::leveler<int> leveler(lib::views::repeat(p + 1, k));
+    uni::leveler<int> leveler(uni::views::repeat(p + 1, k));
 
-    lib::valarray<lib::i64> dp(leveler.sup(), lib::INF64);
+    uni::valarray<uni::i64> dp(leveler.sup(), uni::INF64);
 
     dp[0] = 0;
     REP(i, n) REPD(x, leveler.sup()) {
         auto a = leveler.revert(x);
         a += A[i];
-        ITRR(v, a) lib::chmin(v, p);
-        lib::chmin(dp[leveler.convert(a)], dp[x] + c[i]);
+        ITRR(v, a) uni::chmin(v, p);
+        uni::chmin(dp[leveler.convert(a)], dp[x] + c[i]);
     }
 
-    print(lib::to_optional_if_or_over(dp[leveler.convert(lib::views::repeat(p, k))], lib::INF64).value_or(-1));
+    print(uni::to_optional_if_or_over(dp[leveler.convert(uni::views::repeat(p, k))], uni::INF64).value_or(-1));
 }

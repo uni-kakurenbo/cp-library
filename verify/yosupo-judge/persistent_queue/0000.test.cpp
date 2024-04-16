@@ -25,7 +25,7 @@
 signed main() {
     int q; input >> q;
 
-    std::vector<lib::persistent_queue<int, std::bit_width(200'000U)>> queue(1);
+    std::vector<uni::persistent_queue<int, std::bit_width(200'000U)>> queue(1);
 
     REP(q) {
         int k; input >> k;

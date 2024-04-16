@@ -9,7 +9,7 @@
 #include "algebraic/base.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace algebraic {
 
@@ -30,4 +30,4 @@ struct minmax : base<std::pair<T, T>>, scalar_multipliable<minmax<T>>::identity,
 
 } // namespace algebraic
 
-} // namespace lib
+} // namespace uni

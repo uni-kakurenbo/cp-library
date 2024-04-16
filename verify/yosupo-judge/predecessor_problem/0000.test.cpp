@@ -19,12 +19,12 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::valarray<bool> t(n);
+    uni::valarray<bool> t(n);
     REP(i, n) {
         char v; std::cin >> v;
         t[i] = v == '1';
     }
-    lib::set_adaptor st(n);
+    uni::set_adaptor st(n);
     st.build_from_bits(t);
 
     REP(q) {

@@ -15,7 +15,7 @@
 #include "numeric/arithmetic.hpp"
 #include "template/debug.hpp"
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -85,7 +85,7 @@ struct barrett_reduction {
 
     inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
         if(this->_mod == 1) return 0;
-        return lib::pow(
+        return uni::pow(
             this->reduce(v), p,
             [&](const value_type x, const value_type y) noexcept(NO_EXCEPT) { return this->multiply(x, y); }
         );
@@ -136,4 +136,4 @@ using barrett_reduction_32bit = internal::barrett_reduction<u32, u64>;
 using barrett_reduction_64bit = internal::barrett_reduction<u64, u128>;
 
 
-} // namespace lib
+} // namespace uni

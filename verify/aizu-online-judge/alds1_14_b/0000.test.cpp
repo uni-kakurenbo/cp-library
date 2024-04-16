@@ -18,9 +18,9 @@
 #include "action/range_sequence_hash.hpp"
 
 signed main() {
-    lib::string s, p; input >> s >> p;
+    uni::string s, p; input >> s >> p;
 
-    lib::disjoint_sparse_table<lib::actions::range_sequence_hash<>> hash(s + p);
+    uni::disjoint_sparse_table<uni::actions::range_sequence_hash<>> hash(s + p);
     debug(hash);
 
     auto p_hash = hash(s.size(), hash.size()).fold();

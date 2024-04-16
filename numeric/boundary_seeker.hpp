@@ -14,7 +14,7 @@
 #include "numeric/limits.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -152,4 +152,4 @@ template<class T>
 using boundary_seeker = internal::boundary_seeker_impl::seeker<T,std::is_integral_v<T>>;
 
 
-} // namespace lib
+} // namespace uni

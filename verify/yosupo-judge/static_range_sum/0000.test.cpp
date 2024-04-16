@@ -19,7 +19,7 @@
 signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<int> a(n); input >> a;
-    lib::accumulation<lib::ll> sum(ALL(a));
+    uni::accumulation<uni::ll> sum(ALL(a));
 
     REP(q) {
         int l, r; std::cin >> l >> r;

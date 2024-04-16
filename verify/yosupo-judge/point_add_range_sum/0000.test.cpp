@@ -19,9 +19,9 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::ll> a(n); input >> a;
+    uni::vector<uni::ll> a(n); input >> a;
 
-    lib::fenwick_tree<lib::actions::range_sum<lib::ll>> data(a);
+    uni::fenwick_tree<uni::actions::range_sum<uni::ll>> data(a);
 
     REP(q) {
         int t; std::cin >> t;

@@ -11,7 +11,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, bool CEIL = false>
@@ -41,7 +41,7 @@ struct quotient_enumerator {
 
     inline size_type size() noexcept(NO_EXCEPT) {
         if(this->_size < 0) {
-            size_type r = lib::sqrt_floor(this->_n_impl);
+            size_type r = uni::sqrt_floor(this->_n_impl);
             this->_size = 2 * r - (this->_n_impl < r * (r + 1)) + CEIL;
         }
         return this->_size;
@@ -89,4 +89,4 @@ struct quotient_enumerator {
 };
 
 
-} // namespace lib
+} // namespace uni

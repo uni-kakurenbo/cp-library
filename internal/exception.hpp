@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -12,4 +12,4 @@ template<const int T> inline constexpr bool EXCEPTION_INT = false;
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

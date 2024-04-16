@@ -19,21 +19,21 @@
 
 signed main() {
     int n, k; std::cin >> n >> k;
-    lib::valarray<lib::i32> a(n); input >> a;
-    lib::wavelet_matrix<lib::i64> data(a);
+    uni::valarray<uni::i32> a(n); input >> a;
+    uni::wavelet_matrix<uni::i64> data(a);
 
-    lib::i64 ans = lib::INF64;
+    uni::i64 ans = uni::INF64;
 
     FOR(i, 0, n-k) {
         auto range = data.subseq(i, k);
         // debug(range);
 
-        lib::i64 med = range.median();
+        uni::i64 med = range.median();
 
-        lib::i64 costl = med * range.count_under(med) - range.sum_under(med);
-        lib::i64 costr = range.sum_or_over(med) - med * range.count_or_over(med);
+        uni::i64 costl = med * range.count_under(med) - range.sum_under(med);
+        uni::i64 costr = range.sum_or_over(med) - med * range.count_or_over(med);
 
-        lib::chmin(ans, costl + costr);
+        uni::chmin(ans, costl + costr);
     }
 
     print(ans);

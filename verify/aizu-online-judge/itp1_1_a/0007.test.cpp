@@ -26,16 +26,16 @@
 signed main() {
     print("Hello World");
 
-    lib::dynamic_sequence<lib::actions::make_full_t<lib::i64>> data;
-    lib::map<lib::i64, lib::i64> corr;
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::i64>> data;
+    uni::map<uni::i64, uni::i64> corr;
 
     debug(data);
 
-    lib::timer timer(10000);
+    uni::timer timer(10000);
 
     while(not timer.expired()) {
-        lib::i64 i = lib::randi64();
-        lib::i64 v = lib::randi64();
+        uni::i64 i = uni::randi64();
+        uni::i64 v = uni::randi64();
         i /= 2;
         debug(i, v);
 

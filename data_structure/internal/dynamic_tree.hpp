@@ -16,7 +16,7 @@
 
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -216,4 +216,4 @@ struct basic_core
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

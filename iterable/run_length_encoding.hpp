@@ -13,7 +13,7 @@
 #include "adaptor/vector.hpp"
 
 
-namespace lib {
+namespace uni {
 
 template<class T, class container = vector<std::pair<T,internal::size_t>>>
 struct run_length : container {
@@ -42,4 +42,4 @@ template<std::ranges::input_range R>
 explicit run_length(R&& range) -> run_length<std::ranges::range_value_t<R>>;
 
 
-} // namespace lib
+} // namespace uni

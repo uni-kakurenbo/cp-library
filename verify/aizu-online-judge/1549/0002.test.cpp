@@ -19,7 +19,7 @@ signed main() {
     int n; std::cin >> n;
     std::vector<int> a(n); ITRR(v, a) std::cin >> v;
 
-    lib::wavelet_matrix<lib::ll> data(a);
+    uni::wavelet_matrix<uni::ll> data(a);
     // debug(data);
 
     int q; std::cin >> q;

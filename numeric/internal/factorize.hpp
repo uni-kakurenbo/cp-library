@@ -22,7 +22,7 @@
 #include "random/engine.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace internal {
 
@@ -59,13 +59,13 @@ T find_factor(const T n) noexcept(NO_EXCEPT) {
             for(int k = 0; g == 1 && k < r; k += m) {
                 ys = y;
                 for(int i = 0; i < m && i < r - k; ++i) q *= x - (y = f(y));
-                g = lib::binary_gcd(q.val(), n);
+                g = uni::binary_gcd(q.val(), n);
             }
         }
 
         if(g == n) {
             do {
-                g = lib::binary_gcd((x - (ys = f(ys))).val(), n);
+                g = uni::binary_gcd((x - (ys = f(ys))).val(), n);
             } while(g == 1);
         }
         if(g != n) return g;
@@ -106,4 +106,4 @@ using fast_factorize_impl::internal::factorize;
 
 } // namespace internal
 
-} // namespace lib
+} // namespace uni

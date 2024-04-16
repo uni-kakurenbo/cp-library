@@ -6,7 +6,7 @@
 #include "hash/multiset_hasher.hpp"
 
 signed main() {
-    lib::multiset_hasher<unsigned>
+    uni::multiset_hasher<unsigned>
         hash0 = { 5, 1, 4, 2, 3, 4 },
         hash1 = { 1, 2, 3, 4, 4, 5 };
 

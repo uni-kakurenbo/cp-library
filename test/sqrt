@@ -26,8 +26,8 @@ signed main() {
 void solve() {
     int n; cin >> n;
     REP(k, n) {
-        debug(k, lib::sqrt_floor(k), lib::sqrt_ceil(k));
-        assert(lib::sqrt_floor(k) == (int)std::floor(std::sqrt(k)));
-        assert(lib::sqrt_ceil(k) == (int)std::ceil(std::sqrt(k)));
+        debug(k, uni::sqrt_floor(k), uni::sqrt_ceil(k));
+        assert(uni::sqrt_floor(k) == (int)std::floor(std::sqrt(k)));
+        assert(uni::sqrt_ceil(k) == (int)std::ceil(std::sqrt(k)));
     }
 }

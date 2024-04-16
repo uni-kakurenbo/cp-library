@@ -18,7 +18,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::dynamic_sequence<lib::actions::range_add_range_sum<long>> data(n);
+    uni::dynamic_sequence<uni::actions::range_add_range_sum<long>> data(n);
     debug(data.dump_rich());
 
     while(q--) {

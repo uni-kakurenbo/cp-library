@@ -17,7 +17,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::segment_tree<lib::actions::range_min<int>> data(n);
+    uni::segment_tree<uni::actions::range_min<int>> data(n);
     // debug(data);
 
     REP(q) {

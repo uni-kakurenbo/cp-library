@@ -18,29 +18,29 @@
 #include "algebraic/assignment.hpp"
 
 
-using lib::algebraic::affine;
+using uni::algebraic::affine;
 using mint = atcoder::modint998244353;
 
 struct action {
     using operand = affine<mint,true>;
-    using operation = lib::algebraic::assignment<std::pair<mint,mint>>;
+    using operation = uni::algebraic::assignment<std::pair<mint,mint>>;
 
     static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
-    static operation fold(const operation& x, const lib::internal::size_t) { return x; }
+    static operation fold(const operation& x, const uni::internal::size_t) { return x; }
 };
 
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::vector<lib::spair<int>> f(n); input >> f;
+    uni::vector<uni::spair<int>> f(n); input >> f;
 
-    lib::lazy_segment_tree<action> data(ALL(f));
+    uni::lazy_segment_tree<action> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;
         if(t == 0) {
             int p, a, b; std::cin >> p >> a >> b;
-            data.apply(p, lib::spair<int>{ a, b });
+            data.apply(p, uni::spair<int>{ a, b });
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;

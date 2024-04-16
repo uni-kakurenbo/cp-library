@@ -10,7 +10,7 @@
 #include "internal/dummy.hpp"
 #include "internal/dev_env.hpp"
 
-namespace lib {
+namespace uni {
 
 
 namespace internal {
@@ -161,4 +161,4 @@ struct removable_priority_queue<PriorityQueue, Multiset> : PriorityQueue {
 };
 
 
-} // namespace lib
+} // namespace uni

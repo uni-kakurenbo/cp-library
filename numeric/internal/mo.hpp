@@ -25,7 +25,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 template<class R, class EF, class PF, class EB = EF, class PB = PF>
 class interval_plannner {
@@ -64,7 +64,7 @@ class interval_plannner {
         for(auto query=query_first; query!=query_last; ++query) {
             chmax(n, std::ranges::max(query->first, query->second));
         }
-        n = std::bit_ceil(lib::to_unsigned(n));
+        n = std::bit_ceil(uni::to_unsigned(n));
 
         std::vector<i64> orders(q);
         {
@@ -107,4 +107,4 @@ class interval_plannner {
 };
 
 
-} // namespace lib
+} // namespace uni

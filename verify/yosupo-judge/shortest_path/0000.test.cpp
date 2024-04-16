@@ -18,19 +18,19 @@
 
 signed main() {
     int n, m, s, t; input >> n >> m >> s >> t;
-    lib::graph<lib::i64> graph(n); graph.read<true, false>(m);
+    uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
     debug(graph);
 
-    lib::vector<lib::i64> dist, prev;
+    uni::vector<uni::i64> dist, prev;
     graph.shortest_path_with_cost(s, &dist, &prev);
     debug(dist, prev);
 
-    if(dist[t] >= lib::INF64) {
+    if(dist[t] >= uni::INF64) {
         print(-1);
         return 0;
     }
 
-    auto path = lib::restore_path(t, prev);
+    auto path = uni::restore_path(t, prev);
     debug(path);
 
     print(dist[t], path.size() - 1);

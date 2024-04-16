@@ -5,7 +5,7 @@
 #include "numeric/arithmetic.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 template<class T, T INF, T SUP>
@@ -94,14 +94,14 @@ struct static_restrictor {
 };
 
 
-} // namespace lib
+} // namespace uni
 
 
 namespace std {
 
 
 template<class T, T INF, T SUP>
-T abs(const lib::static_restrictor<T,INF,SUP>& v) noexcept(NO_EXCEPT) { return std::abs(v.val()); }
+T abs(const uni::static_restrictor<T,INF,SUP>& v) noexcept(NO_EXCEPT) { return std::abs(v.val()); }
 
 
 }

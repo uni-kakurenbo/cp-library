@@ -7,7 +7,7 @@
 #include "internal/dev_env.hpp"
 #include "structure/graph.hpp"
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://qiita.com/drken/items/4b4c3f1824339b090202
@@ -94,4 +94,4 @@ struct centroid_decomposition {
 };
 
 
-} // namespace lib
+} // namespace uni

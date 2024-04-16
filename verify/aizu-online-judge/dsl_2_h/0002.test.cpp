@@ -18,7 +18,7 @@
 
 signed main() {
     int n, q; std::cin >> n >> q;
-    lib::dynamic_sequence<lib::actions::range_add_range_min<int>> data(n, 0);
+    uni::dynamic_sequence<uni::actions::range_add_range_min<int>> data(n, 0);
     // debug(data);
 
     REP(q) {

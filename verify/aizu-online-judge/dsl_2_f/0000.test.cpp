@@ -19,7 +19,7 @@
 signed main() {
     int n, q; input >> n >> q;
 
-    lib::lazy_segment_tree<lib::actions::range_set_range_min<int>> data(n);
+    uni::lazy_segment_tree<uni::actions::range_set_range_min<int>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;

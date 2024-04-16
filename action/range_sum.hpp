@@ -7,15 +7,15 @@
 #include "algebraic/addition.hpp"
 
 
-namespace lib {
+namespace uni {
 
 namespace actions {
 
 
 template<class T>
-using range_sum = make_operatable_t<lib::algebraic::addition<T>>;
+using range_sum = make_operatable_t<uni::algebraic::addition<T>>;
 
 
 } // namespace actions
 
-} // namespace lib
+} // namespace uni

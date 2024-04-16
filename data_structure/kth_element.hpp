@@ -14,7 +14,7 @@
 #include "internal/types.hpp"
 
 
-namespace lib {
+namespace uni {
 
 
 // Thanks to: https://qiita.com/drken/items/1b7e6e459c24a83bb7fd
@@ -84,4 +84,4 @@ struct kth_element {
 };
 
 
-} // namespace lib
+} // namespace uni
