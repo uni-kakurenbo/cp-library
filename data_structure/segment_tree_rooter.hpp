@@ -27,7 +27,7 @@ struct segment_tree_rooter {
     inline size_type allocated() const noexcept(NO_EXCEPT) { return (this->_n << 1) - 1; }
 
     template<std::invocable<size_type> F>
-    void range_to_nodes(size_type l, size_type r, F f) noexcept(NO_EXCEPT) {
+    void range_to_nodes(size_type l, size_type r, F&& f) noexcept(NO_EXCEPT) {
         l += this->_n;
         r += this->_n;
 
@@ -42,7 +42,7 @@ struct segment_tree_rooter {
     size_type point_to_node(const size_type p) noexcept(NO_EXCEPT) { return this->_n + p - 1; }
 
     template<std::invocable<size_type> F>
-    void point_to_path(size_type p, F f) noexcept(NO_EXCEPT) {
+    void point_to_path(size_type p, F&& f) noexcept(NO_EXCEPT) {
         p += this->_n;
         while(p > 0) f(p - 1), p >>= 1;
     }

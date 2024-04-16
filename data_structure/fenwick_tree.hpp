@@ -96,7 +96,7 @@ struct core {
     }
 
     template<class F>
-    inline size_type max_right(size_type l, const F& f) const noexcept(NO_EXCEPT)
+    inline size_type max_right(size_type l, F&& f) const noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<operand>
     {
         assert(0 <= l && l <= this->_n);
@@ -112,7 +112,7 @@ struct core {
         return p;
     }
 
-    template<class F> inline size_type min_left(size_type r, const F& f) const noexcept(NO_EXCEPT)
+    template<class F> inline size_type min_left(size_type r, F&& f) const noexcept(NO_EXCEPT)
         requires algebraic::internal::invertible<operand>
     {
         assert(0 <= r && r <= this->_n);
