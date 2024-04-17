@@ -20,13 +20,13 @@ struct dsu {
     using size_type = internal::size_t;
 
   private:
-    size_type _n, _group_count;
+    size_type _n = 0, _group_count = 0;
     // root node: -1 * component size
     // otherwise: parent
     std::vector<size_type> _parent_or_size;
 
   public:
-    dsu() noexcept(NO_EXCEPT) : _n(0) {}
+    dsu() noexcept = default;
     explicit dsu(const size_type n) noexcept(NO_EXCEPT) : _n(n), _group_count(n), _parent_or_size(n, -1) {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
