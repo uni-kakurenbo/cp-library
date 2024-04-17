@@ -44,6 +44,22 @@ struct mixer {
 };
 
 
+
+template<class S>
+struct amplifier {
+    using operand = S;
+    using operation = S;
+
+    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
+        return x + y;
+    }
+
+    static operation fold(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
+        return length * x;
+    }
+};
+
+
 template<algebraic::internal::magma Magma>
 struct make_operatable {
     struct type {

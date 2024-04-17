@@ -1,9 +1,7 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
-#include "algebraic/addition.hpp"
+#include "algebraic/maximum.hpp"
 
 #include "action/helpers.hpp"
 
@@ -14,7 +12,7 @@ namespace actions {
 
 
 template<class T>
-using range_add_range_sum = amplifier<algebraic::addition<T>>;
+using range_chmin_range_min = amplifier<algebraic::maximum<T>>;
 
 
 } // namespace actions

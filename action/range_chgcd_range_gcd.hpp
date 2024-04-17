@@ -1,9 +1,7 @@
 #pragma once
 
 
-#include "internal/dev_env.hpp"
-
-#include "algebraic/addition.hpp"
+#include "algebraic/gcd.hpp"
 
 #include "action/helpers.hpp"
 
@@ -14,7 +12,7 @@ namespace actions {
 
 
 template<class T>
-using range_add_range_sum = amplifier<algebraic::addition<T>>;
+using range_chgcd_range_gcd = make_operatable_t<uni::algebraic::gcd<T>>;
 
 
 } // namespace actions
