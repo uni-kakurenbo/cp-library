@@ -3,7 +3,7 @@
 
 #include "internal/dev_env.hpp"
 
-#include "algebraic/addition.hpp"
+#include "algebraic/bit_xor.hpp"
 
 #include "action/helpers.hpp"
 
@@ -14,7 +14,7 @@ namespace actions {
 
 
 template<class T>
-using range_add_range_sum = amplifier<algebraic::addition<T>>;
+using range_flip_range_bitxor = amplifier<uni::algebraic::bit_xor<T>>;
 
 
 } // namespace actions

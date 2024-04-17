@@ -46,24 +46,31 @@ struct point {
     inline constexpr const value_type& x() const noexcept(NO_EXCEPT) { return this->_x; }
     inline constexpr const value_type& y() const noexcept(NO_EXCEPT) { return this->_y; }
 
-    inline constexpr value_type argument() const noexcept(NO_EXCEPT) {
-        return static_cast<value_type>(std::arg(std::complex<value_type>(this->x(), this->y())));
+    inline constexpr point& rotate_quarter() noexcept(NO_EXCEPT) {
+        const auto x = this->_x - this->_y;
+        const auto y = this->_x + this->_y;
+        this->_x = std::move(x), this->_y = std::move(y);
+        return *this;
     }
 
-    inline constexpr point& operator+=(const point& v) noexcept(NO_EXCEPT) { this->x() += v.x(), this->y() += v.y(); return *this; }
-    inline constexpr point& operator-=(const point& v) noexcept(NO_EXCEPT) { this->x() -= v.x(), this->y() -= v.y(); return *this; }
+    inline constexpr value_type argument() const noexcept(NO_EXCEPT) {
+        return static_cast<value_type>(std::arg(std::complex<value_type>(this->_x, this->_y)));
+    }
 
-    inline constexpr point& operator+=(const value_type& v) noexcept(NO_EXCEPT) { this->x() += v, this->y() += v; return *this; }
-    inline constexpr point& operator-=(const value_type& v) noexcept(NO_EXCEPT) { this->x() -= v, this->y() -= v; return *this; }
-    inline constexpr point& operator*=(const value_type& v) noexcept(NO_EXCEPT) { this->x() *= v, this->y() *= v; return *this; }
-    inline constexpr point& operator/=(const value_type& v) noexcept(NO_EXCEPT) { this->x() /= v, this->y() /= v; return *this; }
+    inline constexpr point& operator+=(const point& v) noexcept(NO_EXCEPT) { this->_x += v._x, this->_y += v._y; return *this; }
+    inline constexpr point& operator-=(const point& v) noexcept(NO_EXCEPT) { this->_x -= v._x, this->_y -= v._y; return *this; }
 
-    friend inline constexpr point operator+(const point& p) noexcept(NO_EXCEPT) { return { +p.x(), +p.y() }; }
-    friend inline constexpr point operator-(const point& p) noexcept(NO_EXCEPT) { return { -p.x(), -p.y() }; }
+    inline constexpr point& operator+=(const value_type& v) noexcept(NO_EXCEPT) { this->_x += v, this->_y += v; return *this; }
+    inline constexpr point& operator-=(const value_type& v) noexcept(NO_EXCEPT) { this->_x -= v, this->_y -= v; return *this; }
+    inline constexpr point& operator*=(const value_type& v) noexcept(NO_EXCEPT) { this->_x *= v, this->_y *= v; return *this; }
+    inline constexpr point& operator/=(const value_type& v) noexcept(NO_EXCEPT) { this->_x /= v, this->_y /= v; return *this; }
+
+    friend inline constexpr point operator+(const point& p) noexcept(NO_EXCEPT) { return { +p._x, +p._y }; }
+    friend inline constexpr point operator-(const point& p) noexcept(NO_EXCEPT) { return { -p._x, -p._y }; }
 
     friend inline constexpr point operator+(point a, const point& b) noexcept(NO_EXCEPT) { return a += b; }
     friend inline constexpr point operator-(point a, const point& b) noexcept(NO_EXCEPT) { return a -= b; }
-    friend inline constexpr value_type operator*(const point& a, const point& b) noexcept(NO_EXCEPT) { return a.x() * b.x() + a.y() * b.y(); }
+    friend inline constexpr value_type operator*(const point& a, const point& b) noexcept(NO_EXCEPT) { return a._x * b._x + a._y * b._y; }
 
     friend inline constexpr point operator+(point a, const value_type& b) noexcept(NO_EXCEPT) { return a += b; }
     friend inline constexpr point operator-(point a, const value_type& b) noexcept(NO_EXCEPT) { return a -= b; }
@@ -75,15 +82,15 @@ struct point {
     friend inline constexpr point operator*(const value_type& a, point b) noexcept(NO_EXCEPT) { return b *= a; }
     friend inline constexpr point operator/(const value_type& a, point b) noexcept(NO_EXCEPT) { return b /= a; }
 
-    friend inline constexpr bool operator==(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) == 0 and compare(a.y(), b.y()) == 0; }
+    friend inline constexpr bool operator==(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a._x, b._x) == 0 and compare(a._y, b._y) == 0; }
     friend inline constexpr bool operator!=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a == b); }
 
-    friend inline constexpr bool operator<(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) != 0 ? compare(a.x(), b.x()) < 0 : compare(a.y(), b.y()) < 0; }
-    friend inline constexpr bool operator>(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a.x(), b.x()) != 0 ? compare(a.x(), b.x()) > 0 : compare(a.y(), b.y()) > 0; }
+    friend inline constexpr bool operator<(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a._x, b._x) != 0 ? compare(a._x, b._x) < 0 : compare(a._y, b._y) < 0; }
+    friend inline constexpr bool operator>(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a._x, b._x) != 0 ? compare(a._x, b._x) > 0 : compare(a._y, b._y) > 0; }
     friend inline constexpr bool operator<=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a > b); }
     friend inline constexpr bool operator>=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a < b); }
 
-    inline std::pair<value_type,value_type> _debug() const { return { this->x(), this->y() }; }
+    inline std::pair<value_type,value_type> _debug() const { return { this->_x, this->_y }; }
 };
 
 
@@ -158,6 +165,18 @@ template<class T>
 inline constexpr T squared_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
     return std::norm(a - b);
 }
+
+
+template<class T>
+inline constexpr T manhattan_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+    return std::abs(a.x() - b.x()) + std::abs(a.y() - b.y());
+}
+
+template<class T>
+inline constexpr T chebyshev_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+    return std::max(std::abs(a.x() - b.x()), std::abs(a.y() - b.y()));
+}
+
 
 template<class T>
 inline constexpr T cross(point<T> a, point<T> b, const point<T>& o = {}) noexcept(NO_EXCEPT) {
