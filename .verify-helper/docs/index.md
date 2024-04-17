@@ -27,7 +27,7 @@
 - `**/internal/`: 主に内部実装．concepts やメタ関数も含まれる．コンテスト中に個別で `#include` することは想定していない．
 
 ---
-[**Extended header (standard)**](./extended/standard.hpp)  
-[**Extended header (whole)**](./extended/all.hpp)  
+[**Expanded header (standard)**](./extended/expanded.hpp)  
+[**Expanded header (whole)**](./expanded/all.hpp)  
 
 [**Lint report**](./lint)
