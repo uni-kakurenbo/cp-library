@@ -119,12 +119,14 @@ jobs:
                   touch ./uni/expanded/standard.hpp
 
                   {
-                      ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" > .standard.log
+                      ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" &> .standard.log
                   } &
 
                   {
-                    ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/include/all.hpp" "${ROOT}/uni/expanded/all.hpp" --root "${ROOT}" > .all.log
+                    ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/include/all.hpp" "${ROOT}/uni/expanded/all.hpp" --root "${ROOT}" &> .all.log
                   } &
+
+                  wait
 
                   echo "::group::standard"
                   cat .standard.log
@@ -133,8 +135,6 @@ jobs:
                   echo "::group::all"
                   cat .all.log
                   echo "::endgroup::"
-
-                  wait
 
             - name: Push
               working-directory: uni
