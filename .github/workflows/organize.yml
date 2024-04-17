@@ -118,8 +118,21 @@ jobs:
                   touch ./uni/expanded/all.hpp
                   touch ./uni/expanded/standard.hpp
 
-                  ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" &> /dev/null &
-                  ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/include/all.hpp" "${ROOT}/uni/expanded/all.hpp" --root "${ROOT}" &> /dev/null &
+                  {
+                      ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" > .standard.log
+                  } &
+
+                  {
+                    ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/include/all.hpp" "${ROOT}/uni/expanded/all.hpp" --root "${ROOT}" > .all.log
+                  } &
+
+                  echo "::group::standard"
+                  cat .standard.log
+                  echo "::endgroup::"
+
+                  echo "::group::all"
+                  cat .all.log
+                  echo "::endgroup::"
 
                   wait
 
