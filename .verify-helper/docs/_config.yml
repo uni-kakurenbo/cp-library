@@ -9,7 +9,6 @@ plugins:
 exclude:
     - test/
     - vendor/
-    - .lint/
     - generate-headers.py
 
 theme: jekyll-theme-cayman
