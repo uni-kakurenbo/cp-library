@@ -1,1 +1,12 @@
 
+name: expanding
+run-name: ${{ github.workflow }} (${{ github.ref_name }})
+
+on:
+    workflow_dispatch:
+        inputs:
+            targets:
+                type: string
+                required: true
+                default: "template/standard.hpp"
+                description: "semicolon-delimitation string"
