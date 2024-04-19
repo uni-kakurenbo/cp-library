@@ -115,9 +115,6 @@ jobs:
               run: |
                   mkdir -p ./uni/expanded/
 
-                  touch ./uni/expanded/all.hpp
-                  touch ./uni/expanded/standard.hpp
-
                   {
                       ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/uni/template/standard.hpp" "${ROOT}/uni/expanded/standard.hpp" --root "${ROOT}" &> .standard.log
                   } &
