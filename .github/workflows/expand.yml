@@ -4,8 +4,70 @@ run-name: ${{ github.workflow }} (${{ github.ref_name }})
 on:
     workflow_dispatch:
         inputs:
-            targets:
-                type: string
+            targets-0:
                 required: true
                 default: "template/standard.hpp"
-                description: "semicolon-delimitation string"
+                description: "#0"
+            target-1:
+                description: "#1"
+            target-2:
+                description: "#2"
+            target-3:
+                description: "#3"
+            target-4:
+                description: "#4"
+            target-5:
+                description: "#5"
+            target-6:
+                description: "#6"
+            target-7:
+                description: "#7"
+            target-8:
+                description: "#8"
+            target-9:
+                description: "#9"
+
+jobs:
+    expand:
+        runs-on: ${{ vars.RUNNER_IMAGE }}
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.head_ref || github.ref_name }}
+                  path: uni
+                  fetch-depth: 0
+
+            - name: Clone Expander
+              uses: actions/checkout@v4
+              with:
+                  repository: uni-kakurenbo/command-line-applications-for-atcoder
+                  sparse-checkout: ./core/expander.py
+                  path: apps
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "pypy3.10"
+
+            - name: Expand
+              env:
+                  TARGETS: ${{ join(github.event.inputs.*, ' ') }}
+                  ROOT: ${{ github.workspace }}
+              run: |
+                  for row in ${TARGETS}; do
+                    echo "#include \"${row}\"" >> ./.targets.hpp
+                  done
+
+                  cat ./.targets.hpp
+
+                  echo "::group::expander"
+                  ./apps/ccore.sh expand_cpp "${ROOT}" "${ROOT}/.targets.hpp" "${ROOT}/.expanded.hpp" --root "${ROOT}"
+                  echo "::endgroup::"
+
+                  {
+                      echo '```cpp'
+                      cat ./.expanded.hpp
+                      echo '```'
+                  } >> ${GITHUB_STEP_SUMMARY}
