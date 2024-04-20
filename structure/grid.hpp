@@ -288,7 +288,7 @@ struct grid_core : container, virtual grid_impl::interface<T> {
 template<class T, class Row = vector<T>, class base = vector<Row>>
 using grid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>>;
 
-template<class T, class Row = valarray<T>, class base = valarray<Row>>
+template<class T, class Row = valarray<T>, class base = vector<Row>>
 using valgrid = internal::grid_core<T,internal::grid_impl::container<T,Row,base>>;
 
 template<class T, class base = vector<T>>

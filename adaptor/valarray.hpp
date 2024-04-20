@@ -46,7 +46,7 @@ template<class T> struct valarray : internal::extended_container<std::valarray<T
   public:
     valarray() noexcept(NO_EXCEPT) {}
 
-    explicit valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(std::forward<const T>(val), length) {}
+    explicit valarray(const std::size_t length, const T& val = T{}) noexcept(NO_EXCEPT) : base(val, length) {}
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     valarray(I first, S last) noexcept(NO_EXCEPT) : base(std::ranges::distance(first, last)) { std::ranges::copy(first, last, std::ranges::begin(*this)); }
