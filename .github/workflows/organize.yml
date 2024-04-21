@@ -85,7 +85,7 @@ jobs:
                     echo "No updated files."
                   fi
 
-    gen-expanded:
+    expand:
         runs-on: ${{ vars.RUNNER_IMAGE }}
         needs: gen-include
 
