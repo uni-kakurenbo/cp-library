@@ -30,4 +30,6 @@
 [**Expanded header (standard)**](./expanded/standard.hpp)  
 [**Expanded header (whole)**](./expanded/all.hpp)  
 
+[**Expander**](https://github.com/uni-kakurenbo/cp-library/actions/workflows/expand.yml)  
+
 [**Lint report**](./lint)
