@@ -47,13 +47,27 @@ auto _debug (T&& val) -> decltype(val._debug()) {
 
 std::ostream *cdebug = &std::clog;
 
+#ifdef DEBUGGER_COLORED_OUTPUT
 
-const std::string COLOR_INIT = "\033[m";
-const std::string COLOR_STRING = "\033[33m";
-const std::string COLOR_TYPE = "\033[34m";
-const std::string COLOR_NUMERIC = "\033[36m";
-const std::string COLOR_LITERAL_OPERATOR = "\033[31m";
+constexpr std::string COLOR_LINE = "\033[3;35m";
+constexpr std::string COLOR_IDENTIFIER = "\033[32m";
+constexpr std::string COLOR_INIT = "\033[m";
+constexpr std::string COLOR_STRING = "\033[33m";
+constexpr std::string COLOR_TYPE = "\033[34m";
+constexpr std::string COLOR_NUMERIC = "\033[36m";
+constexpr std::string COLOR_LITERAL_OPERATOR = "\033[31m";
 
+#else
+
+constexpr std::string COLOR_LINE = "";
+constexpr std::string COLOR_IDENTIFIER = "";
+constexpr std::string COLOR_INIT = "";
+constexpr std::string COLOR_STRING = "";
+constexpr std::string COLOR_TYPE = "";
+constexpr std::string COLOR_NUMERIC = "";
+constexpr std::string COLOR_LITERAL_OPERATOR = "";
+
+#endif
 
 using Brackets = std::pair<std::string, std::string>;
 
@@ -463,7 +477,7 @@ void debug(std::vector<std::string>, size_t, int) { debug(nullptr, COLOR_INIT + 
 std::map<int, int> count;
 template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int line, Head&& H, Tail&&... T) {
     if(idx == 0) {
-        debug(nullptr, "\033[3;35m#" + std::to_string(line) + " (" + std::to_string(count[line]) + ")" + COLOR_INIT);
+        debug(nullptr, COLOR_LINE + "#" + std::to_string(line) + " (" + std::to_string(count[line]) + ")" + COLOR_INIT);
         count[line]++;
     }
     debug(nullptr, "\n - ");
@@ -473,7 +487,7 @@ template<typename Head, typename... Tail> void debug(std::vector<std::string> ar
     const std::string type_name = get_type_name(std::forward<Head>(H));
 
 
-    debug(nullptr, "\033[32m" + args[idx]  + COLOR_INIT + " : ");
+    debug(nullptr, COLOR_IDENTIFIER + args[idx]  + COLOR_INIT + " : ");
     debug(nullptr, content);
 
     if(type_name.size() + content.size() >= 300) debug(nullptr, "\n   ");
