@@ -261,10 +261,10 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
         if(diff < 0) {
             if(this->_block == 1) {
                 const auto missing = std::ranges::advance(this->_c1, diff, this->_b1);
-                if(missing > 0) {
+                if(missing < 0) {
                     this->_block = 0;
                     assert(this->_c0 == this->_e0);
-                    std::ranges::advance(this->_c0, -missing, this->_b0);
+                    std::ranges::advance(this->_c0, missing, this->_b0);
                 }
             }
             else {
@@ -421,7 +421,7 @@ template<class...> struct concat_view;
 
 template<class T>
 struct concat_view<T> : std::views::all_t<T> {
-    explicit concat_view(T&& v) noexcept(NO_EXCEPT) : std::views::all_t<T>(std::forward<T>(v)) {}
+    using std::views::all_t<T>::all_t;
 };
 
 template<class T0, class T1>

@@ -57,9 +57,7 @@ struct zip_view_iterator_category<Const, Views...> {
 
 template<bool Const, class... Views>
 static auto _most_primitive_iterator_concept() noexcept(NO_EXCEPT) {
-    if constexpr(all_contiguous<Const, Views...>)
-        return std::contiguous_iterator_tag{};
-    else if constexpr(all_random_access<Const, Views...>)
+    if constexpr(all_random_access<Const, Views...>)
         return std::random_access_iterator_tag{};
     else if constexpr(all_bidirectional<Const, Views...>)
         return std::bidirectional_iterator_tag{};

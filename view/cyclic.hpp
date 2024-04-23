@@ -107,13 +107,17 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     using value_type = std::ranges::range_value_t<Base>;
     using iterator_concept = typename internal::iterator_concept<Base>;
 
+  private:
+    difference_type _index = 0;
+
+  public:
     iterator() noexcept(NO_EXCEPT) requires std::default_initializable<std::ranges::iterator_t<Base>> = default;
 
     constexpr iterator(iterator<!Const> itr) noexcept(NO_EXCEPT)
         requires
             Const && std::convertible_to<std::ranges::iterator_t<View>, std::ranges::iterator_t<Base>> &&
             std::convertible_to<std::ranges::sentinel_t<View>, std::ranges::sentinel_t<Base>>
-      : _current(std::move(itr._current)), _begin(std::move(itr._begin)), _end(std::move(itr._end))
+      : _current(std::move(itr._current)), _begin(std::move(itr._begin)), _end(std::move(itr._end)), _index(std::move(itr._index))
     {}
 
     inline constexpr std::ranges::iterator_t<Base> base() && noexcept(NO_EXCEPT) { return std::move(this->_current); }
@@ -125,8 +129,11 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     inline constexpr iterator& operator++() noexcept(NO_EXCEPT)
     {
         assert(this->_current != _end);
+        ++this->_index;
+
         ++this->_current;
         if(this->_current == this->_end) this->_current = this->_begin;
+
         return *this;
     }
 
@@ -141,8 +148,11 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     inline constexpr iterator& operator--() noexcept(NO_EXCEPT)
         requires std::ranges::bidirectional_range<Base>
     {
+        --this->_index;
+
         if(this->_current == this->_begin) this->_current = std::prev(this->_end);
         else --this->_current;
+
         return *this;
     }
 
@@ -155,6 +165,8 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     inline constexpr iterator& operator+=(const difference_type diff) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
+        this->_index += diff;
+
         if(diff > 0) {
             auto missing = std::ranges::advance(this->_current, diff, this->_end);
             if constexpr(std::ranges::sized_range<Base>) missing %= std::ranges::distance(this->_begin, this->_end);
@@ -163,12 +175,12 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
                 missing = std::ranges::advance(this->_current, missing, this->_end);
             }
         }
-        if(diff < 0) {
+        else if(diff < 0) {
             auto missing = std::ranges::advance(this->_current, diff, this->_begin);
             if constexpr(std::ranges::sized_range<Base>) missing %= std::ranges::distance(this->_begin, this->_end);
-            while(missing > 0) {
+            while(missing < 0) {
                 this->_current = this->_end;
-                missing = std::ranges::advance(this->_current, -missing, this->_begin);
+                missing = std::ranges::advance(this->_current, missing, this->_begin);
             }
         }
 
@@ -190,37 +202,37 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     friend inline constexpr bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::equality_comparable<std::ranges::iterator_t<Base>>
     {
-        return lhs._current == rhs._current;
+        return lhs._index == rhs._index;
     }
 
     friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
-        return lhs._current < rhs._current;
+        return lhs._index < rhs._index;
     }
 
     friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
-        return rhs._current < lhs._current;
+        return rhs._index > lhs._index;
     }
 
     friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
-        return !(rhs._current < lhs._current);
+        return rhs._index <= lhs._index;
     }
 
     friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base>
     {
-        return !(lhs._current < rhs._current);
+        return rhs._index >= lhs._index;
     }
 
     friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base> && std::three_way_comparable<std::ranges::iterator_t<Base>>
     {
-        return lhs._current <=> rhs._current;
+        return rhs._index <=> lhs._index;
     }
 
     friend inline constexpr iterator operator+(const iterator& itr, const difference_type diff) noexcept(NO_EXCEPT)
@@ -245,7 +257,7 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     friend inline constexpr const difference_type operator-(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::sized_sentinel_for<std::ranges::iterator_t<Base>, std::ranges::iterator_t<Base>>
     {
-        return lhs._current - rhs._current;
+        return lhs._index - rhs._index;
     }
 
     friend inline constexpr std::ranges::range_rvalue_reference_t<Base> iter_move(const iterator& itr) noexcept(NO_EXCEPT)
@@ -256,6 +268,7 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     friend inline constexpr void iter_swap(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::indirectly_swappable<std::ranges::iterator_t<Base>>
     {
+        std::swap(lhs._index, rhs._index);
         std::ranges::iter_swap(lhs._current, rhs._current);
     }
 };
@@ -271,7 +284,7 @@ concept can_cyclic_view = requires { cyclic_view(std::declval<Range>()); };
 
 }
 
-struct Cyclic : adaptor::range_adaptor<Cyclic> {
+struct Cyclic : adaptor::range_adaptor_closure<Cyclic> {
     template<std::ranges::viewable_range Range>
         requires internal::can_cyclic_view<Range>
     inline constexpr auto operator() [[nodiscard]] (Range &&res) const
@@ -279,9 +292,9 @@ struct Cyclic : adaptor::range_adaptor<Cyclic> {
         return cyclic_view(std::forward<Range>(res));
     }
 
-    using adaptor::range_adaptor<Cyclic>::operator();
-    static constexpr int arity = 1;
-    static constexpr bool has_simple_call_op = true;
+    // using adaptor::range_adaptor_closure<Cyclic>::operator();
+    // static constexpr int arity = 1;
+    // static constexpr bool has_simple_call_op = true;
 };
 
 inline constexpr Cyclic cyclic;
