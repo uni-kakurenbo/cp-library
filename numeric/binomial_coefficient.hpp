@@ -130,6 +130,7 @@ struct binomial_coefficient_prime_power_mod {
     inline mod_type mod() const noexcept(NO_EXCEPT) { return this->_m; }
 
     mod_type lucus(value_type n, value_type k) const noexcept(NO_EXCEPT) {
+        if(n < k or n < 0 or k < 0) return 0;
         u32 res = this->_one;
 
         while(n > 0) {
@@ -146,8 +147,8 @@ struct binomial_coefficient_prime_power_mod {
     }
 
     mod_type comb(value_type n, value_type k) const noexcept(NO_EXCEPT) {
-        if(n < k or n < 0 or k < 0) return 0;
         if(this->_q == 1) return this->lucus(n, k);
+        if(n < k or n < 0 or k < 0) return 0;
 
         value_type r = n - k;
         u32 e0 = 0, eq = 0, i = 0;
