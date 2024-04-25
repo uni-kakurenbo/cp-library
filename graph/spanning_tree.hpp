@@ -16,7 +16,7 @@ namespace graph_impl {
 
 
 template<class G, template<class...> class Compare, class Cost, class Size>
-auto kruskal(const G& graph, const Compare<std::tuple<Cost, Size, Size>> compare, G *const mst = nullptr) noexcept(NO_EXCEPT) {
+std::optional<Cost> kruskal(const G& graph, const Compare<std::tuple<Cost, Size, Size>> compare, G *const mst = nullptr) noexcept(NO_EXCEPT) {
     atcoder::dsu ds(graph.size());
 
     std::vector<std::tuple<Cost, Size, Size>> edges;
@@ -31,13 +31,18 @@ auto kruskal(const G& graph, const Compare<std::tuple<Cost, Size, Size>> compare
 
     Cost res = {};
 
+    typename G::size_type cnt = 0;
     ITR(w, u, v, edges) {
         if(not ds.same(u, v)) {
             ds.merge(u, v);
             if(mst) mst->add_edge_bidirectionally(u, v, w);
             res += w;
+            ++cnt;
         }
     }
+
+    assert(cnt <= graph.size() - 1);
+    if(cnt != graph.size() - 1) return {};
 
     return res;
 }

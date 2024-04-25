@@ -74,22 +74,25 @@ template<
 T mex(I first, S last, const T& base = {}) noexcept(NO_EXCEPT) {
     std::vector<T> val(first, last);
     std::ranges::sort(val);
-    val.erase(std::ranges::unique(ALL(val)), val.end());
+    {
+        auto range = std::ranges::unique(val);
+        val.erase(ALL(range));
+    }
     val.erase(val.begin(), std::ranges::lower_bound(val, base));
 
-    std::ranges::range_size_t<std::vector<T>> i = 0;
-    while(i < std::ranges::size(val) and val[i] == T{i} + base) ++i;
+    T i = 0;
+    while(i < std::ranges::ssize(val) && val[i] == i + base) ++i;
 
     return T{i} + base;
 }
 
-template<class T>
-auto mex(const std::initializer_list<T> v) noexcept(NO_EXCEPT) {
-    return mex(ALL(v));
+template<std::ranges::input_range R>
+auto mex(R&& range, const std::ranges::range_value_t<R>& base = {}) noexcept(NO_EXCEPT) {
+    return mex(ALL(range), base);
 }
 
 template<class T>
-auto mex(const std::initializer_list<T> v, const T& base) noexcept(NO_EXCEPT) {
+auto mex(const std::initializer_list<T> v, const T& base = {}) noexcept(NO_EXCEPT) {
     return mex(ALL(v), base);
 }
 

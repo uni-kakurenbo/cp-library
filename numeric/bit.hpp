@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <limits>
 #include <concepts>
+#include <compare>
 #include <bit>
 
 
@@ -177,5 +178,23 @@ inline constexpr auto binary_gcd(T0 v0, T1 v1) noexcept(NO_EXCEPT) {
     return internal::binary_gcd(static_cast<common_type>(v0), static_cast<common_type>(v1));
 }
 
+
+template<std::unsigned_integral T, std::unsigned_integral S>
+inline constexpr bool is_subset_of(T target, S super) noexcept(NO_EXCEPT) {
+    return (target & super) == target;
+}
+
+template<std::unsigned_integral T, std::unsigned_integral S>
+inline constexpr bool is_superset_of(T target, S subset) noexcept(NO_EXCEPT) {
+    return (target | subset) == target;
+}
+
+template<std::unsigned_integral S0, std::unsigned_integral S1>
+inline constexpr auto comapre_as_bitset(S0 s0, S1 s1) noexcept(NO_EXCEPT) {
+    if(s0 == s1) return std::partial_ordering::equivalent;
+    if(is_subset_of(s0, s1)) return std::partial_ordering::less;
+    if(is_superset_of(s0, s1)) return std::partial_ordering::greater;
+    return std::partial_ordering::unordered;
+}
 
 } // namespace uni

@@ -34,6 +34,7 @@ template<class T> struct interface : virtual grid_impl::interface<T> {
 template<class T, class base>
 struct matrix_core : base, virtual matrix_impl::interface<T> {
     using base::base;
+    using size_type = base::size_type;
 
     static inline matrix_core identity(const size_t n, const T &&val = { 1 }) noexcept(NO_EXCEPT) {
         matrix_core res(n);
@@ -116,6 +117,56 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
         return res;
     }
 
+    inline auto to_upper_triangular() noexcept(NO_EXCEPT)
+        requires modint_family<T>
+    {
+        const size_type m = this->rows(), n = this->cols();
+
+        size_type rank = 0;
+
+        REP(j, n) {
+            size_type pivot = -1;
+
+            REP(i, rank, m) {
+                if(this->operator[](i)[j] != 0) {
+                    pivot = i;
+                    break;
+                }
+            }
+
+            if(pivot == -1) continue;
+
+            std::swap(this->operator[](pivot), this->operator[](rank));
+
+            auto inv = this->operator[](rank)[j].inv();
+
+            REP(k, n) {
+                this->operator[](rank)[k] = this->operator[](rank)[k] * inv;
+            }
+
+            REP(i, m) {
+                if(i != rank && this->operator[](i)[j] != 0) {
+                    const auto fac = this->operator[](i)[j];
+                    REP(k, n) this->operator[](i)[k] -= this->operator[](rank)[k] * fac;
+                }
+            }
+
+            ++rank;
+        }
+
+        return rank;
+    }
+
+
+    inline auto to_lower_triangular() noexcept(NO_EXCEPT)
+        requires modint_family<T>
+    {
+        auto rank = this->to_upper_triangular();
+        this->transpose();
+        return rank;
+    }
+
+
     T determinant() const noexcept(NO_EXCEPT)
         requires modint_family<T>
     {
@@ -124,6 +175,7 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
         auto a = *this;
 
         T det = T::one;
+
         REP(j, a.rows()) {
             REP(i, j, a.rows()) {
                 if(a[i][j] == 0) continue;
@@ -134,8 +186,7 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
             if(a[j][j] == 0) return 0;
             REP(i, j+1, a.rows()) {
                 while(a[i][j] != 0) {
-                    const long long q = a[j][j].val() / a[i][j].val();
-                    const T c = -q;
+                    const T c = -to_signed(a[j][j].val() / a[i][j].val());
                     REP(k, j, a.rows()) a[j][k] += a[i][k] * c;
                     std::swap(a[i], a[j]), det = -det;
                 }
@@ -147,15 +198,21 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
     }
 };
 
+
 } // namespace internal
 
+
 template<class T, class base = grid<T>>
-using matrix = internal::matrix_core<T,base>;
+using matrix = internal::matrix_core<T, base>;
 
 template<class T>
-using valmatrix = internal::matrix_core<T,unfolded_grid<T,valarray<T>>>;
+using valmatrix = internal::matrix_core<T, valgrid<T>>;
 
 template<class T>
-using unfolded_matrix = internal::matrix_core<T,unfolded_grid<T>>;
+using unfolded_matrix = internal::matrix_core<T, unfolded_grid<T>>;
+
+template<class T>
+using unfolded_valmatrix = internal::matrix_core<T, unfolded_valgrid<T>>;
+
 
 } // namespace uni

@@ -48,6 +48,7 @@ struct quotient_enumerator {
     }
 
     struct iterator : virtual iterator_interface {
+        using value_type = quotient_enumerator::value_type;
         using reference = value_type;
 
       protected:
@@ -71,7 +72,7 @@ struct quotient_enumerator {
 
       public:
         iterator() noexcept = default;
-        iterator(const T _n, const T l) noexcept(NO_EXCEPT) : _n_impl(_n) { this->_set_l(l); }
+        iterator(const T n, const T l) noexcept(NO_EXCEPT) : _n_impl(n) { this->_set_l(l); }
 
 
         friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._l == rhs._l; };
@@ -90,3 +91,11 @@ struct quotient_enumerator {
 
 
 } // namespace uni
+
+
+namespace std::ranges {
+
+template<class T>
+inline constexpr bool enable_borrowed_range<uni::quotient_enumerator<T>> = true;
+
+} // namespace std::ranges

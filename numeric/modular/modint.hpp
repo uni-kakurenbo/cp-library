@@ -141,7 +141,7 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     constexpr modint inv() const noexcept(NO_EXCEPT) {
         using signed_value_type = std::make_signed_t<value_type>;
 
-        signed_value_type x = this->_val, y = modint::mod(), u = 1, v = 0;
+        signed_value_type x = this->val(), y = modint::mod(), u = 1, v = 0;
 
         while(y > 0) {
             signed_value_type t = x / y;
