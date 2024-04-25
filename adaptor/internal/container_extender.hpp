@@ -139,7 +139,12 @@ struct extended_container : Base {
         return uni::join(*this->_base(), sep);
     }
 
+
     inline auto sum() noexcept(NO_EXCEPT) { return uni::sum(*this->_base()); }
+
+
+    inline auto max() noexcept(NO_EXCEPT) { return std::ranges::max(*this->_base()); }
+    inline auto min() noexcept(NO_EXCEPT) { return std::ranges::min(*this->_base()); }
 };
 
 
