@@ -30,4 +30,5 @@
 #include "numeric/quotient_enumerator.hpp"
 #include "numeric/repeater.hpp"
 #include "numeric/stern_brocot_tree.hpp"
+#include "numeric/subset_enumerator.hpp"
 #include "numeric/subset_superset_transform.hpp"
