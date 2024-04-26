@@ -227,13 +227,13 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         assert(false);
     }
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, -1); }
+    inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, -1); }
 
     inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
-    struct iterator : virtual iterator_interface {
+    struct iterator : iterator_interface {
       protected:
         value_type _n = 0;
         size_type _index = 0;
@@ -326,10 +326,8 @@ struct prime_enumerator : std::ranges::view_interface<prime_enumerator<T>> {
         inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --(*this); return res; }
 
         friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index == rhs._index; }
-        friend inline bool operator!=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index != rhs._index; }
-        friend inline bool operator<(const iterator& lhs, const iterator& rhs) { return lhs._index < rhs._index; }
-        friend inline bool operator>(const iterator& lhs, const iterator& rhs) { return lhs._index > rhs._index; }
-        friend inline size_type operator-(const iterator& lhs, const iterator& rhs) { return lhs._index - rhs._index; }
+        friend inline auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._index <=> rhs._index; }
+        friend inline auto operator-(const iterator& lhs, const iterator& rhs) { return lhs._index - rhs._index; }
     };
 };
 
