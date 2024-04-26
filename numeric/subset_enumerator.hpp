@@ -33,8 +33,8 @@ struct subset_enumerator {
     struct iterator;
     using const_iterator = iterator;
 
-    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this->_n, 0); }
-    inline auto end() noexcept(NO_EXCEPT) { return iterator(this->_n, this->_n, true); }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this->_n, this->_n); }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator(this->_n, 0, true); }
 
     inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
@@ -69,19 +69,18 @@ struct subset_enumerator {
                 return std::partial_ordering::greater;
             }
 
-            return comapre_as_bitset(lhs._v, rhs._v);
+            return comapre_as_bitset(rhs._v, lhs._v);
         };
 
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->_v; }
 
         inline iterator& operator++() noexcept(NO_EXCEPT) {
-            if(this->_v == this->_n) {
+            if(this->_v == 0) {
                 this->_end = true;
             }
             else {
-                const auto lsb = lowest_bit_pos(this->_n & ~this->_v);
-                this->_v = ((this->_v >> lsb) | 1) << lsb;
+                this->_v = (this->_v - 1) & this->_n;
             }
 
             return *this;
@@ -92,7 +91,8 @@ struct subset_enumerator {
                 this->_end = false;
             }
             else {
-                this->_v = (this->_v - 1) & this->_n;
+                const auto lsb = lowest_bit_pos(this->_n & ~this->_v);
+                this->_v = ((this->_v >> lsb) | 1) << lsb;
             }
 
             return *this;
