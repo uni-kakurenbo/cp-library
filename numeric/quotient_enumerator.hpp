@@ -33,13 +33,13 @@ struct quotient_enumerator {
     struct iterator;
     using const_iterator = iterator;
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, 1); }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, this->_n + 1); }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, 1); }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator(this->_n_impl, this->_n + 1); }
 
     inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
-    inline size_type size() noexcept(NO_EXCEPT) {
+    inline auto size() noexcept(NO_EXCEPT) {
         if(this->_size < 0) {
             size_type r = uni::sqrt_floor(this->_n_impl);
             this->_size = 2 * r - (this->_n_impl < r * (r + 1)) + CEIL;
@@ -74,17 +74,15 @@ struct quotient_enumerator {
         iterator() noexcept = default;
         iterator(const T n, const T l) noexcept(NO_EXCEPT) : _n_impl(n) { this->_set_l(l); }
 
-
-        friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._l == rhs._l; };
-        friend inline bool operator!=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._l != rhs._l; };
+        friend inline bool operator==(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT) { return lhs._l == rhs._l; }
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return { this->_q + CEIL, this->_l, this->_r }; }
 
-        inline iterator& operator++() noexcept(NO_EXCEPT) { this->_set_l(this->_r + 1); return *this; }
-        inline iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; this->_set_l(this->_r + 1); return res; }
+        inline auto& operator++() noexcept(NO_EXCEPT) { this->_set_l(this->_r + 1); return *this; }
+        inline auto& operator--() noexcept(NO_EXCEPT) { this->_set_r(this->_l - 1); return *this; }
 
-        inline iterator& operator--() noexcept(NO_EXCEPT) { this->_set_r(this->_l - 1); return *this; }
-        inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; this->_set_r(this->_l - 1); return res; }
+        inline auto operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; this->_set_l(this->_r + 1); return res; }
+        inline auto operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; this->_set_r(this->_l - 1); return res; }
     };
 
 };
