@@ -56,7 +56,7 @@ set +e
         cat ../summary.txt >>../failed-tests.txt
     fi
     
-    jq -n --arg target "${TARGET}" --arg date  \
+    jq -n --arg target "${TARGET}" --arg date "${DATE}" \
         '.[$target] = $date' >>'../timestamps.json'
 
     echo
