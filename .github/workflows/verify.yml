@@ -300,7 +300,7 @@ jobs:
                   git add .verify-helper/timestamps.compile.json
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+                    git commit -m "[auto-verifier] verify commit (compile) ${GITHUB_SHA}"
                     git pull --rebase
                     git push origin HEAD:${GITHUB_REF}
                   else
@@ -688,7 +688,7 @@ jobs:
                   git add .verify-helper/timestamps.remote.json
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+                    git commit -m "[auto-verifier] verify commit (test) ${GITHUB_SHA}"
                     git pull --rebase
                     git push origin HEAD:${GITHUB_REF}
                   else

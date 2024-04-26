@@ -16,8 +16,6 @@ set +e
 
     DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}" | sed -E s/^.*\.o:\ //)"
 
-    git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES}
-
     # shellcheck disable=SC2086
     LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
     LAST_VERIFY_DATE="$(
@@ -56,8 +54,6 @@ set +e
         else
             DATE="$(date -d "@${LAST_MODIFIED_AT}" '+%Y-%m-%d %H:%M:%S %z')"
         fi
-
-        echo "${DATE}"
 
         jq -n --arg target "${TARGET}" --arg date "${DATE}" \
             '.[$target] = $date' >>'../timestamps.json'
