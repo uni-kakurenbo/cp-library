@@ -51,11 +51,11 @@ set +e
 
         cat ../summary.txt >>../passed-tests.txt
     else
-        DATE="$(jq -r --arg target "${TARGET}" --arg default "${DEFAULT_DATE}" '.[$target] // $default' '../timestamps.json')"
+        DATE="$(jq -r --arg target "${TARGET}" --arg default "${DEFAULT_DATE}" '.[$target] // $default' './.verify-helper/timestamps.remote.json')"
 
         cat ../summary.txt >>../failed-tests.txt
     fi
-    
+
     jq -n --arg target "${TARGET}" --arg date "${DATE}" \
         '.[$target] = $date' >>'../timestamps.json'
 

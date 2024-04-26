@@ -47,6 +47,7 @@ auto _debug (T&& val) -> decltype(val._debug()) {
 
 std::ostream *cdebug = &std::clog;
 
+
 #ifdef DEBUGGER_COLORED_OUTPUT
 
 constexpr std::string COLOR_LINE = "\033[3;35m";
