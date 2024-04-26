@@ -48,7 +48,7 @@ set +e
 
         cat ../summary.txt >>../passed-tests.txt
     else
-        prev="$(jq --arg target "${TARGET}" '.[$target] // "@0"' '../timestamps.json')"
+        prev="$(jq -r --arg target "${TARGET}" '.[$target] // "@0"' '../timestamps.json')"
         jq -n --arg target "${TARGET}" --arg prev "${prev}" '.[$target] = $prev' >>'../timestamps.json'
 
         cat ../summary.txt >>../failed-tests.txt
