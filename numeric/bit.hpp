@@ -60,11 +60,11 @@ inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
 
 template<std::unsigned_integral T>
 __attribute__((target("bmi2")))
-inline constexpr T clear_higher_bits(const T v, const T p) {
+inline constexpr T clear_higher_bits(const T v, const int p) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
     assert(p < DIGITS);
 
-    if constexpr(DIGITS <= 32) return _bzhi_u64(v, p);
+    if constexpr(DIGITS <= 32) return _bzhi_u32(v, p);
     if constexpr(DIGITS <= 64) return _bzhi_u64(v, p);
     else {
         static_assert(DIGITS <= 128);
