@@ -11,5 +11,5 @@
 #include "template/standard.hpp"
 
 signed main() {
-    print("Hello World")
+    print("Hello World");
 }
