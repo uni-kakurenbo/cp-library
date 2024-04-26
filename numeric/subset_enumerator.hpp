@@ -39,10 +39,9 @@ struct subset_enumerator {
     inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
     inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
-    inline size_type size() noexcept(NO_EXCEPT) { return 1 << std::popcount(this->_n); }
+    inline auto size() noexcept(NO_EXCEPT) { return static_cast<size_type>(1) << std::popcount(this->_n); }
 
-    struct iterator : virtual iterator_interface {
-        using reference = value_type;
+    struct iterator : iterator_interface {
 
       protected:
         T _n = 0, _v = 0;
@@ -73,9 +72,9 @@ struct subset_enumerator {
         };
 
 
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->_v; }
+        inline auto operator*() const noexcept(NO_EXCEPT) { return this->_v; }
 
-        inline iterator& operator++() noexcept(NO_EXCEPT) {
+        inline auto& operator++() noexcept(NO_EXCEPT) {
             if(this->_v == 0) {
                 this->_end = true;
             }
@@ -86,7 +85,7 @@ struct subset_enumerator {
             return *this;
         }
 
-        inline iterator& operator--() noexcept(NO_EXCEPT) {
+        inline auto& operator--() noexcept(NO_EXCEPT) {
             if(this->_end) {
                 this->_end = false;
             }
@@ -98,8 +97,8 @@ struct subset_enumerator {
             return *this;
         }
 
-        inline iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; ++res; return res; }
-        inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --res; return res; }
+        inline auto operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; ++res; return res; }
+        inline auto operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --res; return res; }
     };
 
 };
