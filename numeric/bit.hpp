@@ -180,8 +180,8 @@ inline constexpr auto binary_gcd(T0 v0, T1 v1) noexcept(NO_EXCEPT) {
 
 
 template<std::unsigned_integral T, std::unsigned_integral S>
-inline constexpr bool is_subset_of(T target, S super) noexcept(NO_EXCEPT) {
-    return (target & super) == target;
+inline constexpr bool is_subset_of(T target, S superset) noexcept(NO_EXCEPT) {
+    return (target & superset) == target;
 }
 
 template<std::unsigned_integral T, std::unsigned_integral S>
