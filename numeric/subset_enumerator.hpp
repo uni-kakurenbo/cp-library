@@ -96,8 +96,8 @@ struct subset_enumerator {
             return *this;
         }
 
-        inline auto operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; ++res; return res; }
-        inline auto operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --res; return res; }
+        inline auto operator++(int) noexcept(NO_EXCEPT) { auto res = *this; ++res; return res; }
+        inline auto operator--(int) noexcept(NO_EXCEPT) { auto res = *this; --res; return res; }
     };
 
 };
