@@ -24,7 +24,7 @@ struct subset_enumerator {
     T _n = 0;
 
   protected:
-    using iterator_interface = internal::forward_iterator<const value_type>;
+    using iterator_interface = internal::bidirectional_iterator_interface<const value_type>;
 
   public:
     // Enumerate tuple of (q, l, r), which means (floor/ceil)(_n/k) == q (l <= k <= r).
@@ -33,13 +33,15 @@ struct subset_enumerator {
     struct iterator;
     using const_iterator = iterator;
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this->_n, this->_n); }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this->_n, 0, true); }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this->_n, 0); }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator(this->_n, this->_n, true); }
+
+    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
     inline size_type size() noexcept(NO_EXCEPT) { return 1 << std::popcount(this->_n); }
 
     struct iterator : virtual iterator_interface {
-        using value_type = subset_enumerator::value_type;
         using reference = value_type;
 
       protected:
@@ -67,15 +69,27 @@ struct subset_enumerator {
                 return std::partial_ordering::greater;
             }
 
-            return comapre_as_bitset(rhs._v, lhs._v);
+            return comapre_as_bitset(lhs._v, rhs._v);
         };
 
 
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->_v; }
 
         inline iterator& operator++() noexcept(NO_EXCEPT) {
-            if(this->_v == 0) {
+            if(this->_v == this->_n) {
                 this->_end = true;
+            }
+            else {
+                const auto lsb = lowest_bit_pos(this->_n & ~this->_v);
+                this->_v = ((this->_v >> lsb) | 1) << lsb;
+            }
+
+            return *this;
+        }
+
+        inline iterator& operator--() noexcept(NO_EXCEPT) {
+            if(this->_end) {
+                this->_end = false;
             }
             else {
                 this->_v = (this->_v - 1) & this->_n;
@@ -85,6 +99,7 @@ struct subset_enumerator {
         }
 
         inline iterator operator++(int) noexcept(NO_EXCEPT) { const auto res = *this; ++res; return res; }
+        inline iterator operator--(int) noexcept(NO_EXCEPT) { const auto res = *this; --res; return res; }
     };
 
 };
