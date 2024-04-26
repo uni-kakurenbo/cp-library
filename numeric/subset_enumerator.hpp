@@ -42,9 +42,8 @@ struct subset_enumerator {
     inline auto size() noexcept(NO_EXCEPT) { return static_cast<size_type>(1) << std::popcount(this->_n); }
 
     struct iterator : iterator_interface {
-
       protected:
-        T _n = 0, _v = 0;
+        value_type _n = 0, _v = 0;
         bool _end = false;
 
       public:
