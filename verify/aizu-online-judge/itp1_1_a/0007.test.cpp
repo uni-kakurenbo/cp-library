@@ -20,7 +20,7 @@ signed main() {
   print("Hello World");
 
   REP(n, 25U) {
-    uni::unorderd_set<u32> st;
+    uni::unordered_set<uni::u32> st;
 
     auto enumerator = uni::subset_enumerator(n);
 
@@ -33,6 +33,6 @@ signed main() {
       assert(st.contains(v));
     }
 
-    assert(st.size() == enumerator.size());
+    assert(st.ssize() == enumerator.size());
   }
 }
