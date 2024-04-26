@@ -13,7 +13,7 @@
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "adaptor/io.hpp"
-#include "random/adaptor.hpp"
+#include "adaptor/set.hpp"
 #include "numeric/subset_enumerator.hpp"
 
 signed main() {
