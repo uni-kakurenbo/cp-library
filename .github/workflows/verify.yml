@@ -29,6 +29,7 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
                   fetch-depth: 0 # for detect already verified tests  with:
+                  token: ${{ secrets.GH_PAT }}
 
             - name: Install octokit
               run: |
@@ -212,6 +213,14 @@ jobs:
 
     compile:
         runs-on: ${{ vars.RUNNER_IMAGE }}
+        if: >-
+            ${{
+                !cancelled() &&
+                (
+                    github.ref_name == github.event.repository.default_branch ||
+                    startsWith(github.ref_name, 'test')
+                )
+            }}
 
         steps:
             - name: Git checkout
@@ -219,7 +228,8 @@ jobs:
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
-                  token: ${{ secrets.GH_PAT }}
+                  fetch-depth: 0
+                  #token: Never specify GH_PAT to avoid infinite loop
 
             - name: Clone AC-Library
               uses: actions/checkout@v4
@@ -236,10 +246,18 @@ jobs:
               run: |
                   set -eu
 
+                  if [ ! -f ./.verify-helper/timestamps.compile.json ]; then
+                    echo '{}' > ./.verify-helper/timestamps.compile.json
+                  fi
+
+                  echo '{}' > ../timestamps.json
+
+                  echo -n > ./.verify-helper/problems.txt
+
                   PARALLEL=$(nproc)
                   echo "Parallel execution: ${PARALLEL}"
 
-                  find ./**/**.hpp -type f | xargs -P ${PARALLEL} -n1 bash -c 'bash ./.github/workflows/internal/compile.sh "$1"' shell
+                  find . -type f -wholename **.hpp -printf "%P\n" | xargs -P ${PARALLEL} -n1 bash -c 'bash ./.github/workflows/internal/compile.sh "$1"' shell
 
                   cat .summary-**.txt | sort > ./temp.txt
                   sed -i '/^$/d' ./temp.txt
@@ -247,6 +265,46 @@ jobs:
                   if [ -s ./temp.txt ]; then
                     echo "### Compiler warnings" >> "${GITHUB_STEP_SUMMARY}"
                     cat ./temp.txt | tr '\r' '\n' | head -c 1M >> "${GITHUB_STEP_SUMMARY}"
+                  fi
+
+            - name: Update timestamps
+              working-directory: main/.verify-helper
+              env:
+                  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+              run: |
+                  touch ./timestamps.compile.json
+
+                  jq --slurp --sort-keys 'reduce .[] as $item ({}; . * $item) | with_entries(.value = .)' \
+                    ./timestamps.compile.json ../../timestamps.json > ./merged-timestamps.json
+
+                  find .. -type f -wholename **.hpp -printf '%P\n' | sort | \
+                    jq -R -s -c 'split("\n")[:-1]' > ./files.json
+
+                  jq --slurpfile source ./merged-timestamps.json -c 'map($source[0][.]) | from_entries' \
+                    ./files.json | jq > ./timestamps.compile.json
+
+                  cat ./timestamps.compile.json
+
+            - name: Push timestamps
+              working-directory: main
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -eu
+
+                  git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+
+                  git config --global user.name "GitHub"
+                  git config --global user.email "noreply@github.com"
+
+                  git add .verify-helper/timestamps.compile.json
+
+                  if (git diff --cached --shortstat | grep '[0-9]'); then
+                    git commit -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+                    git pull --rebase
+                    git push origin HEAD:${GITHUB_REF}
+                  else
+                    echo "No timestamps updated."
                   fi
 
     gen-cases:
@@ -584,6 +642,7 @@ jobs:
                   sparse-checkout: |
                       .verify-helper
                       verify
+                  #token: Never specify GH_PAT to avoid infinite loop
 
             - name: Load timestamps
               uses: actions/download-artifact@v4
