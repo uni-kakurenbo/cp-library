@@ -13,6 +13,8 @@ EXIT_STATUS=0
 # shellcheck source=/dev/null
 source ./.github/workflows/internal/options.env
 
+DEFAULT_DATE="$(date -d "@0" '+%Y-%m-%d %H:%M:%S %z')"
+
 set +e
 {
     echo "${TARGET} (${PROBLEM})"
@@ -42,18 +44,20 @@ set +e
     echo -ne "- ${RICH_TARGET} (${RICH_PROBLEM})\r" >../summary.txt
     echo "  - Testcase hash: \`${PROBLEM_HASH}\`" >>../summary.txt
 
-    DATE="${LAST_MODIFIED_AT}"
+    DATE=""
 
     if [ ${EXIT_STATUS} -eq 0 ]; then
+        DATE="$(date -d "@${LAST_MODIFIED_AT}" '+%Y-%m-%d %H:%M:%S %z')"
+
         cat ../summary.txt >>../passed-tests.txt
     else
-        DATE="$(jq -r --arg target "${TARGET}" '.[$target] // "@0"' '../timestamps.json')"
+        DATE="$(jq -r --arg target "${TARGET}" --arg default "${DEFAULT_DATE}" '.[$target] // $default' '../timestamps.json')"
 
         cat ../summary.txt >>../failed-tests.txt
     fi
     
-    jq -n --arg target "${TARGET}" --arg prev "$(date -d "@${DATE}" '+%Y-%m-%d %H:%M:%S %z')" \
-        '.[$target] = $prev' >>'../timestamps.json'
+    jq -n --arg target "${TARGET}" --arg date  \
+        '.[$target] = $date' >>'../timestamps.json'
 
     echo
 } &>".log-${PID}.txt"
