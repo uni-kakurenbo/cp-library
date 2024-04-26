@@ -44,10 +44,13 @@ set +e
 
     if [ ${EXIT_STATUS} -eq 0 ]; then
         jq -n --arg target "${TARGET}" --arg date "$(date -d "@${LAST_MODIFIED_AT}" '+%Y-%m-%d %H:%M:%S %z')" \
-            '.[$target] = $date' >>"../timestamps.json"
+            '.[$target] = $date' >>'../timestamps.json'
 
         cat ../summary.txt >>../passed-tests.txt
     else
+        prev="$(jq --arg target "${TARGET}" '.[$target] // "@0"' '../timestamps.json')"
+        jq -n --arg target "${TARGET}" --arg prev "${prev}" '.[$target] = $prev' >>'../timestamps.json'
+
         cat ../summary.txt >>../failed-tests.txt
     fi
 
