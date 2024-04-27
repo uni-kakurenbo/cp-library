@@ -13,7 +13,7 @@ EXIT_STATUS=0
 # shellcheck source=/dev/null
 source ./.github/workflows/internal/options.env
 
-DEFAULT_DATE="$(date -d "@0" '+%Y-%m-%d %H:%M:%S %z')"
+DEFAULT_DATE="$(date -d '@0' '+%Y-%m-%d %H:%M:%S %z')"
 
 set +e
 {
