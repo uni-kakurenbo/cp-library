@@ -8,6 +8,7 @@
 #include "snippet/iterations.hpp"
 
 #include "internal/dev_env.hpp"
+#include "internal/concepts.hpp"
 
 #include "structure/grid.hpp"
 #include "adaptor/valarray.hpp"
@@ -20,180 +21,267 @@ namespace uni {
 
 namespace internal {
 
-namespace matrix_impl {
 
-template<class T> struct interface : virtual grid_impl::interface<T> {
-    // virtual size_t rows() const noexcept(NO_EXCEPT)= 0;
-    // virtual size_t cols() const noexcept(NO_EXCEPT)= 0;
+template<class Base>
+struct matrix_core : Base {
+    using Base::Base;
 
-    // virtual size_t square() const noexcept(NO_EXCEPT)= 0;
-};
+    using value_type = typename Base::value_type;
+    using size_type = typename Base::size_type;
 
-}
+    using vector_type = typename Base::row_type;
 
-template<class T, class base>
-struct matrix_core : base, virtual matrix_impl::interface<T> {
-    using base::base;
-    using size_type = base::size_type;
-
-    static inline matrix_core identity(const size_t n, const T &&val = { 1 }) noexcept(NO_EXCEPT) {
+    static constexpr auto identity(const size_type n, const value_type& val = 1) noexcept(NO_EXCEPT) {
         matrix_core res(n);
         REP(i, n) res(i, i) = val;
         return res;
     }
 
-    inline size_t rows() const noexcept(NO_EXCEPT) /*override*/ { return this->height(); }
-    inline size_t cols() const noexcept(NO_EXCEPT) /*override*/ { return this->width(); }
+    inline constexpr bool square() const noexcept(NO_EXCEPT) { return this->height() == this->width(); }
 
-    inline size_t square() const noexcept(NO_EXCEPT) /*override*/ { return this->rows() == this->cols(); }
 
-    template<class U> inline matrix_core& operator+=(const U rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs;
+    constexpr auto& operator+=(const value_type& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) += rhs;
         return *this;
     }
-    template<class ...U> inline matrix_core& operator+=(const matrix_core<U...> rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) += rhs(i, j);
+
+    template<class... Ts>
+    constexpr auto& operator+=(const matrix_core<Ts...>& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) += rhs(i, j);
         return *this;
     }
-    template<class U> inline matrix_core operator+(const U rhs) const noexcept(NO_EXCEPT) {
+
+
+    template<weakly_addition_assignable<matrix_core> T>
+    inline constexpr auto operator+(const T& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) += rhs;
     }
 
-    template<class U> inline matrix_core& operator-=(const U rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs;
+
+    constexpr auto& operator-=(const value_type& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) -= rhs;
         return *this;
     }
-    template<class ...U> inline matrix_core& operator-=(const matrix_core<U...> rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) -= rhs(i, j);
+
+    template<class... Ts>
+    constexpr auto& operator-=(const matrix_core<Ts...>& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) -= rhs(i, j);
         return *this;
     }
-    template<class U> inline matrix_core operator-(const U rhs) const noexcept(NO_EXCEPT) {
+
+
+    template<weakly_subtraction_assignable<matrix_core> T>
+    inline constexpr auto operator-(const T& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) -= rhs;
     }
 
-    template<class ...U> inline matrix_core operator*(const matrix_core<U...> rhs) noexcept(NO_EXCEPT) {
-        assert(this->cols() == rhs.rows());
-        matrix_core res(this->rows(), rhs.cols());
-        REP(i, this->rows()) REP(j, rhs.cols()) REP(k, this->cols()) {
+
+    template<class... Ts>
+    constexpr auto operator*(const matrix_core<Ts...>& rhs) noexcept(NO_EXCEPT) {
+        assert(this->width() == rhs.height());
+        matrix_core res(this->height(), rhs.width());
+        REP(i, this->height()) REP(j, rhs.width()) REP(k, this->width()) {
             res(i, j) += (*this)(i, k) * rhs(k, j);
         }
         return res;
     }
-    template<class U> inline matrix_core operator*(const U rhs) noexcept(NO_EXCEPT) {
-        matrix_core res(*this);
-        REP(i, res.rows()) REP(j, res.cols()) res(i, j) *= rhs;
+
+    template<std::ranges::input_range Vector>
+    constexpr auto operator*(const Vector& rhs) noexcept(NO_EXCEPT) {
+        assert(this->width() == std::ranges::ssize(rhs));
+        Vector res(this->height());
+        REP(i, this->height()) REP(j, this->width()) res[i] += this->operator()(i, j) * rhs[j];
         return res;
     }
-    template<class U> inline matrix_core& operator*=(const U rhs) noexcept(NO_EXCEPT) {
+
+    template<std::ranges::input_range Vector>
+    friend constexpr auto operator*(const Vector& lhs, const matrix_core& rhs) noexcept(NO_EXCEPT) {
+        assert(std::ranges::ssize(lhs) == rhs.height());
+        Vector res(rhs.width());
+        REP(i, rhs.height()) REP(j, rhs.width()) res[j] += lhs[j] * rhs[i][j];
+        return res;
+    }
+
+    constexpr auto operator*(const value_type& rhs) noexcept(NO_EXCEPT) {
+        auto res = *this;
+        REP(i, res.height()) REP(j, res.width()) res(i, j) *= rhs;
+        return res;
+    }
+
+
+    template<multipliable<matrix_core> T>
+    constexpr auto& operator*=(const T& rhs) noexcept(NO_EXCEPT) {
         matrix_core res = *this * rhs;
         this->assign(res);
         return *this;
     }
 
-    template<class U> inline matrix_core& operator/=(const U rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) /= rhs;
+    constexpr auto& operator/=(const value_type& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) /= rhs;
         return *this;
     }
-    template<class U> inline matrix_core operator/(const U rhs) const noexcept(NO_EXCEPT) {
+
+    template<weakly_division_assignable<matrix_core> T>
+    inline constexpr auto operator/(const T& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) /= rhs;
     }
 
-    template<class U> inline matrix_core& operator%=(const U rhs) noexcept(NO_EXCEPT) {
-        REP(i, this->rows()) REP(j, this->cols()) (*this)(i, j) %= rhs;
+    constexpr auto& operator%=(const value_type& rhs) noexcept(NO_EXCEPT) {
+        REP(i, this->height()) REP(j, this->width()) this->operator()(i, j) %= rhs;
         return *this;
     }
-    template<class U> inline matrix_core operator%(const U rhs) const noexcept(NO_EXCEPT) {
+
+    template<weakly_remainder_assignable<matrix_core> T>
+    inline constexpr auto operator%(const T& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) %= rhs;
     }
 
-    inline matrix_core pow(ll p) noexcept(NO_EXCEPT) {
-        assert(this->square());
-        matrix_core x = *this, res = matrix_core::Identity(this->rows());
-        while(p > 0) {
-            if(p & 1) res *= x;
-            x *= x;
-            p >>= 1;
+
+    constexpr auto find_pivot(const size_type rank, const size_type col) const noexcept(NO_EXCEPT) {
+        size_type pivot = -1;
+
+        REP(i, rank, this->height()) {
+            if(this->operator()(i, col) != 0) {
+                pivot = i;
+                break;
+            }
         }
-        return res;
+
+        return pivot;
     }
 
-    inline auto to_upper_triangular() noexcept(NO_EXCEPT)
-        requires modint_family<T>
+    template<bool DIAGONALIZE = false>
+    constexpr void sweep(const size_type rank, const size_type col, const size_type pivot) noexcept(NO_EXCEPT)
+        requires modint_family<value_type>
     {
-        const size_type m = this->rows(), n = this->cols();
+        std::swap(this->operator[](pivot), this->operator[](rank));
 
+        if constexpr(DIAGONALIZE) {
+            const auto inv = this->operator()(rank, col).inv();
+            REP(j, this->width()) this->operator()(rank, j) *= inv;
+        }
+
+        REP(i, (DIAGONALIZE ? 0 : rank + 1), this->height()) {
+            if(i != rank && this->operator()(i, col) != 0) {
+                const auto fac = this->operator()(i, col);
+                REP(j, this->width()) this->operator()(i, j) -= this->operator()(rank, j) * fac;
+            }
+        }
+    }
+
+
+    template<size_type IGNORE_WIDTH = 0, bool DIAGONALIZE = false>
+    inline constexpr auto transform_to_upper_triangular() noexcept(NO_EXCEPT)
+        requires modint_family<value_type>
+    {
         size_type rank = 0;
 
-        REP(j, n) {
-            size_type pivot = -1;
-
-            REP(i, rank, m) {
-                if(this->operator[](i)[j] != 0) {
-                    pivot = i;
-                    break;
-                }
-            }
-
+        REP(j, this->width() - IGNORE_WIDTH) {
+            const auto pivot = this->find_pivot(rank, j);
             if(pivot == -1) continue;
-
-            std::swap(this->operator[](pivot), this->operator[](rank));
-
-            auto inv = this->operator[](rank)[j].inv();
-
-            REP(k, n) {
-                this->operator[](rank)[k] = this->operator[](rank)[k] * inv;
-            }
-
-            REP(i, m) {
-                if(i != rank && this->operator[](i)[j] != 0) {
-                    const auto fac = this->operator[](i)[j];
-                    REP(k, n) this->operator[](i)[k] -= this->operator[](rank)[k] * fac;
-                }
-            }
-
-            ++rank;
+            this->template sweep<DIAGONALIZE>(rank++, j, pivot);
         }
 
         return rank;
     }
 
-
-    inline auto to_lower_triangular() noexcept(NO_EXCEPT)
-        requires modint_family<T>
+    template<size_type IGNORE_WIDTH>
+    inline constexpr auto transform_to_lower_triangular() noexcept(NO_EXCEPT)
+        requires modint_family<value_type>
     {
-        auto rank = this->to_upper_triangular();
+        const auto rank = this->template transform_to_upper_triangular<IGNORE_WIDTH>();
         this->transpose();
         return rank;
     }
 
 
-    T determinant() const noexcept(NO_EXCEPT)
-        requires modint_family<T>
-    {
-        assert(this->rows() == this->cols());
+    template<std::ranges::input_range Vector, class Res = void>
+    constexpr std::optional<size_type> solve_linear_equation(const Vector& b, Res *const res = nullptr) const noexcept(NO_EXCEPT) {
+        assert(this->height() == std::ranges::ssize(b));
 
-        auto a = *this;
+        matrix_core mat(this->height(), this->width() + 1);
 
-        T det = T::one;
+        REP(i, this->height()) {
+            REP(j, this->width()) mat(i, j) = this->operator()(i, j);
+            mat(i, this->width()) = b[i];
+        }
 
-        REP(j, a.rows()) {
-            REP(i, j, a.rows()) {
-                if(a[i][j] == 0) continue;
-                if(i != j) std::swap(a[i], a[j]), det = -det;
-                break;
-            }
+        const auto rank = mat.transform_to_upper_triangular<1, true>();
+        debug(mat);
 
-            if(a[j][j] == 0) return 0;
-            REP(i, j+1, a.rows()) {
-                while(a[i][j] != 0) {
-                    const T c = -to_signed(a[j][j].val() / a[i][j].val());
-                    REP(k, j, a.rows()) a[j][k] += a[i][k] * c;
-                    std::swap(a[i], a[j]), det = -det;
+        REP(i, rank, this->height()) if(mat(i, this->width()) != 0) return {};
+
+        if constexpr(!std::same_as<Res, void>) {
+            static_assert(std::ranges::input_range<Res>);
+
+            constexpr bool MATRIX = derived_from_template<Res, matrix_core>;
+
+            if(res) {
+                if constexpr(MATRIX) {
+                    res->assign(1, this->width());
+                }
+                else {
+                    res->assign(this->width());
+                }
+
+                std::vector<size_type> pivots(MATRIX ? this->width() : 0, -1);
+
+                for(size_type i=0, j=0; i < rank; ++i) {
+                    while(mat(i, j) == 0) ++j;
+
+                    if constexpr(MATRIX) {
+                        res->operator[](0)[j] = mat(i, this->width());
+                        pivots[j] = i;
+                    }
+                    else {
+                        res->operator[](j) = mat(i, this->width());
+                    }
+                }
+
+                if constexpr(MATRIX) {
+                    REP(j, this->width()) {
+                        if(pivots[j] != -1) continue;
+
+                        typename Res::vector_type x(this->width());
+                        x[j] = 1;
+                        REP(k, j) if(pivots[k] != -1) x[k] = -mat(pivots[k], j);
+                        res->push_back(x);
+                    }
+
+                    res->resize(res->size(), res->width());
                 }
             }
         }
 
-        REP(i, a.rows()) det *= a[i][i];
+        return rank;
+    }
+
+    value_type determinant() const noexcept(NO_EXCEPT)
+        requires modint_family<value_type>
+    {
+        assert(this->square());
+
+        auto mat = *this;
+
+        value_type det = value_type::one;
+
+        REP(j, this->height()) {
+            const auto pivot = mat.find_pivot(j, j);
+            if(j < pivot) std::swap(mat[pivot], mat[j]), det = -det;
+
+            if(mat(j, j) == 0) return 0;
+
+            REP(i, j + 1, this->height()) {
+                while(mat(i, j) != 0) {
+                    const auto c = static_cast<value_type>(-to_signed(mat(j, j).val() / mat(i, j).val()));
+                    REP(k, j, this->height()) mat(j, k) += mat(i, k) * c;
+                    std::swap(mat[i], mat[j]), det = -det;
+                }
+            }
+        }
+
+        REP(i, mat.height()) det *= mat(i, i);
+
         return det;
     }
 };
@@ -202,17 +290,17 @@ struct matrix_core : base, virtual matrix_impl::interface<T> {
 } // namespace internal
 
 
-template<class T, class base = grid<T>>
-using matrix = internal::matrix_core<T, base>;
+template<class T, class Base = grid<T>>
+using matrix = internal::matrix_core<Base>;
 
 template<class T>
-using valmatrix = internal::matrix_core<T, valgrid<T>>;
+using valmatrix = internal::matrix_core<valgrid<T>>;
 
 template<class T>
-using unfolded_matrix = internal::matrix_core<T, unfolded_grid<T>>;
+using unfolded_matrix = internal::matrix_core<unfolded_grid<T>>;
 
 template<class T>
-using unfolded_valmatrix = internal::matrix_core<T, unfolded_valgrid<T>>;
+using unfolded_valmatrix = internal::matrix_core<unfolded_valgrid<T>>;
 
 
 } // namespace uni
