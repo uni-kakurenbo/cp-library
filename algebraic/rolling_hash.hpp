@@ -50,8 +50,8 @@ struct rolling_hash_impl {
     rolling_hash_impl() noexcept = default;
 
 
-    inline value_type power() const noexcept(NO_EXCEPT) { return this->_power; }
-    inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; }
+    inline auto power() const noexcept(NO_EXCEPT) { return this->_power; }
+    inline auto val() const noexcept(NO_EXCEPT) { return this->_value; }
 
 
     friend inline bool operator==(const rolling_hash_impl& lhs, const rolling_hash_impl& rhs) noexcept(NO_EXCEPT) {
@@ -77,13 +77,13 @@ struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<roll
     template<class U>
     rolling_hash(const U& v) : base<rolling_hash_impl<T, BASE>>({ std::hash<U>{}(v) }) {}
 
-    friend inline rolling_hash operator+(const rolling_hash& lhs, const rolling_hash& rhs) noexcept(NO_EXCEPT) {
+    friend inline auto operator+(const rolling_hash& lhs, const rolling_hash& rhs) noexcept(NO_EXCEPT) {
         const auto power = lhs->power() * rhs->power();
         if constexpr(REVERSE) return rolling_hash({ lhs->val() * rhs->power() + rhs->val(), power });
         return rolling_hash({ lhs->val() + rhs->val() * lhs->power(), power });
     }
 
-    inline rolling_hash operator-() noexcept(NO_EXCEPT) {
+    inline auto operator-() noexcept(NO_EXCEPT) {
         const auto power_inv = this->val().power().inv();
         return rolling_hash({ -this->val().val() * power_inv, power_inv });
     }

@@ -160,6 +160,19 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
     }
 
 
+    void add(node_pointer& tree, const size_type pos, const operand& val) noexcept(NO_EXCEPT) {
+        node_pointer t0, t1, t2;
+
+        this->split(tree, pos, t0, t1);
+        this->split(t1, 1, t1, t2);
+
+        if(t1 == node_handler::nil) t1 = this->create(data_type{}, 1);
+        t1->data.val = val + t1->data.val;
+
+        this->merge(tree, t0, t1, t2);
+    }
+
+
     void fill(node_pointer& tree, const size_type l, const size_type r, const operand& val) noexcept(NO_EXCEPT) {
         assert(l <= r);
         if(l == r) return;
@@ -198,7 +211,6 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
 
         this->merge(tree, t0, t1, t2);
     }
-
 
     void reverse(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(l <= r);
@@ -404,12 +416,12 @@ struct dynamic_sequence
       : dynamic_sequence(values, allocator)
     {}
 
-    inline size_type offset() const noexcept(NO_EXCEPT) { return this->_offset; }
+    inline auto offset() const noexcept(NO_EXCEPT) { return this->_offset; }
 
-    inline node_pointer& root() noexcept(NO_EXCEPT) { return this->_root; }
-    inline const node_pointer& root() const noexcept(NO_EXCEPT) { return this->_root; }
+    inline auto& root() noexcept(NO_EXCEPT) { return this->_root; }
+    inline const auto& root() const noexcept(NO_EXCEPT) { return this->_root; }
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_root->size; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_root->size; }
 
     inline bool empty() const noexcept(NO_EXCEPT) { return this->size() == 0; }
 
@@ -516,7 +528,7 @@ struct dynamic_sequence
         return *this;
     }
 
-    inline value_type fold() noexcept(NO_EXCEPT) {
+    inline auto fold() noexcept(NO_EXCEPT) {
         return this->_impl.val(this->_root);
     }
 
@@ -526,11 +538,11 @@ struct dynamic_sequence
         return *this;
     }
 
-    inline value_type front() noexcept(NO_EXCEPT) {
+    inline auto front() noexcept(NO_EXCEPT) {
         return this->_impl.fold(this->_root, 0, 1);
     }
 
-    inline value_type back() noexcept(NO_EXCEPT) {
+    inline auto back() noexcept(NO_EXCEPT) {
         return this->_impl.fold(this->_root, this->size() - 1, this->size());
     }
 
@@ -611,9 +623,15 @@ struct dynamic_sequence
         return this->_impl.pop(this->_root, pos, count);
     }
 
-    inline value_type get(size_type pos) noexcept(NO_EXCEPT) {
+    inline auto get(size_type pos) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         return this->_impl.get(this->_root, pos);
+    }
+
+    inline auto& add(size_type pos, const operation& val) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        this->_impl.add(this->_root, pos, val);
+        return *this;
     }
 
     inline auto& fill(size_type l, size_type r, const value_type& val) noexcept(NO_EXCEPT) {
@@ -622,7 +640,7 @@ struct dynamic_sequence
         return *this;
     }
 
-    inline operand fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
+    inline auto fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         this->_normalize_index(l, r);
         return this->_impl.fold(this->_root, l, r);
     }
@@ -698,14 +716,14 @@ struct dynamic_sequence
     // Find the min / max k in [l, r) that satisfies (this[k] + x) != x.
     // If no such k is found, return -1.
     template<bool LEFT = true>
-    inline size_type find(const size_type l, const size_type r, const value_type& val) noexcept(NO_EXCEPT) {
+    inline auto find(const size_type l, const size_type r, const value_type& val) noexcept(NO_EXCEPT) {
         return this->template find<LEFT>(l, r - 1, r);
     }
 
     // Find the min / max k in whole that satisfies (this[k] + x) != x.
     // If no such k is found, return -1.
     template<bool LEFT = true>
-    inline size_type find(const value_type& val) noexcept(NO_EXCEPT) {
+    inline auto find(const value_type& val) noexcept(NO_EXCEPT) {
         return this->find<LEFT>(0, this->size(), val);
     }
 
@@ -716,25 +734,20 @@ struct dynamic_sequence
         {}
 
         operator value_type() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        value_type val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        auto val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
 
-        inline point_reference& apply(const operator_type& val) noexcept(NO_EXCEPT) {
+        inline auto& operator+=(const operator_type& val) noexcept(NO_EXCEPT) {
+            this->_super->add(this->_pos, val);
+            return *this;
+        }
+
+        inline auto& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, val);
             return *this;
         }
-        inline point_reference& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, val);
-            return *this;
-        }
 
-
-        inline point_reference& set(const value_type& val) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, val);
-            return *this;
-        }
-
-        inline point_reference& operator=(const value_type& val) noexcept(NO_EXCEPT) {
+        inline auto& operator=(const value_type& val) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, val);
             return *this;
         }
@@ -750,24 +763,16 @@ struct dynamic_sequence
             return this->_super->clone(this->_begin, this->_end);
         }
 
-        inline value_type fold() noexcept(NO_EXCEPT) {
+        inline auto fold() noexcept(NO_EXCEPT) {
             return this->_super->fold(this->_begin, this->_end);
         }
 
-        inline range_reference& fill(const value_type& val) noexcept(NO_EXCEPT) {
-            this->_super->fill(this->_begin, this->_end, val);
-            return *this;
-        }
-        inline range_reference& operator=(const value_type& val) noexcept(NO_EXCEPT) {
+        inline auto& operator=(const value_type& val) noexcept(NO_EXCEPT) {
             this->_super->fill(this->_begin, this->_end, val);
             return *this;
         }
 
-        inline range_reference& apply(const operator_type& val) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_begin, this->_end, val);
-            return *this;
-        }
-        inline range_reference& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
+        inline auto& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, val);
             return *this;
         }
@@ -775,19 +780,14 @@ struct dynamic_sequence
         // Find the min / max k in [l, r) that satisfies (this[k] + x) != x.
         // If no such k is found, return -1.
         template<bool LEFT = true>
-        inline size_type find(const value_type& val) noexcept(NO_EXCEPT) {
+        inline auto find(const value_type& val) noexcept(NO_EXCEPT) {
             return this->_super->template find<LEFT>(this->_begin, this->_end, val);
         }
     };
 
 
-    inline point_reference operator[](const size_type pos) noexcept(NO_EXCEPT) {
-        return point_reference(this, pos);
-    }
-
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        return range_reference(this, l, r);
-    }
+    inline auto operator[](const size_type pos) noexcept(NO_EXCEPT) { return point_reference(this, pos); }
+    inline auto operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
 
     struct iterator;
@@ -800,11 +800,11 @@ struct dynamic_sequence
         iterator() noexcept = default;
         iterator(dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
 
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 
 
     using dumper::dump_rich;

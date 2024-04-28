@@ -59,20 +59,20 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     value_type _val = 0;
 
 
-    static constexpr modint _raw(const value_type v) noexcept(NO_EXCEPT) {
+    static constexpr auto _raw(const value_type v) noexcept(NO_EXCEPT) {
         modint res;
         res._val = v;
         return res;
     }
 
 
-    static constexpr modint _one() noexcept(NO_EXCEPT)
+    static constexpr auto _one() noexcept(NO_EXCEPT)
         requires internal::has_static_one<typename modint::context::reductor>
     {
         return modint::_raw(modint::context::reduction.one);
     }
 
-    static constexpr modint _one() noexcept(NO_EXCEPT)
+    static constexpr auto _one() noexcept(NO_EXCEPT)
         requires (!internal::has_static_one<typename modint::context::reductor>)
     {
         return modint::_raw(1);
@@ -91,9 +91,9 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     }
 
 
-    static constexpr value_type mod() noexcept(NO_EXCEPT) { return modint::context::reduction.mod(); }
+    static constexpr auto mod() noexcept(NO_EXCEPT) { return modint::context::reduction.mod(); }
 
-    static constexpr modint raw(const value_type v) noexcept(NO_EXCEPT)
+    static constexpr auto raw(const value_type v) noexcept(NO_EXCEPT)
     {
         modint res;
         res._val = modint::context::reduction.convert_raw(v);
@@ -107,25 +107,25 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     constexpr modint(const T v) noexcept(NO_EXCEPT) : _val(modint::context::reduction.convert(v)) {}
 
 
-    inline constexpr value_type val() const noexcept(NO_EXCEPT) {
+    inline constexpr auto val() const noexcept(NO_EXCEPT) {
         return modint::context::reduction.revert(this->_val);
     }
 
     inline constexpr explicit operator value_type() const noexcept(NO_EXCEPT) { return this->_val; }
 
 
-    inline constexpr modint& operator+=(const modint& rhs) noexcept(NO_EXCEPT) {
+    inline constexpr auto& operator+=(const modint& rhs) noexcept(NO_EXCEPT) {
         this->_val = modint::context::reduction.add(this->_val, rhs._val);
         return *this;
     }
 
-    inline constexpr modint& operator-=(const modint& rhs) noexcept(NO_EXCEPT) {
+    inline constexpr auto& operator-=(const modint& rhs) noexcept(NO_EXCEPT) {
         this->_val = modint::context::reduction.subtract(this->_val, rhs._val);
         return *this;
     }
 
 
-    inline constexpr modint& operator*=(const modint& rhs) noexcept(NO_EXCEPT) {
+    inline constexpr auto& operator*=(const modint& rhs) noexcept(NO_EXCEPT) {
         this->_val = modint::context::reduction.multiply(this->_val, rhs._val);
         return *this;
     }
@@ -133,12 +133,12 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     inline constexpr auto& operator/=(const modint& rhs) noexcept(NO_EXCEPT) { return *this *= rhs.inv(); }
 
 
-    constexpr modint pow(const i64 n) const noexcept(NO_EXCEPT) {
+    constexpr auto pow(const i64 n) const noexcept(NO_EXCEPT) {
         return modint::_raw(modint::context::reduction.pow(this->_val, n));
     }
 
 
-    constexpr modint inv() const noexcept(NO_EXCEPT) {
+    constexpr auto inv() const noexcept(NO_EXCEPT) {
         using signed_value_type = std::make_signed_t<value_type>;
 
         signed_value_type x = this->val(), y = modint::mod(), u = 1, v = 0;
@@ -165,19 +165,19 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     }
 
 
-    inline constexpr modint& operator++() noexcept(NO_EXCEPT) { return *this += modint::one; }
-    inline constexpr modint& operator--() noexcept(NO_EXCEPT) { return *this -= modint::one; }
+    inline constexpr auto& operator++() noexcept(NO_EXCEPT) { return *this += modint::one; }
+    inline constexpr auto& operator--() noexcept(NO_EXCEPT) { return *this -= modint::one; }
 
-    inline constexpr modint operator++(int) noexcept(NO_EXCEPT) { const modint res = *this; return ++*this, res; }
-    inline constexpr modint operator--(int) noexcept(NO_EXCEPT) { const modint res = *this; return --*this, res; }
+    inline constexpr auto operator++(int) noexcept(NO_EXCEPT) { const modint res = *this; return ++*this, res; }
+    inline constexpr auto operator--(int) noexcept(NO_EXCEPT) { const modint res = *this; return --*this, res; }
 
     inline constexpr auto operator+() const noexcept(NO_EXCEPT) { return *this; }
     inline constexpr auto operator-() const noexcept(NO_EXCEPT) { return modint::zero - *this; }
 
-    friend inline constexpr modint operator+(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
-    friend inline constexpr modint operator-(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
-    friend inline constexpr modint operator*(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs *= rhs; }
-    friend inline constexpr modint operator/(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs /= rhs; }
+    friend inline constexpr auto operator+(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs += rhs; }
+    friend inline constexpr auto operator-(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs -= rhs; }
+    friend inline constexpr auto operator*(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs *= rhs; }
+    friend inline constexpr auto operator/(modint lhs, const modint& rhs) noexcept(NO_EXCEPT) { return lhs /= rhs; }
 };
 
 

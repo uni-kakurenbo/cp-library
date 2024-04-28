@@ -403,7 +403,7 @@ struct dynamic_set<ActionOrValue, Context>
         return this->get(this->size() - 1);
     }
 
-    inline value_type fold() noexcept(NO_EXCEPT) {
+    inline auto fold() noexcept(NO_EXCEPT) {
         return this->_root->data.acc;
     }
 
@@ -464,8 +464,8 @@ struct dynamic_set<ActionOrValue, Context>
         inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator{ this, 0 }; }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator{ this, this->size() }; }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator{ this, 0 }; }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator{ this, this->size() }; }
 
 
     using dumper::dump_rich;

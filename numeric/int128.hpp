@@ -21,7 +21,7 @@ basic_istream<C,S>& operator>>(std::basic_istream<C,S>& in, uni::i128& v) noexce
     std::string str; in >> str;
     v = 0;
     bool negative = (str[0] == '-');
-    REP(d, std::next(str.begin(), negative), str.end()) {
+    REP(d, std::ranges::next(str.begin(), negative), str.end()) {
         assert(std::isdigit(*d));
         v = v * 10 + *d - '0';
     }

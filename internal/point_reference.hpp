@@ -25,6 +25,8 @@ struct point_reference {
     const size_type _pos;
 
     point_reference(Super *const super, const size_type pos) noexcept(NO_EXCEPT) : _super(super), _pos(pos) {}
+
+    inline auto index() noexcept(NO_EXCEPT) { return this->_pos; }
 };
 
 

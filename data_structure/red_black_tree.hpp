@@ -78,10 +78,10 @@ struct red_black_tree_impl {
   private:
     using derived = Derived;
 
-    inline derived* _derived() noexcept(NO_EXCEPT) {
+    inline auto* _derived() noexcept(NO_EXCEPT) {
         return static_cast<derived*>(this);
     }
-    inline const derived* _derived() const noexcept(NO_EXCEPT) {
+    inline const auto* _derived() const noexcept(NO_EXCEPT) {
         return static_cast<const derived*>(this);
     }
 

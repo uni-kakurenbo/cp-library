@@ -40,7 +40,7 @@ struct leveler {
     }
 
     template<class I>
-    leveler(I first, I last) noexcept(NO_EXCEPT) : _bases(first, last), _dim(std::distance(first, last)) {
+    leveler(I first, I last) noexcept(NO_EXCEPT) : _bases(first, last), _dim(std::ranges::distance(first, last)) {
         this->_max = this->_compute_max();
     }
 

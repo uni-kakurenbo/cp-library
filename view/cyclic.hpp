@@ -150,7 +150,7 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
     {
         --this->_index;
 
-        if(this->_current == this->_begin) this->_current = std::prev(this->_end);
+        if(this->_current == this->_begin) this->_current = std::ranges::prev(this->_end);
         else --this->_current;
 
         return *this;

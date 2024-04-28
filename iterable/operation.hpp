@@ -137,7 +137,7 @@ template<class R, std::input_iterator I, std::sentinel_for<I> S, class D>
 auto split(I first, S last, const D& delim = ' ') noexcept(NO_EXCEPT) {
     R res;
 
-    for(auto itr=first, fnd=first; ; itr=std::next(fnd)) {
+    for(auto itr=first, fnd=first; ; itr=std::ranges::next(fnd)) {
         fnd = std::find(itr, last, delim);
         res.emplace_back(itr, fnd);
         if(fnd == last) break;

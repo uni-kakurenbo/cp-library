@@ -47,7 +47,7 @@ struct base {
     base(Args&&... args) noexcept(NO_EXCEPT) : _value(std::forward<Args>(args)...) {}
 
     inline explicit operator value_type() const noexcept(NO_EXCEPT) { return this->_value; }
-    inline value_type val() const noexcept(NO_EXCEPT) { return this->_value; };
+    inline auto val() const noexcept(NO_EXCEPT) { return this->_value; };
 
     inline const value_type* operator->() const noexcept(NO_EXCEPT) { return &this->_value; };
     inline value_type* operator->() noexcept(NO_EXCEPT) { return &this->_value; };

@@ -275,7 +275,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
     using node_pointer = typename core::node_pointer;
 
   private:
-    inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
+    inline auto _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
         return p < 0 ? this->_n + p : p;
     }
 
@@ -316,9 +316,9 @@ struct dynamic_segment_tree<Action, NodeHandler>
     {}
 
 
-    auto clone() const noexcept(NO_EXCEPT) { return *this; }
+    inline auto clone() const noexcept(NO_EXCEPT) { return *this; }
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_n; }
 
 
     inline auto& clear() noexcept(NO_EXCEPT) {
@@ -350,7 +350,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
     }
 
 
-    inline value_type get(const size_type pos) const noexcept(NO_EXCEPT) {
+    inline auto get(const size_type pos) const noexcept(NO_EXCEPT) {
         assert(pos < this->_n);
         return this->core::get(this->_root, 0, this->_n, pos);
     }
@@ -363,12 +363,12 @@ struct dynamic_segment_tree<Action, NodeHandler>
     }
 
 
-    inline value_type fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+    inline auto fold(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= this->_n);
         return this->core::fold(this->_root, 0, this->_n, l, r);
     }
 
-    inline value_type fold() const noexcept(NO_EXCEPT) { return this->_root->acc; }
+    inline auto fold() const noexcept(NO_EXCEPT) { return this->_root->acc; }
 
 
     inline auto& clear(const size_type l, const size_type r) noexcept(NO_EXCEPT) {
@@ -379,12 +379,12 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
 
     template<bool (*f)(value_type)>
-    inline size_type max_right(const size_type l) const noexcept(NO_EXCEPT) {
+    inline auto max_right(const size_type l) const noexcept(NO_EXCEPT) {
         return this->max_right(l, [](const value_type val) { return f(val); });
     }
 
     template<class F>
-    inline size_type max_right(const size_type l, const F &f) const noexcept(NO_EXCEPT) {
+    inline auto max_right(const size_type l, const F &f) const noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= this->_n);
         value_type acc;
         assert(f(acc));
@@ -394,12 +394,12 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
 
     template<bool (*f)(value_type)>
-    inline size_type min_left(const size_type r) const noexcept(NO_EXCEPT) {
+    inline auto min_left(const size_type r) const noexcept(NO_EXCEPT) {
         return this->min_left(r, [](const value_type val) noexcept(NO_EXCEPT) { return f(val); });
     }
 
     template<class F>
-    inline size_type min_left(const size_type r, const F &f) const noexcept(NO_EXCEPT) {
+    inline auto min_left(const size_type r, const F &f) const noexcept(NO_EXCEPT) {
         assert(0 <= r && r <= this->_n);
         value_type acc;
         assert(f(acc));
@@ -414,23 +414,15 @@ struct dynamic_segment_tree<Action, NodeHandler>
             assert(0 <= this->_pos && this->_pos < this->_super->_n);
         }
 
-        operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        value_type val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        inline operator value_type() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        inline auto val() const noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, v);
-            return *this;
-        }
-        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
+        inline auto& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& add(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->add(this->_pos, v);
-            return *this;
-        }
-        inline point_reference& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
+        inline auto& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->add(this->_pos, v);
             return *this;
         }
@@ -443,14 +435,14 @@ struct dynamic_segment_tree<Action, NodeHandler>
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->_n);
         }
 
-        inline value_type fold() noexcept(NO_EXCEPT) {
+        inline auto fold() noexcept(NO_EXCEPT) {
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
-    inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
+    inline auto operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
+    inline auto operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
 
     struct iterator : internal::container_iterator_interface<value_type, const dynamic_segment_tree, iterator> {
@@ -460,11 +452,11 @@ struct dynamic_segment_tree<Action, NodeHandler>
           : internal::container_iterator_interface<value_type, const dynamic_segment_tree, iterator>(ref, p)
         {}
 
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->_n); }
+    inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->_n); }
 
 
     using core::dump_rich;

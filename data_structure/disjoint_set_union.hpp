@@ -7,6 +7,9 @@
 #include <vector>
 
 
+#include "snippet/aliases.hpp"
+#include "snippet/iterations.hpp"
+
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
@@ -29,10 +32,10 @@ struct dsu {
     dsu() noexcept = default;
     explicit dsu(const size_type n) noexcept(NO_EXCEPT) : _n(n), _group_count(n), _parent_or_size(n, -1) {}
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type group_count() const noexcept(NO_EXCEPT) { return this->_group_count; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_n; }
+    inline auto group_count() const noexcept(NO_EXCEPT) { return this->_group_count; }
 
-    inline size_type merge(const size_type a, const size_type b) noexcept(NO_EXCEPT) {
+    inline auto merge(const size_type a, const size_type b) noexcept(NO_EXCEPT) {
         assert(0 <= a && a < _n);
         assert(0 <= b && b < _n);
 
@@ -57,35 +60,32 @@ struct dsu {
 
     inline size_type leader(const size_type a) noexcept(NO_EXCEPT) {
         assert(0 <= a && a < _n);
-        if (this->_parent_or_size[a] < 0) return a;
+        if(this->_parent_or_size[a] < 0) return a;
         return this->_parent_or_size[a] = this->leader(this->_parent_or_size[a]);
     }
 
-    inline size_type size(const size_type a) noexcept(NO_EXCEPT) {
+    inline auto size(const size_type a) noexcept(NO_EXCEPT) {
         assert(0 <= a && a < _n);
         return -this->_parent_or_size[this->leader(a)];
     }
 
-    inline vector<vector<size_type>> groups() noexcept(NO_EXCEPT) {
+    inline auto groups() noexcept(NO_EXCEPT) {
         vector<size_type> leader_buf(_n), group_size(_n);
-        for (size_type i = 0; i < _n; i++) {
+
+        REP(i, this->_n) {
             leader_buf[i] = this->leader(i);
             group_size[leader_buf[i]]++;
         }
 
         vector<vector<size_type>> result(_n);
-        for (size_type i = 0; i < _n; i++) {
-            result[i].reserve(group_size[i]);
-        }
+        REP(i, this->_n) result[i].reserve(group_size[i]);
 
-        for (size_type i = 0; i < _n; i++) {
-            result[leader_buf[i]].push_back(i);
-        }
+        REP(i, this->_n) result[leader_buf[i]].push_back(i);
 
-        result.erase(
-            remove_if(result.begin(), result.end(), [&](const auto& v) { return v.empty(); }),
-            result.end()
-        );
+        {
+            const auto range = std::ranges::remove_if(result, [&](const auto& v) { return v.empty(); });
+            result.erase(ALL(range));
+        }
 
         return result;
     }

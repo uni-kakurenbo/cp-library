@@ -92,8 +92,8 @@ struct regular_container : Base, container_base<typename Base::value_type::value
     {}
 
     regular_container(const std::initializer_list<row_type> init_list) noexcept(NO_EXCEPT) : Base(init_list) {
-        const size_type rows = std::distance(ALL(init_list));
-        const size_type first_cols = init_list.begin()->size();
+        const auto rows = std::ranges::ssize(init_list);
+        const auto first_cols = init_list.begin()->size();
 
         if constexpr (DEV_ENV) { ITR(init_row, init_list) assert((size_type)init_row.size() == first_cols); }
 

@@ -135,8 +135,8 @@ struct bit_vector {
         inline bool operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+    inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
 };
 
 

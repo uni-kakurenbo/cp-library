@@ -57,7 +57,7 @@ struct kth_element {
             return;
         }
 
-        const value_type kth = this->_small.top();
+        const auto kth = this->_small.top();
 
         if(Comparer{}(v, kth)) {
             this->_small.pop();
@@ -76,7 +76,7 @@ struct kth_element {
 
         if(this->_large.empty()) return;
 
-        const value_type v = this->_large.top();
+        const auto v = this->_large.top();
 
         this->_large.pop();
         this->_small.push(v);
