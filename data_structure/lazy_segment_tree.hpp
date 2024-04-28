@@ -348,7 +348,7 @@ struct lazy_segment_tree<Action> {
             this->_super->apply(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline point_reference& operator*=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -365,7 +365,7 @@ struct lazy_segment_tree<Action> {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
-        inline range_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline range_reference& operator*=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }

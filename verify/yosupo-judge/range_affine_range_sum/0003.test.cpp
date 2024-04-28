@@ -30,7 +30,7 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             int l, r, b, c; std::cin >> l >> r >> b >> c;
-            data(l, r) += { b, c };
+            data(l, r) *= { b, c };
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;

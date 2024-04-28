@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 
 #include "adaptor/internal/input.hpp"
 #include "adaptor/internal/output.hpp"

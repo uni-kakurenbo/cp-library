@@ -723,7 +723,7 @@ struct dynamic_sequence
             this->_super->apply(this->_pos, val);
             return *this;
         }
-        inline point_reference& operator+=(const operator_type& val) noexcept(NO_EXCEPT) {
+        inline point_reference& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, val);
             return *this;
         }
@@ -767,7 +767,7 @@ struct dynamic_sequence
             this->_super->apply(this->_begin, this->_end, val);
             return *this;
         }
-        inline range_reference& operator+=(const operator_type& val) noexcept(NO_EXCEPT) {
+        inline range_reference& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, val);
             return *this;
         }

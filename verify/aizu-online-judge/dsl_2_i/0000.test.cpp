@@ -26,7 +26,7 @@ signed main() {
         int t, l, r; input >> t >> l >> r; ++r;
         if(t == 0) {
             int x; input >> x;
-            data(l, r) += x;
+            data(l, r) *= x;
         }
         if(t == 1) {
             print(data(l, r).fold());

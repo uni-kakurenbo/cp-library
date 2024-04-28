@@ -77,7 +77,7 @@ void solve() {
     valarray<monoid<mint>> a(n, mint{1});
     REP(q) {
         int l, r, d; cin >> l >> r >> d; --l;
-        data(l, r) += d;
+        data(l, r) *= d;
         print(data.fold(0, n)->first);
         // debug(data(0, 2).fold());
     }

@@ -70,13 +70,13 @@ struct core {
     }
 
 
-    inline void apply(size_type p, const operand& x) noexcept(NO_EXCEPT) {
+    inline void add(size_type p, const operand& x) noexcept(NO_EXCEPT) {
         for(p++; p<=this->_n; p += p & -p) this->_data[p-1] = this->_data[p-1] + x;
     }
 
     inline void set(const size_type p, const operand& x) noexcept(NO_EXCEPT) {
         assert(this->get(p) == this->fold(p, p+1));
-        this->apply(p, x + -this->get(p));
+        this->add(p, x + -this->get(p));
     }
 
     inline operand fold(size_type r) const noexcept(NO_EXCEPT) {
@@ -215,12 +215,12 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
             return *this;
         }
 
-        inline point_reference& apply(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, v);
+        inline point_reference& add(const value_type& v) noexcept(NO_EXCEPT) {
+            this->_super->add(this->_pos, v);
             return *this;
         }
         inline point_reference& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, v);
+            this->_super->add(this->_pos, v);
             return *this;
         }
     };
@@ -240,9 +240,9 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
     };
 
 
-    inline auto& apply(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
+    inline auto& add(const size_type p, const value_type& x) noexcept(NO_EXCEPT) {
         assert(0 <= p && p < this->_impl.size());
-        this->_impl.apply(p, x);
+        this->_impl.add(p, x);
          return *this;
     }
 
