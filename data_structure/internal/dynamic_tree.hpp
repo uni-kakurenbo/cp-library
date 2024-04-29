@@ -112,8 +112,19 @@ struct basic_core
 
 
     inline void split(const node_pointer tree, const size_type l, const size_type r, node_pointer& t0, node_pointer& t1, node_pointer& t2) noexcept(NO_EXCEPT) {
-        this->split(tree, r, t1, t2);
-        this->split(t1, l, t0, t1);
+        // See: https://twitter.com/KakurenboUni/status/1784576244321018209
+        this->split(tree, l, t0, t1);
+        this->split(t1, r - l, t1, t2);
+    }
+
+    inline void split(
+        const node_pointer tree,
+        const size_type l, const size_type m, const size_type r,
+        node_pointer& t0, node_pointer& t1, node_pointer& t2, node_pointer& t3
+    ) noexcept(NO_EXCEPT) {
+        // See: https://twitter.com/KakurenboUni/status/1784576244321018209
+        this->split(tree, l, m, t0, t1, t2);
+        this->split(t2, r - m, t2, t3);
     }
 
     inline void merge(node_pointer& tree, node_pointer t0, const node_pointer t1, const node_pointer t2) noexcept(NO_EXCEPT) {
@@ -134,13 +145,13 @@ struct basic_core
 
 
     auto pop(node_pointer& tree, const size_type pos, const size_type count = 1) noexcept(NO_EXCEPT) {
-        assert(0 <= pos && 0 <= count);
+        assert(0 <= count);
+
         if(count == 0) return operand{};
 
         node_pointer t0, t1, t2;
 
-        this->split(tree, pos, t0, t1);
-        this->split(t1, count, t1, t2);
+        this->split(tree, pos, pos + count, t0, t1, t2);
 
         const auto res = this->val(t1);
 
@@ -177,7 +188,7 @@ struct basic_core
     void enumerate(node_pointer tree, I& itr) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
 
-        this->_push(tree);
+        this->base::push(tree);
 
         this->enumerate(tree->left, itr);
 
@@ -193,8 +204,8 @@ struct basic_core
         this->enumerate(tree->right, itr);
     }
 
-    operand fold(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
-        assert(0 <= l && l <= r && r <= tree->size);
+    operand fold(node_pointer& tree, size_type l, size_type r) noexcept(NO_EXCEPT) {
+        assert(l <= r);
         if(l == r) return operand{};
 
         node_pointer t0, t1, t2;

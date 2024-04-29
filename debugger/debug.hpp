@@ -473,13 +473,20 @@ std::vector<std::string> split(const std::string& str) {
 template<class Arg> void raw(std::nullptr_t, Arg&& arg) { *cdebug << std::forward<Arg>(arg) << std::flush; }
 template<class Arg> void raw(Arg&& arg) { *cdebug << dump(std::forward<Arg>(arg)) << std::flush; }
 
-void debug(std::vector<std::string>, size_t, int) { debug(nullptr, COLOR_INIT + "\n"); }
+void debug(const std::vector<std::string>, const size_t, const int, const std::string) { debug(nullptr, COLOR_INIT + "\n"); }
 
-std::map<int, int> count;
-template<typename Head, typename... Tail> void debug(std::vector<std::string> args, size_t idx, int line, Head&& H, Tail&&... T) {
+
+std::map<std::pair<std::string, int>, int> count;
+
+template<class Head, class... Tail>
+void debug(
+    const std::vector<std::string> args, const size_t idx,
+    const int line, const std::string path,
+    Head&& H, Tail&&... T
+) {
     if(idx == 0) {
-        debug(nullptr, COLOR_LINE + "#" + std::to_string(line) + " (" + std::to_string(count[line]) + ")" + COLOR_INIT);
-        count[line]++;
+        std::string file = path.substr(path.find_last_of("/") + 1);
+        debug(nullptr, COLOR_LINE + file + " #" + std::to_string(line) + " (" + std::to_string(count[{ file, line }]++) + ")" + COLOR_INIT);
     }
     debug(nullptr, "\n - ");
 
@@ -495,7 +502,7 @@ template<typename Head, typename... Tail> void debug(std::vector<std::string> ar
 
     debug(nullptr, " " + type_name);
 
-    debug(args, idx + 1, 0, std::forward<Tail>(T)...);
+    debug(args, idx + 1, 0, path, std::forward<Tail>(T)...);
 }
 
 

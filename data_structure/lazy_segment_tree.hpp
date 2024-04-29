@@ -340,7 +340,7 @@ struct lazy_segment_tree<Action> {
             return *this;
         }
 
-        inline auto& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline auto& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->add(this->_pos, v);
             return *this;
         }

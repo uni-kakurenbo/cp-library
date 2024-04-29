@@ -356,7 +356,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
     }
 
 
-    inline auto& add(const size_type pos, const value_type val) noexcept(NO_EXCEPT) {
+    inline auto& add(const size_type pos, const value_type&  val) noexcept(NO_EXCEPT) {
         assert(0 <= pos && pos < this->_n);
         this->set(pos, this->get(pos) + val);
         return *this;
@@ -380,7 +380,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
     template<bool (*f)(value_type)>
     inline auto max_right(const size_type l) const noexcept(NO_EXCEPT) {
-        return this->max_right(l, [](const value_type val) { return f(val); });
+        return this->max_right(l, [](const value_type&  val) { return f(val); });
     }
 
     template<class F>
@@ -395,7 +395,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
 
     template<bool (*f)(value_type)>
     inline auto min_left(const size_type r) const noexcept(NO_EXCEPT) {
-        return this->min_left(r, [](const value_type val) noexcept(NO_EXCEPT) { return f(val); });
+        return this->min_left(r, [](const value_type&  val) noexcept(NO_EXCEPT) { return f(val); });
     }
 
     template<class F>

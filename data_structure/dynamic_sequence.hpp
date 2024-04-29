@@ -101,14 +101,24 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
                 if constexpr(Context::LEAF_ONLY) {
                     if(tree->left != node_handler::nil) {
                         this->clone(tree->left);
-                        if(!tree->left->is_leaf()) tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
-                        tree->left->data.val = ActionOrValue::map(tree->left->data.val, ActionOrValue::fold(tree->data.lazy, tree->left->size));
+                        if(tree->left->is_leaf()) {
+                            tree->left->data.val = ActionOrValue::map(tree->left->data.val, tree->data.lazy);
+                        }
+                        else {
+                            tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
+                            tree->left->data.val = ActionOrValue::map(tree->left->data.val, ActionOrValue::fold(tree->data.lazy, tree->left->size));
+                        }
                     }
 
                     if(tree->right != node_handler::nil) {
                         this->clone(tree->right);
-                        if(!tree->right->is_leaf()) tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
-                        tree->right->data.val = ActionOrValue::map(tree->right->data.val, ActionOrValue::fold(tree->data.lazy, tree->right->size));
+                        if(tree->right->is_leaf()) {
+                            tree->right->data.val = ActionOrValue::map(tree->right->data.val, tree->data.lazy);
+                        }
+                        else {
+                            tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
+                            tree->right->data.val = ActionOrValue::map(tree->right->data.val, ActionOrValue::fold(tree->data.lazy, tree->right->size));
+                        }
                     }
 
                     tree->data.val = ActionOrValue::map(tree->data.val, tree->data.lazy);
@@ -133,7 +143,7 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
     }
 
 
-    inline void update(const node_pointer& tree) noexcept(NO_EXCEPT) {
+    inline void update(node_pointer& tree) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
         this->base::push(tree);
         this->base::pull(tree);
@@ -166,8 +176,9 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         this->split(tree, pos, t0, t1);
         this->split(t1, 1, t1, t2);
 
-        if(t1 == node_handler::nil) t1 = this->create(data_type{}, 1);
-        t1->data.val = val + t1->data.val;
+        const auto prev = this->val(t1);
+        this->dispose(t1);
+        t1 = this->create(data_type{ prev + val }, 1);
 
         this->merge(tree, t0, t1, t2);
     }
@@ -202,6 +213,8 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         assert(l <= r);
         if(l == r) return;
 
+        // debug(l, r, val);
+
         node_pointer t0, t1, t2;
 
         this->split(tree, l, r, t0, t1, t2);
@@ -230,19 +243,17 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         assert(l <= r);
 
         if(count < 0) return this->shift_right(tree, l, r, -count);
-        assert(l + count <= r);
 
         if(count == 0) return;
-        if(count == r - l) return this->erase(tree, l, r);
+        if(count >= r - l) return this->fill(tree, l, r, {});
 
         node_pointer t0, t1, t2, t3;
 
-        this->split(tree, l + count, r, t1, t2, t3);
-        this->split(t1, l, t0, t1);
+        this->split(tree, l, l + count, r, t0, t1, t2, t3);
 
         this->dispose(t1);
 
-        this->merge(t2, t2, this->create({}, r - l - count));
+        this->merge(t2, t2, this->create({}, count));
         this->merge(tree, t0, t2, t3);
     }
 
@@ -250,19 +261,17 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         assert(l <= r);
 
         if(count < 0) return this->shift_left(tree, l, r, -count);
-        assert(l + count <= r);
 
         if(count == 0) return;
-        if(count == r - l) return this->erase(tree, l, r);
+        if(count >= r - l) return this->fill(tree, l, r, {});
 
         node_pointer t0, t1, t2, t3;
 
-        this->split(tree, l, r - count, t1, t2, t3);
-        this->split(t1, l, t0, t1);
+        this->split(tree, l, r - count, r, t0, t1, t2, t3);
 
         this->dispose(t2);
 
-        this->merge(t1, this->create({}, r - l - count), t1);
+        this->merge(t1, this->create({}, count), t1);
         this->merge(tree, t0, t1, t3);
     }
 
@@ -272,8 +281,7 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
 
         node_pointer t0, t1, t2, t3;
 
-        this->split(tree, m, r, t1, t2, t3);
-        this->split(t1, l, t0, t1);
+        this->split(tree, l, m, r, t0, t1, t2, t3);
         this->merge(t2, t2, t1);
         this->merge(tree, t0, t2, t3);
     }
@@ -523,6 +531,23 @@ struct dynamic_sequence
     }
 
 
+    inline auto& expand(size_type l, size_type r) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l, r);
+        node_pointer t0, t1, t2;
+        this->_impl.split(this->_root, l, r, t0, t1, t2);
+        this->_impl.merge(this->_root, t0, t1, t2);
+        return *this;
+    }
+
+    inline auto& expand(size_type pos) noexcept(NO_EXCEPT) {
+        this->_normalize_index(pos);
+        node_pointer t0, t1;
+        this->_impl.split(this->_root, pos, t0, t1);
+        this->_impl.merge(this->_root, t0, t1);
+        return *this;
+    }
+
+
     inline auto& fill(const value_type& val) noexcept(NO_EXCEPT) {
         this->_impl.fill(this->_root, 0, this->size(), val);
         return *this;
@@ -559,7 +584,7 @@ struct dynamic_sequence
 
     inline auto& reverse() noexcept(NO_EXCEPT) {
         this->_root->data.rev ^= 1;
-        this->update(this->_root);
+        this->_impl.update(this->_root);
         return *this;
     }
 
@@ -590,7 +615,7 @@ struct dynamic_sequence
     // Same usage as: std::rotate(:m:)
     inline auto& rotate_right(const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(!this->empty());
-        this->_impl.rotate(this->_root, 0, this->size() - uni::mod(count, this->size()), this->size());
+        this->_impl.rotate(this->_root, 0, uni::mod(-count, this->size()), this->size());
         return *this;
     }
 
@@ -628,7 +653,7 @@ struct dynamic_sequence
         return this->_impl.get(this->_root, pos);
     }
 
-    inline auto& add(size_type pos, const operation& val) noexcept(NO_EXCEPT) {
+    inline auto& add(size_type pos, const value_type& val) noexcept(NO_EXCEPT) {
         this->_normalize_index(pos);
         this->_impl.add(this->_root, pos, val);
         return *this;
@@ -675,6 +700,14 @@ struct dynamic_sequence
         return *this;
     }
 
+    inline auto pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->_impl.pop(this->_root, 0, count);
+    }
+
+    inline auto pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
+        return this->_impl.pop(this->_root, this->size() - count, count);
+    }
+
 
     template<std::ranges::input_range R>
         requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
@@ -685,15 +718,6 @@ struct dynamic_sequence
 
     inline auto& set(const size_type pos, const value_type& val) noexcept(NO_EXCEPT) {
         return this->fill(pos, pos + 1, val);
-    }
-
-
-    inline auto pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->pop(0, count);
-    }
-
-    inline auto pop_back(const size_type count = 1) noexcept(NO_EXCEPT) {
-        return this->pop(this->size() - count, count);
     }
 
 
@@ -709,7 +733,7 @@ struct dynamic_sequence
 
     inline auto& rotate_right(const size_type l, const size_type r, const size_type count = 1) noexcept(NO_EXCEPT) {
         assert(l < r);
-        return this->rotate(l, r - uni::mod(count, r - l), r);
+        return this->rotate(l, l + uni::mod(-count, r - l), r);
     }
 
 
@@ -737,18 +761,18 @@ struct dynamic_sequence
         auto val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
 
-        inline auto& operator+=(const operator_type& val) noexcept(NO_EXCEPT) {
+        inline auto& operator=(const value_type& val) noexcept(NO_EXCEPT) {
+            this->_super->set(this->_pos, val);
+            return *this;
+        }
+
+        inline auto& operator+=(const value_type& val) noexcept(NO_EXCEPT) {
             this->_super->add(this->_pos, val);
             return *this;
         }
 
         inline auto& operator*=(const operator_type& val) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, val);
-            return *this;
-        }
-
-        inline auto& operator=(const value_type& val) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, val);
             return *this;
         }
     };

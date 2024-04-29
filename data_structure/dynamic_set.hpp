@@ -143,6 +143,11 @@ struct set_core :  internal::basic_core<ActionOrValue, set_core<ActionOrValue, C
     }
 
 
+    auto fold(node_pointer tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
+        assert(0 <= l && l <= r && r <= tree->size);
+        return this->base::fold(tree, l, r);
+    }
+
     void erase(node_pointer& tree, const size_type l, const size_type r) noexcept(NO_EXCEPT) {
         assert(0 <= l && l <= r && r <= tree->size);
         this->base::erase(tree, l, r);
@@ -154,40 +159,39 @@ struct set_core :  internal::basic_core<ActionOrValue, set_core<ActionOrValue, C
         return this->base::pop(tree, pos, count);
     }
 
-    operand get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
+    auto get(node_pointer tree, const size_type pos) noexcept(NO_EXCEPT) {
         assert(0 <= pos && pos < tree->size);
         return this->base::get(tree, pos);
     }
 
-
     template<bool STRICT = false>
-    size_type find(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
+    auto find(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
         node_pointer t0, t1;
 
         this->template split<STRICT>(tree, { val }, t0, t1);
 
-        const size_type res = t0->size;
+        const auto res = t0->size;
 
         this->merge(tree, t0, t1);
 
         return res;
     }
 
-    spair<size_type> equal_range(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
+    auto equal_range(node_pointer& tree, const operand& val) noexcept(NO_EXCEPT) {
         node_pointer t0, t1, t2;
 
         this->template split<true>(tree, { val }, t1, t2);
         this->split(t1, { val }, t0, t1);
 
-        const size_type lower = t0->size;
+        const auto lower = t0->size;
 
         this->merge(t1, t0, t1);
 
-        const size_type upper = t1->size;
+        const auto upper = t1->size;
 
         this->merge(tree, t1, t2);
 
-        return { lower, upper };
+        return std::make_pair(std::move(lower), std::move(upper));
     }
 };
 
