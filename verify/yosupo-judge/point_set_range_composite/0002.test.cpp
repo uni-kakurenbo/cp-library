@@ -38,11 +38,12 @@ signed main() {
 
     uni::dynamic_sequence<action> data(ALL(f));
 
-    LOOP(q) {
+    REP(i, q) {
         int t; std::cin >> t;
         if(t == 0) {
             int p, a, b; std::cin >> p >> a >> b;
-            data.apply(p, uni::spair<int>{ a, b });
+            if(i % 2) data.set(p, uni::spair<int>{ a, b });
+            else data.apply(p, uni::spair<int>{ a, b });
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;

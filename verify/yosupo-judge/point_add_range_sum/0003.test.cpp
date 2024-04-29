@@ -34,7 +34,8 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             uni::ll p, x; std::cin >> p >> x;
-            data[p] *= x;
+            if(i % 2) data[p] += x;
+            else data[p] *= x;
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;

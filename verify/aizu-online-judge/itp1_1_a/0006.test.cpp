@@ -33,7 +33,7 @@ signed main() {
 
     uni::timer timer(10000);
 
-    while(not timer.expired()) {
+    while(!timer.expired()) {
         uni::i64 i = uni::randi64();
         uni::i64 v = uni::randi64();
         i /= 2;
