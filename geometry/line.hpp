@@ -1,7 +1,10 @@
 #pragma once
 
 
+#include <utility>
 #include <tuple>
+#include <functional>
+
 
 #include "utility/functional.hpp"
 
@@ -11,9 +14,9 @@
 namespace uni {
 
 
-template<class P>
+template<class Point>
 struct line {
-    using point_type = P;
+    using point_type = Point;
     using value_type = typename point_type::value_type;
 
   private:
@@ -33,39 +36,39 @@ struct line {
         this->_normalize();
     }
 
-    inline constexpr point_type& p0() noexcept(NO_EXCEPT) { return this->_p0; }
-    inline constexpr point_type& p1() noexcept(NO_EXCEPT) { return this->_p1; }
+    inline constexpr auto& p0() noexcept(NO_EXCEPT) { return this->_p0; }
+    inline constexpr auto& p1() noexcept(NO_EXCEPT) { return this->_p1; }
 
-    inline constexpr const point_type& p0() const noexcept(NO_EXCEPT) { return this->_p0; }
-    inline constexpr const point_type& p1() const noexcept(NO_EXCEPT) { return this->_p1; }
+    inline constexpr const auto& p0() const noexcept(NO_EXCEPT) { return this->_p0; }
+    inline constexpr const auto& p1() const noexcept(NO_EXCEPT) { return this->_p1; }
 
     inline constexpr auto vertices() noexcept(NO_EXCEPT) {
-        return std::tuple<point_type&,point_type&>{ this->p0(), this->p1() };
+        return std::tie(this->p0(), this->p1());
     }
     inline const constexpr auto vertices() const noexcept(NO_EXCEPT) {
-        return std::tuple<const point_type&, const point_type&>{ this->p0(), this->p1() };
+        return std::make_pair(std::cref(this->p0()), std::cref(this->p1()));
     }
 
-    inline constexpr const point_type to_vector() const noexcept(NO_EXCEPT) { return this->p1() - this->p0(); }
+    inline constexpr const auto to_vector() const noexcept(NO_EXCEPT) { return this->p1() - this->p0(); }
 
-    inline constexpr const value_type length() const noexcept(NO_EXCEPT) { return uni::distance(this->p0(), this->p1()); }
-    inline constexpr const value_type squared_length() const noexcept(NO_EXCEPT) { return uni::squared_distance(this->p0(), this->p1()); }
+    inline constexpr const auto length() const noexcept(NO_EXCEPT) { return uni::distance(this->p0(), this->p1()); }
+    inline constexpr const auto squared_length() const noexcept(NO_EXCEPT) { return uni::squared_distance(this->p0(), this->p1()); }
 
-    inline constexpr const point_type midpoint() const noexcept(NO_EXCEPT) { return tuple_sum(this->vertices()) / 2; }
+    inline constexpr const auto midpoint() const noexcept(NO_EXCEPT) { return tuple_sum(this->vertices()) / 2; }
 
-    inline std::pair<point_type,point_type> _debug() const { return { this->p0(), this->p1() }; }
+    inline auto _debug() const { return std::make_pair(this->p0(), this->p1()); }
 };
 
 
-template<size_t I, class T>
-inline const typename line<T>::value_type& get(const line<T>& ln) noexcept(NO_EXCEPT) {
+template<size_t I, class Point>
+inline const auto& get(const line<Point>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return ln.p0(); }
     else if constexpr(I == 1) { return ln.p1(); }
-    else { static_assert(uni::internal::EXCEPTION<I>); }
+    else static_assert(uni::internal::EXCEPTION<I>);
 }
 
-template<size_t I, class T>
-inline typename line<T>::value_type& get(line<T>& ln) noexcept(NO_EXCEPT) {
+template<size_t I, class Point>
+inline auto& get(line<Point>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return ln.p0();
     else if constexpr(I == 1) return ln.p1();
     else static_assert(uni::internal::EXCEPTION<I>);
@@ -77,24 +80,24 @@ inline typename line<T>::value_type& get(line<T>& ln) noexcept(NO_EXCEPT) {
 namespace std {
 
 
-template<class T>
-struct tuple_size<uni::line<T>> : integral_constant<size_t,2> {};
+template<class Point>
+struct tuple_size<uni::line<Point>> : integral_constant<size_t, 2> {};
 
-template<size_t I, class T>
-struct tuple_element<I,uni::line<T>> {
-    using type = typename uni::line<T>::value_type;
+template<size_t I, class Point>
+struct tuple_element<I, uni::line<Point>> {
+    using type = typename uni::line<Point>::value_type;
 };
 
 
-template<class P, class C, class S>
-inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, uni::line<P>& v) noexcept(NO_EXCEPT) {
-    P x, y; in >> x >> y;
+template<class Point, class C, class S>
+inline auto& operator>>(basic_istream<C, S>& in, uni::line<Point>& v) noexcept(NO_EXCEPT) {
+    Point x, y; in >> x >> y;
     v = { x, y };
     return in;
 }
 
-template<class P, class C, class S>
-inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const uni::line<P>& v) noexcept(NO_EXCEPT) {
+template<class Point, class C, class S>
+inline auto& operator<<(basic_ostream<C, S>& out, const uni::line<Point>& v) noexcept(NO_EXCEPT) {
     out << v.p0() << " " << v.p1();
     return out;
 }
@@ -106,22 +109,22 @@ inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const uni::line<P
 namespace uni {
 
 
-template<class P>
-bool is_parallel(const line<P>& p, const line<P>& q) noexcept(NO_EXCEPT) {
+template<class Point>
+bool is_parallel(const line<Point>& p, const line<Point>& q) noexcept(NO_EXCEPT) {
     return compare(p.to_vector() * q.to_vector()) == 0;
 }
 
 
-template<class P>
-bool is_orthogonal(const line<P>& p, const line<P>& q) noexcept(NO_EXCEPT) {
+template<class Point>
+bool is_orthogonal(const line<Point>& p, const line<Point>& q) noexcept(NO_EXCEPT) {
     return compare(cross(p.to_vector(), q.to_vector())) == 0;
 }
 
-template<class P>
-inline constexpr std::optional<P> intersection(const line<P>& s, const line<P>& t) noexcept(NO_EXCEPT) {
-    using value_type = typename P::value_type;
+template<class Point>
+inline constexpr std::optional<Point> intersection(const line<Point>& s, const line<Point>& t) noexcept(NO_EXCEPT) {
+    using value_type = typename Point::value_type;
 
-    const P p = s.to_vector(), q = t.to_vector();
+    const Point p = s.to_vector(), q = t.to_vector();
 
     const value_type d0 = cross(p, q);
     const value_type d1 = cross(p, s.p1() - t.p0());

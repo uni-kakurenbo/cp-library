@@ -17,11 +17,11 @@ namespace uni {
 
 
 template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::input_iterator I, std::sentinel_for<I> S>
-vector<std::iter_value_t<I>> convex_hull(I first, S last) noexcept(NO_EXCEPT) {
-    using P = std::iter_value_t<I>;
+auto convex_hull(I first, S last) noexcept(NO_EXCEPT) {
+    using point_type = std::iter_value_t<I>;
     using size_type = internal::size_t;
 
-    auto remove = [&](const P& p, const P& q, const P& r) -> bool {
+    auto remove = [&](const point_type& p, const point_type& q, const point_type& r) -> bool {
         if constexpr(ALLOW_LINE) {
             return compare(cross(p, q, r)) < 0;
         }
@@ -30,12 +30,12 @@ vector<std::iter_value_t<I>> convex_hull(I first, S last) noexcept(NO_EXCEPT) {
         }
     };
 
-    std::vector<P> points(first, last);
+    std::vector<point_type> points(first, last);
 
-    const auto n = static_cast<size_type>(points.size());
-    std::sort(std::begin(points), std::end(points));
+    const auto n = std::ranges::ssize(points);
+    std::ranges::sort(points);
 
-    vector<P> res(2 * n);
+    vector<point_type> res(2 * n);
     size_type k = 0;
 
     for(size_type i=0; i<n; res[k++] = points[i++]) {
@@ -52,14 +52,14 @@ vector<std::iter_value_t<I>> convex_hull(I first, S last) noexcept(NO_EXCEPT) {
 }
 
 template<std::input_iterator I, std::sentinel_for<I> S>
-inline auto convex_hull(I first, S last) noexcept(NO_EXCEPT) { return convex_hull<false,true>(first, last); }
+inline auto convex_hull(I first, S last) noexcept(NO_EXCEPT) { return convex_hull<false, true>(first, last); }
 
 
-template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::ranges::input_range V>
-inline auto convex_hull(V&& v) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN,ALLOW_LINE>(std::begin(v), std::end(v)); }
+template<bool LEAVE_MARGIN, bool ALLOW_LINE, std::ranges::input_range R>
+inline auto convex_hull(R&& range) noexcept(NO_EXCEPT) { return convex_hull<LEAVE_MARGIN, ALLOW_LINE>(std::begin(range), std::end(range)); }
 
-template<std::ranges::input_range V>
-inline auto convex_hull(V&& v) noexcept(NO_EXCEPT) { return convex_hull<false,true>(std::begin(v), std::end(v)); }
+template<std::ranges::input_range R>
+inline auto convex_hull(R&& range) noexcept(NO_EXCEPT) { return convex_hull<false, true>(std::begin(range), std::end(range)); }
 
 
 } // namespace uni

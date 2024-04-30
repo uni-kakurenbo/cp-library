@@ -17,7 +17,7 @@ namespace uni {
 
 
 template<class T>
-inline constexpr point<T> projected(const point<T>& p, const line<point<T>>& ln) noexcept(NO_EXCEPT) {
+inline constexpr auto projection(const line<point<T>>& ln, const point<T>& p) noexcept(NO_EXCEPT) {
     const point<T> q = ln.p0() - ln.p1();
     const T t = (p - ln.p0()) * q / std::norm(q);
     return ln.p0() + q * t;
@@ -25,7 +25,7 @@ inline constexpr point<T> projected(const point<T>& p, const line<point<T>>& ln)
 
 
 template<class T>
-inline constexpr point<T> reflected(const point<T>& p, const line<point<T>>& ln) {
+inline constexpr auto reflection(const line<point<T>>& ln, const point<T>& p) {
     return p + (projection(ln, p) - p) * 2;
 }
 
@@ -68,7 +68,7 @@ inline constexpr positional_relation relation(
 
 
 template<class T>
-inline constexpr positional_relation relation(const point<T>& p, const line<point<T>>& seg) noexcept(NO_EXCEPT) {
+inline constexpr auto relation(const point<T>& p, const line<point<T>>& seg) noexcept(NO_EXCEPT) {
     return internal::relation(p, seg);
 }
 

@@ -41,46 +41,46 @@ struct point {
         return *this;
     };
 
-    inline constexpr value_type& x() noexcept(NO_EXCEPT) { return this->_x; }
-    inline constexpr value_type& y() noexcept(NO_EXCEPT) { return this->_y; }
-    inline constexpr const value_type& x() const noexcept(NO_EXCEPT) { return this->_x; }
-    inline constexpr const value_type& y() const noexcept(NO_EXCEPT) { return this->_y; }
+    inline constexpr auto& x() noexcept(NO_EXCEPT) { return this->_x; }
+    inline constexpr auto& y() noexcept(NO_EXCEPT) { return this->_y; }
+    inline constexpr const auto& x() const noexcept(NO_EXCEPT) { return this->_x; }
+    inline constexpr const auto& y() const noexcept(NO_EXCEPT) { return this->_y; }
 
-    inline constexpr point& rotate_quarter() noexcept(NO_EXCEPT) {
+    inline constexpr auto& rotate_quarter() noexcept(NO_EXCEPT) {
         const auto x = this->_x - this->_y;
         const auto y = this->_x + this->_y;
         this->_x = std::move(x), this->_y = std::move(y);
         return *this;
     }
 
-    inline constexpr value_type argument() const noexcept(NO_EXCEPT) {
+    inline constexpr auto argument() const noexcept(NO_EXCEPT) {
         return static_cast<value_type>(std::arg(std::complex<value_type>(this->_x, this->_y)));
     }
 
-    inline constexpr point& operator+=(const point& v) noexcept(NO_EXCEPT) { this->_x += v._x, this->_y += v._y; return *this; }
-    inline constexpr point& operator-=(const point& v) noexcept(NO_EXCEPT) { this->_x -= v._x, this->_y -= v._y; return *this; }
+    inline constexpr auto& operator+=(const point& v) noexcept(NO_EXCEPT) { this->_x += v._x, this->_y += v._y; return *this; }
+    inline constexpr auto& operator-=(const point& v) noexcept(NO_EXCEPT) { this->_x -= v._x, this->_y -= v._y; return *this; }
 
-    inline constexpr point& operator+=(const value_type& v) noexcept(NO_EXCEPT) { this->_x += v, this->_y += v; return *this; }
-    inline constexpr point& operator-=(const value_type& v) noexcept(NO_EXCEPT) { this->_x -= v, this->_y -= v; return *this; }
-    inline constexpr point& operator*=(const value_type& v) noexcept(NO_EXCEPT) { this->_x *= v, this->_y *= v; return *this; }
-    inline constexpr point& operator/=(const value_type& v) noexcept(NO_EXCEPT) { this->_x /= v, this->_y /= v; return *this; }
+    inline constexpr auto& operator+=(const value_type& v) noexcept(NO_EXCEPT) { this->_x += v, this->_y += v; return *this; }
+    inline constexpr auto& operator-=(const value_type& v) noexcept(NO_EXCEPT) { this->_x -= v, this->_y -= v; return *this; }
+    inline constexpr auto& operator*=(const value_type& v) noexcept(NO_EXCEPT) { this->_x *= v, this->_y *= v; return *this; }
+    inline constexpr auto& operator/=(const value_type& v) noexcept(NO_EXCEPT) { this->_x /= v, this->_y /= v; return *this; }
 
-    friend inline constexpr point operator+(const point& p) noexcept(NO_EXCEPT) { return { +p._x, +p._y }; }
-    friend inline constexpr point operator-(const point& p) noexcept(NO_EXCEPT) { return { -p._x, -p._y }; }
+    friend inline constexpr auto operator+(const point& p) noexcept(NO_EXCEPT) { return { +p._x, +p._y }; }
+    friend inline constexpr auto operator-(const point& p) noexcept(NO_EXCEPT) { return { -p._x, -p._y }; }
 
-    friend inline constexpr point operator+(point a, const point& b) noexcept(NO_EXCEPT) { return a += b; }
-    friend inline constexpr point operator-(point a, const point& b) noexcept(NO_EXCEPT) { return a -= b; }
-    friend inline constexpr value_type operator*(const point& a, const point& b) noexcept(NO_EXCEPT) { return a._x * b._x + a._y * b._y; }
+    friend inline constexpr auto operator+(point a, const point& b) noexcept(NO_EXCEPT) { return a += b; }
+    friend inline constexpr auto operator-(point a, const point& b) noexcept(NO_EXCEPT) { return a -= b; }
+    friend inline constexpr auto operator*(const point& a, const point& b) noexcept(NO_EXCEPT) { return a._x * b._x + a._y * b._y; }
 
-    friend inline constexpr point operator+(point a, const value_type& b) noexcept(NO_EXCEPT) { return a += b; }
-    friend inline constexpr point operator-(point a, const value_type& b) noexcept(NO_EXCEPT) { return a -= b; }
-    friend inline constexpr point operator*(point a, const value_type& b) noexcept(NO_EXCEPT) { return a *= b; }
-    friend inline constexpr point operator/(point a, const value_type& b) noexcept(NO_EXCEPT) { return a /= b; }
+    friend inline constexpr auto operator+(point a, const value_type& b) noexcept(NO_EXCEPT) { return a += b; }
+    friend inline constexpr auto operator-(point a, const value_type& b) noexcept(NO_EXCEPT) { return a -= b; }
+    friend inline constexpr auto operator*(point a, const value_type& b) noexcept(NO_EXCEPT) { return a *= b; }
+    friend inline constexpr auto operator/(point a, const value_type& b) noexcept(NO_EXCEPT) { return a /= b; }
 
-    friend inline constexpr point operator+(const value_type& a, point b) noexcept(NO_EXCEPT) { return b += a; }
-    friend inline constexpr point operator-(const value_type& a, point b) noexcept(NO_EXCEPT) { return b += a; }
-    friend inline constexpr point operator*(const value_type& a, point b) noexcept(NO_EXCEPT) { return b *= a; }
-    friend inline constexpr point operator/(const value_type& a, point b) noexcept(NO_EXCEPT) { return b /= a; }
+    friend inline constexpr auto operator+(const value_type& a, point b) noexcept(NO_EXCEPT) { return b += a; }
+    friend inline constexpr auto operator-(const value_type& a, point b) noexcept(NO_EXCEPT) { return b += a; }
+    friend inline constexpr auto operator*(const value_type& a, point b) noexcept(NO_EXCEPT) { return b *= a; }
+    friend inline constexpr auto operator/(const value_type& a, point b) noexcept(NO_EXCEPT) { return b /= a; }
 
     friend inline constexpr bool operator==(const point& a, const point& b) noexcept(NO_EXCEPT) { return compare(a._x, b._x) == 0 and compare(a._y, b._y) == 0; }
     friend inline constexpr bool operator!=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a == b); }
@@ -90,23 +90,24 @@ struct point {
     friend inline constexpr bool operator<=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a > b); }
     friend inline constexpr bool operator>=(const point& a, const point& b) noexcept(NO_EXCEPT) { return !(a < b); }
 
-    inline std::pair<value_type,value_type> _debug() const { return { this->_x, this->_y }; }
+    auto _debug() const { return std::make_pair(this->_x, this->_y); }
 };
 
 
 template<size_t I, class T>
-inline const typename point<T>::value_type& get(const point<T>& p) noexcept(NO_EXCEPT) {
+inline const auto& get(const point<T>& p) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return p.x(); }
     else if constexpr(I == 1) { return p.y(); }
-    else { static_assert(uni::internal::EXCEPTION<I>); }
+    else static_assert(uni::internal::EXCEPTION<I>);
 }
 
 template<size_t I, class T>
-inline typename point<T>::value_type& get(point<T>& p) noexcept(NO_EXCEPT) {
+inline auto& get(point<T>& p) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return p.x();
     else if constexpr(I == 1) return p.y();
     else static_assert(internal::EXCEPTION<I>);
 }
+
 
 } // namespace uni
 
@@ -124,10 +125,10 @@ struct tuple_element<I,uni::point<T>> {
 
 
 template<class T>
-inline constexpr T norm(const uni::point<T>& v) noexcept(NO_EXCEPT) { return v.x() * v.x() + v.y() * v.y(); }
+inline constexpr auto norm(const uni::point<T>& v) noexcept(NO_EXCEPT) { return v.x() * v.x() + v.y() * v.y(); }
 
 template<class T>
-inline constexpr T abs(const uni::point<T>& v) noexcept(NO_EXCEPT) {
+inline constexpr auto abs(const uni::point<T>& v) noexcept(NO_EXCEPT) {
     if constexpr(is_floating_point_v<T>) {
         return static_cast<T>(std::abs(std::complex<T>(v.x(), v.y())));
     }
@@ -137,14 +138,14 @@ inline constexpr T abs(const uni::point<T>& v) noexcept(NO_EXCEPT) {
 }
 
 template<class T, class C, class S>
-inline basic_istream<C,S>& operator>>(basic_istream<C,S>& in, uni::point<T>& v) noexcept(NO_EXCEPT) {
+inline auto& operator>>(basic_istream<C, S>& in, uni::point<T>& v) noexcept(NO_EXCEPT) {
     T x, y; in >> x >> y;
     v = { x, y };
     return in;
 }
 
 template<class T, class C, class S>
-inline basic_ostream<C,S>& operator<<(basic_ostream<C,S>& out, const uni::point<T>& v) noexcept(NO_EXCEPT) {
+inline auto& operator<<(basic_ostream<C, S>& out, const uni::point<T>& v) noexcept(NO_EXCEPT) {
     out << v.x() << " " << v.y();
     return out;
 }
@@ -157,29 +158,29 @@ namespace uni {
 
 
 template<class T>
-inline constexpr T distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+inline constexpr auto distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
     return std::abs(a - b);
 }
 
 template<class T>
-inline constexpr T squared_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+inline constexpr auto squared_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
     return std::norm(a - b);
 }
 
 
 template<class T>
-inline constexpr T manhattan_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+inline constexpr auto manhattan_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
     return std::abs(a.x() - b.x()) + std::abs(a.y() - b.y());
 }
 
 template<class T>
-inline constexpr T chebyshev_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
+inline constexpr auto chebyshev_distance(const point<T>& a, const point<T>& b) noexcept(NO_EXCEPT) {
     return std::max(std::abs(a.x() - b.x()), std::abs(a.y() - b.y()));
 }
 
 
 template<class T>
-inline constexpr T cross(point<T> a, point<T> b, const point<T>& o = point<T>()) noexcept(NO_EXCEPT) {
+inline constexpr auto cross(point<T> a, point<T> b, const point<T>& o = point<T>()) noexcept(NO_EXCEPT) {
     a -= o, b -= o;
     return a.x() * b.y() - a.y() * b.x();
 }
@@ -193,7 +194,7 @@ inline constexpr point<T> rotate(const point<T>& p, const Angle angle) noexcept(
 }
 
 template<class T, class Angle = T>
-inline constexpr point<T> rotate(const point<T>& p, const point<T>& q, const Angle angle) noexcept(NO_EXCEPT) {
+inline constexpr auto rotate(const point<T>& p, const point<T>& q, const Angle angle) noexcept(NO_EXCEPT) {
     return rotate(p - q, angle) + q;
 }
 
@@ -210,7 +211,7 @@ inline constexpr positional_relation relation(const point<T>& p, point<T> q, poi
 };
 
 template<class T>
-inline constexpr positional_relation relation(const point<T>& p, const point<T>& q) noexcept(NO_EXCEPT) { return relation<T>({ 0, 0 }, p, q); }
+inline constexpr auto relation(const point<T>& p, const point<T>& q) noexcept(NO_EXCEPT) { return relation<T>({ 0, 0 }, p, q); }
 
 
 template<bool ALLOW_LINE, std::ranges::random_access_range R>
