@@ -16,7 +16,7 @@
 #include "data_structure/dynamic_sequence.hpp"
 #include "action/range_affine_range_sum.hpp"
 
-#include "verify/aizu-online-judge/itp1_1_a/internal/dynamic_sequence.0001.test.hpp"
+#include "verify/aizu-online-judge/itp1_1_a/internal/dynamic_sequence.0001.hpp"
 
 using mint = uni::modint998244353;
 
