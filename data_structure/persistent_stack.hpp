@@ -38,12 +38,12 @@ struct persistent_stack {
 
   private:
     size_type _size = 0;
-    node_pointer _head = {};
+    node_pointer _head;
 
-    [[no_unique_address]] node_handler _node_handler = {};
+    [[no_unique_address]] node_handler _node_handler;
 
   public:
-    explicit persistent_stack(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {};
+    explicit persistent_stack(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _node_handler(allocator) {};
 
 
     persistent_stack(const persistent_stack& source, const allocator_type& allocator) noexcept(NO_EXCEPT)

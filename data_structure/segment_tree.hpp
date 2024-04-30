@@ -75,7 +75,7 @@ struct core {
         REPD(p, 1, this->_size) this->_pull(p);
     }
 
-    inline void fill(const operand& v = {}) noexcept(NO_EXCEPT) {
+    inline void fill(const operand& v = operand()) noexcept(NO_EXCEPT) {
         REP(p, this->_n) this->_data[this->_size + p] = v;
         REPD(p, 1, this->_size) this->_pull(p);
     }
@@ -205,7 +205,7 @@ struct segment_tree<Monoid> {
 
   public:
     segment_tree() noexcept(NO_EXCEPT) : _impl() {};
-    explicit segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
+    explicit segment_tree(const size_type n, const value_type& v = value_type()) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
 
     template<std::convertible_to<value_type> T>
     segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : segment_tree(ALL(init_list)) {}
@@ -236,7 +236,7 @@ struct segment_tree<Monoid> {
     template<std::ranges::input_range R>
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
-    inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill(const value_type& v = value_type()) noexcept(NO_EXCEPT) {
         this->_impl.fill(v);
         return *this;
     }

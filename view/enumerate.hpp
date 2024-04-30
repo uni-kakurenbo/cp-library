@@ -38,7 +38,7 @@ struct enumerate_view : public std::ranges::view_interface<enumerate_view<View>>
         requires std::default_initializable<View>
     = default;
 
-    constexpr explicit enumerate_view(View __base) : _base(std::move(__base)) {}
+    constexpr explicit enumerate_view(View base) : _base(std::move(base)) {}
 
     constexpr auto begin()
         requires(!internal::simple_view<View>)
@@ -120,8 +120,8 @@ class enumerate_view<View>::iterator {
     std::ranges::iterator_t<Base> _current = std::ranges::iterator_t<Base>();
     difference_type _pos = 0;
 
-    constexpr explicit iterator(std::ranges::iterator_t<Base> __current, const difference_type __pos)
-      : _current(std::move(__current)), _pos(__pos)
+    constexpr explicit iterator(std::ranges::iterator_t<Base> current, const difference_type pos)
+      : _current(std::move(current)), _pos(pos)
     {}
 
   public:
@@ -134,7 +134,7 @@ class enumerate_view<View>::iterator {
       : _current(std::move(itr._current)), _pos(itr._pos)
     {}
 
-    constexpr const std::ranges::iterator_t<Base> &base() const & noexcept {
+    constexpr const std::ranges::iterator_t<Base>& base() const & noexcept {
         return this->_current;
     }
 

@@ -3,6 +3,7 @@
 
 #include <array>
 #include <tuple>
+#include <concepts>
 
 #include "internal/dev_env.hpp"
 
@@ -19,7 +20,7 @@ struct triangle {
     using value_type = typename point_type::value_type;
 
   private:
-    point_type _p0 = {}, _p1 = {}, _p2 = {};
+    point_type _p0, _p1, _p2;
 
   protected:
     inline constexpr void _normalize() noexcept(NO_EXCEPT) {
@@ -31,13 +32,7 @@ struct triangle {
   public:
     constexpr triangle() noexcept(NO_EXCEPT) {}
 
-    template<class P0, class P1, class P2 = point_type>
-    constexpr triangle(const P0& p0, const P1& p1, const P2& p2 = {}) noexcept(NO_EXCEPT) : _p0(p0), _p1(p1), _p2(p2)
-    {
-        this->_normalize();
-    }
-
-    constexpr triangle(const point_type& p0, const point_type& p1, const point_type& p2 = {}) noexcept(NO_EXCEPT) : _p0(p0), _p1(p1), _p2(p2)
+    constexpr triangle(const point_type& p0, const point_type& p1, const point_type& p2 = point_type()) noexcept(NO_EXCEPT) : _p0(p0), _p1(p1), _p2(p2)
     {
         this->_normalize();
     }

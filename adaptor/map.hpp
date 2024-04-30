@@ -36,7 +36,7 @@ template<class Map> struct map_wrapper : map_wrapper_base<Map> {
     using default_func_type = std::function<mapped_type(key_type)>;
 
     int _default_type = 0;
-    mapped_type _default_val = {};
+    mapped_type _default_val = mapped_type();
     default_func_noarg_type _default_func_noarg;
     default_func_type _default_func;
 

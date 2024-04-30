@@ -110,7 +110,7 @@ struct zip_view<Views...>::iterator
 
     iterator_collection _current;
 
-    constexpr explicit iterator(decltype(_current) __current) : _current(std::move(__current)) {}
+    constexpr explicit iterator(decltype(_current) current) : _current(std::move(current)) {}
 
     // template<std::copy_constructible F, std::ranges::input_range... Vs>
     //     requires
@@ -301,7 +301,7 @@ struct zip_view<Views...>::sentinel {
 
     sentinel_collection _end;
 
-    constexpr explicit sentinel(decltype(_end) __end) noexcept(NO_EXCEPT) : _end(__end) {}
+    constexpr explicit sentinel(sentinel_collection end) noexcept(NO_EXCEPT) : _end(end) {}
 
   public:
     sentinel() = default;

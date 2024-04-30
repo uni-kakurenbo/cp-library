@@ -115,7 +115,7 @@ struct stride_view : std::ranges::view_interface<stride_view<View>> {
 };
 
 template<class Range>
-stride_view(Range &&, std::ranges::range_difference_t<Range>) -> stride_view<std::views::all_t<Range>>;
+stride_view(Range&& , std::ranges::range_difference_t<Range>) -> stride_view<std::views::all_t<Range>>;
 
 
 template<std::ranges::input_range View>
@@ -228,30 +228,6 @@ struct stride_view<View>::iterator : iterator_tag<Const> {
         return lhs._current == rhs._current;
     }
 
-    friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return lhs._current < rhs._current;
-    }
-
-    friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return rhs._current < lhs._current;
-    }
-
-    friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return !(rhs._current < lhs._current);
-    }
-
-    friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return !(lhs._current < rhs._current);
-    }
-
     friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base> && std::three_way_comparable<std::ranges::iterator_t<Base>>
     {
@@ -325,7 +301,7 @@ concept can_stride_view = requires { stride_view(std::declval<Range>(), std::dec
 struct Stride : adaptor::range_adaptor<Stride> {
     template<std::ranges::viewable_range Range, class T = std::ranges::range_difference_t<Range>>
         requires internal::can_stride_view<Range, T>
-    inline constexpr auto operator() [[nodiscard]] (Range &&res, std::type_identity_t<T> diff) const
+    inline constexpr auto operator() [[nodiscard]] (Range&& res, std::type_identity_t<T> diff) const
     {
         return stride_view(std::forward<Range>(res), diff);
     }

@@ -29,7 +29,7 @@ std::optional<Cost> kruskal(const G& graph, const Compare<std::tuple<Cost, Size,
 
     if(mst) mst->clear(), mst->resize(graph.size());
 
-    Cost res = {};
+    Cost res = 0;
 
     typename G::size_type cnt = 0;
     ITR(w, u, v, edges) {

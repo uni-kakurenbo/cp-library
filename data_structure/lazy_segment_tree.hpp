@@ -92,7 +92,7 @@ struct core {
     inline operand fold_all() const noexcept(NO_EXCEPT) { return this->_values[1]; }
 
 
-    inline void fill( const operand& v = {}) noexcept(NO_EXCEPT) {
+    inline void fill( const operand& v = operand()) noexcept(NO_EXCEPT) {
         REP(p, 0, this->_n) {
             this->_lengths[this->_size + p] = 1, this->_values[this->_size + p] = v;
         }
@@ -290,7 +290,7 @@ struct lazy_segment_tree<Action> {
   public:
     lazy_segment_tree() noexcept(NO_EXCEPT) : _impl() {}
 
-    explicit lazy_segment_tree(const size_type n, const value_type& v = {}) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
+    explicit lazy_segment_tree(const size_type n, const value_type& v = value_type()) noexcept(NO_EXCEPT) : _impl(n) { this->_impl.fill(v); }
 
     template<std::convertible_to<value_type> T>
     lazy_segment_tree(const std::initializer_list<T>& init_list) noexcept(NO_EXCEPT) : lazy_segment_tree(ALL(init_list)) {}
@@ -318,7 +318,7 @@ struct lazy_segment_tree<Action> {
     template<std::ranges::input_range R>
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
-    inline auto& fill( const value_type& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill( const value_type& v = value_type()) noexcept(NO_EXCEPT) {
         this->impl.fill(v);
         return *this;
     }

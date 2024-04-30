@@ -25,7 +25,7 @@ struct range_extractor : Container {
     size_type _end;
 
     int _default_type = 0;
-    value_type _default_val = {};
+    value_type _default_val = value_type();
     default_func_noarg_type _default_func_noarg;
     default_func_type _default_func;
     inline static value_type _tmp;

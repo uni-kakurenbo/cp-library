@@ -187,7 +187,7 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
     template<std::ranges::input_range R>
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
-    inline auto& fill(const value_type& v = {}) noexcept(NO_EXCEPT) {
+    inline auto& fill(const value_type& v = value_type()) noexcept(NO_EXCEPT) {
         std::fill(this->data(), this->data() + this->_impl.size(), v);
         this->_init();
         return *this;

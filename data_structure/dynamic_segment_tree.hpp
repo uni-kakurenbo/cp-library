@@ -53,7 +53,7 @@ struct core {
     [[no_unique_address]] node_handler _node_handler;
 
   public:
-    explicit core(const allocator_type& allocator= {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+    explicit core(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
 
     core(const core&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
     core(core&&, const allocator_type& allocator) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
@@ -285,7 +285,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
   public:
     ~dynamic_segment_tree() { this->dispose(this->_root); }
 
-    dynamic_segment_tree(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : core(allocator) {};
+    dynamic_segment_tree(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : core(allocator) {};
 
     dynamic_segment_tree(const dynamic_segment_tree& source, const allocator_type& allocator) noexcept(NO_EXCEPT)
       : core(allocator), _n(source._n), _root(source._root)
@@ -295,23 +295,23 @@ struct dynamic_segment_tree<Action, NodeHandler>
       : core(allocator), _n(source._n), _root(source._root)
     {}
 
-    explicit dynamic_segment_tree(const size_type n, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    explicit dynamic_segment_tree(const size_type n, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : core(allocator), _n(n)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_segment_tree(const std::initializer_list<T>& init_list, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_segment_tree(const std::initializer_list<T>& init_list, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_segment_tree(init_list, allocator)
     {}
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_segment_tree(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : dynamic_segment_tree(allocator) {
+    dynamic_segment_tree(I first, S last, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : dynamic_segment_tree(allocator) {
         this->assign(first, last);
     }
 
     template<std::ranges::input_range R>
         requires (!std::same_as<std::decay_t<R>, dynamic_segment_tree>)
-    dynamic_segment_tree(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_segment_tree(R&& range, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_segment_tree(ALL(range), allocator)
     {}
 
