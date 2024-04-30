@@ -40,7 +40,7 @@ template<boxable T> struct box : std::optional<T> {
 
     using std::optional<T>::operator=;
 
-    constexpr box &operator=(const box& other) noexcept(
+    constexpr box& operator=(const box& other) noexcept(
         std::is_nothrow_copy_constructible_v<T>)
         requires(!std::copyable<T>) && std::copy_constructible<T>
     {
@@ -51,8 +51,7 @@ template<boxable T> struct box : std::optional<T> {
         return *this;
     }
 
-    constexpr box&
-    operator=(box&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
+    constexpr box& operator=(box&& other) noexcept(std::is_nothrow_move_constructible_v<T>)
         requires(!std::movable<T>)
     {
         if(this != std::addressof(other)) {
@@ -88,57 +87,51 @@ struct box<T> {
   public:
     box() requires std::default_initializable<T> = default;
 
-    constexpr explicit box(const T &__t) noexcept(
-        std::is_nothrow_copy_constructible_v<T>
-    )
+    constexpr explicit box(const T& value) noexcept(std::is_nothrow_copy_constructible_v<T>)
         requires std::copy_constructible<T>
-    : _value(__t)
+    : _value(value)
     {}
 
-    constexpr explicit box(T &&__t) noexcept(
-        std::is_nothrow_move_constructible_v<T>
-    )
-    : _value(std::move(__t)) {}
+    constexpr explicit box(T&& value) noexcept(std::is_nothrow_move_constructible_v<T>)
+    : _value(std::move(value)) {}
 
     template<class... Args>
         requires std::constructible_from<T, Args...>
-    constexpr explicit box(std::in_place_t, Args &&...args) noexcept(
-        std::is_nothrow_constructible_v<T, Args...>
-    )
+    constexpr explicit box(std::in_place_t, Args&&... args) noexcept(std::is_nothrow_constructible_v<T, Args...>)
     : _value(std::forward<Args>(args)...) {}
 
-    box(const box &) = default;
-    box(box &&) = default;
-    box &operator=(const box &) requires std::copyable<T> = default;
-    box &operator=(box &&) requires std::movable<T> = default;
+    box(const box& ) = default;
+    box(box&& ) = default;
+    box& operator=(const box& ) requires std::copyable<T> = default;
+    box& operator=(box&& ) requires std::movable<T> = default;
 
-    constexpr box &operator=(const box &other) noexcept
+    constexpr box& operator=(const box& other) noexcept
         requires(!std::copyable<T>) && std::copy_constructible<T>
     {
         static_assert(std::is_nothrow_copy_constructible_v<T>);
         if(this != std::addressof(other)) {
-            _value.~T();
-            std::construct_at(std::addressof(_value), *other);
+            this->_value.~T();
+            std::construct_at(std::addressof(this->_value), *other);
         }
         return *this;
     }
 
-    constexpr box &operator=(box &&other) noexcept
+    constexpr box& operator=(box&& other) noexcept
         requires(!std::movable<T>)
     {
         static_assert(std::is_nothrow_move_constructible_v<T>);
         if(this != std::addressof(other)) {
-            _value.~T();
-            std::construct_at(std::addressof(_value), std::move(*other));
+            this->_value.~T();
+            std::construct_at(std::addressof(this->_value), std::move(*other));
         }
         return *this;
     }
 
     constexpr bool has_value() const noexcept { return true; };
-    constexpr T &operator*() noexcept { return _value; }
-    constexpr const T &operator*() const noexcept { return _value; }
-    constexpr T *operator->() noexcept { return std::addressof(_value); }
-    constexpr const T *operator->() const noexcept { return std::addressof(_value); }
+    constexpr T& operator*() noexcept { return this->_value; }
+    constexpr const T& operator*() const noexcept { return this->_value; }
+    constexpr T* operator->() noexcept { return std::addressof(this->_value); }
+    constexpr const T* operator->() const noexcept { return std::addressof(this->_value); }
 };
 
 
