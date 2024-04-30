@@ -13,20 +13,20 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/lazy_segment_tree.hpp"
-#include "action/range_set_range_min.hpp"
+#include "data_structure/dynamic_sequence.hpp"
+#include "action/range_min.hpp"
+#include "action/helpers.hpp"
 
 signed main() {
     int n, q; input >> n >> q;
 
-    uni::lazy_segment_tree<uni::actions::range_set_range_min<int>> data(n);
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>> data(n);
 
-    REP(i, q) {
+    REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;
         if(t == 0) {
             int x; input >> x;
-            if(l + 1 == r) data[l] = x;
-            else data(l, r) *= x;
+            data(l, r) = x;
         }
         if(t == 1) {
             print(data(l, r).fold());
