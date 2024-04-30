@@ -87,7 +87,7 @@ struct regular_container : Base, container_base<typename Base::value_type::value
 
     explicit regular_container(const size_type n = 0) noexcept(NO_EXCEPT) : regular_container(n, n) {}
 
-    regular_container(const size_type h, const size_type w, const value_type &val = {}) noexcept(NO_EXCEPT)
+    regular_container(const size_type h, const size_type w, const value_type &val = value_type()) noexcept(NO_EXCEPT)
       : Base(h, row_type(w, val)), container_base<value_type>(h, w)
     {}
 
@@ -105,7 +105,7 @@ struct regular_container : Base, container_base<typename Base::value_type::value
         this->Base::assign(ALL(source));
     }
 
-    inline void assign(const size_type h, const size_type w, const value_type &val = {}) noexcept(NO_EXCEPT) {
+    inline void assign(const size_type h, const size_type w, const value_type &val = value_type()) noexcept(NO_EXCEPT) {
         this->container_base<value_type>::resize(h, w);
         this->Base::resize(h);
         ITRR(row, *this) row.assign(w, val);
@@ -147,7 +147,7 @@ struct unfolded_container : Base, container_base<typename Base::value_type> {
 
     explicit unfolded_container(size_type n = 0) noexcept(NO_EXCEPT) : unfolded_container(n, n) {}
 
-    unfolded_container(const size_type h, const size_type w, const value_type &val = {}) noexcept(NO_EXCEPT)
+    unfolded_container(const size_type h, const size_type w, const value_type &val = value_type()) noexcept(NO_EXCEPT)
       : Base(h * w, val), container_base<value_type>(h, w)
     {}
 
@@ -176,7 +176,7 @@ struct unfolded_container : Base, container_base<typename Base::value_type> {
         this->Base::assign(ALL(source));
     }
 
-    inline void assign(const size_type h, const size_type w, const value_type &val = {}) noexcept(NO_EXCEPT) {
+    inline void assign(const size_type h, const size_type w, const value_type &val = value_type()) noexcept(NO_EXCEPT) {
         this->container_base<value_type>::resize(h, w);
         this->Base::assign(h * w, val);
     }

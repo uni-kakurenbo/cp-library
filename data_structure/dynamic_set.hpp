@@ -247,34 +247,34 @@ struct dynamic_set<ActionOrValue, Context>
   public:
     ~dynamic_set() { this->_impl.dispose(this->_root); }
 
-    dynamic_set(const allocator_type& alloc = {}) noexcept(NO_EXCEPT) : _impl(alloc) {};
+    dynamic_set(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _impl(allocator) {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_set(I first, S last, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : _impl(alloc)
+    dynamic_set(I first, S last, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
+      : _impl(allocator)
     {
         this->assign(first, last);
     }
 
 
-    explicit dynamic_set(const size_type size, const value_type& val, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : _impl(alloc)
+    explicit dynamic_set(const size_type size, const value_type& val, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
+      : _impl(allocator)
     {
         this->assign(size, val);
     }
 
-    explicit dynamic_set(const size_type size, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(size, value_type{}, alloc)
+    explicit dynamic_set(const size_type size, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
+      : dynamic_set(size, value_type{}, allocator)
     {}
 
     template<std::ranges::input_range R>
-    explicit dynamic_set(R&& range, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(ALL(range), alloc)
+    explicit dynamic_set(R&& range, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
+      : dynamic_set(ALL(range), allocator)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_set(const std::initializer_list<T>& values, const allocator_type& alloc = {}) noexcept(NO_EXCEPT)
-      : dynamic_set(values, alloc)
+    dynamic_set(const std::initializer_list<T>& values, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
+      : dynamic_set(values, allocator)
     {}
 
 

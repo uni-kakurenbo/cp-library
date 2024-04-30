@@ -58,7 +58,7 @@ template<class T, class... Ts> inline bool chmin(T &a, Ts... b) noexcept(NO_EXCE
 template<class T, class... Ts> inline bool chmax(T &a, Ts... b) noexcept(NO_EXCEPT) { return chmax(a, max(b...)); }
 
 template<class... Ts>
-inline constexpr std::common_type_t<Ts...> tuple_sum(const std::tuple<Ts...>& tuple, const std::common_type_t<Ts...>& base = {}) noexcept(NO_EXCEPT) {
+inline constexpr std::common_type_t<Ts...> tuple_sum(const std::tuple<Ts...>& tuple, const std::common_type_t<Ts...>& base = std::common_type_t<Ts...>()) noexcept(NO_EXCEPT) {
     std::common_type_t<Ts...> res = base;
     tuple_for_each(tuple, [&](const auto& v) constexpr { res += v; });
     return res;

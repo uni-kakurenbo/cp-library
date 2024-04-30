@@ -185,7 +185,7 @@ struct treap_impl : private uncopyable {
     }
 
   public:
-    explicit treap_impl(const allocator_type& allocator= {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+    explicit treap_impl(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
 
     template<std::random_access_iterator I, std::sized_sentinel_for<I> S>
     node_pointer build(I first, S last) {

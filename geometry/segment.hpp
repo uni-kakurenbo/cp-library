@@ -16,7 +16,7 @@ struct segment : line<Point> {
     using point_type = Point;
     using value_type = typename point_type::value_type;
 
-    constexpr segment(const point_type& p0, const point_type& p1 = {}) noexcept(NO_EXCEPT) : line<Point>(p0, p1) {};
+    constexpr segment(const point_type& p0, const point_type& p1 = point_type()) noexcept(NO_EXCEPT) : line<Point>(p0, p1) {};
 
     template<class U> constexpr segment(const line<U>& ln) noexcept(NO_EXCEPT) : line<Point>(ln.p0(), ln.p1()) {}
 };

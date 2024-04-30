@@ -71,7 +71,7 @@ template<
     std::sentinel_for<I> S,
     class T = std::iter_value_t<I>
 >
-T mex(I first, S last, const T& base = {}) noexcept(NO_EXCEPT) {
+T mex(I first, S last, const T& base = T()) noexcept(NO_EXCEPT) {
     std::vector<T> val(first, last);
     std::ranges::sort(val);
     {
@@ -87,12 +87,12 @@ T mex(I first, S last, const T& base = {}) noexcept(NO_EXCEPT) {
 }
 
 template<std::ranges::input_range R>
-auto mex(R&& range, const std::ranges::range_value_t<R>& base = {}) noexcept(NO_EXCEPT) {
+auto mex(R&& range, const std::ranges::range_value_t<R>& base = std::ranges::range_value_t<R>()) noexcept(NO_EXCEPT) {
     return mex(ALL(range), base);
 }
 
 template<class T>
-auto mex(const std::initializer_list<T> v, const T& base = {}) noexcept(NO_EXCEPT) {
+auto mex(const std::initializer_list<T> v, const T& base = T()) noexcept(NO_EXCEPT) {
     return mex(ALL(v), base);
 }
 
@@ -231,7 +231,7 @@ auto replace(R&& source, R&& from, R&& to) noexcept(NO_EXCEPT) {
 
 
 template<alignment ALIGNMENT, internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto align(R&& source, const internal::size_t size, const T& v = T()) noexcept(NO_EXCEPT) {
     if(std::ssize(source) >= size) return source;
 
     if(ALIGNMENT == alignment::left) {
@@ -260,17 +260,17 @@ auto align(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO
 
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto ljust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto ljust(R&& source, const internal::size_t size, const T& v = T()) noexcept(NO_EXCEPT) {
     return align<alignment::left>(source, size, v);
 }
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto cjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto cjust(R&& source, const internal::size_t size, const T& v = T()) noexcept(NO_EXCEPT) {
     return align<alignment::center>(source, size, v);
 }
 
 template<internal::resizable_range R, class T = std::ranges::range_value_t<R>>
-auto rjust(R&& source, const internal::size_t size, const T& v = {}) noexcept(NO_EXCEPT) {
+auto rjust(R&& source, const internal::size_t size, const T& v = T()) noexcept(NO_EXCEPT) {
     return align<alignment::right>(source, size, v);
 }
 
