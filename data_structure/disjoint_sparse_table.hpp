@@ -122,13 +122,13 @@ template<algebraic::internal::semigroup Semigroup>
 struct disjoint_sparse_table<Semigroup> {
   private:
     using core = internal::disjoint_sparse_table_impl::core<Semigroup>;
-    using iterator = typename core::iterator;
+    using iterator = core::iterator;
 
     core _impl;
 
   public:
-    using value_type = typename core::operand;
-    using size_type = typename core::size_type;
+    using value_type = Semigroup;
+    using size_type = core::size_type;
 
   protected:
     inline auto _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
@@ -136,7 +136,7 @@ struct disjoint_sparse_table<Semigroup> {
     }
 
   public:
-    explicit disjoint_sparse_table(const size_type n, const Semigroup& val = {}) noexcept(NO_EXCEPT) : _impl(n) {
+    explicit disjoint_sparse_table(const size_type n, const value_type& val = value_type()) noexcept(NO_EXCEPT) : _impl(n) {
         this->_impl.data().begin()->assign(n, val);
     }
 

@@ -36,7 +36,7 @@ struct accumulation : Container {
 
     template<std::ranges::input_range R, class Operator = std::plus<T>>
         requires std::regular_invocable<Operator, T, T>
-    explicit accumulation(R&& range, const T& head = {}, Operator&& op = std::plus<T>{})
+    explicit accumulation(R&& range, const T& head = T(), Operator&& op = std::plus<T>{})
       : accumulation(ALL(range), head, op)
     {}
 
@@ -44,7 +44,7 @@ struct accumulation : Container {
         std::input_iterator I, std::sentinel_for<I> S,
         class Operator = std::plus<T>
     >
-    accumulation(I first, S last, const T& head = {}, Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
+    accumulation(I first, S last, const T& head = T(), Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::ranges::distance(first, last) + 1);
         std::exclusive_scan(first, last, std::ranges::begin(*this), head, op);
         const auto back = std::ranges::prev(std::ranges::end(*this));
@@ -85,7 +85,7 @@ struct accumulation_2d : Container {
         requires
             std::ranges::input_range<typename std::ranges::range_value_t<R>> &&
             std::regular_invocable<Operator, T, T>
-    explicit accumulation_2d(R&& range, const T& head = {}, Operator&& op = std::plus<T>{})
+    explicit accumulation_2d(R&& range, const T& head = T(), Operator&& op = std::plus<T>{})
       : accumulation_2d(ALL(range), head, op)
     {}
 

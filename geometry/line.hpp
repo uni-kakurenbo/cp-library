@@ -17,7 +17,7 @@ struct line {
     using value_type = typename point_type::value_type;
 
   private:
-    point_type _p0 = {}, _p1 = {};
+    point_type _p0, _p1;
 
   protected:
     inline constexpr void _normalize() noexcept(NO_EXCEPT) { if(this->_p0 > this->_p1) std::swap(this->_p0, this->_p1); }

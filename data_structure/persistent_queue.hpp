@@ -38,12 +38,12 @@ struct persistent_queue {
 
   private:
     size_type _size = 0;
-    node_pointer _head = {}, _tail = {};
+    node_pointer _head, _tail;
 
-    [[no_unique_address]] node_handler _node_handler = {};
+    [[no_unique_address]] node_handler _node_handler;
 
   public:
-    explicit persistent_queue(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
+    explicit persistent_queue(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _node_handler(allocator) {}
 
 
     persistent_queue(const persistent_queue& source, const allocator_type& allocator) noexcept(NO_EXCEPT)

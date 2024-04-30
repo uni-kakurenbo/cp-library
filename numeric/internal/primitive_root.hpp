@@ -62,7 +62,7 @@ template<static_modint_family Mint>
 constexpr u32 primitive_root_constexpr(u32 m) {
     assert(Mint::mod() == m);
 
-    u32 divs[20] = {}; divs[0] = 2;
+    u32 divs[20]{}; divs[0] = 2;
     u32 cnt = 1;
 
     u64 x = (m - 1) / 2;

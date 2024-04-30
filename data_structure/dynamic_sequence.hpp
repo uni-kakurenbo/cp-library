@@ -389,38 +389,38 @@ struct dynamic_sequence
   public:
     ~dynamic_sequence() { this->_impl.dispose(this->_root); }
 
-    dynamic_sequence(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : _impl(allocator) {};
+    dynamic_sequence(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : _impl(allocator) {};
 
-    dynamic_sequence(const node_pointer& root, const size_type offset = 0, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_sequence(const node_pointer& root, const size_type offset = 0, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : _impl(allocator), _root(root), _offset(offset)
     {};
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
-    dynamic_sequence(I first, S last, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_sequence(I first, S last, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : _impl(allocator)
     {
         this->assign(first, last);
     }
 
 
-    explicit dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    explicit dynamic_sequence(const size_type size, const value_type& val, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : _impl(allocator)
     {
         this->assign(size, val);
     }
 
-    explicit dynamic_sequence(const size_type size, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    explicit dynamic_sequence(const size_type size, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_sequence(size, value_type{}, allocator)
     {}
 
     template<std::ranges::input_range R>
         requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
-    explicit dynamic_sequence(R&& range, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    explicit dynamic_sequence(R&& range, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_sequence(ALL(range), allocator)
     {}
 
     template<std::convertible_to<value_type> T>
-    dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    dynamic_sequence(const std::initializer_list<T>& values, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_sequence(values, allocator)
     {}
 

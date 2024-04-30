@@ -179,7 +179,7 @@ inline constexpr T chebyshev_distance(const point<T>& a, const point<T>& b) noex
 
 
 template<class T>
-inline constexpr T cross(point<T> a, point<T> b, const point<T>& o = {}) noexcept(NO_EXCEPT) {
+inline constexpr T cross(point<T> a, point<T> b, const point<T>& o = point<T>()) noexcept(NO_EXCEPT) {
     a -= o, b -= o;
     return a.x() * b.y() - a.y() * b.x();
 }

@@ -26,7 +26,7 @@ struct base_handler {
     [[no_unique_address]] node_allocator_type _allocator;
 
   public:
-    base_handler(const allocator_type& allocator = {}) noexcept(NO_EXCEPT)
+    base_handler(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
         : _allocator(allocator)
     {}
 
@@ -107,7 +107,7 @@ struct reusing {
         inline static node_pointer nil;
 
 
-        handler(const allocator_type& allocator = {}) noexcept(NO_EXCEPT) : base(allocator) {
+        handler(const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT) : base(allocator) {
             if(handler::_instance_count++ == 0) {
                 handler::nil = new node_type{};
             }
