@@ -205,30 +205,6 @@ struct cyclic_view<View>::iterator : iterator_tag<Const> {
         return lhs._index == rhs._index;
     }
 
-    friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return lhs._index < rhs._index;
-    }
-
-    friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return rhs._index > lhs._index;
-    }
-
-    friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return rhs._index <= lhs._index;
-    }
-
-    friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<Base>
-    {
-        return rhs._index >= lhs._index;
-    }
-
     friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
         requires std::ranges::random_access_range<Base> && std::three_way_comparable<std::ranges::iterator_t<Base>>
     {

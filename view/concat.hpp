@@ -16,8 +16,6 @@
 #include "internal/type_traits.hpp"
 #include "internal/ranges.hpp"
 
-#include "view/internal/base.hpp"
-
 
 
 namespace uni {
@@ -301,32 +299,6 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
     {
         if(lhs._block != rhs._block) return false;
         return lhs._block == 0 ? lhs._c0 == rhs._c0 : lhs._c1 == rhs._c1;
-    }
-
-    friend inline constexpr bool operator<(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
-    {
-        if(lhs._block != rhs._block) return lhs._block < rhs._block;
-        return lhs._block == 0 ? lhs._c0 < rhs._c0 : lhs._c1 < rhs._c1;
-    }
-
-    friend inline constexpr bool operator>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
-    {
-        if(lhs._block != rhs._block) return lhs._block > rhs._block;
-        return lhs._block == 0 ? lhs._c0 > rhs._c0 : lhs._c1 > rhs._c1;
-    }
-
-    friend inline constexpr bool operator<=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
-    {
-        return !(rhs < lhs);
-    }
-
-    friend inline constexpr bool operator>=(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)
-        requires std::ranges::random_access_range<B0> && std::ranges::random_access_range<B1>
-    {
-        return !(lhs < rhs);
     }
 
     friend inline constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) noexcept(NO_EXCEPT)

@@ -32,7 +32,7 @@ struct repeat_view : public std::ranges::view_interface<repeat_view<T, Bound>> {
     internal::box<T> _value;
     [[no_unique_address]] Bound _bound = Bound();
 
-    struct Iterator;
+    struct iterator;
 
     template <typename Range>
     friend constexpr auto take_of_repeat_view(Range&&, std::ranges::range_difference_t<Range>);
@@ -43,12 +43,12 @@ struct repeat_view : public std::ranges::view_interface<repeat_view<T, Bound>> {
   public:
     repeat_view() requires std::default_initializable<T> = default;
 
-    constexpr explicit repeat_view(const T &val, Bound bound = Bound())
+    constexpr explicit repeat_view(const T& val, Bound bound = Bound())
         requires std::copy_constructible<T> : _value(val), _bound(bound) {
         if constexpr(!std::same_as<Bound, std::unreachable_sentinel_t>) assert(bound >= 0);
     }
 
-    constexpr explicit repeat_view(T &&val, Bound bound = Bound())
+    constexpr explicit repeat_view(T&& val, Bound bound = Bound())
       : _value(std::move(val)), _bound(bound)
     {}
 
@@ -62,14 +62,14 @@ struct repeat_view : public std::ranges::view_interface<repeat_view<T, Bound>> {
         _bound(std::make_from_tuple<Bound>(std::move(bound_args)))
     {}
 
-    constexpr Iterator begin() const {
-        return Iterator(std::addressof(*this->_value));
+    constexpr iterator begin() const {
+        return iterator(std::addressof(*this->_value));
     }
 
-    constexpr Iterator end() const
+    constexpr iterator end() const
         requires(!std::same_as<Bound, std::unreachable_sentinel_t>)
     {
-        return Iterator(std::addressof(*this->_value), this->_bound);
+        return iterator(std::addressof(*this->_value), this->_bound);
     }
 
     constexpr std::unreachable_sentinel_t end() const noexcept {
@@ -90,14 +90,14 @@ template <std::move_constructible T, std::semiregular Bound>
     requires
         std::is_object_v<T> && std::same_as<T, std::remove_cv_t<T>> &&
         (std::is_integral_v<Bound> || std::same_as<Bound, std::unreachable_sentinel_t>)
-struct repeat_view<T, Bound>::Iterator {
+struct repeat_view<T, Bound>::iterator {
   private:
     using index_type = std::conditional_t<std::same_as<Bound, std::unreachable_sentinel_t>, std::ptrdiff_t, Bound>;
 
     const T* _value = nullptr;
     index_type _crrent = index_type();
 
-    constexpr explicit Iterator(const T* val, index_type bound = index_type())
+    constexpr explicit iterator(const T* val, index_type bound = index_type())
       : _value(val), _crrent(bound)
     {
         if constexpr(!std::same_as<Bound, std::unreachable_sentinel_t>) assert(bound >= 0);
@@ -116,40 +116,40 @@ struct repeat_view<T, Bound>::Iterator {
             internal::iota_diff_t<index_type>
         >;
 
-    Iterator() = default;
+    iterator() = default;
 
     constexpr const T& operator*() const noexcept { return *this->_value; }
 
-    constexpr Iterator& operator++() {
+    constexpr iterator& operator++() {
         ++this->_crrent;
         return *this;
     }
 
-    constexpr Iterator operator++(int) {
+    constexpr iterator operator++(int) {
         auto _tmp = *this;
         ++*this;
         return _tmp;
     }
 
-    constexpr Iterator& operator--() {
+    constexpr iterator& operator--() {
         if constexpr(!std::same_as<Bound, std::unreachable_sentinel_t>) assert(this->_crrent > 0);
         --this->_crrent;
         return *this;
     }
 
-    constexpr Iterator operator--(int) {
+    constexpr iterator operator--(int) {
         auto _tmp = *this;
         --*this;
         return _tmp;
     }
 
-    constexpr Iterator& operator+=(difference_type diff) {
+    constexpr iterator& operator+=(difference_type diff) {
         if constexpr(!std::same_as<Bound, std::unreachable_sentinel_t>) assert(this->_crrent + diff >= 0);
         this->_crrent += diff;
         return *this;
     }
 
-    constexpr Iterator& operator-=(difference_type diff) {
+    constexpr iterator& operator-=(difference_type diff) {
         if constexpr(!std::same_as<Bound, std::unreachable_sentinel_t>) assert(this->_crrent - diff >= 0);
         this->_crrent -= diff;
         return *this;
@@ -159,27 +159,27 @@ struct repeat_view<T, Bound>::Iterator {
         return *(*this + diff);
     }
 
-    friend constexpr bool operator==(const Iterator& lhs, const Iterator& rhs) {
+    friend constexpr bool operator==(const iterator& lhs, const iterator& rhs) {
         return lhs._crrent == rhs._crrent;
     }
 
-    friend constexpr auto operator<=>(const Iterator& lhs, const Iterator& rhs) {
+    friend constexpr auto operator<=>(const iterator& lhs, const iterator& rhs) {
         return lhs._crrent <=> rhs._crrent;
     }
 
-    friend constexpr Iterator operator+(Iterator itr, difference_type diff) {
+    friend constexpr iterator operator+(iterator itr, difference_type diff) {
         return itr += diff;
     }
 
-    friend constexpr Iterator operator+(difference_type diff, Iterator itr) {
+    friend constexpr iterator operator+(difference_type diff, iterator itr) {
         return itr + diff;
     }
 
-    friend constexpr Iterator operator-(Iterator itr, difference_type diff) {
+    friend constexpr iterator operator-(iterator itr, difference_type diff) {
         return itr -= diff;
     }
 
-    friend constexpr difference_type operator-(const Iterator& lhs, const Iterator& rhs) {
+    friend constexpr difference_type operator-(const iterator& lhs, const iterator& rhs) {
         return (
             static_cast<difference_type>(lhs._crrent) -
             static_cast<difference_type>(rhs._crrent)
