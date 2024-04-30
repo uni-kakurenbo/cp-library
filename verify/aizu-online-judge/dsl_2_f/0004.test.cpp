@@ -14,22 +14,21 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "data_structure/dynamic_sequence.hpp"
-#include "action/range_min.hpp"
-#include "action/helpers.hpp"
+#include "action/range_set_range_max.hpp"
 
 signed main() {
     int n, q; input >> n >> q;
 
-    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>> data(n);
+    uni::dynamic_sequence<uni::actions::range_set_range_max<int>> data(n);
 
     REP(q) {
         int t, l, r; input >> t >> l >> r; ++r;
         if(t == 0) {
             int x; input >> x;
-            data(l, r) = x;
+            data(l, r) *= -x-1;
         }
         if(t == 1) {
-            print(data(l, r).fold());
+            print(-data(l, r).fold().val()-1);
         }
     }
 }

@@ -333,22 +333,19 @@ struct lazy_segment_tree<Action> {
         }
 
         operator value_type() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
-        value_type val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
+        auto val() noexcept(NO_EXCEPT) { return this->_super->get(this->_pos); }
 
-        inline point_reference& set(const value_type& v) noexcept(NO_EXCEPT) {
-            this->_super->set(this->_pos, v);
-            return *this;
-        }
-        inline point_reference& operator=(const value_type& v) noexcept(NO_EXCEPT) {
+        inline auto& operator=(const value_type& v) noexcept(NO_EXCEPT) {
             this->_super->set(this->_pos, v);
             return *this;
         }
 
-        inline point_reference& apply(const action_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_pos, v);
+        inline auto& operator+=(const value_type& v) noexcept(NO_EXCEPT) {
+            this->_super->add(this->_pos, v);
             return *this;
         }
-        inline point_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
+
+        inline auto& operator*=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_pos, v);
             return *this;
         }
@@ -361,17 +358,13 @@ struct lazy_segment_tree<Action> {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline range_reference& apply(const action_type& v) noexcept(NO_EXCEPT) {
-            this->_super->apply(this->_begin, this->_end, v);
-            return *this;
-        }
-        inline range_reference& operator+=(const action_type& v) noexcept(NO_EXCEPT) {
+        inline auto& operator*=(const action_type& v) noexcept(NO_EXCEPT) {
             this->_super->apply(this->_begin, this->_end, v);
             return *this;
         }
 
-        inline value_type fold() noexcept(NO_EXCEPT) {
-            if(this->_begin == 0 and this->_end == this->_super->size()) return this->_super->fold();
+        inline auto fold() noexcept(NO_EXCEPT) {
+            if(this->_begin == 0 && this->_end == this->_super->size()) return this->_super->fold();
             return this->_super->fold(this->_begin, this->_end);
         }
     };
@@ -405,37 +398,37 @@ struct lazy_segment_tree<Action> {
     inline auto& apply(const action_type& v) noexcept(NO_EXCEPT) { this->apply(0, this->_impl.size(), v);  return *this; }
 
 
-    inline value_type get(size_type p) noexcept(NO_EXCEPT) {
+    inline auto get(size_type p) noexcept(NO_EXCEPT) {
         p = this->_positivize_index(p), assert(0 <= p && p < this->_impl.size());
-        return this->_impl.get(p).val();
+        return this->_impl.get(p);
     }
 
-    inline point_reference operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
+    inline auto operator[](const size_type p) noexcept(NO_EXCEPT) { return point_reference(this, p); }
+    inline auto operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
 
-    inline value_type fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
+    inline auto fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->_impl.size());
-        return this->_impl.fold(l, r).val();
+        return this->_impl.fold(l, r);
     }
-    inline value_type fold() noexcept(NO_EXCEPT) { return this->_impl.fold_all(); }
+    inline auto fold() noexcept(NO_EXCEPT) { return this->_impl.fold_all(); }
 
 
 
     template<bool (*f)(value_type)>
-    inline size_type max_right(const size_type l) noexcept(NO_EXCEPT) {
+    inline auto max_right(const size_type l) noexcept(NO_EXCEPT) {
         return this->max_right(l, [](operand x) { return f(x); });
     }
 
     template<class F>
-    inline size_type max_right(const size_type l, F&& f) noexcept(NO_EXCEPT) {
+    inline auto max_right(const size_type l, F&& f) noexcept(NO_EXCEPT) {
         return this->_impl.max_right(l, std::forward<F>(f));
     }
 
 
     template<bool (*f)(value_type)>
-    inline size_type min_left(const size_type r) noexcept(NO_EXCEPT) {
+    inline auto min_left(const size_type r) noexcept(NO_EXCEPT) {
         return min_left(r, [](operand x) { return f(x); });
     }
 
@@ -452,11 +445,11 @@ struct lazy_segment_tree<Action> {
           : internal::container_iterator_interface<value_type, lazy_segment_tree, iterator>(ref, p)
         {}
 
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
     };
 
-    inline iterator begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
-    inline iterator end() noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
+    inline auto begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
+    inline auto end() noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
 };
 
 

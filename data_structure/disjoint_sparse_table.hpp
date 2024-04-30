@@ -131,7 +131,7 @@ struct disjoint_sparse_table<Semigroup> {
     using size_type = typename core::size_type;
 
   protected:
-    inline size_type _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
+    inline auto _positivize_index(const size_type p) const noexcept(NO_EXCEPT) {
         return p < 0 ? this->_impl.size() + p : p;
     }
 
@@ -165,21 +165,21 @@ struct disjoint_sparse_table<Semigroup> {
             assert(0 <= this->_begin && this->_begin <= this->_end && this->_end <= this->_super->size());
         }
 
-        inline value_type fold() noexcept(NO_EXCEPT) {
+        inline auto fold() noexcept(NO_EXCEPT) {
             return this->_super->fold(this->_begin, this->_end);
         }
     };
 
 
-    inline value_type fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
+    inline auto fold(size_type l, size_type r) noexcept(NO_EXCEPT) {
         l = this->_positivize_index(l), r = this->_positivize_index(r);
         assert(0 <= l && l <= r && r <= this->size());
         return this->_impl.fold(l, r);
     }
-    inline value_type fold() noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
+    inline auto fold() noexcept(NO_EXCEPT) { return this->fold(0, this->size()); }
 
     inline auto operator[](const size_type index) const noexcept(NO_EXCEPT) { return this->_impl.data().front()[index]; }
-    inline range_reference operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
+    inline auto operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
     inline auto begin() const noexcept(NO_EXCEPT) { return this->_impl.data().begin()->begin(); }
     inline auto end() const noexcept(NO_EXCEPT) { return this->_impl.data().begin()->end(); }

@@ -28,7 +28,7 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             uni::ll p, x; std::cin >> p >> x;
-            data.set(p, data[p].val() + x);
+            data[p] += x;
         }
         if(t == 1) {
             int l, r; std::cin >> l >> r;

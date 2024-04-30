@@ -20,7 +20,7 @@ namespace internal {
 template<class Super, std::integral SizeType = typename Super::size_type>
 struct range_reference {
     using size_type = SizeType;
-    using iterator = typename Super::iterator;
+    using iterator = Super::iterator;
 
   protected:
     Super *const _super;
@@ -29,13 +29,15 @@ struct range_reference {
     range_reference(Super *const super, const size_type begin, const size_type end) noexcept(NO_EXCEPT) : _super(super), _begin(begin), _end(end) {}
 
   public:
-    inline iterator begin() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_begin); }
-    inline iterator end() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_end); }
+    inline auto begin() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_begin); }
+    inline auto end() const noexcept(NO_EXCEPT) { return std::ranges::next(std::ranges::begin(*this->_super), this->_end); }
 
-    inline size_type size() const noexcept(NO_EXCEPT) { return this->_end - this->_begin; }
+    inline auto size() const noexcept(NO_EXCEPT) { return this->_end - this->_begin; }
+
+    inline auto interval() const noexcept(NO_EXCEPT) { return std::make_pair(this->_begin, this->_end); }
 
   protected:
-    inline range_reference sub_range(size_type l, size_type r) const noexcept(NO_EXCEPT) {
+    inline auto sub_range(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         l = _super->_positivize_index(l), r = _super->_positivize_index(r);
         assert(0 <= l and l <= r and r <= this->size());
 
@@ -44,18 +46,18 @@ struct range_reference {
 
   public:
     template<uni::interval_notation rng = uni::interval_notation::right_open>
-    inline range_reference range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
+    inline auto range(const size_type l, const size_type r) const noexcept(NO_EXCEPT) {
         if constexpr(rng == uni::interval_notation::right_open) return this->sub_range(l, r);
         if constexpr(rng == uni::interval_notation::left_open) return this->sub_range(l+1, r+1);
         if constexpr(rng == uni::interval_notation::open) return this->sub_range(l+1, r);
         if constexpr(rng == uni::interval_notation::closed) return this->sub_range(l, r+1);
     }
-    inline range_reference range() const noexcept(NO_EXCEPT) { return range_reference(this->_begin, this->_end); }
+    inline auto range() const noexcept(NO_EXCEPT) { return range_reference(this->_begin, this->_end); }
 
-    inline range_reference operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return this->sub_range(l, r); }
+    inline auto operator()(const size_type l, const size_type r) const noexcept(NO_EXCEPT) { return this->sub_range(l, r); }
 
-    inline range_reference subseq(const size_type p, const size_type c) const noexcept(NO_EXCEPT) { return this->sub_range(p, p+c); }
-    inline range_reference subseq(const size_type p) const noexcept(NO_EXCEPT) { return this->sub_range(p, this->size()); }
+    inline auto subseq(const size_type p, const size_type c) const noexcept(NO_EXCEPT) { return this->sub_range(p, p+c); }
+    inline auto subseq(const size_type p) const noexcept(NO_EXCEPT) { return this->sub_range(p, this->size()); }
 };
 
 

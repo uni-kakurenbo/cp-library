@@ -124,7 +124,7 @@ struct sequence_hasher {
     }
 
     template<std::input_iterator I, std::sentinel_for<I> S>
-    sequence_hasher(I first, S last) noexcept(NO_EXCEPT) : sequence_hasher(static_cast<size_type>(std::distance(first, last))) {
+    sequence_hasher(I first, S last) noexcept(NO_EXCEPT) : sequence_hasher(static_cast<size_type>(std::ranges::distance(first, last))) {
         this->_hashed.resize(this->_n);
         this->_hashed.assign(this->_n+1, 0);
 
@@ -188,7 +188,7 @@ struct sequence_hasher {
     template<std::input_iterator I, std::sentinel_for<I> S>
     inline sequence_hasher& concat(I first, S last) noexcept(NO_EXCEPT) {
         size_type n = this->_n;
-        this->_n += std::distance(first, last);
+        this->_n += std::ranges::distance(first, last);
 
         size_type i = n;
         for(auto itr=first; itr!=last; ++i, ++itr) {

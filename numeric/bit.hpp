@@ -58,14 +58,14 @@ inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
 }
 
 
-template<std::unsigned_integral T>
+template<std::unsigned_integral T, std::integral I = int>
 __attribute__((target("bmi2")))
-inline constexpr T clear_higher_bits(const T v, const int p) {
+inline constexpr T clear_higher_bits(const T v, const I p) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    assert(p < DIGITS);
+    assert(0 <= p && p < DIGITS);
 
-    if constexpr(DIGITS <= 32) return _bzhi_u32(v, p);
-    if constexpr(DIGITS <= 64) return _bzhi_u64(v, p);
+    if constexpr(DIGITS <= 32) return _bzhi_u32(v, static_cast<u32>(p));
+    if constexpr(DIGITS <= 64) return _bzhi_u64(v, static_cast<u64>(p));
     else {
         static_assert(DIGITS <= 128);
 
@@ -80,34 +80,38 @@ inline constexpr T clear_higher_bits(const T v, const int p) {
 }
 
 
-template<std::unsigned_integral T> constexpr T shiftl(const T, const int = 1);
-template<std::unsigned_integral T> constexpr T shiftr(const T, const int = 1);
+template<std::unsigned_integral T, std::integral I = int> constexpr T shiftl(const T, const I = 1);
+template<std::unsigned_integral T, std::integral I = int> constexpr T shiftr(const T, const I = 1);
 
-template<std::unsigned_integral T>
-constexpr T shiftl(const T x, const int n) {
+template<std::unsigned_integral T, std::integral I>
+constexpr T shiftl(const T x, const I n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    if(n < 0) return shiftr(x, -n);
+    if constexpr(std::signed_integral<I>) {
+        if(n < 0) return shiftr(x, -n);
+    }
     if(n >= DIGITS) return 0;
     return x << n;
 }
 
-template<std::unsigned_integral T>
-constexpr T shiftr(const T x, const int n) {
+template<std::unsigned_integral T, std::integral I>
+constexpr T shiftr(const T x, const I n) {
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    if(n < 0) return shiftl(x, -n);
+    if constexpr(std::signed_integral<I>) {
+        if(n < 0) return shiftl(x, -n);
+    }
     if(n >= DIGITS) return 0;
     return x >> n;
 }
 
 
-template<std::unsigned_integral T>
-inline constexpr T bit(const T x, const int p) {
+template<std::unsigned_integral T, std::integral I = int>
+inline constexpr T bit(const T x, const I p) {
     return shiftr(x, p) & T{1};
 }
 
 
-template<std::unsigned_integral T>
-inline constexpr T lower_bits(const T x, const int digits = (std::numeric_limits<T>::digits >> 1)) {
+template<std::unsigned_integral T, std::integral I = int>
+inline constexpr T lower_bits(const T x, const I digits = (std::numeric_limits<T>::digits >> 1)) {
     return x & (uni::shiftl(x, digits) - 1);
 }
 

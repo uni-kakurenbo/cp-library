@@ -79,7 +79,7 @@ auto manhattan_mst_edges(
     using cost_type = std::common_type_t<std::iter_value_t<I0>, std::iter_value_t<I1>>;
     using size_type = internal::size_t;
 
-    assert(std::distance(x_first, x_last) == std::distance(y_first, y_last));
+    assert(std::ranges::distance(x_first, x_last) == std::ranges::distance(y_first, y_last));
 
     if(cost_sum) *cost_sum = 0;
 

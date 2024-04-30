@@ -91,14 +91,14 @@ struct accumulation_2d : Container {
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     accumulation_2d(I first, S last, const T head = T{}, const Operator op = std::plus<T>{}) noexcept(NO_EXCEPT) : _op(op) {
-        const size_type h = static_cast<size_type>(std::ranges::distance(first, last));
-        const size_type w = static_cast<size_type>(std::ranges::distance(ALL(*first)));
+        const auto h = static_cast<size_type>(std::ranges::distance(first, last));
+        const auto w = static_cast<size_type>(std::ranges::distance(ALL(*first)));
         {
             auto row = first;
             this->assign(h + 1, {});
             (*this)[0].assign(w + 1, head);
             REP(i, h) {
-                assert(w == std::distance(ALL(*row)));
+                assert(w == std::ranges::ssize(*row));
                 (*this)[i + 1].assign(w + 1, head);
                 REP(j, w) (*this)[i + 1][j + 1] = first[i][j];
                 ++row;

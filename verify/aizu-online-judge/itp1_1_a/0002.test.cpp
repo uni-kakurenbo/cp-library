@@ -26,7 +26,7 @@ signed main() {
     uni::timer timer(10000);
 
     // int i = 0;
-    while(not timer.expired()) {
+    while(!timer.expired()) {
         const int n = rng(1'000'000) + 1;
         // debug(i, n);
 

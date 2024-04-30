@@ -32,7 +32,7 @@ signed main() {
 
     uni::timer timer(10000);
 
-    while(not timer.expired()) {
+    while(!timer.expired()) {
         int t = uni::randi64() % 2;
         uni::i64 v = (uni::randi64() % 2) || data.empty() ? uni::randi64() : data[uni::randi64() % data.size()].val();
         debug(t, v);

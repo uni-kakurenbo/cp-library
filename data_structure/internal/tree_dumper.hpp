@@ -16,10 +16,10 @@ namespace internal {
 template<class Derived, class Core, bool LEAF_ONLY>
 struct dumpable_tree {
   private:
-    using node_handler = typename Core::node_handler;
-    using node_pointer = typename Core::node_pointer;
+    using node_handler = Core::node_handler;
+    using node_pointer = Core::node_pointer;
 
-    using size_type = typename Core::node_pointer;
+    using size_type = Core::size_type;
 
     inline auto _push(const node_pointer& tree) {
         return static_cast<Derived*>(this)->_impl.push(tree);
@@ -34,7 +34,10 @@ struct dumpable_tree {
         this->_push(tree);
 
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
-        const auto here = prefix + "--+ " + debugger::dump(index) + " : " + debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
+        const auto here =
+            prefix + "--+ [" +
+            debugger::dump(index) + ", " + debugger::dump(index + tree->length) + ") : " +
+            debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
         index += tree->length;
 
         const auto right = this->dump_rich(tree->right, prefix + (dir == -1 ? "| " : "  "), 1, index);
@@ -69,7 +72,7 @@ struct dumpable_tree {
                     prefix + "--+ [" +
                     debugger::dump(index - tree->size) + ", " + debugger::dump(index) + ") : " +
                     debugger::COLOR_STRING + color + debugger::COLOR_INIT + " " +
-                    debugger::dump(tree->data) + "\n";
+                    debugger::dump(tree->data) + " [" + debugger::dump(tree->size) + "]\n";
             }
             return "";
         }();

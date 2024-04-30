@@ -44,7 +44,7 @@ signed main() {
         }
         if(t == 3) {
             int l, r, b, c; std::cin >> l >> r >> b >> c;
-            data(l, r) += { b, c };
+            data(l, r) *= { b, c };
         }
         if(t == 4) {
             int l, r; std::cin >> l >> r;

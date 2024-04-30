@@ -73,12 +73,12 @@ struct set_adaptor_impl {
     }
 
     inline std::optional<value_type> next(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.max_right(k, [count](const auto& p) { return p.val()->first.val() <= count; });
+        const auto v = this->_data.max_right(k, [count](const auto& p) { return p.val()->first.val() <= count; });
         if(v == this->_data.size()) return {};
         return { v };
     }
     inline std::optional<value_type> prev(const key_type& k, const size_type count = 0) const noexcept(NO_EXCEPT) {
-        const value_type v = this->_data.min_left(k + 1, [count](const auto& p) { return p.val()->first.val() <= count; });
+        const auto v = this->_data.min_left(k + 1, [count](const auto& p) { return p.val()->first.val() <= count; });
         if(v == 0) return {};
         return { v - 1 };
     }

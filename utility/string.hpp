@@ -15,7 +15,7 @@ namespace uni {
 template<std::input_iterator I, std::sentinel_for<I> S, class Res = std::string>
 Res to_lower(I first, S last) noexcept(NO_EXCEPT) {
     Res res;
-    res.reserve(std::distance(first, last));
+    res.reserve(std::ranges::distance(first, last));
     std::ranges::transform(first, last, std::back_inserter(res), ::tolower);
     return res;
 }
@@ -23,7 +23,7 @@ Res to_lower(I first, S last) noexcept(NO_EXCEPT) {
 template<std::input_iterator I, std::sentinel_for<I> S, class Res = std::string>
 Res to_uppwer(I first, S last) noexcept(NO_EXCEPT) {
     Res res;
-    res.reserve(std::distance(first, last));
+    res.reserve(std::ranges::distance(first, last));
     std::ranges::transform(first, last, std::back_inserter(res), ::toupper);
     return res;
 }

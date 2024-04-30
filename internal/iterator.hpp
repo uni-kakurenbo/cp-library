@@ -73,10 +73,10 @@ struct container_iterator_interface : random_access_iterator_base<T> {
 
     static_assert(std::three_way_comparable<difference_type>);
 
-    inline derived* _derived() noexcept(NO_EXCEPT) {
+    inline auto* _derived() noexcept(NO_EXCEPT) {
         return static_cast<derived*>(this);
     }
-    inline const derived* _derived() const noexcept(NO_EXCEPT) {
+    inline const auto* _derived() const noexcept(NO_EXCEPT) {
         return static_cast<const derived*>(this);
     }
 
@@ -84,24 +84,24 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     container_iterator_interface() noexcept = default;
     container_iterator_interface(Container *const ref, const difference_type& pos) noexcept(NO_EXCEPT) : _ref(ref), _pos(pos) {}
 
-    inline Container* ref() const noexcept(NO_EXCEPT) { return this->_ref; }
+    inline auto ref() const noexcept(NO_EXCEPT) { return this->_ref; }
 
-    inline difference_type pos() const noexcept(NO_EXCEPT) { return this->_pos; }
-    inline difference_type& pos() { return this->_pos; }
+    inline auto pos() const noexcept(NO_EXCEPT) { return this->_pos; }
+    inline auto& pos() { return this->_pos; }
 
-    inline derived& operator++() noexcept(NO_EXCEPT) { return ++this->_pos, *this->_derived(); }
-    inline derived& operator--() noexcept(NO_EXCEPT) { return --this->_pos, *this->_derived(); }
+    inline auto& operator++() noexcept(NO_EXCEPT) { return ++this->_pos, *this->_derived(); }
+    inline auto& operator--() noexcept(NO_EXCEPT) { return --this->_pos, *this->_derived(); }
 
-    inline derived operator++(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return ++this->_pos, res; }
-    inline derived operator--(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return --this->_pos, res; }
+    inline auto operator++(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return ++this->_pos, res; }
+    inline auto operator--(int) noexcept(NO_EXCEPT) { auto res = *this->_derived(); return --this->_pos, res; }
 
-    inline derived& operator+=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos += count, *this->_derived(); }
-    inline derived& operator-=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos -= count, *this->_derived(); }
+    inline auto& operator+=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos += count, *this->_derived(); }
+    inline auto& operator-=(const difference_type count) noexcept(NO_EXCEPT) { return this->_pos -= count, *this->_derived(); }
 
     inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->_pos); }
-    inline T operator[](const difference_type count) const noexcept(NO_EXCEPT) { return *(*this->_derived() + count); }
+    inline auto operator[](const difference_type count) const noexcept(NO_EXCEPT) { return *(*this->_derived() + count); }
 
-    inline difference_type operator-(const derived& other) const noexcept(NO_EXCEPT) { return this->_pos - other._pos; }
+    inline auto operator-(const derived& other) const noexcept(NO_EXCEPT) { return this->_pos - other._pos; }
 
 
     friend inline bool operator==(const derived& lhs, const derived& rhs) noexcept(NO_EXCEPT) {

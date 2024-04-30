@@ -33,13 +33,13 @@ struct set_wrapper : Set {
     inline auto ssize() const noexcept(NO_EXCEPT) { return std::ranges::ssize(*this); }
 
     inline auto min_element() const noexcept(NO_EXCEPT) { return this->begin(); }
-    inline auto max_element() const noexcept(NO_EXCEPT) { return std::prev(this->end()); }
+    inline auto max_element() const noexcept(NO_EXCEPT) { return std::ranges::prev(this->end()); }
 
     inline auto min() const noexcept(NO_EXCEPT) { return *this->begin(); }
-    inline auto max() const noexcept(NO_EXCEPT) { return *std::prev(this->end()); }
+    inline auto max() const noexcept(NO_EXCEPT) { return *std::ranges::prev(this->end()); }
 
     inline auto& pop_min() noexcept(NO_EXCEPT) { this->erase(this->begin()); return *this; }
-    inline auto& pop_max() noexcept(NO_EXCEPT) { this->erase(std::prev(this->end())); return *this; }
+    inline auto& pop_max() noexcept(NO_EXCEPT) { this->erase(std::ranges::prev(this->end())); return *this; }
 
 
     inline auto kth_smallest_element(const size_type k) const noexcept(NO_EXCEPT) {
