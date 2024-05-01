@@ -2,17 +2,46 @@
 
 
 #include <cstdint>
+#include <concepts>
 #include <utility>
+#include <cmath>
 
 
 #include "snippet/aliases.hpp"
 
 #include "internal/type_traits.hpp"
+#include "internal/exception.hpp"
 
 #include "numeric/limits.hpp"
 
 
 namespace uni {
+
+
+namespace internal {
+    template<class T>
+    consteval auto get_pi() {
+        if constexpr(std::integral<T>) {
+            return static_cast<T>(3);
+        }
+        else if constexpr(std::same_as<T, float>) {
+            return M_PIf;
+        }
+        else if constexpr(std::same_as<T, double>) {
+            return M_PI;
+        }
+        else if constexpr(std::same_as<T, ld>) {
+            return M_PIl;
+        }
+        else {
+            static_assert(EXCEPTION<T>);
+        }
+    }
+} // namespace internal
+
+
+template<class T = ld>
+constexpr auto PI = internal::get_pi<T>();
 
 
 enum class comparison : std::uint8_t {
@@ -69,13 +98,18 @@ enum class positional_relation : std::int8_t {
     counter_clockwise,
     anti_clockwise = counter_clockwise,
 
-    straight_backward,
-    straight_forward,
-    straight_middle,
+    backward,
+    forward,
 
     in,
     on,
-    out
+    out,
+
+    included = in,
+    inscribed,
+    intersecting,
+    circumscribed,
+    distant,
 };
 
 

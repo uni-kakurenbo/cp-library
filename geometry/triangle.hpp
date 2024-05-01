@@ -5,10 +5,12 @@
 #include <tuple>
 #include <concepts>
 
-#include "internal/dev_env.hpp"
 
+#include "internal/dev_env.hpp"
 #include "utility/functional.hpp"
+
 #include "geometry/point.hpp"
+#include "geometry/circle.hpp"
 
 
 namespace uni {
@@ -23,7 +25,7 @@ struct triangle {
     point_type _p0, _p1, _p2;
 
   protected:
-    inline constexpr void _normalize() noexcept(NO_EXCEPT) {
+    constexpr void _normalize() noexcept(NO_EXCEPT) {
         std::array<point_type,3> vs = { this->_p0, this->_p1, this->_p2 };
         std::sort(std::begin(vs), std::end(vs));
         std::tie(this->_p0, this->_p1, this->_p2) = std::tie(vs[0], vs[1], vs[2]);
@@ -37,6 +39,7 @@ struct triangle {
         this->_normalize();
     }
 
+
     inline constexpr auto& p0() noexcept(NO_EXCEPT) { return this->_p0; }
     inline constexpr auto& p1() noexcept(NO_EXCEPT) { return this->_p1; }
     inline constexpr auto& p2() noexcept(NO_EXCEPT) { return this->_p2; }
@@ -45,34 +48,32 @@ struct triangle {
     inline constexpr const auto& p1() const noexcept(NO_EXCEPT) { return this->_p1; }
     inline constexpr const auto& p2() const noexcept(NO_EXCEPT) { return this->_p2; }
 
-    inline constexpr auto vertices() noexcept(NO_EXCEPT) {
-        return std::tie(this->p0(), this->p1(), this->p2());
-    }
-    inline constexpr auto vertices() const noexcept(NO_EXCEPT) {
-        return std::make_tuple(std::cref(this->p0()), std::cref(this->p1()), std::cref(this->p2()));
-    }
 
-    inline constexpr const value_type area() const noexcept(NO_EXCEPT) {
-        return std::abs(cross(this->p0(), this->p1(), this->p2())) / 2;
-    }
+    inline constexpr auto vertices() noexcept(NO_EXCEPT) { return std::tie(this->_p0, this->_p1, this->_p2); }
+    inline constexpr auto vertices() const noexcept(NO_EXCEPT) { return std::make_tuple(std::cref(this->_p0), std::cref(this->_p1), std::cref(this->_p2)); }
 
-    inline constexpr auto distances() const noexcept(NO_EXCEPT) {
+
+    constexpr const auto signed_area() const noexcept(NO_EXCEPT) { return cross(this->_p0, this->_p1, this->_p2) / 2; }
+    inline constexpr const auto area() const noexcept(NO_EXCEPT) { return std::abs(this->signed_area()); }
+
+
+    constexpr auto distances() const noexcept(NO_EXCEPT) {
         return std::make_tuple(
-            uni::distance(this->p1(), this->p2()),
-            uni::distance(this->p2(), this->p0()),
-            uni::distance(this->p0(), this->p1())
+            uni::distance(this->_p1, this->_p2),
+            uni::distance(this->_p2, this->_p0),
+            uni::distance(this->_p0, this->_p1)
         );
     }
 
-    inline constexpr auto squared_distances() const noexcept(NO_EXCEPT) {
+    constexpr auto squared_distances() const noexcept(NO_EXCEPT) {
         return std::make_tuple(
-            uni::squared_distance(this->p1(), this->p2()),
-            uni::squared_distance(this->p2(), this->p0()),
-            uni::squared_distance(this->p0(), this->p1())
+            uni::squared_distance(this->_p1, this->_p2),
+            uni::squared_distance(this->_p2, this->_p0),
+            uni::squared_distance(this->_p0, this->_p1)
         );
     }
 
-    inline constexpr auto angles() const noexcept(NO_EXCEPT) {
+    constexpr auto angles() const noexcept(NO_EXCEPT) {
         const auto [ d0, d1, d2 ] = this->distances();
         return std::make_tuple(
             std::acos((d1 * d1 + d2 * d2 - d0 * d0) / (2 * d1 * d2)),
@@ -81,36 +82,43 @@ struct triangle {
         );
     }
 
-    inline constexpr  point_type centroid() const noexcept(NO_EXCEPT) { return tuple_sum(this->vertices()) / 3; }
 
-    inline constexpr auto circum_center() const noexcept(NO_EXCEPT) {
+    constexpr  point_type barycenter() const noexcept(NO_EXCEPT) { return tuple_sum(this->vertices()) / 3; }
+
+    constexpr auto circumcenter() const noexcept(NO_EXCEPT) {
         const auto [ d0, d1, d2 ] = this->squared_distances();
         const auto t0 = d0 * (d1 + d2 - d0);
         const auto t1 = d1 * (d2 + d0 - d1);
         const auto t2 = d2 * (d0 + d1 - d2);
-        return (t0 * this->p0() + t1 * this->p1() + t2 * this->p2()) / (t0 + t1 + t2);
+        return (t0 * this->_p0 + t1 * this->_p1 + t2 * this->_p2) / (t0 + t1 + t2);
     }
 
-    inline constexpr auto inner_center() const noexcept(NO_EXCEPT) {
+    constexpr auto incenter() const noexcept(NO_EXCEPT) {
         const auto [ d0, d1, d2 ] = this->distances();
-        return (d0 * this->p0() + d1 * this->p1() + d2 * this->p2()) / (d0 + d1 + d2);
+        return (d0 * this->_p0 + d1 * this->_p1 + d2 * this->_p2) / (d0 + d1 + d2);
     }
 
-    inline constexpr auto ortho_center() const noexcept(NO_EXCEPT) {
-        return tuple_sum(this->vertices()) - 2 * this->circum_center();
+    constexpr auto orthocenter() const noexcept(NO_EXCEPT) {
+        return tuple_sum(this->vertices()) - 2 * this->circumcenter();
     }
 
-    inline constexpr triangle excenters() const noexcept(NO_EXCEPT) {
+    constexpr triangle excenters() const noexcept(NO_EXCEPT) {
         const auto [ d0, d1, d2 ] = this->distances();
         return {
-            (d1 * this->p1() + d2 * this->p2() - d0 * this->p0()) / (d1 + d2 - d0),
-            (d2 * this->p1() + d0 * this->p2() - d1 * this->p0()) / (d2 + d0 - d1),
-            (d0 * this->p1() + d1 * this->p2() - d2 * this->p0()) / (d0 + d1 - d2)
+            (d1 * this->_p1 + d2 * this->_p2 - d0 * this->_p0) / (d1 + d2 - d0),
+            (d2 * this->_p1 + d0 * this->_p2 - d1 * this->_p0) / (d2 + d0 - d1),
+            (d0 * this->_p1 + d1 * this->_p2 - d2 * this->_p0) / (d0 + d1 - d2)
         };
     }
 
+
+    // implemented in geometry/basic.hpp
+    constexpr auto circumcircle() const noexcept(NO_EXCEPT);
+    constexpr auto incircle() const noexcept(NO_EXCEPT);
+
+
     auto _debug() const noexcept(NO_EXCEPT) {
-        return std::make_tuple(this->p0(), this->p1(), this->p2());
+        return std::make_tuple(this->_p0, this->_p1, this->_p2);
     }
 };
 
@@ -148,7 +156,7 @@ struct tuple_element<I,uni::triangle<T>> {
 
 
 template<class T, class C, class S>
-inline auto& operator>>(basic_istream<C, S>& in, uni::triangle<T>& v) noexcept(NO_EXCEPT) {
+auto& operator>>(basic_istream<C, S>& in, uni::triangle<T>& v) noexcept(NO_EXCEPT) {
     typename uni::triangle<T>::point_type p, q, r; in >> p >> q >> r;
     v = { p, q, r };
     return in;
@@ -156,3 +164,25 @@ inline auto& operator>>(basic_istream<C, S>& in, uni::triangle<T>& v) noexcept(N
 
 
 } // namespace std
+
+
+namespace uni {
+
+
+template<class> struct circle;
+
+template<class Point>
+constexpr auto triangle<Point>::incircle() const noexcept(NO_EXCEPT) {
+    const auto p = this->incenter();
+    return circle<Point>::raw(p, squared_distance(p, line(this->_p0, this->_p1)));
+}
+
+
+template<class Point>
+constexpr auto triangle<Point>::circumcircle() const noexcept(NO_EXCEPT) {
+    const auto p = this->circumcenter();
+    return circle<Point>::raw(p, squared_distance(p, this->_p0));
+}
+
+
+} // namespace uni

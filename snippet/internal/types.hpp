@@ -15,8 +15,12 @@ using i64 = std::int64_t;
 using u64 = std::uint64_t;
 
 #ifdef __GNUC__
+
 using i128 = __int128_t;
 using u128 = __uint128_t;
+
+using f128 = __float128;
+
 #endif
 
 using uint = unsigned;
