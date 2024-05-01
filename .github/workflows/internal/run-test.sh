@@ -24,9 +24,15 @@ set +e
     time g++-12 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
     echo "::endgroup::"
 
+    PRECISION="$(grep -Po '(?<=\#define\ ERROR\ ).+' "${TARGET}")"
+
     TESTER_OPTION=''
     if [ -f "../testcases/${PROBLEM_HASH}/checker" ]; then
         TESTER_OPTION+="--judge-command ../testcases/${PROBLEM_HASH}/checker"
+    fi
+
+    if [ -s PRECISION ]; then
+        TESTER_OPTION+="--error ${PRECISION}"
     fi
 
     echo "::group::run test"
