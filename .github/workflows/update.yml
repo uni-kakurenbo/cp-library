@@ -100,7 +100,12 @@ jobs:
 
     analyze:
         needs: config
-        if: ${{ !cancelled() && needs.config.outputs.run-analysis == 'true' }}
+        if: >-
+            ${{
+              !cancelled() &&
+              needs.config.outputs.run-analysis == 'true' &&
+              !startsWith(github.ref_name, 'test')
+            }}
         uses: ./.github/workflows/analyze.yml
 
     verify:

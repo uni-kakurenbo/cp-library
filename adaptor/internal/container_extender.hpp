@@ -42,13 +42,13 @@ struct extended_container : Base {
 
     inline const auto& operator[](internal::size_t p) const noexcept(NO_EXCEPT) {
         p = p < 0 ? p + this->size() : p;
-        assert(0 <= p && p < static_cast<internal::size_t>(this->size()));
+        assert(0 <= p && p < this->ssize());
         return this->Base::operator[](p);
     }
 
     inline auto& operator[](internal::size_t p) noexcept(NO_EXCEPT) {
         p = p < 0 ? p + this->size() : p;
-        assert(0 <= p && p < static_cast<internal::size_t>(this->size()));
+        assert(0 <= p && p < this->ssize());
         return this->Base::operator[](p);
     }
 

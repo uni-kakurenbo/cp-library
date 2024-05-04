@@ -31,7 +31,7 @@ set +e
         TESTER_OPTION+="--judge-command ../testcases/${PROBLEM_HASH}/checker"
     fi
 
-    if [ -s PRECISION ]; then
+    if [ -n "${PRECISION}" ]; then
         TESTER_OPTION+="--error ${PRECISION}"
     fi
 

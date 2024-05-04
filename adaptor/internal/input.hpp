@@ -146,6 +146,8 @@ struct input_adaptor {
         for(I itr=first; itr!=last; ++itr) *this >> *itr;
         return *this;
     }
+
+    explicit operator bool() const noexcept(NO_EXCEPT) { return (bool)*this->in; }
 };
 
 
