@@ -39,7 +39,6 @@ struct triangle {
         this->_normalize();
     }
 
-
     inline constexpr auto& p0() noexcept(NO_EXCEPT) { return this->_p0; }
     inline constexpr auto& p1() noexcept(NO_EXCEPT) { return this->_p1; }
     inline constexpr auto& p2() noexcept(NO_EXCEPT) { return this->_p2; }
