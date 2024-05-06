@@ -62,5 +62,6 @@ signed main() {
         }
 
         debug(data.dump_rich());
+        debug(data.traverse());
     }
 }

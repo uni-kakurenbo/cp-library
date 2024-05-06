@@ -502,14 +502,14 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
 
   public:
     struct iterator : iterator_interface {
-        iterator() noexcept = default;
-        iterator(const wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
-
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 };
 
 
@@ -673,15 +673,14 @@ struct compressed_wavelet_matrix : protected wavelet_matrix<u32, MapTemplate> {
 
   public:
     struct iterator : iterator_interface {
-        iterator() noexcept = default;
-        iterator(const compressed_wavelet_matrix *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
-
-        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
-        inline auto operator[](const typename iterator_interface::difference_type count) const noexcept(NO_EXCEPT) { return *(*this + count); }
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 };
 
 

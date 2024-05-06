@@ -82,7 +82,7 @@ struct container_iterator_interface : random_access_iterator_base<T> {
 
   public:
     container_iterator_interface() noexcept = default;
-    container_iterator_interface(Container *const ref, const difference_type& pos) noexcept(NO_EXCEPT) : _ref(ref), _pos(pos) {}
+    container_iterator_interface(Container *const ref, const difference_type pos) noexcept(NO_EXCEPT) : _ref(ref), _pos(pos) {}
 
     inline auto ref() const noexcept(NO_EXCEPT) { return this->_ref; }
 

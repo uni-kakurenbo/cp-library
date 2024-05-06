@@ -20,7 +20,7 @@
 #include "adaptor/array.hpp"
 #include "view/zip.hpp"
 #include "view/cyclic.hpp"
-#include "data_structure/disjoint_set_union.hpp"
+#include "data_structure/disjoint_set.hpp"
 
 using point = uni::point<uni::ld>;
 
@@ -30,7 +30,7 @@ signed main() {
     uni::valarray<uni::i32> s(r), t(r); input >> uni::views::zip(s, t);
     s -= 1, t -= 1;
 
-    uni::dsu ds(v);
+    uni::disjoint_set ds(v);
 
     auto ch = ps.convex_hull();
     debug(ch);

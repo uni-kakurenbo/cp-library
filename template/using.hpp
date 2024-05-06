@@ -15,11 +15,11 @@ using std::priority_queue;
 
 using std::bitset;
 
-using std::sort;
-using std::reverse;
+using std::ranges::sort;
+using std::ranges::reverse;
 
-using std::min_element;
-using std::max_element;
+using std::ranges::min_element;
+using std::ranges::max_element;
 
 
 using uni::i32;

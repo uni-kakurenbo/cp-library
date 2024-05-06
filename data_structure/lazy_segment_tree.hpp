@@ -437,19 +437,21 @@ struct lazy_segment_tree<Action> {
         return this->_impl.min_left(r, std::forward<F>(f));
     }
 
+    struct iterator;
 
-    struct iterator : internal::container_iterator_interface<value_type, lazy_segment_tree, iterator> {
-        iterator() noexcept = default;
+  protected:
+    using iterator_interface = internal::container_iterator_interface<value_type, lazy_segment_tree, iterator>;
 
-        iterator(lazy_segment_tree *const ref, const size_type p) noexcept(NO_EXCEPT)
-          : internal::container_iterator_interface<value_type, lazy_segment_tree, iterator>(ref, p)
-        {}
-
-        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+  public:
+    struct iterator : iterator_interface {
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
+
+    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 };
 
 

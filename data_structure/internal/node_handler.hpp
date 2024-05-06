@@ -36,7 +36,7 @@ struct base_handler {
 
     base_handler(base_handler&& source) noexcept = default;
 
-    base_handler& operator=(const base_handler& source) noexcept(NO_EXCEPT) {
+    auto& operator=(const base_handler& source) noexcept(NO_EXCEPT) {
         if(&source != this) {
             if constexpr(allocator_traits::propagate_on_container_copy_assignment::value) {
                 this->_allocator = source._allocator;
@@ -45,7 +45,7 @@ struct base_handler {
         return *this;
     }
 
-    base_handler& operator=(base_handler&& source) noexcept(NO_EXCEPT) {
+    auto& operator=(base_handler&& source) noexcept(NO_EXCEPT) {
         if(&source != this) {
             if constexpr(allocator_traits::propagate_on_container_move_assignment::value) {
                 this->_allocator = source._allocator;
@@ -71,11 +71,11 @@ struct cloneable {
         inline static node_pointer nil = std::make_shared<node_type>();
 
         template<class... Args>
-        inline node_pointer create(Args&&... args) noexcept(NO_EXCEPT) {
+        inline auto create(Args&&... args) noexcept(NO_EXCEPT) {
             return std::allocate_shared<node_type>(this->_allocator, std::forward<Args>(args)...);
         }
 
-        inline node_pointer clone(const node_pointer& ptr) noexcept(NO_EXCEPT) {
+        inline auto clone(const node_pointer& ptr) noexcept(NO_EXCEPT) {
             return this->create(*ptr);
         }
 
@@ -121,14 +121,14 @@ struct reusing {
 
 
         template<class... Args>
-        inline node_pointer create(Args&&... args) noexcept(NO_EXCEPT) {
+        inline auto create(Args&&... args) noexcept(NO_EXCEPT) {
             node_pointer node = node_allocator_traits::allocate(this->_allocator, 1);
             node_allocator_traits::construct(this->_allocator, node, std::forward<Args>(args)...);
 
             return node;
         }
 
-        inline node_pointer clone(const node_pointer ptr) const noexcept { return ptr; }
+        inline auto clone(const node_pointer ptr) const noexcept { return ptr; }
 
         inline bool disposable(const node_pointer node) const noexcept(NO_EXCEPT) {
             return node != handler::nil;

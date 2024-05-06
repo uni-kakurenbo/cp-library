@@ -821,14 +821,16 @@ struct dynamic_sequence
 
   public:
     struct iterator : iterator_interface {
-        iterator() noexcept = default;
-        iterator(dynamic_sequence *const ref, const size_type pos) noexcept(NO_EXCEPT) : iterator_interface(ref, pos) {}
-
-        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() noexcept(NO_EXCEPT) { return iterator(this, this->size()); }
+
+    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
+
+    inline auto traverse() const noexcept(NO_EXCEPT) { return typename sequence_core::traverser(this->_root); }
 
 
     using dumper::dump_rich;

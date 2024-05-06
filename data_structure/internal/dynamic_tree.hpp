@@ -6,7 +6,9 @@
 
 
 #include "snippet/aliases.hpp"
+
 #include "internal/dummy.hpp"
+#include "internal/uncopyable.hpp"
 
 #include "action/base.hpp"
 #include "data_structure/internal/basic_tree_concept.hpp"
@@ -96,7 +98,7 @@ struct basic_core
     using operation = data_type::lazy_t;
 
 
-    inline operand val(const node_pointer& node) const noexcept(NO_EXCEPT) {
+    inline auto val(const node_pointer& node) const noexcept(NO_EXCEPT) {
         if constexpr(Context::LEAF_ONLY) {
             if(node->is_leaf()) return node->size * node->data.val;
             return node->data.val;
@@ -204,7 +206,7 @@ struct basic_core
         this->enumerate(tree->right, itr);
     }
 
-    operand fold(node_pointer& tree, size_type l, size_type r) noexcept(NO_EXCEPT) {
+    auto fold(node_pointer& tree, size_type l, size_type r) noexcept(NO_EXCEPT) {
         assert(l <= r);
         if(l == r) return operand{};
 

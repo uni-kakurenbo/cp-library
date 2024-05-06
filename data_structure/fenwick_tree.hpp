@@ -286,14 +286,14 @@ struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
 
   public:
     struct iterator : iterator_interface {
-        iterator() noexcept = default;
-        iterator(const fenwick_tree *const ref, const size_type p) noexcept(NO_EXCEPT) : iterator_interface(ref, p) {}
-
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->_impl.size()); }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 };
 
 

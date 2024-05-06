@@ -22,7 +22,7 @@
 #include "action/helpers.hpp"
 
 using uni::algebraic::affine;
-using mint = atcoder::modint998244353;
+using mint = uni::modint998244353;
 
 signed main() {
     int n, q; std::cin >> n >> q;
