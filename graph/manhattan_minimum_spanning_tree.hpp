@@ -7,7 +7,6 @@
 #include <numeric>
 #include <algorithm>
 
-#include <atcoder/dsu>
 
 #include "snippet/iterations.hpp"
 
@@ -15,6 +14,8 @@
 #include "internal/types.hpp"
 
 #include "adaptor/vector.hpp"
+
+#include "data_structure/disjoint_set.hpp"
 
 #include "structure/graph.hpp"
 #include "graph/spanning_tree.hpp"
@@ -44,7 +45,7 @@ auto manhattan_mst_candidate_edges(
 
     REP(_0, 2) {
         REP(_1, 2) {
-            std::sort(ALL(indices), [&](const auto i, const auto j) { return xs[i] + ys[i] < xs[j] + ys[j]; });
+            std::ranges::sort(indices, [&](const auto i, const auto j) { return xs[i] + ys[i] < xs[j] + ys[j]; });
 
             std::map<cost_type,size_type> scan;
             ITR(i, indices) {
@@ -61,7 +62,7 @@ auto manhattan_mst_candidate_edges(
         ITRR(x, xs) x *= -1;
     }
 
-    std::sort(ALL(res), [&](const auto& p, const auto& q) { return std::get<2>(p) < std::get<2>(q); });
+    std::ranges::sort(res, [&](const auto& p, const auto& q) { return std::get<2>(p) < std::get<2>(q); });
 
     return res;
 }
@@ -84,7 +85,7 @@ auto manhattan_mst_edges(
     if(cost_sum) *cost_sum = 0;
 
     vector<std::tuple<size_type, size_type, cost_type>> res;
-    atcoder::dsu uf(static_cast<int>(std::ranges::distance(x_first, x_last)));
+    disjoint_set uf(std::ranges::distance(x_first, x_last));
 
     ITR(u, v, w, (manhattan_mst_candidate_edges<I0,I1>(x_first, x_last, y_first, y_last))) {
         if(not uf.same(u, v)) {

@@ -13,13 +13,14 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
+#include "numeric/modular/modint.hpp"
 #include "data_structure/lazy_segment_tree.hpp"
 #include "algebraic/affine.hpp"
 #include "algebraic/assignment.hpp"
 
 
 using uni::algebraic::affine;
-using mint = atcoder::modint998244353;
+using mint = uni::modint998244353;
 
 struct action {
     using operand = affine<mint,true>;

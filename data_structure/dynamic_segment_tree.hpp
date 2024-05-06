@@ -445,18 +445,22 @@ struct dynamic_segment_tree<Action, NodeHandler>
     inline auto operator()(const size_type l, const size_type r) noexcept(NO_EXCEPT) { return range_reference(this, l, r); }
 
 
-    struct iterator : internal::container_iterator_interface<value_type, const dynamic_segment_tree, iterator> {
-        iterator() noexcept = default;
+  public:
+    struct iterator;
 
-        iterator(const dynamic_segment_tree *const ref, const size_type p) noexcept(NO_EXCEPT)
-          : internal::container_iterator_interface<value_type, const dynamic_segment_tree, iterator>(ref, p)
-        {}
+  protected:
+    using iterator_interface = internal::container_iterator_interface<value_type, const dynamic_segment_tree, iterator>;
 
-        inline auto operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+  public:
+    struct iterator : iterator_interface {
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() const noexcept(NO_EXCEPT) { return iterator(this, 0); }
     inline auto end() const noexcept(NO_EXCEPT) { return iterator(this, this->_n); }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
 
     using core::dump_rich;

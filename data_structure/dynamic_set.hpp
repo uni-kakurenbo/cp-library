@@ -462,14 +462,14 @@ struct dynamic_set<ActionOrValue, Context>
 
   public:
     struct iterator : iterator_interface {
-        iterator() noexcept = default;
-        iterator(dynamic_set *const ref, const size_type k) noexcept(NO_EXCEPT) : iterator_interface(ref, k) {}
-
-        inline value_type operator*() const noexcept(NO_EXCEPT) { return this->ref()->get(this->pos()); }
+        using iterator_interface::iterator_interface;
     };
 
     inline auto begin() noexcept(NO_EXCEPT) { return iterator{ this, 0 }; }
     inline auto end() noexcept(NO_EXCEPT) { return iterator{ this, this->size() }; }
+
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->end()); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(this->begin()); }
 
 
     using dumper::dump_rich;

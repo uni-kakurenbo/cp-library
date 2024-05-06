@@ -12,12 +12,12 @@
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
-#include "data_structure/disjoint_set_union.hpp"
+#include "data_structure/disjoint_set.hpp"
 
 signed main() {
     uni::i32 n, q; input >> n >> q;
 
-    uni::dsu ds(n);
+    uni::disjoint_set ds(n);
 
     REP(q) {
         uni::i32 t, x, y; input >> t >> x >> y;

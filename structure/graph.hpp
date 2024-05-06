@@ -20,7 +20,7 @@
 #include "adaptor/io.hpp"
 
 #include "structure/grid.hpp"
-#include "data_structure/disjoint_set_union.hpp"
+#include "data_structure/disjoint_set.hpp"
 
 #include "adaptor/virtual_map.hpp"
 
@@ -258,7 +258,7 @@ struct mixin : Graph {
     inline auto maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
-    inline dsu components() const noexcept(NO_EXCEPT);
+    inline disjoint_set components() const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
     inline bool is_bipartite() const noexcept(NO_EXCEPT);

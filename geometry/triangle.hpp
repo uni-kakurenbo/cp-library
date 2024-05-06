@@ -27,7 +27,7 @@ struct triangle {
   protected:
     constexpr void _normalize() noexcept(NO_EXCEPT) {
         std::array<point_type,3> vs = { this->_p0, this->_p1, this->_p2 };
-        std::sort(std::begin(vs), std::end(vs));
+        std::ranges::sort(vs);
         std::tie(this->_p0, this->_p1, this->_p2) = std::tie(vs[0], vs[1], vs[2]);
     }
 

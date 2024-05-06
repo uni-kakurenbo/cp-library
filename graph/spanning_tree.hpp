@@ -1,11 +1,10 @@
 #pragma once
 
 
-#include <atcoder/dsu>
-
-
 #include "internal/dev_env.hpp"
 #include "structure/graph.hpp"
+
+#include "data_structure/disjoint_set.hpp"
 
 
 namespace uni {
@@ -17,7 +16,7 @@ namespace graph_impl {
 
 template<class G, template<class...> class Compare, class Cost, class Size>
 std::optional<Cost> kruskal(const G& graph, const Compare<std::tuple<Cost, Size, Size>> compare, G *const mst = nullptr) noexcept(NO_EXCEPT) {
-    atcoder::dsu ds(graph.size());
+    disjoint_set ds(graph.size());
 
     std::vector<std::tuple<Cost, Size, Size>> edges;
 
@@ -25,7 +24,7 @@ std::optional<Cost> kruskal(const G& graph, const Compare<std::tuple<Cost, Size,
         edges.emplace_back(e.cost, u, e.to);
     }
 
-    std::ranges::sort(ALL(edges), compare);
+    std::ranges::sort(edges, compare);
 
     if(mst) mst->clear(), mst->resize(graph.size());
 

@@ -18,8 +18,8 @@
 
 namespace uni {
 
-//Thanks to: atcoder::dsu
-struct dsu {
+//Thanks to: atcoder::disjoint_set
+struct disjoint_set {
     using size_type = internal::size_t;
 
   private:
@@ -29,8 +29,8 @@ struct dsu {
     std::vector<size_type> _parent_or_size;
 
   public:
-    dsu() noexcept = default;
-    explicit dsu(const size_type n) noexcept(NO_EXCEPT) : _n(n), _group_count(n), _parent_or_size(n, -1) {}
+    disjoint_set() noexcept = default;
+    explicit disjoint_set(const size_type n) noexcept(NO_EXCEPT) : _n(n), _group_count(n), _parent_or_size(n, -1) {}
 
     inline auto size() const noexcept(NO_EXCEPT) { return this->_n; }
     inline auto group_count() const noexcept(NO_EXCEPT) { return this->_group_count; }
