@@ -76,7 +76,7 @@ inline constexpr std::make_unsigned_t<T> to_unsigned(const T& x) noexcept(NO_EXC
 
 
 template<class T, class R = T>
-inline constexpr R nPr(const T& n, const T& r) noexcept(NO_EXCEPT) {
+inline constexpr R perm(const T& n, const T& r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n < r) return 0;
@@ -88,7 +88,7 @@ inline constexpr R nPr(const T& n, const T& r) noexcept(NO_EXCEPT) {
 }
 
 template<class T, class R = T>
-inline constexpr R nCr(const T& n, T r) noexcept(NO_EXCEPT) {
+inline constexpr R comb(const T& n, T r) noexcept(NO_EXCEPT) {
     assert(0 <= n);
     assert(0 <= r);
     if(n == r) return 1;
