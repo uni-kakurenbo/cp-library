@@ -4,6 +4,7 @@
 #include <cassert>
 #include <tuple>
 #include <iostream>
+#include <ranges>
 
 
 #include "snippet/internal/types.hpp"
@@ -11,6 +12,7 @@
 
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
+#include "internal/concepts.hpp"
 
 #include "utility/functional.hpp"
 #include "adaptor/valarray.hpp"
@@ -218,22 +220,25 @@ struct mixin : Graph {
 
   public:
     // graph/shortest_path.hpp
-    template<class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_without_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+    template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_without_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
-    inline auto shortest_path_without_cost(const node_type&) const noexcept(NO_EXCEPT);
-
-    // graph/dijkstra.hpp
-    template<class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_with_01cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
-
-    inline auto shortest_path_with_01cost(const node_type&) const noexcept(NO_EXCEPT);
+    template<item_or_convertible_range<node_type> Source>
+    inline auto shortest_path_without_cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
-    template<class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_with_cost(const node_type&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+    template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_with_01cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
-    inline auto shortest_path_with_cost(const node_type&) const noexcept(NO_EXCEPT);
+    template<item_or_convertible_range<node_type> Source>
+    inline auto shortest_path_with_01cost(Source&&) const noexcept(NO_EXCEPT);
+
+    // graph/dijkstra.hpp
+    template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
+    inline void shortest_path_with_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+
+    template<item_or_convertible_range<node_type> Source>
+    inline auto shortest_path_with_cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
     inline bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);

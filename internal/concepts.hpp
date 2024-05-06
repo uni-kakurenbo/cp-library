@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <concepts>
+#include <ranges>
 #include <limits>
 #include <functional>
 
@@ -10,6 +11,14 @@
 namespace uni {
 
 namespace internal {
+
+
+template<class R, class T>
+concept convertibel_range = std::convertible_to<std::ranges::range_value_t<R>, T>;
+
+
+template<class T, class V>
+concept item_or_convertible_range = std::convertible_to<T, V> || convertibel_range<T, V>;
 
 
 template<class Structure>
