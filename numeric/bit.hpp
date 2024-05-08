@@ -105,7 +105,7 @@ constexpr T shiftr(const T x, const I n) {
 
 
 template<std::unsigned_integral T, std::integral I = int>
-inline constexpr T bit(const T x, const I p) {
+inline constexpr bool bit(const T x, const I p) {
     return shiftr(x, p) & T{1};
 }
 
