@@ -3,10 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/../..",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/ac-library",
-                "~/boost",
-                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/uni",
+                "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++-13",
