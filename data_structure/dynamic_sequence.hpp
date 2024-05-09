@@ -414,7 +414,7 @@ struct dynamic_sequence
     {}
 
     template<std::ranges::input_range R>
-        requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
+        requires (!std::same_as<std::remove_cvref_t<R>, dynamic_sequence>)
     explicit dynamic_sequence(R&& range, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_sequence(ALL(range), allocator)
     {}
@@ -710,7 +710,7 @@ struct dynamic_sequence
 
 
     template<std::ranges::input_range R>
-        requires (!std::same_as<std::decay_t<R>, dynamic_sequence>)
+        requires (!std::same_as<std::remove_cvref_t<R>, dynamic_sequence>)
     inline auto& insert(const size_type pos, R&& range) noexcept(NO_EXCEPT) {
         return this->insert(pos, ALL(range));
     }

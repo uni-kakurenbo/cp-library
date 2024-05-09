@@ -18,9 +18,9 @@
 namespace uni {
 
 
-template<class T> struct valarray : internal::extended_container<std::valarray<T>> {
+template<class T> struct valarray : internal::advanced_container<std::valarray<T>> {
   private:
-    using base = internal::extended_container<std::valarray<T>>;
+    using base = internal::advanced_container<std::valarray<T>>;
 
   public:
     using size_type = internal::size_t;

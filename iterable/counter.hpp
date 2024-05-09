@@ -12,13 +12,13 @@
 namespace uni {
 
 
-template<class T, class container = dynamic_auto_holder<T,internal::size_t>>
-struct counter : container {
+template<class T, class Container = dynamic_auto_holder<T, internal::size_t>>
+struct counter : Container {
     counter() noexcept(NO_EXCEPT) = default;
 
     template<std::input_iterator I, std::sentinel_for<I> S>
     counter(I first, S last) noexcept(NO_EXCEPT) {
-        for(auto itr=first; itr!=last; ++itr) ++(*this)[*itr];
+        for(auto itr = first; itr != last; ++itr) ++(*this)[*itr];
     }
 
     template<std::ranges::input_range R>

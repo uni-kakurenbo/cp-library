@@ -281,7 +281,7 @@ template<
     std::ranges::forward_range Order
 >
     requires std::ranges::output_range<Res, std::ranges::range_value_t<Target>>
-Res order_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
+Res ordered_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
     const auto size = std::ranges::ssize(target);
     Res res(size);
 
@@ -303,8 +303,8 @@ template<
     std::ranges::random_access_range Target,
     std::ranges::forward_range Order
 >
-auto order_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
-    return order_by<std::decay_t<Target>, Target, Order>(std::forward<Target>(target), std::forward<Order>(order));
+auto ordered_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
+    return ordered_by<std::remove_cvref_t<Target>, Target, Order>(std::forward<Target>(target), std::forward<Order>(order));
 }
 
 

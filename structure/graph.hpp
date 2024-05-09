@@ -127,12 +127,14 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
       : base(n), _out_degs(n), _in_degs(n)
     {}
 
-    inline auto& clear() noexcept(NO_EXCEPT) {
-        this->base::clear(), this->_out_degs.clear(), this->_in_degs.clear();
+    auto& clear() noexcept(NO_EXCEPT) {
+        this->_directed_edge_count = 0, this->_undirected_edge_count = 0;
+        this->base::clear(), this->_edges.clear();
+        this->_out_degs.clear(), this->_in_degs.clear();
         return *this;
     }
 
-    inline auto& resize(const size_type n) noexcept(NO_EXCEPT) {
+    auto& resize(const size_type n) noexcept(NO_EXCEPT) {
         this->base::resize(n), this->_out_degs.resize(n), this->_in_degs.resize(n);
         return *this;
     }
@@ -152,14 +154,14 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     inline size_type directed_edges_count() const noexcept(NO_EXCEPT) { return this->_directed_edge_count; }
 
     template<class R = valgrid<bool>>
-    inline auto make_has_edges() const noexcept(NO_EXCEPT) {
+    auto make_has_edges() const noexcept(NO_EXCEPT) {
         R res(this->size(), this->size(), false);
         REP(i, this->size()) ITR(j, this->operator[](i)) res[i][j] = true;
         return res;
     }
 
     template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
-    inline auto make_initial_distance_matrix() const noexcept(NO_EXCEPT) {
+    auto make_initial_distance_matrix() const noexcept(NO_EXCEPT) {
         R res(this->size(), this->size(), numeric_limits<T>::arithmetic_infinity());
         if constexpr(SELF_ZERO) REP(i, this->size()) res[i][i] = 0;
         REP(i, this->size()) ITR(j, this->operator[](i)) res[i][j] = j.cost;
@@ -167,7 +169,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     }
 
     template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
-    inline auto make_distance_matrix() const noexcept(NO_EXCEPT) {
+    auto make_distance_matrix() const noexcept(NO_EXCEPT) {
         R res = this->make_initial_distance_matrix<SELF_ZERO,T,R>();
         REP(k, this->size()) REP(i, this->size()) REP(j, this->size()) {
             chmin(res[i][j], res[i][k] + res[k][j]);
@@ -176,7 +178,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     }
 
     template<const edge_kind EDGE_TYPE = edge_kind::directed>
-    inline void add_edge(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
+    void add_edge(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
         assert(0 <= u and u < this->size()), assert(0 <= v and v < this->size());
         const size_type k = this->edges().size();
         this->_edges.emplace_back(u, v, w, k);
@@ -189,7 +191,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     }
 
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adaptor<>>
-    void inline read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
+    inline void read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
@@ -198,7 +200,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     }
 
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adaptor<>>
-    void inline read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
+    inline void read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
@@ -221,62 +223,62 @@ struct mixin : Graph {
   public:
     // graph/shortest_path.hpp
     template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_without_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+    void shortest_path_without_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
     template<item_or_convertible_range<node_type> Source>
-    inline auto shortest_path_without_cost(Source&&) const noexcept(NO_EXCEPT);
+    auto shortest_path_without_cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
     template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_with_01cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+    void shortest_path_with_01cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
     template<item_or_convertible_range<node_type> Source>
-    inline auto shortest_path_with_01cost(Source&&) const noexcept(NO_EXCEPT);
+    auto shortest_path_with_01cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/dijkstra.hpp
     template<item_or_convertible_range<node_type> Source, class Dist, class Prev = std::nullptr_t>
-    inline void shortest_path_with_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
+    void shortest_path_with_cost(Source&&, Dist *const, Prev *const = nullptr, const node_type& = -1, const node_type& = -2) const noexcept(NO_EXCEPT);
 
     template<item_or_convertible_range<node_type> Source>
-    inline auto shortest_path_with_cost(Source&&) const noexcept(NO_EXCEPT);
+    auto shortest_path_with_cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
-    inline bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);
-    inline bool sort_topologically() const noexcept(NO_EXCEPT);
+    bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);
+    bool sort_topologically() const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
-    template<class> inline bool sort_topologically_with_priority(vector<node_type> *const) const noexcept(NO_EXCEPT);
-    template<class> inline bool sort_topologically_with_priority() const noexcept(NO_EXCEPT);
+    template<class> bool sort_topologically_with_priority(vector<node_type> *const) const noexcept(NO_EXCEPT);
+    template<class> bool sort_topologically_with_priority() const noexcept(NO_EXCEPT);
 
     // graph/minimum_paph_cover.hpp
-    inline size_type minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT);
+    size_type minimum_paph_cover_size_as_dag() const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
-    inline auto minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
+    auto minimum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/spanning_tree_cost.hpp
-    inline auto maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
+    auto maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
-    inline disjoint_set components() const noexcept(NO_EXCEPT);
+    disjoint_set components() const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
-    inline bool is_bipartite() const noexcept(NO_EXCEPT);
+    bool is_bipartite() const noexcept(NO_EXCEPT);
 
     // graph/connected_components.hpp
     template<class Colors>
-    inline bool is_bipartite(Colors *const) const noexcept(NO_EXCEPT);
+    bool is_bipartite(Colors *const) const noexcept(NO_EXCEPT);
 
     // graph/parse_grid.hpp
     template<bool = false, class G, class U = char>
-    inline void parse_grid(const G&, U = '.') noexcept(NO_EXCEPT);
+    void parse_grid(const G&, U = '.') noexcept(NO_EXCEPT);
 
     // graph/manhattan_minimum_spanning_tree.hpp
     template<
         std::input_iterator I0, std::input_iterator I1,
         std::sentinel_for<I0> S0, std::sentinel_for<I1> S1
     >
-    inline cost_type build_manhattan_mst(I0, S0, I1, S1) noexcept(NO_EXCEPT);
+    cost_type build_manhattan_mst(I0, S0, I1, S1) noexcept(NO_EXCEPT);
 };
 
 

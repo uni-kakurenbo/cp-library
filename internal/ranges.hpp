@@ -106,7 +106,7 @@ concept adaptor_invocable = requires { std::declval<Adaptor>()(std::declval<Args
 template<class Adaptor, class... Args>
 concept adaptor_partial_app_viable =
     (Adaptor::arity > 1) && (sizeof...(Args) == Adaptor::arity - 1) &&
-    (std::constructible_from<std::decay_t<Args>, Args> && ...);
+    (std::constructible_from<std::remove_cvref_t<Args>, Args> && ...);
 
 template<class Adaptor, class... Args> struct partial;
 
@@ -135,7 +135,7 @@ constexpr auto operator|(Range&& range, Self&& self) {
 template <class Lhs, class Rhs>
     requires is_range_adaptor_closure<Lhs> && is_range_adaptor_closure<Rhs>
 constexpr auto operator|(Lhs&& lhs, Rhs&& rhs) {
-    return pipe<std::decay_t<Lhs>, std::decay_t<Rhs>>{ std::forward<Lhs>(lhs), std::forward<Rhs>(rhs)};
+    return pipe<std::remove_cvref_t<Lhs>, std::remove_cvref_t<Rhs>>{ std::forward<Lhs>(lhs), std::forward<Rhs>(rhs)};
 }
 
 
@@ -143,7 +143,7 @@ template<class Derived> struct range_adaptor {
     template<class... Args>
         requires adaptor_partial_app_viable<Derived, Args...>
     inline constexpr auto operator()(Args&& ..._args) const noexcept(NO_EXCEPT) {
-        return partial<Derived, std::decay_t<Args>...>{
+        return partial<Derived, std::remove_cvref_t<Args>...>{
             std::forward<Args>(_args)...
         };
     }
