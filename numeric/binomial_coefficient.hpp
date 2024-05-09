@@ -101,7 +101,7 @@ struct binomial_coefficient_prime_power_mod {
     binomial_coefficient_prime_power_mod() noexcept = default;
 
     explicit binomial_coefficient_prime_power_mod(const value_type max = 20'000'000) noexcept(NO_EXCEPT)
-        requires (1 < mod_type::mod() and mod_type::mod() < self::MOD_SUP)
+        requires (1 < mod_type::mod() && mod_type::mod() < self::MOD_SUP)
       : _m(mod_type::mod()), _max(max)
     {
         constexpr std::pair<u32,u32> pq = self::_factorize(mod_type::mod());
@@ -114,7 +114,7 @@ struct binomial_coefficient_prime_power_mod {
         requires (not modint_family<mod_type>)
       : _p(static_cast<u32>(p)), _q(static_cast<u32>(q)), _max(max)
     {
-        assert(1 < p and p < self::MOD_SUP);
+        assert(1 < p && p < self::MOD_SUP);
         assert(0 < q);
 
         u64 m = 1;
@@ -129,14 +129,17 @@ struct binomial_coefficient_prime_power_mod {
 
     inline mod_type mod() const noexcept(NO_EXCEPT) { return this->_m; }
 
-    mod_type lucus(value_type n, value_type k) const noexcept(NO_EXCEPT) {
-        if(n < k or n < 0 or k < 0) return 0;
+    mod_type lucus(value_type n, value_type r) const noexcept(NO_EXCEPT) {
+        assert(0 <= n);
+        assert(0 <= r);
+
+        if(n < r) return 0;
         u32 res = this->_one;
 
         while(n > 0) {
             u32 n0, k0;
             std::tie(n, n0) = this->_barrett_p.divide(n);
-            std::tie(k, k0) = this->_barrett_p.divide(k);
+            std::tie(r, k0) = this->_barrett_p.divide(r);
             if(n0 < k0) return 0;
 
             res = this->_reduction_m.multiply(res, this->_fact[n0]);
@@ -146,24 +149,27 @@ struct binomial_coefficient_prime_power_mod {
         return static_cast<mod_type>(this->_reduction_m.revert(res));
     }
 
-    mod_type comb(value_type n, value_type k) const noexcept(NO_EXCEPT) {
-        if(this->_q == 1) return this->lucus(n, k);
-        if(n < k or n < 0 or k < 0) return 0;
+    mod_type comb(value_type n, value_type r) const noexcept(NO_EXCEPT) {
+        assert(0 <= n);
+        assert(0 <= r);
 
-        value_type r = n - k;
+        if(this->_q == 1) return this->lucus(n, r);
+        if(n < r) return 0;
+
+        value_type k = n - r;
         u32 e0 = 0, eq = 0, i = 0;
         u32 res = this->_one;
 
         while(n > 0) {
             res = this->_reduction_m.multiply(res, this->_fact[this->_barrett_m.reduce(n)]);
-            res = this->_reduction_m.multiply(res, this->_inv_fact[this->_barrett_m.reduce(k)]);
             res = this->_reduction_m.multiply(res, this->_inv_fact[this->_barrett_m.reduce(r)]);
+            res = this->_reduction_m.multiply(res, this->_inv_fact[this->_barrett_m.reduce(k)]);
 
             n = this->_barrett_p.quotient(n);
-            k = this->_barrett_p.quotient(k);
             r = this->_barrett_p.quotient(r);
+            k = this->_barrett_p.quotient(k);
 
-            u32 eps = static_cast<u32>(n - k - r);
+            u32 eps = static_cast<u32>(n - r - k);
             e0 += eps;
             if(e0 >= this->_q) return 0;
             if(++i >= this->_q) eq += eps;
@@ -183,7 +189,7 @@ struct binomial_coefficient_prime_power_mod {
 using internal::binomial_coefficient_prime_power_mod;
 
 
-// (md < 10^7 and N < 2^30) or (md < 2^30 and N < 2 * 10^7)
+// (md < 10^7 && N < 2^30) || (md < 2^30 && N < 2 * 10^7)
 template<class T, class R = T>
     requires (std::numeric_limits<R>::digits > 30) || internal::modint_family<R>
 struct binomial_coefficient {
@@ -204,7 +210,7 @@ struct binomial_coefficient {
         u32 md = this->_mod;
         if(md == 1) return;
 
-        assert((md < 20'000'000 and this->_max < (1 << 30)) or (md < (1 << 30) and this->_max < 30'000'000));
+        assert((md < 20'000'000 && this->_max < (1 << 30)) || (md < (1 << 30) && this->_max < 30'000'000));
 
         assert(1 <= md);
         assert(md <= internal_binomial<>::MOD_SUP);
@@ -246,21 +252,22 @@ struct binomial_coefficient {
         this->_init();
     }
 
-    mod_type comb(const value_type n, const value_type k) const noexcept(NO_EXCEPT) {
+    mod_type comb(const value_type n, const value_type r) const noexcept(NO_EXCEPT) {
+        assert(n >= 0), assert(r >= 0);
         if(this->_mod == 1) return 0;
-        if(n < k or n < 0 or k < 0) return 0;
+        if(n < r) return 0;
 
         if(this->_mods.size() == 1) {
-            if((this->_mods.back() & 1) == 0) return static_cast<mod_type>(this->_internal_2p.comb(n, k));
-            else return static_cast<mod_type>(this->_internals[0].comb(n, k));
+            if((this->_mods.back() & 1) == 0) return static_cast<mod_type>(this->_internal_2p.comb(n, r));
+            else return static_cast<mod_type>(this->_internals[0].comb(n, r));
         }
 
         std::vector<long long> rem, div;
         REP(i, 0, std::ranges::ssize(this->_mods)) {
             div.push_back(this->_mods[i]);
-            if((this->_mods[i] & 1) == 0) rem.push_back(this->_internal_2p.comb(n, k));
+            if((this->_mods[i] & 1) == 0) rem.push_back(this->_internal_2p.comb(n, r));
             else {
-                rem.push_back(this->_internals[i].comb(n, k));
+                rem.push_back(this->_internals[i].comb(n, r));
             }
         }
 

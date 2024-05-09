@@ -35,7 +35,7 @@ signed main() {
     debug(inds, x, y, w);
 
     inds.sort([&](int i, int j) { return x[i] < x[j]; });
-    x = uni::order_by(x, inds), y = uni::order_by(y, inds), w = uni::order_by(w, inds);
+    x = uni::ordered_by(x, inds), y = uni::ordered_by(y, inds), w = uni::ordered_by(w, inds);
     debug(inds, x, y, w);
 
     uni::compressed comp_y(y);

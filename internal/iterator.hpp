@@ -66,7 +66,7 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     using difference_type = std::make_signed_t<typename Container::size_type>;
 
   private:
-    using derived = std::decay_t<Derived>;
+    using derived = std::remove_cvref_t<Derived>;
 
     Container* _ref;
     difference_type _pos;

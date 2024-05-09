@@ -310,7 +310,7 @@ struct dynamic_segment_tree<Action, NodeHandler>
     }
 
     template<std::ranges::input_range R>
-        requires (!std::same_as<std::decay_t<R>, dynamic_segment_tree>)
+        requires (!std::same_as<std::remove_cvref_t<R>, dynamic_segment_tree>)
     dynamic_segment_tree(R&& range, const allocator_type& allocator = allocator_type()) noexcept(NO_EXCEPT)
       : dynamic_segment_tree(ALL(range), allocator)
     {}

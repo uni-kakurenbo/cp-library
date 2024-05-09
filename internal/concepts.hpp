@@ -127,37 +127,37 @@ concept remainder_calculable =
 template<class L, class R = L>
 concept addition_assignable =
     weakly_addition_assignable<L, R> &&
-    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<>&, L, R>>, R> &&
+    weakly_addition_assignable<std::remove_cvref_t<std::invoke_result_t<std::plus<>&, L, R>>, R> &&
     weakly_addition_assignable<L, std::invoke_result_t<std::plus<>&, L, R>> &&
-    weakly_addition_assignable<std::decay_t<std::invoke_result_t<std::plus<>&, L, R>>, std::invoke_result_t<std::plus<>&, L, R>>;
+    weakly_addition_assignable<std::remove_cvref_t<std::invoke_result_t<std::plus<>&, L, R>>, std::invoke_result_t<std::plus<>&, L, R>>;
 
 template<class L, class R = L>
 concept subtraction_assignable =
     weakly_subtraction_assignable<L, R> &&
-    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<>&, L, R>>, R> &&
+    weakly_subtraction_assignable<std::remove_cvref_t<std::invoke_result_t<std::minus<>&, L, R>>, R> &&
     weakly_subtraction_assignable<L, std::invoke_result_t<std::minus<>&, L, R>> &&
-    weakly_subtraction_assignable<std::decay_t<std::invoke_result_t<std::minus<>&, L, R>>, std::invoke_result_t<std::minus<>&, L, R>>;
+    weakly_subtraction_assignable<std::remove_cvref_t<std::invoke_result_t<std::minus<>&, L, R>>, std::invoke_result_t<std::minus<>&, L, R>>;
 
 template<class L, class R = L>
 concept multipliation_assignalbe =
     weakly_multipliation_assignalbe<L, R> &&
-    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<>&, L, R>>, R> &&
+    weakly_multipliation_assignalbe<std::remove_cvref_t<std::invoke_result_t<std::multiplies<>&, L, R>>, R> &&
     weakly_multipliation_assignalbe<L, std::invoke_result_t<std::multiplies<>&, L, R>> &&
-    weakly_multipliation_assignalbe<std::decay_t<std::invoke_result_t<std::multiplies<>&, L, R>>, std::invoke_result_t<std::multiplies<>&, L, R>>;
+    weakly_multipliation_assignalbe<std::remove_cvref_t<std::invoke_result_t<std::multiplies<>&, L, R>>, std::invoke_result_t<std::multiplies<>&, L, R>>;
 
 template<class L, class R = L>
 concept division_assignable =
     weakly_division_assignable<L, R> &&
-    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, R> &&
+    weakly_division_assignable<std::remove_cvref_t<std::invoke_result_t<std::divides<>&, L, R>>, R> &&
     weakly_division_assignable<L, std::invoke_result_t<std::divides<>&, L, R>> &&
-    weakly_division_assignable<std::decay_t<std::invoke_result_t<std::divides<>&, L, R>>, std::invoke_result_t<std::divides<>&, L, R>>;
+    weakly_division_assignable<std::remove_cvref_t<std::invoke_result_t<std::divides<>&, L, R>>, std::invoke_result_t<std::divides<>&, L, R>>;
 
 template<class L, class R = L>
 concept remainder_assignable =
     weakly_remainder_assignable<L, R> &&
-    weakly_remainder_assignable<std::decay_t<std::invoke_result_t<std::modulus<>&, L, R>>, R> &&
+    weakly_remainder_assignable<std::remove_cvref_t<std::invoke_result_t<std::modulus<>&, L, R>>, R> &&
     weakly_remainder_assignable<L, std::invoke_result_t<std::modulus<>&, L, R>> &&
-    weakly_remainder_assignable<std::decay_t<std::invoke_result_t<std::modulus<>&, L, R>>, std::invoke_result_t<std::modulus<>&, L, R>>;
+    weakly_remainder_assignable<std::remove_cvref_t<std::invoke_result_t<std::modulus<>&, L, R>>, std::invoke_result_t<std::modulus<>&, L, R>>;
 
 
 template<class T>

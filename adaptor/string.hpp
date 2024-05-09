@@ -10,7 +10,7 @@
 namespace uni {
 
 
-using string = internal::extended_container<std::string>;
+using string = internal::advanced_container<std::string>;
 
 
 } // namespace uni

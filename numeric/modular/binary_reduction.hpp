@@ -55,7 +55,10 @@ struct binary_reduction {
         return x * y;
     }
 
-    inline constexpr value_type pow(const value_type v, i64 p) const noexcept(NO_EXCEPT) {
+    template<std::integral K>
+    inline constexpr value_type pow(const value_type v, const K p) const noexcept(NO_EXCEPT) {
+        if constexpr(std::signed_integral<K>) assert(p >= 0);
+
         if(this->_mask == 0) return 0;
         return uni::pow(v, p);
     }

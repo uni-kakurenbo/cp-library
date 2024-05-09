@@ -75,31 +75,47 @@ inline constexpr std::make_unsigned_t<T> to_unsigned(const T& x) noexcept(NO_EXC
 }
 
 
-template<class T, class R = T>
-inline constexpr R perm(const T& n, const T& r) noexcept(NO_EXCEPT) {
-    assert(0 <= n);
-    assert(0 <= r);
-    if(n < r) return 0;
+namespace internal {
 
-    R res = 1;
-    REP(i, r) res *= n-i;
 
+template<class T>
+inline constexpr auto perm(const T& n, const T& r) noexcept(NO_EXCEPT) {
+    T res = 1;
+    REP(i, r) res *= n - i;
     return res;
 }
 
-template<class T, class R = T>
-inline constexpr R comb(const T& n, T r) noexcept(NO_EXCEPT) {
-    assert(0 <= n);
-    assert(0 <= r);
-    if(n == r) return 1;
-    if(n < r) return 0;
+template<class T>
+inline constexpr auto comb(const T& n, T r) noexcept(NO_EXCEPT) {
+    if(n < 2 * r) r = n - r;
 
-    if(n < r*2) r = n-r;
-    R p = 1, q = 1;
-    REP(i, r) p *= n-i, q *= r-i;
+    T p = 1, q = 1;
+    REP(i, r) p *= n - i, q *= r - i;
 
     return p / q;
 }
+
+
+} // namespace internal
+
+
+template<class T0, std::common_with<T0> T1>
+inline constexpr auto perm(const T0& n, const T1& r) noexcept(NO_EXCEPT) {
+    assert(n >= 0), assert(r >= 0);
+    using T = std::common_type_t<T0, T1>;
+    if(n < r) return static_cast<T>(0);
+    return internal::perm<T>(n, r);
+}
+
+template<class T0, std::common_with<T0> T1>
+inline constexpr auto comb(const T0& n, const T1& r) noexcept(NO_EXCEPT) {
+    assert(n >= 0), assert(r >= 0);
+    using T = std::common_type_t<T0, T1>;
+    if(n < r) return static_cast<T>(0);
+    if(n == r) return static_cast<T>(1);
+    return internal::comb<T>(n, r);
+}
+
 
 
 template<class T, class U, std::invocable<T, T> F = std::multiplies<T>>

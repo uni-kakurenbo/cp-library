@@ -115,9 +115,9 @@ Res convolution(R0&& v0, R1&& v1) {
 
     assert(n + m - 1 <= (1 << MAX_AB_BIT));
 
-    const auto c0 = convolution<MOD0, std::decay_t<R0>>(v0, v1);
-    const auto c1 = convolution<MOD1, std::decay_t<R0>>(v0, v1);
-    const auto c2 = convolution<MOD2, std::decay_t<R0>>(v0, v1);
+    const auto c0 = convolution<MOD0, std::remove_cvref_t<R0>>(v0, v1);
+    const auto c1 = convolution<MOD1, std::remove_cvref_t<R0>>(v0, v1);
+    const auto c2 = convolution<MOD2, std::remove_cvref_t<R0>>(v0, v1);
 
     Res c(n + m - 1);
 

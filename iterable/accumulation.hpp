@@ -16,13 +16,12 @@
 #include "internal/type_traits.hpp"
 
 #include "adaptor/vector.hpp"
-#include "adaptor/valarray.hpp"
 
 
 namespace uni {
 
 
-template<class T, class Container = valarray<T>>
+template<class T, class Container = vector<T>>
 struct accumulation : Container {
     using size_type = internal::size_t;
 
@@ -46,9 +45,11 @@ struct accumulation : Container {
     >
     accumulation(I first, S last, const T& head = T(), Operator&& op = std::plus<T>{}) noexcept(NO_EXCEPT) {
         this->resize(std::ranges::distance(first, last) + 1);
-        std::exclusive_scan(first, last, std::ranges::begin(*this), head, op);
-        const auto back = std::ranges::prev(std::ranges::end(*this));
-        *back = op(*std::ranges::prev(back), *std::ranges::prev(last));
+        *this->begin() = head;
+        for(auto itr = std::ranges::begin(*this); first != last; ++first) {
+            const auto prev = itr++;
+            *itr = op(*prev, *first);
+        }
     }
 
     template<class Operator = std::minus<T>>
@@ -67,7 +68,7 @@ template<std::ranges::input_range R>
 explicit accumulation(R&&) -> accumulation<typename std::ranges::range_value_t<R>>;
 
 
-template<class T, class Container = vector<valarray<T>>, class Operator = std::plus<T>>
+template<class T, class Container = vector<vector<T>>, class Operator = std::plus<T>>
 struct accumulation_2d : Container {
     using size_type = internal::size_t;
 

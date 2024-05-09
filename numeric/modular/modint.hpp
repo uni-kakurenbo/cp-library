@@ -133,7 +133,10 @@ struct modint : internal::modint_base<modint<Context>, Context::dynamic> {
     inline constexpr auto& operator/=(const modint& rhs) noexcept(NO_EXCEPT) { return *this *= rhs.inv(); }
 
 
-    constexpr auto pow(const i64 n) const noexcept(NO_EXCEPT) {
+    template<std::integral K>
+    constexpr auto pow(const K n) const noexcept(NO_EXCEPT) {
+        if constexpr(std::signed_integral<K>) assert(n >= 0);
+
         return modint::_raw(modint::context::reduction.pow(this->_val, n));
     }
 

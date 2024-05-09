@@ -61,8 +61,10 @@ inline constexpr int lowest_bit_pos(const T v) noexcept(NO_EXCEPT) {
 template<std::unsigned_integral T, std::integral I = int>
 __attribute__((target("bmi2")))
 inline constexpr T clear_higher_bits(const T v, const I p) {
+    if constexpr(std::signed_integral<I>) assert(0 <= p);
+
     constexpr int DIGITS = std::numeric_limits<T>::digits;
-    assert(0 <= p && p < DIGITS);
+    assert(p <= DIGITS);
 
     if constexpr(DIGITS <= 32) return _bzhi_u32(v, static_cast<u32>(p));
     if constexpr(DIGITS <= 64) return _bzhi_u64(v, static_cast<u64>(p));
@@ -106,12 +108,37 @@ constexpr T shiftr(const T x, const I n) {
 
 template<std::unsigned_integral T, std::integral I = int>
 inline constexpr bool bit(const T x, const I p) {
+    if constexpr(std::signed_integral<I>) assert(0 <= p);
+    assert(p < std::numeric_limits<T>::digits);
+
     return shiftr(x, p) & T{1};
 }
 
 
 template<std::unsigned_integral T, std::integral I = int>
-inline constexpr T lower_bits(const T x, const I digits = (std::numeric_limits<T>::digits >> 1)) {
+inline constexpr bool reset_bit(const T x, const I p) {
+    if constexpr(std::signed_integral<I>) assert(0 <= p);
+    assert(p < std::numeric_limits<T>::digits);
+
+    return x & ~(T{1} << p);
+}
+
+
+template<std::unsigned_integral T, std::integral I = int>
+inline constexpr bool set_bit(const T x, const I p, const bool bit = true) {
+    if constexpr(std::signed_integral<I>) assert(0 <= p);
+    assert(p < std::numeric_limits<T>::digits);
+
+    if(!bit) return reset(x, p);
+    return x | (T{1} << p);
+}
+
+
+template<std::unsigned_integral T, std::integral I = int>
+inline constexpr T lower_bits(const T x, const I digits) {
+    if constexpr(std::signed_integral<I>) assert(0 <= digits);
+    assert(digits <= std::numeric_limits<T>::digits);
+
     return x & (uni::shiftl(x, digits) - 1);
 }
 

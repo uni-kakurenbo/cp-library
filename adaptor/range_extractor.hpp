@@ -39,7 +39,7 @@ struct range_extractor : Container {
 
   public:
     template<class... Args>
-    explicit range_extractor(const Args&... args) noexcept(NO_EXCEPT) : Container(args...) {
+    explicit range_extractor(Args&&... args) noexcept(NO_EXCEPT) : Container(std::forward<Args>(args)...) {
         this->_begin = 0;
         this->_end = this->size();
     }

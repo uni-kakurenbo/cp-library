@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <limits>
+#include <concepts>
 #include <type_traits>
 
 
@@ -83,7 +84,10 @@ struct barrett_reduction {
         return this->reduce(static_cast<large_type>(x) * static_cast<large_type>(y));
     }
 
-    inline constexpr value_type pow(const large_type v, i64 p) const noexcept(NO_EXCEPT) {
+    template<std::integral K>
+    inline constexpr value_type pow(const large_type v, const K p) const noexcept(NO_EXCEPT) {
+        if constexpr(std::signed_integral<K>) assert(p >= 0);
+
         if(this->_mod == 1) return 0;
         return uni::pow(
             this->reduce(v), p,

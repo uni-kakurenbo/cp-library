@@ -101,9 +101,9 @@ struct debug_t : std::string {
 
 template<size_t N, class T>
 void dump_tuple_impl([[maybe_unused]] T&& val, std::stringstream &res) {
-    if constexpr(N < std::tuple_size_v<std::decay_t<T>>) {
+    if constexpr(N < std::tuple_size_v<std::remove_cvref_t<T>>) {
         res << dump(std::get<N>(val));
-        if constexpr(N < std::tuple_size_v<std::decay_t<T>> - 1) res << ", ";
+        if constexpr(N < std::tuple_size_v<std::remove_cvref_t<T>> - 1) res << ", ";
         dump_tuple_impl<N + 1>(std::forward<T>(val), res);
     }
 }
@@ -146,7 +146,7 @@ struct dump_primitive_like {
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::basic_string>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::basic_string>
     std::string operator()(T&& val) const {
         std::stringstream res;
         res << COLOR_STRING << "`" << val << "`" << COLOR_INIT;
@@ -189,7 +189,7 @@ struct dump_primitive_like {
     };
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::optional>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::optional>
     std::string operator()(T&& val) const {
         if(val.has_value()) return dump(*val);
         return COLOR_TYPE + "invalid" + COLOR_INIT;
@@ -226,61 +226,61 @@ struct dump_iterator {
 
 struct dump_wrapper {
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::map>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::map>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::multimap>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::multimap>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::unordered_map>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::unordered_map>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::unordered_multimap>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::unordered_multimap>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::set>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::set>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::multiset>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::multiset>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::unordered_set>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::unordered_set>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::unordered_multiset>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::unordered_multiset>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("{", "}"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::vector>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::vector>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("[", "]"));
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::deque>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::deque>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("[", "]"));
     }
@@ -316,7 +316,7 @@ struct dump_wrapper {
 
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::pair>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::pair>
     std::string operator()(T&& val) const {
         std::stringstream res;
         res << "( " << dump(val.first) << ", " << dump(val.second) << " )";
@@ -324,7 +324,7 @@ struct dump_wrapper {
     }
 
     template<class T>
-        requires uni::internal::derived_from_template<std::decay_t<T>, std::tuple>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::tuple>
     std::string operator()(T&& val) const {
         std::stringstream res;
         res << "( ";

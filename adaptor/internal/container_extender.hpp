@@ -20,7 +20,7 @@ namespace internal {
 
 
 template<class Base>
-struct extended_container : Base {
+struct advanced_container : Base {
   private:
     inline Base* _base() noexcept(NO_EXCEPT) {
         return static_cast<Base*>(this);
@@ -32,7 +32,7 @@ struct extended_container : Base {
   public:
     using Base::Base;
 
-    extended_container(const Base& base) : Base(base) {}
+    advanced_container(const Base& base) : Base(base) {}
 
     using size_type = decltype(std::ranges::size(std::declval<Base>()));
     using value_type = typename Base::value_type;

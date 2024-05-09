@@ -17,7 +17,7 @@
 namespace uni {
 
 
-template<class container = valgrid<internal::size_t>>
+template<class container = grid<internal::size_t>>
 struct lcs_sizes : container {
     lcs_sizes() noexcept = default;
 

@@ -12,7 +12,7 @@ namespace uni {
 
 
 template<class T, int N>
-using array = internal::extended_container<std::array<T,N>>;
+using array = internal::advanced_container<std::array<T,N>>;
 
 
 } // namespace uni

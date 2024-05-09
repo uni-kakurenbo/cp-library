@@ -21,6 +21,9 @@ using std::ranges::reverse;
 using std::ranges::min_element;
 using std::ranges::max_element;
 
+using std::make_pair;
+using std::make_tuple;
+
 
 using uni::i32;
 using uni::u32;
