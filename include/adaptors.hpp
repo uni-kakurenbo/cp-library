@@ -3,6 +3,7 @@
 #include "adaptor/gnu/hash_table.hpp"
 
 #include "adaptor/array.hpp"
+#include "adaptor/auto_expander.hpp"
 #include "adaptor/io.hpp"
 #include "adaptor/map.hpp"
 #include "adaptor/multi_container.hpp"
