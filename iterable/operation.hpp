@@ -282,15 +282,18 @@ template<
 >
     requires std::ranges::output_range<Res, std::ranges::range_value_t<Target>>
 Res ordered_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
-    const auto size = std::ranges::ssize(target);
-    Res res(size);
+    const auto target_size = std::ranges::ssize(target);
+    const auto order_size = std::ranges::ssize(order);
+    Res res(order_size);
 
     {
         auto res_itr = std::ranges::begin(res);
-        auto order_itr = std::ranges::begin(std::forward<Order>(order));
+        auto order_itr = std::ranges::begin(order);
+        const auto order_end = std::ranges::end(std::forward<Order>(order))
 
-        for(const auto res_end = std::ranges::end(res); res_itr != res_end; ++res_itr, ++order_itr) {
-            assert(0 <= *order_itr && *order_itr < size);
+        for(; order_itr != order_end; ++res_itr, ++order_itr) {
+            if constexpr(std::signed_integral<std::ranges::range_value_t<Order>>) assert(0 <= *order_itr);
+            assert(*order_itr < target_size);
             *res_itr = target[*order_itr];
         }
     }
