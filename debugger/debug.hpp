@@ -274,6 +274,12 @@ struct dump_wrapper {
     }
 
     template<class T>
+        requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::valarray>
+    std::string operator()(T&& val) const {
+        return dump_range_impl(val, Brackets("[", "]"));
+    }
+
+    template<class T>
         requires uni::internal::derived_from_template<std::remove_cvref_t<T>, std::vector>
     std::string operator()(T&& val) const {
         return dump_range_impl(val, Brackets("[", "]"));
@@ -392,9 +398,8 @@ std::string dump(T&& val) {
         return dump_wrapper{}(std::forward<T>(val));
     }
 
-
     if constexpr(std::invocable<dump_range, T>) {;
-        // return "range
+        // return "range";
         return dump_range{}(std::forward<T>(val));
     }
 

@@ -58,6 +58,15 @@ concept has_static_one = requires { T::one; };
 
 
 template<class L, class R = L>
+concept weakly_bitand_calcurable = requires (L lhs, R rhs) { lhs & rhs; };
+
+template<class L, class R = L>
+concept weakly_bitor_calcurable = requires (L lhs, R rhs) { lhs | rhs; };
+
+template<class L, class R = L>
+concept weakly_bitxor_calcurable = requires (L lhs, R rhs) { lhs ^ rhs; };
+
+template<class L, class R = L>
 concept weakly_addable = requires (L lhs, R rhs) { lhs + rhs; };
 
 template<class L, class R = L>
@@ -74,6 +83,15 @@ concept weakly_remainder_calculable = requires (L lhs, R rhs) { lhs % rhs; };
 
 
 template<class L, class R = L>
+concept weakly_bitand_assignable = requires (L lhs, R rhs) { lhs += rhs; };
+
+template<class L, class R = L>
+concept weakly_bitor_assignable = requires (L lhs, R rhs) { lhs |= rhs; };
+
+template<class L, class R = L>
+concept weakly_bitxor_assignable = requires (L lhs, R rhs) { lhs ^= rhs; };
+
+template<class L, class R = L>
 concept weakly_addition_assignable = requires (L lhs, R rhs) { lhs += rhs; };
 
 template<class L, class R = L>
@@ -87,6 +105,28 @@ concept weakly_division_assignable = requires (L lhs, R rhs) { lhs /= rhs; };
 
 template<class L, class R = L>
 concept weakly_remainder_assignable = requires (L lhs, R rhs) { lhs /= rhs; };
+
+
+template<class L, class R = L>
+concept bitand_calculable =
+    weakly_bitand_calcurable<L, R> &&
+    weakly_bitand_calcurable<std::invoke_result_t<std::bit_and<>&, L, R>, R> &&
+    weakly_bitand_calcurable<L, std::invoke_result_t<std::bit_and<>&, L, R>> &&
+    weakly_bitand_calcurable<std::invoke_result_t<std::bit_and<>&, L, R>, std::invoke_result_t<std::bit_and<>&, L, R>>;
+
+template<class L, class R = L>
+concept bitor_calculable =
+    weakly_bitor_calcurable<L, R> &&
+    weakly_bitor_calcurable<std::invoke_result_t<std::bit_or<>&, L, R>, R> &&
+    weakly_bitor_calcurable<L, std::invoke_result_t<std::bit_or<>&, L, R>> &&
+    weakly_bitor_calcurable<std::invoke_result_t<std::bit_or<>&, L, R>, std::invoke_result_t<std::bit_or<>&, L, R>>;
+
+template<class L, class R = L>
+concept bitxor_calculable =
+    weakly_bitxor_calcurable<L, R> &&
+    weakly_bitxor_calcurable<std::invoke_result_t<std::bit_xor<>&, L, R>, R> &&
+    weakly_bitxor_calcurable<L, std::invoke_result_t<std::bit_xor<>&, L, R>> &&
+    weakly_bitxor_calcurable<std::invoke_result_t<std::bit_xor<>&, L, R>, std::invoke_result_t<std::bit_xor<>&, L, R>>;
 
 template<class L, class R = L>
 concept addable =
@@ -123,6 +163,27 @@ concept remainder_calculable =
     weakly_remainder_calculable<L, std::invoke_result_t<std::modulus<>&, L, R>> &&
     weakly_remainder_calculable<std::invoke_result_t<std::modulus<>&, L, R>, std::invoke_result_t<std::modulus<>&, L, R>>;
 
+
+template<class L, class R = L>
+concept bitand_assignable =
+    weakly_bitand_assignable<L, R> &&
+    weakly_bitand_assignable<std::invoke_result_t<std::bit_and<>&, L, R>, R> &&
+    weakly_bitand_assignable<L, std::invoke_result_t<std::bit_and<>&, L, R>> &&
+    weakly_bitand_assignable<std::invoke_result_t<std::bit_and<>&, L, R>, std::invoke_result_t<std::bit_and<>&, L, R>>;
+
+template<class L, class R = L>
+concept bitor_assignable =
+    weakly_bitor_calcurable<L, R> &&
+    weakly_bitor_calcurable<std::invoke_result_t<std::bit_or<>&, L, R>, R> &&
+    weakly_bitor_calcurable<L, std::invoke_result_t<std::bit_or<>&, L, R>> &&
+    weakly_bitor_calcurable<std::invoke_result_t<std::bit_or<>&, L, R>, std::invoke_result_t<std::bit_or<>&, L, R>>;
+
+template<class L, class R = L>
+concept bitxor_assignable =
+    weakly_bitxor_calcurable<L, R> &&
+    weakly_bitxor_calcurable<std::invoke_result_t<std::bit_xor<>&, L, R>, R> &&
+    weakly_bitxor_calcurable<L, std::invoke_result_t<std::bit_xor<>&, L, R>> &&
+    weakly_bitxor_calcurable<std::invoke_result_t<std::bit_xor<>&, L, R>, std::invoke_result_t<std::bit_xor<>&, L, R>>;
 
 template<class L, class R = L>
 concept addition_assignable =
