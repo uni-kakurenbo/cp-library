@@ -289,7 +289,7 @@ Res ordered_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
     {
         auto res_itr = std::ranges::begin(res);
         auto order_itr = std::ranges::begin(order);
-        const auto order_end = std::ranges::end(std::forward<Order>(order))
+        const auto order_end = std::ranges::end(std::forward<Order>(order));
 
         for(; order_itr != order_end; ++res_itr, ++order_itr) {
             if constexpr(std::signed_integral<std::ranges::range_value_t<Order>>) assert(0 <= *order_itr);
