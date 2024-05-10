@@ -121,8 +121,7 @@ struct matrix_core : Base {
         return *this;
     }
 
-    template<weakly_division_assignable<matrix_core> T>
-    inline constexpr auto operator/(const T& rhs) const noexcept(NO_EXCEPT) {
+    inline constexpr auto operator/(const value_type& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) /= rhs;
     }
 
@@ -131,8 +130,7 @@ struct matrix_core : Base {
         return *this;
     }
 
-    template<weakly_remainder_assignable<matrix_core> T>
-    inline constexpr auto operator%(const T& rhs) const noexcept(NO_EXCEPT) {
+    inline constexpr auto operator%(const value_type& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) %= rhs;
     }
 

@@ -12,7 +12,7 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
-#include "adaptor/internal/container_extender.hpp"
+#include "adaptor/internal/advanced_container.hpp"
 
 
 namespace uni {
@@ -58,6 +58,7 @@ template<class T> struct valarray : internal::advanced_container<std::valarray<T
     valarray(const std::mask_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
     valarray(const std::indirect_array<T>& arr) noexcept(NO_EXCEPT) : base(arr) {};
     valarray(const std::initializer_list<T>& init) noexcept(NO_EXCEPT) : base(init) {}
+    valarray(const internal::advanced_container<std::valarray<T>>& arr) noexcept(NO_EXCEPT) : base(arr) {}
 
   #ifdef __GNUC__
     template<class Dom> valarray(const std::_Expr<Dom,T>& expr) noexcept(NO_EXCEPT) : base(expr) {}
@@ -98,17 +99,11 @@ template<class T> struct valarray : internal::advanced_container<std::valarray<T
     inline const T& front() const noexcept(NO_EXCEPT) { return *this->begin(); }
     inline T& front() noexcept(NO_EXCEPT) { return *this->begin(); }
 
-    inline const T* begin() const noexcept(NO_EXCEPT) { return this->size() ? std::addressof((*this)[0]) : nullptr; }
-    inline T* begin() noexcept(NO_EXCEPT) { return this->size() ? std::addressof((*this)[0]) : nullptr; }
+    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::ranges::end(*this)); }
+    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::ranges::begin(*this)); }
 
-    inline const T* end() const noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
-    inline T* end() noexcept(NO_EXCEPT) { if(auto n = this->size()) { return std::addressof((*this)[0]) + n; } else { return nullptr; } }
-
-    inline auto rbegin() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::end(*this)); }
-    inline auto rend() noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::begin(*this)); }
-
-    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::end(*this)); }
-    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::begin(*this)); }
+    inline auto rbegin() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::ranges::end(*this)); }
+    inline auto rend() const noexcept(NO_EXCEPT) { return std::make_reverse_iterator(std::ranges::begin(*this)); }
 };
 
 
