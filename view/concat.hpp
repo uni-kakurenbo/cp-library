@@ -134,7 +134,7 @@ struct concat_view<V0, V1>::iterator : iterator_tag<Const> {
     constexpr iterator(Parent *const parent, const std::ranges::iterator_t<B0> c0, const std::ranges::iterator_t<B1> c1, const int block) noexcept(NO_EXCEPT)
       : _c0(std::move(c0)), _b0(std::ranges::begin(parent->_b0)), _e0(std::ranges::end(parent->_b0)),
         _c1(std::move(c1)), _b1(std::ranges::begin(parent->_b1)), _e1(std::ranges::end(parent->_b1)),
-        _block(block)
+        _block(block || std::ranges::empty(parent->_b0))
     {}
 
     friend concat_view;
