@@ -479,7 +479,7 @@ struct wavelet_matrix : internal::wavelet_matrix_impl::base<std::make_unsigned_t
 
     inline auto count_in_range(const value_type& x, const value_type& y) const noexcept(NO_EXCEPT) { return this->range().count_in_range(x, y); }
 
-    inline auto count_qeual_to(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_qeual_to(v); }
+    inline auto count_equal_to(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_equal_to(v); }
     inline auto count_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_under(v); }
     inline auto count_over(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_over(v); }
     inline auto count_or_under(const value_type& v) const noexcept(NO_EXCEPT) { return this->range().count_or_under(v); }

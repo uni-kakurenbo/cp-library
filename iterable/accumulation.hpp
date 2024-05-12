@@ -54,10 +54,18 @@ struct accumulation : Container {
 
     template<class Operator = std::minus<T>>
         requires std::regular_invocable<Operator, T, T>
-    inline T operator()(size_type left, size_type right, Operator&& op = std::minus<T>{}) const noexcept(NO_EXCEPT) {
+    T operator()(size_type left, size_type right, Operator&& op = std::minus<T>{}) noexcept(NO_EXCEPT) {
         left = _positivize_index(left), right = _positivize_index(right);
         assert(0 <= left and left <= right and right < (size_type)std::size(*this));
         return op((*this)[right], (*this)[left]);
+    }
+
+    template<class Operator = std::minus<T>>
+        requires std::regular_invocable<Operator, T, T>
+    T operator()(size_type left, size_type right, Operator&& op = std::minus<T>{}) const noexcept(NO_EXCEPT) {
+        left = _positivize_index(left), right = _positivize_index(right);
+        assert(0 <= left and left <= right and right < (size_type)std::size(*this));
+        return op(this->at(right), this->at(left));
     }
 };
 

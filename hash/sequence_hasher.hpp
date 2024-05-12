@@ -166,7 +166,7 @@ struct sequence_hasher {
     template<class T> inline sequence_hasher& push_back(const T& v) noexcept(NO_EXCEPT) {
         this->_n++;
 
-        this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + std::hash<T>{}(v);
+        this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + hash64(v);
         if(this->hashed(this->_n) >= sequence_hasher::mod) this->hashed(this->_n-1) -= sequence_hasher::mod;
 
         return *this;
@@ -192,7 +192,7 @@ struct sequence_hasher {
 
         size_type i = n;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + std::hash<typename std::iterator_traits<I>::value_type>{}(*itr);
+            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
             if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
         }
 
