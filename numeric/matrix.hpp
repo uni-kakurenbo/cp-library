@@ -205,7 +205,6 @@ struct matrix_core : Base {
         }
 
         const auto rank = mat.transform_to_upper_triangular<1, true>();
-        debug(mat);
 
         REP(i, rank, this->height()) if(mat(i, this->width()) != 0) return {};
 
