@@ -201,6 +201,7 @@ struct advanced_container : Base {
     UNI_ADVANCED_CONTAINER_OPERATOR(-=, -, internal::weakly_subtraction_assignable)
     UNI_ADVANCED_CONTAINER_OPERATOR(*=, *, internal::weakly_multipliation_assignalbe)
     UNI_ADVANCED_CONTAINER_OPERATOR(/=, /, internal::weakly_division_assignable)
+    UNI_ADVANCED_CONTAINER_OPERATOR(%=, %, internal::weakly_remainder_assignable)
     UNI_ADVANCED_CONTAINER_OPERATOR(&=, &, internal::weakly_bitand_assignable)
     UNI_ADVANCED_CONTAINER_OPERATOR(|=, |, internal::weakly_bitor_assignable)
     UNI_ADVANCED_CONTAINER_OPERATOR(^=, ^, internal::weakly_bitxor_assignable)

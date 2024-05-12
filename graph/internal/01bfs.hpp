@@ -30,12 +30,12 @@ void uni::internal::graph_impl::mixin<Graph>::shortest_path_with_01cost(
 
     if constexpr(std::ranges::range<Source>) {
         ITR(v, s) {
-            que.push(v), dist->operator[](v) = 0;
+            que.push_back(v), dist->operator[](v) = 0;
             if constexpr(!std::is_same_v<Prev, std::nullptr_t>) prev->operator[](v) = root;
         }
     }
     else {
-        que.push(s), dist->operator[](s) = 0;
+        que.push_back(s), dist->operator[](s) = 0;
         if constexpr(!std::is_same_v<Prev, std::nullptr_t>) prev->operator[](s) = root;
     }
 
@@ -61,6 +61,6 @@ template<class Graph>
 template<uni::internal::item_or_convertible_range<typename Graph::node_type> Source>
 auto uni::internal::graph_impl::mixin<Graph>::shortest_path_with_01cost(Source&& s) const noexcept(NO_EXCEPT) {
     uni::auto_holder<typename uni::internal::graph_impl::mixin<Graph>::node_type, cost_type> dist;
-    this->shortest_path_with_01cost<cost_type>(std::forward<Source>(s), &dist);
+    this->shortest_path_with_01cost(std::forward<Source>(s), &dist);
     return dist;
 }
