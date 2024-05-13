@@ -193,59 +193,61 @@ struct matrix_core : Base {
     }
 
 
-    template<std::ranges::input_range Vector, class Res = void>
-    constexpr std::optional<size_type> solve_linear_equation(const Vector& b, Res *const res = nullptr) const noexcept(NO_EXCEPT) {
-        assert(this->height() == std::ranges::ssize(b));
+    template<std::ranges::input_range Vector, class Sol = void, class System = void>
+    constexpr std::optional<size_type> solve_linear_equation(
+        const Vector& v,
+        Sol *const sol = nullptr,
+        System *const system = nullptr
+    )
+        const noexcept(NO_EXCEPT)
+        requires modint_family<value_type>
+    {
+        static_assert(!(std::same_as<Sol, void>) || (std::same_as<System, void>));
+
+        assert(this->height() == std::ranges::ssize(v));
 
         matrix_core mat(this->height(), this->width() + 1);
 
         REP(i, this->height()) {
             REP(j, this->width()) mat(i, j) = this->operator()(i, j);
-            mat(i, this->width()) = b[i];
+            mat(i, this->width()) = v[i];
         }
 
         const auto rank = mat.transform_to_upper_triangular<1, true>();
 
-        REP(i, rank, this->height()) if(mat(i, this->width()) != 0) return {};
+        REP(i, rank, this->height()) if(mat(i, this->width()) != value_type::zero) return {};
 
-        if constexpr(!std::same_as<Res, void>) {
-            static_assert(std::ranges::input_range<Res>);
+        if constexpr(!std::same_as<Sol, void>) {
+            static_assert(std::ranges::output_range<Sol, value_type>);
+            static_assert(std::ranges::output_range<std::ranges::range_value_t<System>, value_type>);
+            assert(!sol || system);
 
-            constexpr bool MATRIX = derived_from_template<Res, matrix_core>;
+            if(sol) {
+                sol->assign(this->width(), value_type::zero);
 
-            if(res) {
-                if constexpr(MATRIX) {
-                    res->assign(1, this->width());
-                }
-                else {
-                    res->assign(this->width());
-                }
+                std::vector<size_type> pivots(system ? this->width() : 0, -1);
 
-                std::vector<size_type> pivots(MATRIX ? this->width() : 0, -1);
+                for(size_type i = 0, j = 0; i < rank; ++i) {
+                    while(mat(i, j) == value_type::zero) ++j;
 
-                for(size_type i=0, j=0; i < rank; ++i) {
-                    while(mat(i, j) == 0) ++j;
+                    sol->operator[](j) = mat(i, this->width());
 
-                    if constexpr(MATRIX) {
-                        res->operator[](0)[j] = mat(i, this->width());
+                    if constexpr(!std::same_as<System, void>) if(system) {
                         pivots[j] = i;
                     }
-                    else {
-                        res->operator[](j) = mat(i, this->width());
-                    }
                 }
 
-                if constexpr(MATRIX) {
+                if constexpr(!std::same_as<System, void>) if(system) {
                     REP(j, this->width()) {
                         if(pivots[j] != -1) continue;
 
-                        typename Res::vector_type x(this->width());
-                        x[j] = 1;
+                        typename System::vector_type x(this->width());
+                        x[j] = value_type::one;
                         REP(k, j) if(pivots[k] != -1) x[k] = -mat(pivots[k], j);
-                        res->push_back(x);
+                        system->push_back(x);
                     }
 
-                    res->resize(res->size(), res->width());
+                    system->resize(system->size(), this->width());
                 }
             }
         }

@@ -24,12 +24,14 @@ signed main() {
     uni::vector<mint> b(n); input >> b;
     debug(a, b);
 
-    uni::matrix<mint> res;
-    auto rank = a.solve_linear_equation(b, &res);
+    uni::vector<mint> sol;
+    uni::matrix<mint> system;
+    auto rank = a.solve_linear_equation(b, &sol, &system);
 
     if(rank.has_value()) {
         print(m - *rank);
-        print(res);
+        print(sol);
+        print(system);
     }
     else {
         print(-1);
