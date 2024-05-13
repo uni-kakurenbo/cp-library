@@ -10,6 +10,10 @@
 
 #include "include/all.hpp"
 
+static_assert(std::same_as<uni::algebraic::make_opposite_t<uni::algebraic::affine<std::nullptr_t>>, uni::algebraic::opposite<uni::algebraic::affine<std::nullptr_t>>>);
+static_assert(std::same_as<uni::algebraic::make_opposite_t<uni::algebraic::make_opposite_t<uni::algebraic::affine<std::nullptr_t>>>, uni::algebraic::affine<std::nullptr_t>>);
+static_assert(std::same_as<uni::algebraic::make_opposite_t<uni::algebraic::addition<std::nullptr_t>>, uni::algebraic::addition<std::nullptr_t>>);
+
 signed main() {
     print("Hello World");
 }

@@ -44,6 +44,7 @@ template<class T>
 using make_magma_t = typename make_magma<T>::type;
 
 
+
 } // namespace algebraic
 
 } // namespace uni

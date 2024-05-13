@@ -26,7 +26,7 @@ struct hash_table : Base {
     }
 
     template<class K, class T>
-    inline auto emplace(K&& key, T&& val) noexcept(NO_EXCEPT) {
+    inline decltype(auto) emplace(K&& key, T&& val) noexcept(NO_EXCEPT) {
         return this->Base::insert({ std::forward<K>(key), std::forward<T>(val) });
     }
 

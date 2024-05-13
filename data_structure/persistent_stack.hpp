@@ -31,8 +31,13 @@ struct persistent_stack {
         value_type value;
         node_pointer next;
 
-        node_type(value_type _value, node_pointer _next) noexcept(NO_EXCEPT)
+        node_type(node_pointer _next, value_type _value) noexcept(NO_EXCEPT)
           : value(_value), next(_next)
+        {}
+
+        template<class... Args>
+        node_type(node_pointer _next, Args&&... args) noexcept(NO_EXCEPT)
+          : value(std::forward<Args>(args)...), next(_next)
         {}
     };
 
@@ -66,7 +71,7 @@ struct persistent_stack {
         return this->_head->value;
     }
 
-    template<std::convertible_to<value_type> T>
+    template<std::convertible_to<value_type> T = value_type>
         requires std::is_move_constructible_v<T>
     inline value_type top_or(T&& v) const noexcept(NO_EXCEPT) {
         if(this->empty()) return static_cast<value_type>(std::forward<T>(v));
@@ -81,11 +86,18 @@ struct persistent_stack {
     }
 
 
-    template<std::convertible_to<value_type> T>
+    template<std::convertible_to<value_type> T = value_type>
     inline auto& push(T&& x) noexcept(NO_EXCEPT) {
-        this->_head = this->_node_handler.create(std::forward<T>(x), this->_head);
+        this->_head = this->_node_handler.create(this->_head, std::forward<T>(x));
         ++this->_size;
         return *this;
+    }
+
+    template<class... Args>
+    inline auto& emplace(Args&&... args) noexcept(NO_EXCEPT) {
+        this->_head = this->_node_handler.create(this->_head, std::forward<Args>(args)...);
+        ++this->_size;
+        return this->_head->value;
     }
 
 

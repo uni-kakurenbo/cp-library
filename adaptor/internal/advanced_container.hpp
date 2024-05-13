@@ -46,12 +46,10 @@
         return *this; \
     } \
     \
-    template<class T> \
+    template<class T = value_type> \
         requires \
             concepts<value_type> && \
-            ( \
-                std::convertible_to<T, value_type> || std::same_as<T, advanced_container> \
-            ) \
+            (std::convertible_to<T, value_type> || std::same_as<T, advanced_container>) \
     friend auto operator op(advanced_container lhs, const T& rhs) noexcept(NO_EXCEPT) { \
         return lhs op_assign rhs; \
     }

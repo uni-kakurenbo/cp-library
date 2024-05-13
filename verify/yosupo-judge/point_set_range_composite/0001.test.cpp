@@ -23,7 +23,7 @@ using uni::algebraic::affine;
 using mint = uni::modint998244353;
 
 struct action {
-    using operand = affine<mint,true>;
+    using operand = affine<mint>;
     using operation = uni::algebraic::assignment<std::pair<mint,mint>>;
 
     static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }

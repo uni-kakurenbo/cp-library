@@ -67,7 +67,7 @@ struct persistent_queue {
         return this->_head->value;
     }
 
-    template<std::convertible_to<value_type> T>
+    template<std::convertible_to<value_type> T = value_type>
         requires std::is_move_constructible_v<T>
     inline value_type front_or(T&& v) const noexcept(NO_EXCEPT) {
         if(this->empty()) return static_cast<value_type>(std::forward<T>(v));
@@ -80,7 +80,7 @@ struct persistent_queue {
         return this->_tail->value;
     }
 
-    template<std::convertible_to<value_type> T>
+    template<std::convertible_to<value_type> T = value_type>
         requires std::is_move_constructible_v<T>
     inline value_type back_or(T&& v) const noexcept(NO_EXCEPT) {
         if(this->empty()) return static_cast<value_type>(std::forward<T>(v));
@@ -95,7 +95,7 @@ struct persistent_queue {
     }
 
 
-    template<std::convertible_to<value_type> T>
+    template<std::convertible_to<value_type> T = value_type>
     auto& push(T&& x) noexcept(NO_EXCEPT) {
         node_pointer node = this->_node_handler.create(x);
 

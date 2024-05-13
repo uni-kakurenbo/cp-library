@@ -29,7 +29,7 @@ signed main() {
     uni::vector<uni::spair<int>> f(n); input >> f;
 
     // uni::views::zip(std::views::iota(0, n), std::views::iota(0, n))
-    uni::dynamic_segment_tree<uni::actions::make_operatable_t<affine<mint, true>>> data(f);
+    uni::dynamic_segment_tree<uni::actions::make_operatable_t<affine<mint>>> data(f);
     // REPD(i, n) data.set(i, std::make_pair(i, i));
     debug(data.dump_rich());
 

@@ -47,7 +47,7 @@ struct restorable_stack {
     }
 
 
-    template<std::convertible_to<T> U>
+    template<std::convertible_to<T> U = T>
     inline auto top_or(U &&v) const noexcept(NO_EXCEPT) {
         return this->_current->val.value_or(std::forward<U>(v));
     }

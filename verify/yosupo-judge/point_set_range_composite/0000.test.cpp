@@ -26,7 +26,7 @@ signed main() {
     int n, q; std::cin >> n >> q;
     uni::vector<uni::spair<int>> f(n); input >> f;
 
-    uni::segment_tree<affine<mint,true>> data(ALL(f));
+    uni::segment_tree<affine<mint>> data(ALL(f));
 
     LOOP(q) {
         int t; std::cin >> t;

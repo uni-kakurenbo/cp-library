@@ -15,6 +15,7 @@ namespace uni {
 
 namespace algebraic {
 
+
 template<
     internal::magma M0,
     internal::magma M1
