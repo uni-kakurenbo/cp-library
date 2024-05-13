@@ -16,6 +16,8 @@ namespace actions {
 template<class T>
 using range_add_range_sum = amplifier<algebraic::addition<T>>;
 
+static_assert(internal::full_action<range_add_range_sum<int>>);
+
 
 } // namespace actions
 

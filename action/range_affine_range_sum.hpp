@@ -18,16 +18,18 @@ namespace actions {
 template<class T, bool REVERSE = false>
 struct range_affine_range_sum {
     using operand = algebraic::addition<T>;
-    using operation = algebraic::affine<T, REVERSE>;
+    using operation = algebraic::affine<T, !REVERSE>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        return y->first * x.val() + y->second;
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return f(x.val());
     }
 
-    static operation fold(const operation& x, const uni::internal::size_t length) noexcept(NO_EXCEPT) {
-        return operation({ x->first, x->second * length });
+    static auto power(const operation& f, const uni::internal::size_t length) noexcept(NO_EXCEPT) {
+        return operation({ f->first, f->second * length });
     }
 };
+
+static_assert(internal::full_action<range_affine_range_sum<int>>);
 
 
 } // namespace actions

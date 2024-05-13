@@ -17,16 +17,18 @@ namespace actions {
 
 
 template<class T, bool REVERSE = false>
-struct range_affine_range_minmax : base<algebraic::affine<T, REVERSE>> {
+struct range_affine_range_minmax : base<algebraic::affine<T, !REVERSE>> {
     using operand = algebraic::minmax<T>;
-    using operation = algebraic::affine<T, REVERSE>;
+    using operation = algebraic::affine<T, !REVERSE>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        auto res = operand({ x->first * y->first + y->second, x->second * y->first + y->second });
-        if (y->first < 0) std::swap(res->first, res->second);
+    static auto mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        auto res = operand({ f(x->first), f(x->second) });
+        if (f->first < 0) std::swap(res->first, res->second);
         return res;
     }
 };
+
+static_assert(internal::full_action<range_affine_range_minmax<int>>);
 
 
 } // namespace actions

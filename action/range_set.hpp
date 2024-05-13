@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "action/range_sum.hpp"
+#include "action/base.hpp"
 #include "action/helpers.hpp"
 
 #include "algebraic/null.hpp"
@@ -14,19 +14,16 @@ namespace actions {
 
 
 template<class T>
-struct range_set {
+struct range_set : base<algebraic::assignment<T>> {
     using operand = algebraic::null<T>;
     using operation = algebraic::assignment<T>;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        return y->value_or(x.val());
-    }
-
-    static operation fold(const operation& x, const uni::internal::size_t) noexcept(NO_EXCEPT) {
-        if(x->has_value()) return operation(x->operator*());
-        return x;
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return f->value_or(x.val());
     }
 };
+
+static_assert(internal::full_action<range_set<int>>);
 
 
 } // namesapce actions

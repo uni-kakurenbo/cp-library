@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "action/range_sum.hpp"
+#include "action/base.hpp"
 #include "action/helpers.hpp"
 
 #include "algebraic/addition.hpp"
@@ -12,8 +12,18 @@ namespace uni {
 namespace actions {
 
 
+
 template<class T>
-using range_add = uni::actions::make_effective_t<uni::algebraic::addition<T>>;
+struct range_add : base<algebraic::addition<T>> {
+    using operand = algebraic::null<T>;
+    using operation = algebraic::addition<T>;
+
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return f.val() + x.val();
+    }
+};
+
+static_assert(internal::full_action<range_add<int>>);
 
 
 } // namesapce actions

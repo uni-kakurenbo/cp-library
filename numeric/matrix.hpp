@@ -11,7 +11,6 @@
 #include "internal/concepts.hpp"
 
 #include "structure/grid.hpp"
-#include "adaptor/valarray.hpp"
 
 #include "numeric/modular/modint_interface.hpp"
 

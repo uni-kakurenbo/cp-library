@@ -46,7 +46,7 @@ struct kth_element {
         return {};
     }
 
-    template<std::convertible_to<T> U>
+    template<std::convertible_to<T> U = T>
     inline auto value_or(U&& v) const noexcept(NO_EXCEPT) {
         return this->get().value_or(std::forward<U>(v));
     }

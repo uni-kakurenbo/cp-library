@@ -14,4 +14,5 @@
 #include "algebraic/minimum.hpp"
 #include "algebraic/minmax.hpp"
 #include "algebraic/null.hpp"
+#include "algebraic/opposite.hpp"
 #include "algebraic/rolling_hash.hpp"

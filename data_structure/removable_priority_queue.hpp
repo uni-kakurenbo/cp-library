@@ -110,7 +110,7 @@ struct removable_priority_queue<PriorityQueue, Multiset> : PriorityQueue {
     }
 
     template<class... Args>
-    void emplace(Args&&... args) noexcept(NO_EXCEPT) {
+    decltype(auto) emplace(Args&&... args) noexcept(NO_EXCEPT) {
         if constexpr(self::CHECK_EXISTANCE) this->_elements.emplace(args...);
         return this->base_type::emplace(std::forward<Args>(args)...);
     }

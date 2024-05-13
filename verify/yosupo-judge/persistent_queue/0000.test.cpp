@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <memory>
-#include <scoped_allocator>
 
 #include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"

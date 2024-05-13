@@ -20,7 +20,7 @@ namespace actions {
 template<class operation = uni::internal::dummy>
     requires algebraic::internal::monoid<operation> || std::same_as<operation, uni::internal::dummy>
 struct base {
-    static operation fold(const operation& x, const uni::internal::size_t) noexcept(NO_EXCEPT) { return x; }
+    static operation power(const operation& x, const uni::internal::size_t) noexcept(NO_EXCEPT) { return x; }
 };
 
 
@@ -34,7 +34,7 @@ template<class T>
 concept effective_action =
     algebraic::internal::magma<typename T::operation> &&
     requires (const typename T::operation& f, const uni::internal::size_t length) {
-        { T::fold(f, length) } -> std::same_as<typename T::operation>;
+        { T::power(f, length) } -> std::same_as<typename T::operation>;
     };
 
 template<class T>
@@ -46,8 +46,8 @@ concept effect_only_action = effective_action<T> && (!operatable_action<T>);
 template<class T>
 concept full_action =
     operatable_action<T> && effective_action<T> &&
-    requires (typename T::operand v, typename T::operation f) {
-        { T::map(v, f) } -> std::same_as<typename T::operand>;
+    requires (typename T::operation f, typename T::operand v) {
+        { T::mapping(f, v) } -> std::same_as<typename T::operand>;
     };
 
 template<class T>
