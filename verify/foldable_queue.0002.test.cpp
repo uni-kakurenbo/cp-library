@@ -19,13 +19,14 @@
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
 #include "data_structure/foldable_queue.hpp"
+#include "data_structure/persistent_stack.hpp"
 #include "algebraic/affine.hpp"
 
 
 using mint = uni::modint998244353;
 
 signed main() {
-    uni::foldable_queue<uni::algebraic::affine<mint>> queue;
+    uni::foldable_queue<uni::algebraic::affine<mint>, uni::persistent_stack> queue;
 
     uni::i32 q; input >> q;
     REP(q) {

@@ -12,7 +12,9 @@ namespace actions {
 
 
 template<class T>
-using range_chgcd_range_gcd = make_operatable_t<uni::algebraic::gcd<T>>;
+using range_chgcd_range_gcd = amplifier<uni::algebraic::gcd<T>>;
+
+static_assert(internal::full_action<range_chgcd_range_gcd<int>>);
 
 
 } // namespace actions

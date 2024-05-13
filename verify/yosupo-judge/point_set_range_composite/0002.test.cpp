@@ -14,36 +14,24 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "data_structure/dynamic_sequence.hpp"
-#include "algebraic/affine.hpp"
-#include "algebraic/assignment.hpp"
 #include "numeric/modular/modint.hpp"
+#include "action/range_set_range_composition.hpp"
 
 
-using uni::algebraic::affine;
 using mint = uni::modint998244353;
-
-
-struct action {
-    using operand = affine<mint>;
-    using operation = uni::algebraic::assignment<std::pair<mint,mint>>;
-
-    static operand map(const operand& x, const operation& f) { return f->value_or(std::pair<mint,mint>{x->first, x->second}); }
-    static operation fold(const operation& x, const uni::internal::size_t) { return x; }
-};
-
 
 signed main() {
     int n, q; std::cin >> n >> q;
     std::vector<std::pair<mint,mint>> f(n); input >> f;
 
-    uni::dynamic_sequence<action> data(ALL(f));
+    uni::dynamic_sequence<uni::actions::range_set_range_composition<mint>> data(f);
 
     REP(i, q) {
         int t; std::cin >> t;
         if(t == 0) {
             int p, a, b; std::cin >> p >> a >> b;
-            if(i % 2) data.set(p, uni::spair<int>{ a, b });
-            else data.apply(p, uni::spair<int>{ a, b });
+            if(i % 2) data[p] = { a, b };
+            else data[p] *= std::make_pair(a, b);
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;

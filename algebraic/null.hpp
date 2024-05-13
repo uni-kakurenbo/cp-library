@@ -21,7 +21,7 @@ struct null : base<T>, scalar_multipliable<null<T>>::identity, associative, comm
     using base<T>::base;
 
     friend inline null operator+(const null& lhs, const null& rhs) noexcept(NO_EXCEPT) {
-        if(lhs == null{}) return rhs;
+        if(lhs == null()) return rhs;
         return lhs;
     }
 

@@ -11,8 +11,11 @@ namespace uni {
 namespace algebraic {
 
 
-template<class T, T (*op)(T, T), T (*e)(), class... Tags>
+template<class T, auto op, auto e, class... Tags>
 struct helper : uni::algebraic::base<T>, uni::algebraic::scalar_multipliable<helper<T, op, e, Tags...>>::automatic, Tags... {
+    static_assert(std::same_as<std::invoke_result_t<decltype(op), T, T>, T>);
+    static_assert(std::same_as<std::invoke_result_t<decltype(e)>, T>);
+
     using uni::algebraic::base<T>::base;
 
     helper() : helper(e()) {}
@@ -23,7 +26,7 @@ struct helper : uni::algebraic::base<T>, uni::algebraic::scalar_multipliable<hel
 };
 
 
-template<class T, T (*op)(T, T), T (*e)()>
+template<class T, auto op, auto e>
 using monoid_helper = helper<T, op, e, associative>;
 
 

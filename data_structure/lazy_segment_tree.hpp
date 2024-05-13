@@ -58,7 +58,7 @@ struct core {
     }
 
     inline void _all_apply(const size_type p, const operation& f) noexcept(NO_EXCEPT) {
-        this->_values[p] = action::map(this->_values[p], action::fold(f, this->_lengths[p]));
+        this->_values[p] = action::mapping(action::power(f, this->_lengths[p]), this->_values[p]);
         if(p < this->_size) this->_lazy[p] = f + this->_lazy[p];
     }
 
@@ -158,7 +158,7 @@ struct core {
     inline void apply(size_type p, const operation& f) noexcept(NO_EXCEPT) {
         p += this->_size;
         FORD(i, 1, this->_depth) this->_push(p >> i);
-        this->_values[p] = action::map(this->_values[p], action::fold(f, this->_lengths[p]));
+        this->_values[p] = action::mapping(action::power(f, this->_lengths[p]), this->_values[p]);
         FOR(i, 1, this->_depth) this->_pull(p >> i);
     }
 
@@ -264,8 +264,8 @@ template<actions::internal::full_action Action>
     requires internal::available<internal::lazy_segment_tree_impl::core<Action>>
 struct lazy_segment_tree<Action> {
     using action = Action;
-    using operand = typename Action::operand;
-    using operation = typename Action::operation;
+    using operand = Action::operand;
+    using operation = Action::operation;
 
   private:
     using core = internal::lazy_segment_tree_impl::core<action>;
@@ -274,9 +274,9 @@ struct lazy_segment_tree<Action> {
 
   public:
     using value_type = operand;
-    using action_type = typename operation::value_type;
+    using action_type = operation::value_type;
 
-    using size_type = typename core::size_type;
+    using size_type = core::size_type;
 
     inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
     inline auto allocated() const noexcept(NO_EXCEPT) { return this->_impl.allocated(); }

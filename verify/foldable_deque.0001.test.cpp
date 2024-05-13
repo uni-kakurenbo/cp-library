@@ -18,16 +18,14 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "data_structure/foldable_stack.hpp"
-#include "data_structure/persistent_stack.hpp"
-#include "algebraic/affine.hpp"
-#include "algebraic/addition.hpp"
+#include "data_structure/foldable_deque.hpp"
+#include "action/range_composition.hpp"
 
 
 using mint = uni::modint998244353;
 
 signed main() {
-    uni::foldable_deque<uni::algebraic::affine<mint>, uni::persistent_stack> deque;
+    uni::foldable_deque<uni::actions::range_composition<mint>> deque;
 
     uni::i32 q; input >> q;
     REP(q) {

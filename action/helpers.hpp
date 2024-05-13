@@ -14,32 +14,38 @@ namespace uni {
 namespace actions {
 
 
-template<class S, S (*op)(S, S), S (*e)(), class F, S (*mapping)(F, S), F (*composition)(F, F), F (*id)(), F (*folding)(F, int) = nullptr>
+template<class S, auto op, auto e, class F, auto _mapping, auto composition, auto id, auto _power = nullptr>
 struct helper {
-    using operand = algebraic::monoid_helper<S,op,e>;
-    using operation = algebraic::monoid_helper<F,composition,id>;
+    static_assert(std::same_as<std::invoke_result_t<decltype(_mapping), F, S>, S>);
+    static_assert(std::same_as<std::invoke_result_t<decltype(_power), F, uni::internal::size_t>, F>);
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        return mapping(y.val(), x.val());
+    using operand = algebraic::monoid_helper<S, op, e>;
+    using operation = algebraic::monoid_helper<F, composition, id>;
+
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return _mapping(f.val(), x.val());
     }
-    static operation fold(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
-        if constexpr(folding == nullptr) return x;
-        return folding(x.val(), length);
+    static operation power(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
+        if constexpr(_power == nullptr) return x;
+        return _power(x.val(), length);
     }
 };
 
 
-template<class S, class F, S (*mapping)(F, S), F (*folding)(F, int) = nullptr>
+template<class S, class F, auto _mapping, auto _power = nullptr>
 struct mixer {
+    static_assert(std::same_as<std::invoke_result_t<decltype(_mapping), F, S>, S>);
+    static_assert(std::same_as<std::invoke_result_t<decltype(_power), F, uni::internal::size_t>, F>);
+
     using operand = S;
     using operation = F;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        return mapping(y.val(), x.val());
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return _mapping(f.val(), x.val());
     }
-    static operation fold(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
-        if constexpr(folding == nullptr) return x;
-        return folding(x.val(), length);
+    static operation power(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
+        if constexpr(_power == nullptr) return x;
+        return _power(x.val(), length);
     }
 };
 
@@ -50,11 +56,11 @@ struct amplifier {
     using operand = S;
     using operation = S;
 
-    static operand map(const operand& x, const operation& y) noexcept(NO_EXCEPT) {
-        return x + y;
+    static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
+        return f + x;
     }
 
-    static operation fold(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
+    static operation power(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         return length * x;
     }
 };
@@ -112,7 +118,7 @@ struct make_full<Action> {
 
         using actions::base<algebraic::null<typename base::operand::value_type>>::base;
 
-        static operand map(const operand& x, const operation&) noexcept(NO_EXCEPT) { return x; }
+        static operand mapping(const operation&, const operand& x) noexcept(NO_EXCEPT) { return x; }
     };
 
     static_assert(internal::full_action<type>);
@@ -128,7 +134,7 @@ struct make_full<Action> {
 
         using base::base;
 
-        static operand map(const operand& x, const operation& f) noexcept(NO_EXCEPT) { return x + f; }
+        static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) { return f + x; }
     };
 
     static_assert(internal::full_action<type>);

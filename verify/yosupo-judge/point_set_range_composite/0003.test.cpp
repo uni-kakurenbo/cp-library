@@ -37,7 +37,7 @@ signed main() {
         int t; std::cin >> t;
         if(t == 0) {
             int p, a, b; std::cin >> p >> a >> b;
-            data.set(p, std::pair<mint,mint>{ a, b });
+            data[p] = { a, b };
         }
         if(t == 1) {
             int l, r, x; std::cin >> l >> r >> x;

@@ -18,28 +18,30 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "data_structure/foldable_queue.hpp"
+#include "data_structure/dynamic_sequence.hpp"
+#include "data_structure/red_black_tree.hpp"
+#include "action/range_composition.hpp"
 #include "algebraic/affine.hpp"
 
 
 using mint = uni::modint998244353;
 
 signed main() {
-    uni::foldable_queue<uni::algebraic::affine<mint>> queue;
+    uni::dynamic_sequence<uni::actions::range_composition<mint>, uni::red_black_tree_context<uni::u32>> data;
 
     uni::i32 q; input >> q;
     REP(q) {
         uni::i32 t; input >> t;
         if(t == 0) {
             mint a, b; input >> a >> b;
-            queue.emplace(a, b);
+            data.push_back({ a, b });
         }
         if(t == 1) {
-            queue.pop();
+            data.pop_front();
         }
         if(t == 2) {
             mint x; input >> x;
-            print(queue.fold()(x));
+            print(data.fold()(x));
         }
     }
 }

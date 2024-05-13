@@ -52,6 +52,7 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
     using base = typename internal::basic_core<ActionOrValue, sequence_core, Context>;
 
   public:
+    static constexpr bool ACC = actions::internal::operatable_action<ActionOrValue>;
     static constexpr bool LAZY = actions::internal::effective_action<ActionOrValue>;
 
     using base::base;
@@ -72,11 +73,13 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
 
 
     inline void pull(const node_pointer& tree) const noexcept(NO_EXCEPT) {
-        if constexpr(Context::LEAF_ONLY) {
-            tree->data.val = this->val(tree->left) + this->val(tree->right);
-        }
-        else if constexpr(LAZY) {
-            tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
+        if constexpr(ACC) {
+            if constexpr(Context::LEAF_ONLY) {
+                tree->data.val = this->val(tree->left) + this->val(tree->right);
+            }
+            else {
+                tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
+            }
         }
     }
 
@@ -102,39 +105,39 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
                     if(tree->left != node_handler::nil) {
                         this->clone(tree->left);
                         if(tree->left->is_leaf()) {
-                            tree->left->data.val = ActionOrValue::map(tree->left->data.val, tree->data.lazy);
+                            tree->left->data.val = ActionOrValue::mapping(tree->data.lazy, tree->left->data.val);
                         }
                         else {
                             tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
-                            tree->left->data.val = ActionOrValue::map(tree->left->data.val, ActionOrValue::fold(tree->data.lazy, tree->left->size));
+                            tree->left->data.val = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->left->size), tree->left->data.val);
                         }
                     }
 
                     if(tree->right != node_handler::nil) {
                         this->clone(tree->right);
                         if(tree->right->is_leaf()) {
-                            tree->right->data.val = ActionOrValue::map(tree->right->data.val, tree->data.lazy);
+                            tree->right->data.val = ActionOrValue::mapping(tree->data.lazy, tree->right->data.val);
                         }
                         else {
                             tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
-                            tree->right->data.val = ActionOrValue::map(tree->right->data.val, ActionOrValue::fold(tree->data.lazy, tree->right->size));
+                            tree->right->data.val = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->right->size), tree->right->data.val);
                         }
                     }
 
-                    tree->data.val = ActionOrValue::map(tree->data.val, tree->data.lazy);
+                    tree->data.val = ActionOrValue::mapping(tree->data.lazy, tree->data.val);
                 }
                 else {
                     if(tree->left != node_handler::nil) {
                         tree->left->data.lazy = tree->data.lazy + tree->left->data.lazy;
-                        tree->left->data.acc = ActionOrValue::map(tree->left->data.acc, ActionOrValue::fold(tree->data.lazy, tree->left->size));
+                        tree->left->data.acc = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->left->size), tree->left->data.acc);
                     }
 
                     if(tree->right != node_handler::nil) {
                         tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
-                        tree->right->data.acc = ActionOrValue::map(tree->right->data.acc, ActionOrValue::fold(tree->data.lazy, tree->right->size));
+                        tree->right->data.acc = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->right->size), tree->right->data.acc);
                     }
 
-                    tree->data.val = ActionOrValue::map(tree->data.val, tree->data.lazy);
+                    tree->data.val = ActionOrValue::mapping(tree->data.lazy, tree->data.val);
                 }
 
                 tree->data.lazy = operation{};

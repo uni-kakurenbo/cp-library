@@ -6,7 +6,7 @@
  */
 /* #language C++ 20 GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/queue_operate_all_composite"
+#define PROBLEM "https://judge.yosupo.jp/problem/deque_operate_all_composite"
 
 #include "sneaky/enforce_int128_enable.hpp"
 
@@ -18,28 +18,35 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "data_structure/foldable_queue.hpp"
-#include "algebraic/affine.hpp"
+#include "data_structure/dynamic_sequence.hpp"
+#include "action/range_composition.hpp"
 
 
 using mint = uni::modint998244353;
 
 signed main() {
-    uni::foldable_queue<uni::algebraic::affine<mint>> queue;
+    uni::dynamic_sequence<uni::actions::range_composition<mint>> data;
 
     uni::i32 q; input >> q;
     REP(q) {
         uni::i32 t; input >> t;
         if(t == 0) {
             mint a, b; input >> a >> b;
-            queue.emplace(a, b);
+            data.push_front({ a, b });
         }
         if(t == 1) {
-            queue.pop();
+            mint a, b; input >> a >> b;
+            data.push_back({ a, b });
         }
         if(t == 2) {
+            data.pop_front();
+        }
+        if(t == 3) {
+            data.pop_back();
+        }
+        if(t == 4) {
             mint x; input >> x;
-            print(queue.fold()(x));
+            print(data.fold()(x));
         }
     }
 }

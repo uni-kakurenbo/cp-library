@@ -22,6 +22,9 @@ template<
 >
 using range_sequence_hash = make_operatable_t<uni::algebraic::rolling_hash<REVERSE, T, BASE>>;
 
+static_assert(internal::operand_only_action<range_sequence_hash<false>>);
+static_assert(internal::operand_only_action<range_sequence_hash<true>>);
+
 
 } // namespace actions
 

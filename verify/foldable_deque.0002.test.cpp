@@ -6,7 +6,7 @@
  */
 /* #language C++ 20 GCC */
 
-#define PROBLEM "https://judge.yosupo.jp/problem/queue_operate_all_composite"
+#define PROBLEM "https://judge.yosupo.jp/problem/deque_operate_all_composite"
 
 #include "sneaky/enforce_int128_enable.hpp"
 
@@ -18,28 +18,36 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "data_structure/foldable_queue.hpp"
+#include "data_structure/foldable_deque.hpp"
+#include "data_structure/persistent_stack.hpp"
 #include "algebraic/affine.hpp"
 
 
 using mint = uni::modint998244353;
 
 signed main() {
-    uni::foldable_queue<uni::algebraic::affine<mint>> queue;
+    uni::foldable_deque<uni::algebraic::affine<mint>, uni::persistent_stack> deque;
 
     uni::i32 q; input >> q;
     REP(q) {
         uni::i32 t; input >> t;
         if(t == 0) {
             mint a, b; input >> a >> b;
-            queue.emplace(a, b);
+            deque.emplace_front(a, b);
         }
         if(t == 1) {
-            queue.pop();
+            mint a, b; input >> a >> b;
+            deque.emplace_back(a, b);
         }
         if(t == 2) {
+            deque.pop_front();
+        }
+        if(t == 3) {
+            deque.pop_back();
+        }
+        if(t == 4) {
             mint x; input >> x;
-            print(queue.fold()(x));
+            print(deque.fold()(x));
         }
     }
 }

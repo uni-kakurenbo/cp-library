@@ -17,11 +17,11 @@ struct affine : base<std::pair<T, T>>, scalar_multipliable<affine<T, REVERSE>>::
     affine() noexcept(NO_EXCEPT) : affine({ 1, 0 }) {};
 
     friend inline affine operator+(const affine& lhs, const affine& rhs) noexcept(NO_EXCEPT) {
-        if constexpr(REVERSE) return affine({ lhs->first * rhs->first, lhs->first * rhs->second + lhs->second });
-        return affine({ rhs->first * lhs->first, rhs->first * lhs->second + rhs->second });
+        if constexpr(REVERSE) return affine({ lhs->first * rhs->first, lhs(rhs->second) });
+        return affine({ rhs->first * lhs->first, rhs(lhs->second) });
     }
 
-    inline auto operator()(const T& x) {
+    inline auto operator()(const T& x) const noexcept(NO_EXCEPT) {
         return this->val().first * x + this->val().second;
     }
 };

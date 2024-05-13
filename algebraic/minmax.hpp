@@ -19,8 +19,11 @@ struct minmax : base<std::pair<T, T>>, scalar_multipliable<minmax<T>>::identity,
     using base<std::pair<T, T>>::base;
 
     minmax() noexcept(NO_EXCEPT)
-      : minmax({ std::numeric_limits<T>::max(), std::numeric_limits<T>::lowest() })
+      : minmax(std::numeric_limits<T>::max(), std::numeric_limits<T>::lowest())
     {};
+
+    minmax(const T& v) noexcept(NO_EXCEPT) : minmax(v, v) {};
+
 
     friend inline minmax operator+(const minmax& lhs, const minmax& rhs) noexcept(NO_EXCEPT) {
         return minmax({ std::min(lhs.val().first, rhs->first), std::max(lhs.val().second, rhs->second) });

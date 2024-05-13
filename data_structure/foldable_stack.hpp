@@ -6,6 +6,7 @@
 
 
 #include "internal/dev_env.hpp"
+#include "internal/unconstructible.hpp"
 
 #include "adaptor/stack.hpp"
 #include "adaptor/queue_by_stack.hpp"
@@ -14,16 +15,23 @@
 #include "algebraic/internal/concepts.hpp"
 #include "algebraic/opposite.hpp"
 
+#include "action/base.hpp"
+
 
 namespace uni {
 
 
-template<algebraic::internal::monoid ValueType, template<class...> class Stack = stack>
-struct foldable_stack {
-    using fold_type = ValueType;
-    using value_type = ValueType::value_type;
 
-    using size_type = Stack<ValueType>::size_type;
+template<class, template<class...> class = stack>
+struct foldable_stack : internal::unconstructible {};
+
+
+template<algebraic::internal::monoid Monoid, template<class...> class Stack>
+struct foldable_stack<Monoid, Stack> {
+    using fold_type = Monoid;
+    using value_type = Monoid::value_type;
+
+    using size_type = Stack<Monoid>::size_type;
 
     Stack<value_type> _val;
     Stack<fold_type> _acc;
@@ -75,36 +83,9 @@ struct foldable_stack {
 };
 
 
-namespace internal {
-
-
-template<algebraic::internal::monoid Monoid, template<class...> class Stack>
-using foldable_queue_base = queue_by_stack<foldable_stack<Monoid, Stack>, foldable_stack<algebraic::make_opposite_t<Monoid>, Stack>>;
-
-template<algebraic::internal::monoid Monoid, template<class...> class Stack>
-using foldable_deque_base = deque_by_stack<foldable_stack<algebraic::make_opposite_t<Monoid>, Stack>, foldable_stack<Monoid, Stack>>;
-
-
-} // namespace internal
-
-
-template<algebraic::internal::monoid Monoid, template<class...> class Stack = stack>
-struct foldable_queue : internal::foldable_queue_base<Monoid, Stack> {
-    using internal::foldable_queue_base<Monoid, Stack>::foldable_queue_base;
-
-    inline auto fold() const noexcept(NO_EXCEPT) {
-        return Monoid(this->_out.fold()) + this->_in.fold();
-    }
-};
-
-
-template<algebraic::internal::monoid Monoid, template<class...> class Stack = stack>
-struct foldable_deque : internal::foldable_deque_base<Monoid, Stack> {
-    using internal::foldable_deque_base<Monoid, Stack>::foldable_deque_base;
-
-    inline auto fold() const noexcept(NO_EXCEPT) {
-        return Monoid(this->_front.fold()) + this->_back.fold();
-    }
+template<actions::internal::operatable_action Action, template<class...> class Stack>
+struct foldable_stack<Action, Stack> : foldable_stack<typename Action::operand> {
+    using foldable_stack<typename Action::operand>::foldable_stack;
 };
 
 

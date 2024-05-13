@@ -18,9 +18,8 @@
 #include "snippet/iterations.hpp"
 #include "adaptor/io.hpp"
 #include "numeric/modular/modint.hpp"
-#include "data_structure/foldable_stack.hpp"
+#include "data_structure/foldable_deque.hpp"
 #include "algebraic/affine.hpp"
-#include "algebraic/addition.hpp"
 
 
 using mint = uni::modint998244353;
