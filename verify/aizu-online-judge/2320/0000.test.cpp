@@ -43,7 +43,7 @@ signed main() {
 
             uni::i32 i, j, d = id % 4 - 1;
 
-            int cnt = 0;
+            uni::i32 cnt = 0;
             do {
                 if(++cnt > 4) return 0;
 

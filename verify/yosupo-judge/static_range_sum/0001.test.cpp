@@ -18,12 +18,12 @@
 #include "algebraic/addition.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); REP(i, n) std::cin >> a[i];
+    uni::i32 n, q; input >> n >> q;
+    std::vector<uni::i32> a(n); REP(i, n) input >> a[i];
     uni::disjoint_sparse_table<uni::algebraic::addition<uni::i64>> sum(a);
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(sum(l, r).fold());
     }
 }

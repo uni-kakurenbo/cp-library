@@ -25,8 +25,8 @@ using uni::algebraic::affine;
 using mint = uni::modint998244353;
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::vector<uni::spair<int>> f(n); input >> f;
+    uni::i32 n, q; input >> n >> q;
+    uni::vector<uni::spair<uni::i32>> f(n); input >> f;
 
     // uni::views::zip(std::views::iota(0, n), std::views::iota(0, n))
     uni::dynamic_segment_tree<uni::actions::make_operatable_t<affine<mint>>> data(f);
@@ -34,13 +34,13 @@ signed main() {
     debug(data.dump_rich());
 
     LOOP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int p, a, b; std::cin >> p >> a >> b;
+            uni::i32 p, a, b; input >> p >> a >> b;
             data[p] = { a, b };
         }
         if(t == 1) {
-            int l, r, x; std::cin >> l >> r >> x;
+            uni::i32 l, r, x; input >> l >> r >> x;
             auto [a, b] = data.fold(l, r).val();
             print(a * x + b);
         }

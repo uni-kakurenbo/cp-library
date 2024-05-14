@@ -17,18 +17,18 @@
 #include "action/range_add_range_min.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::dynamic_sequence<uni::actions::range_add_range_min<int>> data(n, 0);
+    uni::i32 n, q; input >> n >> q;
+    uni::dynamic_sequence<uni::actions::range_add_range_min<uni::i32>> data(n, 0);
     // debug(data);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, x; std::cin >> l >> r >> x; ++r;
+            uni::i32 l, r, x; input >> l >> r >> x; ++r;
             data(l, r) *= x;
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             print(data(l, r).fold());
         }
         // debug(data);

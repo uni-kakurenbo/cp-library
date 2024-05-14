@@ -33,7 +33,7 @@ signed main() {
     uni::timer timer(10000);
 
     while(!timer.expired()) {
-        int t = uni::randi64() % 2;
+        uni::i32 t = uni::randi64() % 2;
         uni::i64 v = (uni::randi64() % 2) || data.empty() ? uni::randi64() : data[uni::randi64() % data.size()].val();
         debug(t, v);
 
@@ -51,7 +51,7 @@ signed main() {
 
         bool ok = true;
         {
-            int i = 0;
+            uni::i32 i = 0;
             ITR(v, corr) {
                 ok &= data[i++].val() == v;
             }

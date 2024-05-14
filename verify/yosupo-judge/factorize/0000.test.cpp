@@ -17,9 +17,9 @@
 #include "numeric/fast_prime.hpp"
 
 signed main() {
-    int q; std::cin >> q;
+    uni::i32 q; input >> q;
     REP(q) {
-        uni::ll a; std::cin >> a;
+        uni::ll a; input >> a;
         auto facts = uni::factorize(a);
         print(facts.size(), facts);
     }

@@ -17,18 +17,18 @@
 #include "action/range_affine_range_minmax.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
 
     uni::lazy_segment_tree<uni::actions::range_affine_range_minmax<uni::ll>> data(n, uni::spair<uni::ll>{ 0, 0 });
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, x; std::cin >> l >> r >> x; ++r;
+            uni::i32 l, r, x; input >> l >> r >> x; ++r;
             data(l, r) *= { 1, x };
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             print(data(l, r).fold()->first);
         }
         // debug(data);

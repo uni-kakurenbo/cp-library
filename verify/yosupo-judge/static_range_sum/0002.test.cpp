@@ -18,12 +18,12 @@
 #include "algebraic/addition.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<uni::i64> a(n); input >> a;
     uni::fenwick_tree<uni::algebraic::addition<uni::i64>> sum(a);
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(sum(l, r).fold());
     }
 }

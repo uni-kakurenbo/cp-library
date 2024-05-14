@@ -16,18 +16,18 @@
 #include "action/range_min.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::segment_tree<uni::actions::range_min<int>> data(n);
+    uni::i32 n, q; input >> n >> q;
+    uni::segment_tree<uni::actions::range_min<uni::i32>> data(n);
     // debug(data);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int p, x; std::cin >> p >> x;;
+            uni::i32 p, x; input >> p >> x;;
             data[p] = x;
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             print(data(l, r).fold());
         }
         // debug(data);

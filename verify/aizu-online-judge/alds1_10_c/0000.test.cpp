@@ -17,9 +17,9 @@
 #include "iterable/longest_common_subsequence.hpp"
 
 signed main() {
-    int q; std::cin >> q;
+    uni::i32 q; input >> q;
     REP(q) {
-        uni::string x, y; std::cin >> x >> y;
+        uni::string x, y; input >> x >> y;
         print(uni::lcs_sizes(ALL(x), ALL(y)).back().back());
     }
 }

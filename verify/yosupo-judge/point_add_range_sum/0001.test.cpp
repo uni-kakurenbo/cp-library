@@ -19,19 +19,19 @@
 
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::vector<uni::ll> a(n); input >> a;
 
     uni::segment_tree<uni::actions::range_sum<uni::ll>> data(a);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            uni::ll p, x; std::cin >> p >> x;
+            uni::ll p, x; input >> p >> x;
             data[p] += x;
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             print(data.fold(l, r));
         }
     }

@@ -21,19 +21,19 @@
 using mint = uni::modint998244353;
 
 signed main() {
-    int n, q; input >> n >> q;
-    uni::vector<uni::spair<int>> f(n); input >> f;
+    uni::i32 n, q; input >> n >> q;
+    uni::vector<uni::spair<uni::i32>> f(n); input >> f;
 
     uni::lazy_segment_tree<uni::actions::range_set_range_composition<mint>> data(f);
 
     LOOP(q) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int p, a, b; input >> p >> a >> b;
+            uni::i32 p, a, b; input >> p >> a >> b;
             data[p] *= std::make_pair(a, b);
         }
         if(t == 1) {
-            int l, r, x; input >> l >> r >> x;
+            uni::i32 l, r, x; input >> l >> r >> x;
             auto [a, b] = data.fold(l, r).val();
             print(a * x + b);
         }

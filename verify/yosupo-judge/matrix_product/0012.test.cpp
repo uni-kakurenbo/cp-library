@@ -19,7 +19,7 @@
 signed main() {
     uni::dynamic_montgomery_modint_32bit<-1>::set_mod(998244353);
 
-    int n, m, k; std::cin >> n >> m >> k;
+    uni::i32 n, m, k; input >> n >> m >> k;
     uni::matrix<uni::dynamic_montgomery_modint_32bit<-1>> a(n, m), b(m, k);
     input >> a >> b;
     print(a * b);

@@ -21,18 +21,18 @@
 #include "template/debug.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
 
     uni::dynamic_sequence<uni::i32, uni::red_black_tree_context<uni::i32>> data(n, (1U << 31) - 1);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, x; std::cin >> l >> r >> x; ++r;
+            uni::i32 l, r, x; input >> l >> r >> x; ++r;
             data(l, r) = x;
         }
         if(t == 1) {
-            int p; std::cin >> p;
+            uni::i32 p; input >> p;
             print(data[p]);
         }
         debug(data);

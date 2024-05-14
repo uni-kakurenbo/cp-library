@@ -18,20 +18,20 @@
 #include "action/range_sum.hpp"
 
 signed main() {
-    int n; input >> n;
+    uni::i32 n; input >> n;
 
     uni::dynamic_segment_tree<uni::actions::range_sum<uni::i64>> sum(1'000'000'001);
 
     uni::i64 ans = 0;
 
     REP(n) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int i, x; input >> i >> x;
+            uni::i32 i, x; input >> i >> x;
             sum[i] += x;
         }
         if(t == 1) {
-            int l, r; input >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             ans += sum(l, r).fold().val();
             debug(ans);
         }

@@ -16,10 +16,10 @@
 #include "adaptor/io.hpp"
 #include "numeric/fast_prime.hpp"
 
-int main() {
-    int q; std::cin >> q;
+uni::i32 main() {
+    uni::i32 q; input >> q;
     REP(q) {
-        uni::i64 n; std::cin >> n;
+        uni::i64 n; input >> n;
         print.yesno(uni::is_prime(n));
     }
 }

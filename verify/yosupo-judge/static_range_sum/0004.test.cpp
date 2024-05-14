@@ -20,12 +20,12 @@
 #include "action/range_sum.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<uni::i64> a(n); input >> a;
     uni::lazy_segment_tree<uni::actions::make_full_t<uni::actions::range_sum<uni::i64>>> sum(a);
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(sum(l, r).fold());
     }
 }

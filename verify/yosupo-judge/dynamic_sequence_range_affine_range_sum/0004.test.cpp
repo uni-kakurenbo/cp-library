@@ -24,7 +24,7 @@
 using mint = uni::modint998244353;
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::vector<mint> a(n); input >> a;
 
     uni::dynamic_sequence<
@@ -33,25 +33,25 @@ signed main() {
     > data(a);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int p, x; std::cin >> p >> x;
+            uni::i32 p, x; input >> p >> x;
             data.insert(p, mint{ x });
         }
         if(t == 1) {
-            int p; std::cin >> p;
+            uni::i32 p; input >> p;
             data.erase(p);
         }
         if(t == 2) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             data.reverse(l, r);
         }
         if(t == 3) {
-            int l, r, b, c; std::cin >> l >> r >> b >> c;
+            uni::i32 l, r, b, c; input >> l >> r >> b >> c;
             data(l, r) *= { b, c };
         }
         if(t == 4) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             print(data(l, r).fold());
             // break;
         }

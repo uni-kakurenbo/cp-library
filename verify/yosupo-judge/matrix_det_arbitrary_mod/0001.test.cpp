@@ -19,7 +19,7 @@
 using mint = uni::dynamic_arbitrary_montgomery_modint_32bit<-1>;
 
 signed main() {
-    int n, m; input >> n >> m;
+    uni::i32 n, m; input >> n >> m;
     mint::set_mod(m);
     uni::matrix<mint> a(n, n); input >> a;
     print(a.determinant());

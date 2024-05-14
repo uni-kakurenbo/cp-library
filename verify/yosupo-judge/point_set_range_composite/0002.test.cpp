@@ -21,20 +21,20 @@
 using mint = uni::modint998244353;
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     std::vector<std::pair<mint,mint>> f(n); input >> f;
 
     uni::dynamic_sequence<uni::actions::range_set_range_composition<mint>> data(f);
 
     REP(i, q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int p, a, b; std::cin >> p >> a >> b;
+            uni::i32 p, a, b; input >> p >> a >> b;
             if(i % 2) data[p] = { a, b };
             else data[p] *= std::make_pair(a, b);
         }
         if(t == 1) {
-            int l, r, x; std::cin >> l >> r >> x;
+            uni::i32 l, r, x; input >> l >> r >> x;
             auto [a, b] = data.fold(l, r).val();
             print(a * x + b);
         }

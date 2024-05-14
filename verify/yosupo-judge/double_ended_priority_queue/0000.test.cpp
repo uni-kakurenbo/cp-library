@@ -19,7 +19,7 @@
 #include "data_structure/dynamic_set.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
 
     uni::dynamic_set<uni::i32> set(({
         uni::vector<uni::i32> v(n); input >> v;
@@ -27,7 +27,7 @@ signed main() {
     }));
 
     REP(q) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
             uni::i32 x; input >> x;
             set.insert(x);

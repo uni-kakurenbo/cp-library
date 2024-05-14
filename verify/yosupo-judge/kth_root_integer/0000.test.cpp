@@ -15,9 +15,9 @@
 #include "numeric/arithmetic.hpp"
 
 signed main() {
-    int t; std::cin >> t;
+    uni::i32 t; input >> t;
     REP(t) {
-        uni::u64 a, k; std::cin >> a >> k;
+        uni::u64 a, k; input >> a >> k;
         print(uni::kth_root_floor(a, k));
     }
 }

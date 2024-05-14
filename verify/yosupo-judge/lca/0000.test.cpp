@@ -17,18 +17,18 @@
 #include "graph/lowest_common_ancestor.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::graph<> G(n);
 
     REP(i, 1, n) {
-        int p; std::cin >> p;
+        uni::i32 p; input >> p;
         G.add_edge_bidirectionally(i, p);
     }
 
     uni::lowest_common_ancestor lca(G, 0);
 
     LOOP(q) {
-        int u, v; std::cin >> u >> v;
+        uni::i32 u, v; input >> u >> v;
         print(lca(u, v));
     }
 

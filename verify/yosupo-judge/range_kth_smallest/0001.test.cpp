@@ -19,13 +19,13 @@
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<uni::u32> a(n); input >> a;
 
     uni::wavelet_matrix data(a);
 
     REP(q) {
-        int l, r, k; std::cin >> l >> r >> k;
+        uni::i32 l, r, k; input >> l >> r >> k;
         print(*data.range(l, r).kth_smallest_element(k));
     }
 }

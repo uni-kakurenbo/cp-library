@@ -18,13 +18,13 @@
 #include "action/range_sum.hpp"
 #include "action/helpers.hpp"
 
-int main() {
-    int n, q; std::cin >> n >> q;
+uni::i32 main() {
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<uni::i64> a(n); input >> a;
     uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_sum<uni::i64>>> data(a);
 
     REP(q) {
-        int t, l, r; std::cin >> t >> l >> r;
+        uni::i32 t, l, r; input >> t >> l >> r;
         if(t == 0) {
             data.reverse(l, r);
         }

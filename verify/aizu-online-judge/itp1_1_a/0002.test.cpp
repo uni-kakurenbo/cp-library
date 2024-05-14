@@ -25,9 +25,9 @@ signed main() {
     uni::random_adaptor<uni::random_engine_32bit> rng;
     uni::timer timer(10000);
 
-    // int i = 0;
+    // uni::i32 i = 0;
     while(!timer.expired()) {
-        const int n = rng(1'000'000) + 1;
+        const uni::i32 n = rng(1'000'000) + 1;
         // debug(i, n);
 
         auto p = uni::prime_sieve(n);

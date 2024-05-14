@@ -18,7 +18,7 @@
 #include "iterable/operation.hpp"
 
 signed main() {
-    int n, m, s; input >> n >> m >> s;
+    uni::i32 n, m, s; input >> n >> m >> s;
     uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
 
     auto dists = graph.shortest_path_with_cost(s);

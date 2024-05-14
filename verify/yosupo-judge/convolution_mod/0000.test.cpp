@@ -20,7 +20,7 @@
 using mint = uni::modint998244353;
 
 signed main() {
-    int n, m; std::cin >> n >> m;
+    uni::i32 n, m; input >> n >> m;
     uni::vector<mint> a(n), b(m); input >> a >> b;
     print(uni::convolution<uni::vector<mint>>(a, b));
 }
