@@ -36,7 +36,7 @@ namespace uni {
 namespace internal {
 
 
-// Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
+// Thanks to: http://blog.mitaki28.info/1447078746296/
 template<class NodeHandler, class Derived, std::integral SizeType, class ValueType>
 struct red_black_tree_impl {
     using size_type = SizeType;
