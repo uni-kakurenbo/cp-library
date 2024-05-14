@@ -9,8 +9,11 @@
 #include "internal/dev_env.hpp"
 
 #include "algebraic/base.hpp"
+
 #include "numeric/fast_prime.hpp"
 #include "numeric/modular/modint.hpp"
+
+#include "random/engine.hpp"
 
 
 namespace uni {
@@ -35,7 +38,8 @@ struct rolling_hash_impl {
                 rolling_hash_impl::base = uni::primitive_root(value_type::mod());
             }
             else if constexpr(BASE < 0) {
-                rolling_hash_impl::base = static_cast<value_type>(uni::primitive_root(rolling_hash_impl::mod));
+                random_engine_64bit random(std::random_device{}());
+                sequence_hasher::base = static_cast<value_type>(random() % value_type::mod());
             }
             else {
                 rolling_hash_impl::base = BASE;
