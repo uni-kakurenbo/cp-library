@@ -25,7 +25,7 @@
 #include "iterable/operation.hpp"
 
 signed main() {
-    int n, q; input >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::vector<uni::i32> x(n), y(n), w(n), inds(n);
 
     input >> uni::views::zip(x, y, w);
@@ -33,7 +33,7 @@ signed main() {
 
     debug(inds, x, y, w);
 
-    inds.sort([&](int i, int j) { return x[i] < x[j]; });
+    inds.sort([&](uni::i32 i, uni::i32 j) { return x[i] < x[j]; });
     x = uni::ordered_by(x, inds), y = uni::ordered_by(y, inds), w = uni::ordered_by(w, inds);
     debug(inds, x, y, w);
 
@@ -50,7 +50,7 @@ signed main() {
     debug(storage);
 
     REP(q) {
-        int l, d, r, u; input >> l >> d >> r >> u;
+        uni::i32 l, d, r, u; input >> l >> d >> r >> u;
         auto nl = std::ranges::lower_bound(x, l) - std::ranges::begin(x);
         auto nr = std::ranges::lower_bound(x, r) - std::ranges::begin(x);
         debug(l, d, r, u);

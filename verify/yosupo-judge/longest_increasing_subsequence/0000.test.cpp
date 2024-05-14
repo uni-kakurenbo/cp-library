@@ -15,9 +15,9 @@
 #include "iterable/longest_increasing_subsequence.hpp"
 
 signed main() {
-    int n; std::cin >> n;
-    uni::vector<int> a(n); input >> a;
-    uni::lis<true,int> lis(ALL(a));
+    uni::i32 n; input >> n;
+    uni::vector<uni::i32> a(n); input >> a;
+    uni::lis<true,uni::i32> lis(ALL(a));
 
     print(lis.size(), lis.indices);
 }

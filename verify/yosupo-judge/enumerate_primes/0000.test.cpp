@@ -20,7 +20,7 @@
 #include "numeric/prime_enumerator.hpp"
 
 signed main() {
-    int n, a, b; std::cin >> n >> a >> b;
+    uni::i32 n, a, b; input >> n >> a >> b;
     assert(a > 0);
     auto sieve = uni::prime_enumerator(n);
     print(sieve.size(), (sieve.size() + a - b - 1) / a);

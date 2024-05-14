@@ -21,7 +21,7 @@
 using mint = uni::modint998244353;
 
 signed main() {
-    int n; std::cin >> n;
+    uni::i32 n; input >> n;
     uni::vector<mint> a(n), b(n); input >> a >> b;
     print(uni::lcm_convolution<uni::vector<mint>, 1>(a, b));
 }

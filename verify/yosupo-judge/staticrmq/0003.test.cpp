@@ -18,12 +18,12 @@
 #include "action/range_max.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::valarray<int> a(n); input >> a; a *= -1;
-    uni::segment_tree<uni::actions::range_max<int>> max(a);
+    uni::i32 n, q; input >> n >> q;
+    uni::valarray<uni::i32> a(n); input >> a; a *= -1;
+    uni::segment_tree<uni::actions::range_max<uni::i32>> max(a);
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(-max(l, r).fold().val());
     }
 }

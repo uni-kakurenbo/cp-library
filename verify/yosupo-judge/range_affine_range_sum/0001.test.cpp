@@ -19,19 +19,19 @@
 
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     std::vector<uni::static_modint_64bit<998244353>> a(n); input >> a;
 
     uni::lazy_segment_tree<uni::actions::range_affine_range_sum<uni::static_modint_64bit<998244353>>> data(ALL(a));
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, b, c; std::cin >> l >> r >> b >> c;
+            uni::i32 l, r, b, c; input >> l >> r >> b >> c;
             data(l, r) *= { b, c };
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             print(data(l, r).fold());
         }
     }

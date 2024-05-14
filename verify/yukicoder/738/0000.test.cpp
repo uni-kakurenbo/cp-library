@@ -18,7 +18,7 @@
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {
-    int n, k; std::cin >> n >> k;
+    uni::i32 n, k; input >> n >> k;
     uni::valarray<uni::i32> a(n); input >> a;
     uni::wavelet_matrix<uni::i64> data(a);
 

@@ -17,7 +17,7 @@
 #include "numeric/matrix.hpp"
 
 signed main() {
-    int n, m, k; std::cin >> n >> m >> k;
+    uni::i32 n, m, k; input >> n >> m >> k;
     uni::matrix<uni::static_builtin_modint_64bit<998244353>> a(n, m), b(m, k);
     input >> a >> b;
     print(a * b);

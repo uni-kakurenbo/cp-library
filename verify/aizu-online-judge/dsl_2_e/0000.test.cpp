@@ -20,7 +20,7 @@
 #include "template/debug.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
 
     uni::lazy_segment_tree<
         uni::actions::make_full_t<
@@ -29,13 +29,13 @@ signed main() {
     > data(n);
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, x; std::cin >> l >> r >> x; --l;
+            uni::i32 l, r, x; input >> l >> r >> x; --l;
             data(l, r) *= x;
         }
         if(t == 1) {
-            int p; std::cin >> p; --p;
+            uni::i32 p; input >> p; --p;
             print(data[p]);
         }
         debug(data);

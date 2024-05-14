@@ -20,35 +20,35 @@
 #include "data_structure/dynamic_set.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::dynamic_set<uni::i32, uni::treap_context<uni::i32>> st;
 
     REP(i, n) {
-        char v; std::cin >> v;
+        char v; input >> v;
         if(v == '1') st.insert(i);
     }
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             st.insert<true>(k);
         }
         if(t == 1) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             st.erase(k);
         }
         if(t == 2) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             print(st.contains(k));
         }
         if(t == 3) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             auto itr = st.lower_bound(k);
             print(itr == st.end() ? -1 : *itr);
         }
         if(t == 4) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             auto itr = st.upper_bound(k);
             print(itr == st.begin() ? -1 : *std::ranges::prev(itr));
         }

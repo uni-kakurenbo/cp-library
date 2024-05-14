@@ -17,12 +17,12 @@
 #include "iterable/accumulation.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    std::vector<int> a(n); input >> a;
+    uni::i32 n, q; input >> n >> q;
+    std::vector<uni::i32> a(n); input >> a;
     uni::accumulation<uni::ll> sum(ALL(a));
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(sum(l, r));
     }
 }

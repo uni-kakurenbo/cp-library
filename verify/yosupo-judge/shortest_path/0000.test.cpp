@@ -17,7 +17,7 @@
 #include "graph/shortest_path.hpp"
 
 signed main() {
-    int n, m, s, t; input >> n >> m >> s >> t;
+    uni::i32 n, m, s, t; input >> n >> m >> s >> t;
     uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
     debug(graph);
 

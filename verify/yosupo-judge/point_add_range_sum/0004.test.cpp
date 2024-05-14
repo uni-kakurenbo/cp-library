@@ -22,7 +22,7 @@
 
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::vector<uni::ll> a(n); input >> a;
 
     uni::dynamic_sequence<uni::actions::range_add_range_sum<uni::ll>, uni::persistent_red_black_tree_context<uni::i32>> data(a);
@@ -31,14 +31,14 @@ signed main() {
     // debug(data.dump_rich());
 
     REP(i, q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            uni::ll p, x; std::cin >> p >> x;
+            uni::ll p, x; input >> p >> x;
             if(i % 2) data[p] += x;
             else data[p] *= x;
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             print(data(l, r).fold());
         }
         debug(data.dump_rich());

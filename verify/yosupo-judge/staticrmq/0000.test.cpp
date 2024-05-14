@@ -19,12 +19,12 @@
 
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::valarray<int> a(n); input >> a;
-    uni::disjoint_sparse_table<uni::algebraic::minimum<int>> min(a);
+    uni::i32 n, q; input >> n >> q;
+    uni::valarray<uni::i32> a(n); input >> a;
+    uni::disjoint_sparse_table<uni::algebraic::minimum<uni::i32>> min(a);
 
     REP(q) {
-        int l, r; std::cin >> l >> r;
+        uni::i32 l, r; input >> l >> r;
         print(min(l, r).fold());
     }
 }

@@ -22,18 +22,18 @@
 #include <memory_resource>
 
 signed main() {
-    int q; input >> q;
+    uni::i32 q; input >> q;
 
-    std::vector<uni::persistent_queue<int, std::bit_width(200'000U)>> queue(1);
+    std::vector<uni::persistent_queue<uni::i32, std::bit_width(200'000U)>> queue(1);
 
     REP(q) {
-        int k; input >> k;
+        uni::i32 k; input >> k;
         if(k == 0) {
-            int t, x; input >> t >> x; ++t;
+            uni::i32 t, x; input >> t >> x; ++t;
             queue.emplace_back(queue[t].clone().push(x));
         }
         if(k == 1) {
-            int t; input >> t; ++t;
+            uni::i32 t; input >> t; ++t;
             print(queue[t].front());
             queue.emplace_back(queue[t].clone().pop());
         }

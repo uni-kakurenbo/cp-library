@@ -24,12 +24,12 @@
 #include "numeric/modular/modint.hpp"
 
 signed main() {
-    int t; std::cin >> t;
-    uni::i32 m; std::cin >> m;
+    uni::i32 t; input >> t;
+    uni::i32 m; input >> m;
     uni::binomial_coefficient<uni::i64> binom(m);
 
     REP(t) {
-        uni::i64 n, k; std::cin >> n >> k;
+        uni::i64 n, k; input >> n >> k;
         print(binom.comb(n, k));
     }
 }

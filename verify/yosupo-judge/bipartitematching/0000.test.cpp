@@ -16,11 +16,11 @@
 #include "graph/maximum_bipartite_matching.hpp"
 
 signed main() {
-    int l, r, n; input >> l >> r >> n;
+    uni::i32 l, r, n; input >> l >> r >> n;
 
     uni::maximum_bipartite_matching matching(l, r);
     REP(n) {
-        int a, b; input >> a >> b;
+        uni::i32 a, b; input >> a >> b;
         matching.add(a, b);
     }
 

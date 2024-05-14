@@ -16,7 +16,7 @@
 #include "iterable/accumulation.hpp"
 
 signed main() {
-    int n, m; input >> n >> m;
+    uni::i32 n, m; input >> n >> m;
     uni::vector<uni::i64> x(n), y(n); input >> uni::views::zip(x, y);
 
     uni::compressed comp_x(x), comp_y(y);

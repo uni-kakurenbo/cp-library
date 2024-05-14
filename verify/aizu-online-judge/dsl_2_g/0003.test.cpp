@@ -17,20 +17,20 @@
 #include "action/range_add_range_sum.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
-    uni::dynamic_sequence<uni::actions::range_add_range_sum<long>> data(n);
+    uni::i32 n, q; input >> n >> q;
+    uni::dynamic_sequence<uni::actions::range_add_range_sum<uni::i64>> data(n);
     debug(data.dump_rich());
 
     while(q--) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, x; std::cin >> l >> r >> x; --l;
+            uni::i32 l, r, x; input >> l >> r >> x; --l;
             if(l + 1 == r) data[l] += x;
             else data(l, r) *= x;
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r; --l;
-            std::cout << data(l, r).fold().val() << "\n";
+            uni::i32 l, r; input >> l >> r; --l;
+            print(data(l, r).fold());
         }
         debug(data.dump_rich());
     }

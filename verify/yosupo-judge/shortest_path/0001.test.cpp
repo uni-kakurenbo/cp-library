@@ -19,12 +19,12 @@
 #include "data_structure/removable_priority_queue.hpp"
 
 signed main() {
-    int n, m, s, t; input >> n >> m >> s >> t;
+    uni::i32 n, m, s, t; input >> n >> m >> s >> t;
     uni::graph<uni::i64> graph(n); graph.read<true, false>(m);
 
-    uni::removable_priority_queue<std::pair<uni::i64, int>, std::vector<std::pair<uni::i64, int>>, std::greater<std::pair<uni::i64, int>>> que;
+    uni::removable_priority_queue<std::pair<uni::i64, uni::i32>, std::vector<std::pair<uni::i64, uni::i32>>, std::greater<std::pair<uni::i64, uni::i32>>> que;
     uni::vector<uni::i64> dists(n, uni::INF64);
-    uni::vector<int> prev(n, -1);
+    uni::vector<uni::i32> prev(n, -1);
 
     que.emplace(dists[s] = 0, s);
 

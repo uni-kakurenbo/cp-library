@@ -20,24 +20,24 @@
 #include "action/helpers.hpp"
 
 signed main() {
-    int n, q; input >> n >> q;
-    uni::vector<int> a(n); input >> a;
+    uni::i32 n, q; input >> n >> q;
+    uni::vector<uni::i32> a(n); input >> a;
 
-    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<int>>, uni::persistent_red_black_tree_context<uni::i32>> data(a);
+    uni::dynamic_sequence<uni::actions::make_full_t<uni::actions::range_min<uni::i32>>, uni::persistent_red_black_tree_context<uni::i32>> data(a);
     debug(data.dump_rich());
 
     REP(q) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r; input >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             data.rotate_right(l, r);
         }
         if(t == 1) {
-            int l, r; input >> l >> r; ++r;
+            uni::i32 l, r; input >> l >> r; ++r;
             print(data(l, r).fold());
         }
         if(t == 2) {
-            int p, x; input >> p >> x;
+            uni::i32 p, x; input >> p >> x;
             data[p] = x;
         }
         debug(data.dump_rich());

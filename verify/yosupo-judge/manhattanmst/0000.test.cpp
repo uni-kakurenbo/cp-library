@@ -8,9 +8,9 @@
 #include "graph/manhattan_minimum_spanning_tree.hpp"
 
 signed main() {
-    int n; std::cin >> n;
+    uni::i32 n; input >> n;
     uni::vector<uni::ll> xs(n), ys(n);
-    REP(i, n) std::cin >> xs[i] >> ys[i];
+    REP(i, n) input >> xs[i] >> ys[i];
 
     uni::ll cost = 0;
     auto edges = uni::manhattan_mst_edges(ALL(xs), ALL(ys), &cost);

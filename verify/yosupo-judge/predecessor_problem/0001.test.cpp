@@ -19,11 +19,11 @@
 #include "data_structure/segment_tree.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<bool> t(n);
 
     REP(i, n) {
-        char v; std::cin >> v;
+        char v; input >> v;
         t[i] = v == '1';
     }
 
@@ -31,25 +31,25 @@ signed main() {
     st.build_from_bits(ALL(t));
 
     REP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             st.insert(k);
         }
         if(t == 1) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             st.remove(k);
         }
         if(t == 2) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             print(st.contains(k));
         }
         if(t == 3) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             print(st.next(k).value_or(-1));
         }
         if(t == 4) {
-            int k; std::cin >> k;
+            uni::i32 k; input >> k;
             print(st.prev(k).value_or(-1));
         }
     }

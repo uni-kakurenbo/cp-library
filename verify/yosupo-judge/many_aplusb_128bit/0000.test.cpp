@@ -15,9 +15,9 @@
 #include "numeric/int128.hpp"
 
 signed main() {
-    int t; std::cin >> t;
+    uni::i32 t; input >> t;
     REP(t) {
-        uni::i128 a, b; std::cin >> a >> b;
+        uni::i128 a, b; input >> a >> b;
         print(a + b);
     }
 }

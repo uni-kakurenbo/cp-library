@@ -16,12 +16,12 @@
 #include "iterable/operation.hpp"
 
 signed main() {
-    uni::multi_container<int, 3> cnt(4, 3, 10);
+    uni::multi_container<uni::i32, 3> cnt(4, 3, 10);
 
-    int n; input >> n;
+    uni::i32 n; input >> n;
 
     REP(i, n) {
-        int b, f, r, v; input >> b >> f >> r >> v; --b, --f, --r;
+        uni::i32 b, f, r, v; input >> b >> f >> r >> v; --b, --f, --r;
         cnt[b][f][r] += v;
     }
 

@@ -9,7 +9,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
 
 #include <iostream>
-// #include "snippet/aliases.hpp"
+#include "snippet/aliases.hpp"
 #include "snippet/fast_io.hpp"
 #include "snippet/iterations.hpp"
 #include "numeric/modular/modint.hpp"
@@ -18,19 +18,19 @@
 #include "action/range_affine_range_sum.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     std::vector<uni::modint998244353> a(n); input >> a;
 
     uni::dynamic_sequence<uni::actions::range_affine_range_sum<uni::modint998244353>> data(a);
 
     LOOP(q) {
-        int t; std::cin >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
-            int l, r, b, c; std::cin >> l >> r >> b >> c;
+            uni::i32 l, r, b, c; input >> l >> r >> b >> c;
             data.apply(l, r, { b, c });
         }
         if(t == 1) {
-            int l, r; std::cin >> l >> r;
+            uni::i32 l, r; input >> l >> r;
             print(data.fold(l, r));
         }
     }

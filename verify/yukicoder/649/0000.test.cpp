@@ -16,12 +16,12 @@
 
 
 signed main() {
-    int q, k; input >> q >> k, --k;
+    uni::i32 q, k; input >> q >> k, --k;
 
     uni::kth_element<uni::i64> data(k);
 
     REP(q) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 1) {
             uni::i64 v; input >> v;
             data.push(v);

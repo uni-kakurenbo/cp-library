@@ -17,13 +17,13 @@
 #include "data_structure/wavelet_matrix.hpp"
 
 signed main() {
-    int n, q; std::cin >> n >> q;
+    uni::i32 n, q; input >> n >> q;
     uni::valarray<unsigned> a(n); input >> a;
 
     uni::wavelet_matrix data(a);
 
     REP(q) {
-        int l, r, x; std::cin >> l >> r >> x;
+        uni::i32 l, r, x; input >> l >> r >> x;
         print(data(l, r).count(x));
     }
 }

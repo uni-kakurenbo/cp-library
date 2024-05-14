@@ -16,7 +16,7 @@
 #include "numeric/quotient_enumerator.hpp"
 
 signed main() {
-    uni::i64 n; std::cin >> n;
+    uni::i64 n; input >> n;
 
     uni::quotient_enumerator qe(n);
 

@@ -22,14 +22,14 @@
 #include "numeric/modular/binary_reduction.hpp"
 
 signed main() {
-    int t; std::cin >> t;
-    uni::u32 m; std::cin >> m;
+    uni::i32 t; input >> t;
+    uni::u32 m; input >> m;
 
     if(std::has_single_bit(m)) {
         uni::binomial_coefficient_prime_power_mod<uni::i32, uni::i32, uni::binary_reduction_32bit> binom(m, 1, 10'000'000);
 
         REP(t) {
-            uni::i32 n, k; std::cin >> n >> k;
+            uni::i32 n, k; input >> n >> k;
             print(binom.comb(n, k));
         }
     }
@@ -37,7 +37,7 @@ signed main() {
         uni::binomial_coefficient_prime_power_mod<uni::i32, uni::i32, uni::montgomery_reduction_32bit> binom(m, 1, 10'000'000);
 
         REP(t) {
-            uni::i32 n, k; std::cin >> n >> k;
+            uni::i32 n, k; input >> n >> k;
             print(binom.comb(n, k));
         }
     }

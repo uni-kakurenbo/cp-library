@@ -15,7 +15,7 @@
 #include "numeric/fast_prime.hpp"
 
 signed main() {
-    int n; std::cin >> n;
+    uni::i32 n; input >> n;
     print << n << ": ";
     print(uni::factorize(n));
 }

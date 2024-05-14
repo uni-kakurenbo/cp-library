@@ -12,8 +12,6 @@
 #include "internal/types.hpp"
 
 #include "numeric/modular/modint_interface.hpp"
-// #include "numeric/internal/primality_test.hpp"
-// #include "numeric/internal/primitive_root.hpp"
 
 #include "template/debug.hpp"
 

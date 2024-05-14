@@ -26,9 +26,9 @@ using mint = uni::modint998244353;
 signed main() {
     uni::dynamic_sequence<uni::i64> data;
 
-    int q; input >> q;
+    uni::i32 q; input >> q;
     REP(q) {
-        int t; input >> t;
+        uni::i32 t; input >> t;
         if(t == 0) {
             uni::i64 i, v; input >> i >> v;
             data[i] = v;

@@ -17,9 +17,9 @@
 #include "numeric/fast_prime.hpp"
 
 signed main() {
-    int q; std::cin >> q;
+    uni::i32 q; input >> q;
     REP(q) {
-        uni::u64 p; std::cin >> p;
+        uni::u64 p; input >> p;
         print(uni::primitive_root(p));
     }
 }
