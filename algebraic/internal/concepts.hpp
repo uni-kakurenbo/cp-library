@@ -19,7 +19,7 @@ namespace internal {
 
 template<class T>
 concept magma =
-    uni::internal::addable<T> && std::same_as<std::common_type_t<T>, T> &&
+    uni::internal::addable<T> &&
     requires () {
         typename T::value_type;
     };
