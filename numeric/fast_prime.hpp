@@ -44,9 +44,10 @@ inline auto divisors(const i64 n) noexcept(NO_EXCEPT) {
     return res;
 }
 
+template<bool FORCE_RANDOM = false>
 inline auto primitive_root(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
-    return primitive_root<uni::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, uni::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>, i64>(n);
+    return primitive_root<uni::dynamic_montgomery_modint_32bit<INTERNAL_MODINT_ID>, uni::dynamic_montgomery_modint_64bit<INTERNAL_MODINT_ID>, i64, FORCE_RANDOM>(n);
 }
 
 

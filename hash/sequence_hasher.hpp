@@ -36,7 +36,7 @@ struct sequence_hasher {
     using hash_type = uint64_t;
 
     static constexpr hash_type mod = MOD;
-    inline static hash_type base = BASE;
+    inline static hash_type base;
 
   private:
     size_type _n = 0, _front = 0;
@@ -47,15 +47,15 @@ struct sequence_hasher {
     static inline hash_type power(const size_type p) noexcept(NO_EXCEPT) {
         if(static_cast<size_type>(sequence_hasher::_powers.size()) <= p) {
             size_type n = static_cast<size_type>(sequence_hasher::_powers.size());
-            sequence_hasher::_powers.resize(p+1);
+            sequence_hasher::_powers.resize(p + 1);
             if(n == 0) sequence_hasher::_powers[0] = 1;
-            REP(i, std::max(size_type{ 0 }, n-1), p) sequence_hasher::_powers[i+1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
+            REP(i, std::max(size_type{ 0 }, n-1), p) sequence_hasher::_powers[i + 1] = sequence_hasher::mul(sequence_hasher::_powers[i], sequence_hasher::base);
         }
         return sequence_hasher::_powers[p];
     }
 
     inline hash_type& hashed(const size_type p) noexcept(NO_EXCEPT) {
-        if(static_cast<size_type>(this->_hashed.size()) <= p) this->_hashed.resize(p+1);
+        if(static_cast<size_type>(this->_hashed.size()) <= p) this->_hashed.resize(p + 1);
         return this->_hashed[p];
     }
     inline const hash_type& hashed(const size_type p) const noexcept(NO_EXCEPT) { return this->_hashed[p]; }
@@ -114,11 +114,14 @@ struct sequence_hasher {
     sequence_hasher(const size_type n = 0) noexcept(NO_EXCEPT) : _n(n) {
         if(sequence_hasher::base <= 0) {
             if constexpr(BASE == 0) {
-                sequence_hasher::base = static_cast<hash_type>(uni::primitive_root(sequence_hasher::mod));
+                sequence_hasher::base = static_cast<hash_type>(uni::primitive_root<true>(sequence_hasher::mod));
             }
             else if constexpr(BASE < 0) {
                 random_engine_64bit random(std::random_device{}());
                 sequence_hasher::base = static_cast<hash_type>(random() % sequence_hasher::mod);
+            }
+            else {
+                sequence_hasher::base = BASE;
             }
         }
     }
@@ -126,12 +129,12 @@ struct sequence_hasher {
     template<std::input_iterator I, std::sentinel_for<I> S>
     sequence_hasher(I first, S last) noexcept(NO_EXCEPT) : sequence_hasher(static_cast<size_type>(std::ranges::distance(first, last))) {
         this->_hashed.resize(this->_n);
-        this->_hashed.assign(this->_n+1, 0);
+        this->_hashed.assign(this->_n + 1, 0);
 
         size_type i = 0;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
-            if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
+            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
+            if(this->hashed(i + 1) >= sequence_hasher::mod) this->hashed(i + 1) -= sequence_hasher::mod;
         }
     }
 
@@ -192,8 +195,8 @@ struct sequence_hasher {
 
         size_type i = n;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i+1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
-            if(this->hashed(i+1) >= sequence_hasher::mod) this->hashed(i+1) -= sequence_hasher::mod;
+            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
+            if(this->hashed(i + 1) >= sequence_hasher::mod) this->hashed(i + 1) -= sequence_hasher::mod;
         }
 
         return *this;

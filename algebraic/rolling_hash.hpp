@@ -35,11 +35,11 @@ struct rolling_hash_impl {
     {
         if(rolling_hash_impl::base == 0) {
             if constexpr(BASE == 0) {
-                rolling_hash_impl::base = uni::primitive_root(value_type::mod());
+                rolling_hash_impl::base = uni::primitive_root<true>(value_type::mod());
             }
             else if constexpr(BASE < 0) {
                 random_engine_64bit random(std::random_device{}());
-                sequence_hasher::base = static_cast<value_type>(random() % value_type::mod());
+                rolling_hash_impl::base = static_cast<value_type>(random() % value_type::mod());
             }
             else {
                 rolling_hash_impl::base = BASE;
@@ -78,8 +78,18 @@ template<
 struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<rolling_hash<REVERSE, T, BASE>>::automatic, associative {
     using base<rolling_hash_impl<T, BASE>>::base;
 
+
+    rolling_hash(const T& v) : base<rolling_hash_impl<T, BASE>>(v) {}
+
     template<class U>
-    rolling_hash(const U& v) : base<rolling_hash_impl<T, BASE>>({ std::hash<U>{}(v) }) {}
+        requires (
+            (!std::same_as<std::remove_cvref_t<U>, T>) &&
+            (!std::constructible_from<rolling_hash_impl<T, BASE>, U>)
+        )
+    rolling_hash(U&& v) : base<rolling_hash_impl<T, BASE>>(hash64(std::forward<U>(v))) {
+        debug("a");
+    }
+
 
     friend inline auto operator+(const rolling_hash& lhs, const rolling_hash& rhs) noexcept(NO_EXCEPT) {
         const auto power = lhs->power() * rhs->power();

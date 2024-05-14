@@ -92,14 +92,16 @@ constexpr u32 primitive_root_constexpr(u32 m) {
 }
 
 
-template<modint_family Small, modint_family Large = Small, std::integral Res = u64>
+template<modint_family Small, modint_family Large = Small, std::integral Res = u64, bool FORCE_RANDOM = false>
 constexpr Res primitive_root(const u64 p) noexcept(NO_EXCEPT) {
-    if(p == 2) return 1;
-    if(p == 167772161) return 3;
-    if(p == 469762049) return 3;
-    if(p == 754974721) return 11;
-    if(p == 998244353) return 3;
-    if(p == (u64{ 1 } << 61) - 1) return 37;
+    if constexpr(!FORCE_RANDOM) {
+        if(p == 2) return 1;
+        if(p == 167772161) return 3;
+        if(p == 469762049) return 3;
+        if(p == 754974721) return 11;
+        if(p == 998244353) return 3;
+        if(p == (UINT64_C(1) << 61) - 1) return 37;
+    }
 
 
     if(std::is_constant_evaluated()) {
