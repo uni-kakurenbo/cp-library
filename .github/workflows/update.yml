@@ -6,8 +6,8 @@ on:
         inputs:
             force:
                 type: boolean
-                default: false
                 required: true
+                default: false
     push:
         branches:
             - main
@@ -113,6 +113,8 @@ jobs:
         if: ${{ !cancelled() && needs.config.outputs.run-verify == 'true' }}
         uses: ./.github/workflows/verify.yml
         secrets: inherit
+        with:
+          force: ${{ github.event.inputs.force }}
 
     documantaion:
         needs:

@@ -9,6 +9,10 @@ on:
                 required: true
                 default: false
     workflow_call:
+        inputs:
+            force:
+                type: boolean
+                default: false
         secrets:
             YUKICODER_TOKEN:
                 required: false
