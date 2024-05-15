@@ -114,7 +114,7 @@ jobs:
         uses: ./.github/workflows/verify.yml
         secrets: inherit
         with:
-          force: ${{ github.event.inputs.force }}
+            force: ${{ github.event.inputs.force == 'true' }}
 
     documantaion:
         needs:
