@@ -9,7 +9,7 @@ PID="$$"
 {
     PROBLEM="$(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${FILE}")"
 
-    DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
+    DEPENDENCIES="$(time g++-13 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
 
     # shellcheck disable=SC2086
     LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
