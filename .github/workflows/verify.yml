@@ -46,7 +46,6 @@ jobs:
               working-directory: main/.verify-helper/
               run: |
                   echo "{}" > ./timestamps.remote.json
-                  echo "{}" > ./timestamps.compile.json
 
             - name: Filter test files
               working-directory: main
@@ -242,6 +241,12 @@ jobs:
                   path: ac-library
                   sparse-checkout: atcoder
                   token: ${{ secrets.GH_PAT }}
+
+            - name: Reset timestamps
+              if: ${{ github.event.inputs.force == 'true' }}
+              working-directory: main/.verify-helper/
+              run: |
+                  echo "{}" > ./timestamps.compile.json
 
             - name: Run compiling test
               working-directory: main
