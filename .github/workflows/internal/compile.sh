@@ -14,7 +14,7 @@ set +e
 {
     echo "::group::${TARGET}"
 
-    DEPENDENCIES="$(time g++-13 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}" | sed -E s/^.*\.o:\ //)"
+    DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${TARGET}" | sed -E s/^.*\.o:\ //)"
 
     # shellcheck disable=SC2086
     LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
@@ -30,7 +30,7 @@ set +e
     echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
 
     if [ "${LAST_MODIFIED_AT}" -gt "${LAST_VERIFIED_AT}" ]; then
-        time g++-13 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2>".warn-${PID}.txt"
+        time g++-12 "${OPTIONS[@]}" -O0 -I"${WORKING_DIRECTORY}" -I"${WORKING_DIRECTORY}/../ac-library" "${TARGET}" 2>".warn-${PID}.txt"
 
         LINES=$(wc -l ".warn-${PID}.txt" | cut -d' ' -f1)
 

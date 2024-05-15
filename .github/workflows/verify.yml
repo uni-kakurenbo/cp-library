@@ -6,6 +6,8 @@ on:
         inputs:
             force:
                 type: boolean
+                required: true
+                default: false
     workflow_call:
         secrets:
             YUKICODER_TOKEN:
@@ -39,10 +41,16 @@ jobs:
                   npm install @octokit/core@5.1.0
                   npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
 
+            - name: Reset timestamps
+              if: ${{ github.event.inputs.force }}
+              working-directory: main/.verify-helper/
+              run: |
+                  echo "{}" > ./timestamps.remote.json
+                  echo "{}" > ./timestamps.compile.json
+
             - name: Filter test files
               working-directory: main
               env:
-                  FORCE: ${{ github.event.inputs.force }}
                   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
               run: |
                   set -eu
@@ -56,7 +64,7 @@ jobs:
                   echo -n > ../skipped-tests.txt
 
                   time find verify -type f -name '*.test.cpp' | sort | \
-                  xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {} "${FORCE}"
+                  xargs -P0 -I {} bash ./.github/workflows/internal/allocate.sh {}
 
                   sort ./.verify-helper/problems.txt | uniq > ./.verify-helper/temp.txt
                   cp ./.verify-helper/temp.txt ./.verify-helper/problems.txt

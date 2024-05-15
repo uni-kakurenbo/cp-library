@@ -3,38 +3,33 @@ set -eu
 
 WORKING_DIRECTORY="${PWD}"
 FILE="$1"
-FORCE="$2"
+# HASH="$2"
 PID="$$"
 
 {
     PROBLEM="$(grep -Po '(?<=\#define\ PROBLEM\ ")[^",]+(?=")' "${FILE}")"
 
-    if "${FORCE}"; then
-        LAST_MODIFIED_AT="1"
-        LAST_VERIFIED_AT="0"
-    else
-        DEPENDENCIES="$(time g++-13 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
+    DEPENDENCIES="$(time g++-12 -std=gnu++20 -MM -I"${WORKING_DIRECTORY}" "${FILE}" | sed -E s/^.*\.test\.o:\ //)"
 
-        # shellcheck disable=SC2086
-        LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
-        LAST_VERIFY_DATE="$(
-            jq -r --arg target "${FILE}" \
-                '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
-        )"
+    # shellcheck disable=SC2086
+    LAST_MODIFY_DATE="$(git log -1 --date=iso --pretty=%ad -- ${DEPENDENCIES})"
+    LAST_VERIFY_DATE="$(
+        jq -r --arg target "${FILE}" \
+            '.[$target] // "@0"' ./.verify-helper/timestamps.remote.json
+    )"
 
-        LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
-        LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
+    LAST_MODIFIED_AT=$(date --date "${LAST_MODIFY_DATE}" '+%s')
+    LAST_VERIFIED_AT=$(date --date "${LAST_VERIFY_DATE}" '+%s')
 
-        echo "::group::${FILE} [PID:${PID}]"
-        echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
-        echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
-        echo '::endgroup::'
-        echo '::group::dependencies'
-        echo -e "Dependencies:\n${DEPENDENCIES}"
-        echo '::endgroup::'
-    fi
+    echo "::group::${FILE} [PID:${PID}]"
+    echo "Last modify: ${LAST_MODIFY_DATE} (${LAST_MODIFIED_AT})"
+    echo "Last verify: ${LAST_VERIFY_DATE} (${LAST_VERIFIED_AT})"
+    echo '::endgroup::'
+    echo '::group::dependencies'
+    echo -e "Dependencies:\n${DEPENDENCIES}"
+    echo '::endgroup::'
 
-    if [[ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]]; then
+    if [ "${LAST_MODIFIED_AT}" -le "${LAST_VERIFIED_AT}" ]; then
         RICH_TARGET="[\`${FILE}\`](https://github.com/${GITHUB_REPOSITORY}/blob/${BRANCH_NAME}/${FILE})"
         RICH_PROBLEM="[$(basename "${PROBLEM}")](${PROBLEM})"
         echo "- ${RICH_TARGET} (${RICH_PROBLEM})" >>../skipped-tests.txt
