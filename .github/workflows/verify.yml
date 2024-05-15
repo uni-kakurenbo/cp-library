@@ -42,7 +42,7 @@ jobs:
                   npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
 
             - name: Reset timestamps
-              if: ${{ github.event.inputs.force }}
+              if: ${{ github.event.inputs.force == 'true' }}
               working-directory: main/.verify-helper/
               run: |
                   echo "{}" > ./timestamps.remote.json
