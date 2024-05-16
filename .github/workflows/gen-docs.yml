@@ -27,7 +27,7 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: 3.12.0
+                  python-version: ${{ vars.PYTHON_VERSION }}
 
             - name: Install oj-verify
               run: pip3 install -U online-judge-verify-helper

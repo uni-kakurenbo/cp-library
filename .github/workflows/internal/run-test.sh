@@ -21,7 +21,7 @@ set +e
     echo "[Hash: ${PROBLEM_HASH}] [PID: ${PID}]"
 
     echo "::group::build"
-    time g++-13 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
+    time g++-14 "${OPTIONS[@]}" -I"${WORKING_DIRECTORY}" -o "${TARGET}.exe" "${TARGET}"
     echo "::endgroup::"
 
     PRECISION="$(grep -Po '(?<=\#define\ ERROR\ ).+' "${TARGET}")"
