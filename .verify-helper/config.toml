@@ -5,6 +5,7 @@ CXXFLAGS = [
     "-Wno-misleading-indentation",
     "-Wall",
     "-Wextra",
+    "-Wdangling-reference",
     "-fconcepts-diagnostics-depth=5",
     "-Wno-char-subscripts",
     "-fsplit-stack",
