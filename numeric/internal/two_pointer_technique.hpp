@@ -34,7 +34,7 @@ struct base {
     base(std::function<bool(T)> validate) : _validate(validate) {}
 
     void scan(T, T, T) {
-        static_assert(internal::EXCEPTION<T>, "not implemented: scan()");
+        static_assert(internal::EXCEPTION_ON_TYPE<T>, "not implemented: scan()");
     }
 
     void split(const T first, const T last, intervals<T> *intervals) const {

@@ -45,7 +45,7 @@ struct set_hasher : protected Set<T> {
     inline size_type size() const noexcept(NO_EXCEPT) { return this->base::size(); }
     inline size_type max_size() const noexcept(NO_EXCEPT) { return this->base::max_size(); }
 
-    inline void clear() const noexcept(NO_EXCEPT) { this->_hash = 0, this->base::clear(); }
+    inline void clear() noexcept(NO_EXCEPT) { this->_hash = 0, this->base::clear(); }
 
     using base::count;
     using base::find;

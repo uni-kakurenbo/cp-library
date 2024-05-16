@@ -34,7 +34,7 @@ namespace internal {
             return M_PIl;
         }
         else {
-            static_assert(EXCEPTION<T>);
+            static_assert(EXCEPTION_ON_TYPE<T>);
         }
     }
 } // namespace internal

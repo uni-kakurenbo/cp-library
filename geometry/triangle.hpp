@@ -127,7 +127,7 @@ inline const auto& get(const triangle<T>& t) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return t.p0(); }
     else if constexpr(I == 1) { return t.p1(); }
     else if constexpr(I == 2) { return t.p2(); }
-    else static_assert(internal::EXCEPTION<I>);
+    else static_assert(internal::EXCEPTION_ON_VALUE<I>);
 }
 
 template<size_t I, class T>
@@ -135,7 +135,7 @@ inline auto& get(triangle<T>& t) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return t.p0();
     else if constexpr(I == 1) return t.p1();
     else if constexpr(I == 2) return t.p2();
-    else static_assert(internal::EXCEPTION<I>);
+    else static_assert(internal::EXCEPTION_ON_VALUE<I>);
 }
 
 

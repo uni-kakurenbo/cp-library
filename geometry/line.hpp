@@ -80,14 +80,14 @@ template<size_t I, class Point>
 inline const auto& get(const line<Point>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return ln.p0(); }
     else if constexpr(I == 1) { return ln.p1(); }
-    else static_assert(uni::internal::EXCEPTION<I>);
+    else static_assert(uni::internal::EXCEPTION_ON_VALUE<I>);
 }
 
 template<size_t I, class Point>
 inline auto& get(line<Point>& ln) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return ln.p0();
     else if constexpr(I == 1) return ln.p1();
-    else static_assert(uni::internal::EXCEPTION<I>);
+    else static_assert(uni::internal::EXCEPTION_ON_VALUE<I>);
 }
 
 

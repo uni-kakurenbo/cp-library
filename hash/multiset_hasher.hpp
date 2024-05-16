@@ -82,7 +82,7 @@ struct multiset_hasher {
     multiset_hasher(const std::initializer_list<U>& init_list) noexcept(NO_EXCEPT) : multiset_hasher(std::begin(init_list), std::end(init_list)) {}
 
     inline size_type empty() const noexcept(NO_EXCEPT) { return this->get() == 0; }
-    inline void clear() const noexcept(NO_EXCEPT) { this->_hash = 0; }
+    inline void clear() noexcept(NO_EXCEPT) { this->_hash = 0; }
 
     // return: whether inserted newly
     inline void insert(const T& v, size_type count = 1) noexcept(NO_EXCEPT) {
