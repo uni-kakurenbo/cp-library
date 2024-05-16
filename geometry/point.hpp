@@ -96,14 +96,14 @@ template<size_t I, class T>
 inline const auto& get(const point<T>& p) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) { return p.x(); }
     else if constexpr(I == 1) { return p.y(); }
-    else static_assert(uni::internal::EXCEPTION<I>);
+    else static_assert(uni::internal::EXCEPTION_ON_VALUE<I>);
 }
 
 template<size_t I, class T>
 inline auto& get(point<T>& p) noexcept(NO_EXCEPT) {
     if constexpr(I == 0) return p.x();
     else if constexpr(I == 1) return p.y();
-    else static_assert(internal::EXCEPTION<I>);
+    else static_assert(internal::EXCEPTION_ON_VALUE<I>);
 }
 
 

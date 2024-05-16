@@ -1,8 +1,9 @@
 #pragma once
 
 
-#include <functional>
+#include <cmath>
 #include <utility>
+#include <functional>
 #include <type_traits>
 
 

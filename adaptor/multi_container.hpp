@@ -105,7 +105,7 @@ struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl
 
 template<class T, template<class...> class Holder, template<class...> class Container>
 struct multi_container<T, 0, Holder, Container> {
-    static_assert(internal::EXCEPTION<T>, "invalid rank: 0, should be 1 or more");
+    static_assert(internal::EXCEPTION_ON_TYPE<T>, "invalid rank: 0, should be 1 or more");
 };
 
 

@@ -6,8 +6,8 @@ namespace uni {
 namespace internal {
 
 
-template<class... T> inline constexpr bool EXCEPTION = false;
-template<const int T> inline constexpr bool EXCEPTION_INT = false;
+template<class... T> inline constexpr bool EXCEPTION_ON_TYPE = false;
+template<auto T> inline constexpr bool EXCEPTION_ON_VALUE = false;
 
 
 } // namespace internal
