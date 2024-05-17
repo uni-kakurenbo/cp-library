@@ -44,7 +44,7 @@ jobs:
                   git add ./cppcheck_report.xml
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] lint commit ${GITHUB_SHA}"
+                    git commit -m "[workflow] update lint report ${GITHUB_SHA}"
 
                     REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
 

@@ -26,7 +26,7 @@ namespace internal {
 template<modint_family Mint>
 constexpr bool primality_test(const u64 n, const std::vector<u64>& ws) noexcept(NO_EXCEPT) {
     if constexpr(dynamic_modint_family<Mint>) Mint::set_mod(n);
-    // assert(Mint::mod() == n);
+    assert(Mint::mod() == n);
 
     const u64 d = (n - 1) >> std::countr_zero(n - 1);
 
@@ -37,7 +37,7 @@ constexpr bool primality_test(const u64 n, const std::vector<u64>& ws) noexcept(
         x = x.pow(d);
         if(x == Mint::one || x == rev) continue;
         u64 t = d;
-        while(t != n-1 && x != Mint::one && x != rev) x *= x, t <<= 1;
+        while(t != n - 1 && x != Mint::one && x != rev) x *= x, t <<= 1;
         if(x != rev) return false;
     }
 

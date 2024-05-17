@@ -40,7 +40,7 @@ jobs:
                   git add .
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] header-generation commit ${GITHUB_SHA}"
+                    git commit -m "[workflow] generate include headers ${GITHUB_SHA}"
 
                     REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
 
@@ -77,7 +77,7 @@ jobs:
                   git add .
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] organization commit ${GITHUB_SHA}"
+                    git commit -m "[workflow] organize verification files ${GITHUB_SHA}"
 
                     REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
 
@@ -151,7 +151,7 @@ jobs:
                   git add ./expanded/
 
                   if (git diff --cached --shortstat | grep '[0-9]'); then
-                    git commit -m "[auto-verifier] expander commit ${GITHUB_SHA}"
+                    git commit -m "[workflow] generate expanded headeres ${GITHUB_SHA}"
 
                     REPOSITORY_NAME="${{ github.head_ref || github.ref_name }}"
 
