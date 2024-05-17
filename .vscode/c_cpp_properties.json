@@ -6,7 +6,7 @@
                 "/home/uni_kakurenbo/CompetitiveProgramming/sources/libraries/**"
             ],
             "defines": [ "LOCAL_JUDGE" ],
-            "compilerPath": "/usr/bin/g++-13",
+            "compilerPath": "/usr/bin/g++-14",
             "cStandard": "gnu23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "linux-gcc-x64"

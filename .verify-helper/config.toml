@@ -1,5 +1,5 @@
 [[languages.cpp.environments]]
-CXX = "g++-13"
+CXX = "g++-14"
 CXXFLAGS = [
     "-std=gnu++20",
     "-Wno-misleading-indentation",
