@@ -160,7 +160,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         return res;
     }
 
-    template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
+    template<bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
     auto make_initial_distance_matrix() const noexcept(NO_EXCEPT) {
         R res(this->size(), this->size(), numeric_limits<T>::arithmetic_infinity());
         if constexpr(SELF_ZERO) REP(i, this->size()) res[i][i] = 0;
@@ -168,7 +168,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         return res;
     }
 
-    template<const bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
+    template<bool SELF_ZERO = true, class T = cost_type, class R = valgrid<T>>
     auto make_distance_matrix() const noexcept(NO_EXCEPT) {
         R res = this->make_initial_distance_matrix<SELF_ZERO,T,R>();
         REP(k, this->size()) REP(i, this->size()) REP(j, this->size()) {
@@ -177,21 +177,22 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
         return res;
     }
 
-    template<const edge_kind EDGE_TYPE = edge_kind::directed>
-    void add_edge(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
+    template<edge_kind EDGE_TYPE = edge_kind::directed>
+    auto add_edge(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
         assert(0 <= u and u < this->size()), assert(0 <= v and v < this->size());
         const size_type k = this->edges().size();
         this->_edges.emplace_back(u, v, w, k);
         this->_add_edge(u, v, w, k);
         if constexpr(EDGE_TYPE == edge_kind::undirected) this->_add_edge(v, u, w, k);
+        return k;
     }
 
-    inline void add_edge_bidirectionally(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
-        this->add_edge<edge_kind::undirected>(u, v, w);
+    inline auto add_edge_bidirectionally(const node_type u, const node_type v, const cost_type w = 1) noexcept(NO_EXCEPT) {
+        return this->add_edge<edge_kind::undirected>(u, v, w);
     }
 
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, const edge_kind EDGE_TYPE = edge_kind::directed, class Stream = input_adaptor<>>
-    inline void read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
+    void read(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
@@ -200,7 +201,7 @@ struct regular_core : regular_base<NodeType,CostType,Container<vector<internal::
     }
 
     template<bool WEIGHTED = false, bool ONE_ORIGIN = true, class Stream = input_adaptor<>>
-    inline void read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
+    void read_bidirectionally(const size_type edges, Stream *const ist = &_input) noexcept(NO_EXCEPT) {
         REP(edges) {
             node_type u, v; cost_type w = 1; *ist >> u >> v; if(ONE_ORIGIN) --u, --v;
             if(WEIGHTED) *ist >> w;
