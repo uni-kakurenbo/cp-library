@@ -8,7 +8,7 @@
             "defines": [
                 "LOCAL_JUDGE"
             ],
-            "compilerPath": "/usr/bin/g++-14",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "gnu23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "linux-gcc-x64"
