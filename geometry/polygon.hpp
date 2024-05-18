@@ -32,14 +32,18 @@ struct polygon : Container {
     using container_type::container_type;
 
 
-    auto area() noexcept(NO_EXCEPT) {
+    auto doubled_area() noexcept(NO_EXCEPT) {
         const auto n = std::ranges::ssize(*this);
         const auto view = uni::views::cyclic(*this);
 
         value_type res = 0;
         REP(i, n) res += cross(view[i], view[i + 1]);
 
-        return res / 2;
+        return res;
+    }
+
+    inline auto area() noexcept(NO_EXCEPT) {
+        return this->doubled_area() / 2;
     }
 
 
@@ -48,7 +52,7 @@ struct polygon : Container {
 
 
     // implemented in geometry/convex_hull.hpp
-    template<bool = true, bool = false>
+    template<bool ALLOW_LINE = true, bool LEAVE_MARGIN = false>
     auto convex_hull() noexcept(NO_EXCEPT);
 
 };
