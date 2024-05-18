@@ -221,6 +221,7 @@
   "template/debug.hpp": "2024-05-16 10:33:37 +0000",
   "template/standard.hpp": "2024-05-18 09:12:42 +0000",
   "template/using.hpp": "2024-05-18 09:12:42 +0000",
+  "template/warnings.hpp": "2024-05-18 10:56:15 +0000",
   "utility/functional.hpp": "2024-05-16 10:33:37 +0000",
   "utility/internal/functional_base.hpp": "2024-04-16 10:36:34 +0000",
   "utility/restrictor.hpp": "2024-05-16 10:33:37 +0000",
