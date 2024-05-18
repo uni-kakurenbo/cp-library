@@ -83,7 +83,7 @@ struct lowest_common_ancestor {
         return this->parent[0][u];
     }
 
-    size_type distance_ignored_cost(const size_type u, const size_type v) const noexcept(NO_EXCEPT) {
+    size_type path_length(const size_type u, const size_type v) const noexcept(NO_EXCEPT) {
         return this->depth[u] + this->depth[v] - 2 * this->depth[find(u, v)];
     }
 
