@@ -170,22 +170,16 @@ auto split(V&& v, const std::initializer_list<T> ds) noexcept(NO_EXCEPT){
 }
 
 
-template<std::ranges::sized_range R>
-auto find(R source,  R query) noexcept(NO_EXCEPT) {
-    using value_type = std::ranges::range_value_t<R>;
+template<std::ranges::sized_range Source, std::ranges::sized_range Qeury>
+auto find(Source&& source,  Qeury&& query) noexcept(NO_EXCEPT) {
+    z_array z_arr(views::concat(query, source));
+    const auto query_size = std::ranges::ssize(query);
 
-    const auto joined = views::concat(source, query);
-    std::vector<value_type> pre_z(std::begin(joined), std::end(joined));
-    z_array z_arr(ALL(pre_z));
-
-    const internal::size_t query_size = std::ranges::size(query);
-
-    vector<std::ranges::iterator_t<R>> res;
-
+    vector<std::ranges::iterator_t<Source>> res;
     {
         auto itr = std::ranges::begin(source);
-        REP(i, query_size, z_arr.size()) {
-            if(z_arr[i] >= query_size) res.push_back(internal::to_non_const_iterator(source, itr));
+        REP(i, query_size, std::ranges::size(z_arr)) {
+            if(z_arr[i] >= query_size) res.push_back(itr);
             ++itr;
         }
     }
@@ -194,39 +188,53 @@ auto find(R source,  R query) noexcept(NO_EXCEPT) {
 }
 
 
-template<replacement_policy POLICY = replacement_policy::insert_sync, std::ranges::input_range R>
-auto replace(R&& source, R&& from, R&& to) noexcept(NO_EXCEPT) {
-    R res;
+template<
+    replacement_policy POLICY,
+    std::ranges::sized_range R,
+    std::ranges::sized_range From,
+    std::ranges::sized_range To
+>
+auto replaced(R&& source, From&& from, To&& to) noexcept(NO_EXCEPT) {
+    std::remove_cvref_t<R> res;
 
     if constexpr(POLICY == replacement_policy::insert_sync) {
         const auto found = find(source, from);
-        auto itr = std::begin(source);
+        auto itr = std::ranges::begin(source);
         ITRR(fn, found) {
             std::ranges::copy(itr, fn, std::back_inserter(res));
             std::ranges::copy(ALL(to), std::back_inserter(res));
-            itr = std::ranges::next(fn, std::size(from));
+            itr = std::ranges::next(fn, std::ranges::size(from));
         }
         std::ranges::copy(itr, std::ranges::end(source), std::back_inserter(res));
     }
     else {
         res = source;
-        res.resize(std::size(source) + std::size(to));
+        res.resize(std::ranges::size(source) + std::ranges::size(to));
 
         const auto found = find(res, from);
         auto prev = std::ranges::begin(res);
         ITRR(fn, found) {
             if constexpr(POLICY == replacement_policy::overwrite_sync) {
-                if(prev <= fn) prev = std::copy(ALL(to), internal::to_non_const_iterator(res, fn));
+                if(prev <= fn) prev = std::ranges::copy(to, fn);
             }
             else {
-                std::copy(ALL(to), internal::to_non_const_iterator(res, fn));
+                std::ranges::copy(to, fn);
             }
         }
 
-        res.resize(std::size(source));
+        res.resize(std::ranges::size(source));
     }
 
     return res;
+}
+
+template<
+    std::ranges::sized_range R,
+    std::ranges::sized_range From,
+    std::ranges::sized_range To
+>
+inline auto replaced(R&& source, From&& from, To&& to) noexcept(NO_EXCEPT) {
+    return replaced<replacement_policy::insert_sync, R, From, To>(std::forward<R>(source), std::forward<From>(from), std::forward<To>(to));
 }
 
 
@@ -308,6 +316,31 @@ template<
 >
 auto ordered_by(Target&& target, Order&& order) noexcept(NO_EXCEPT) {
     return ordered_by<std::remove_cvref_t<Target>, Target, Order>(std::forward<Target>(target), std::forward<Order>(order));
+}
+
+
+template<std::ranges::input_range Target, std::ranges::input_range Source>
+    requires std::equality_comparable_with<std::ranges::range_value_t<Target>, std::ranges::range_value_t<Source>>
+auto is_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
+    auto target_itr = std::ranges::begin(source);
+    auto source_itr = std::ranges::begin(source);
+
+    const auto target_end = std::ranges::end(source);
+    const auto source_end = std::ranges::end(source);
+
+    for(; source_itr != source_end; ++source_itr) {
+        if(*target_itr == *source_itr) ++target_itr;
+    }
+
+    return target_itr == target_end;
+}
+
+
+template<std::ranges::input_range Target, std::ranges::input_range Source>
+    requires std::equality_comparable_with<std::ranges::range_value_t<Target>, std::ranges::range_value_t<Source>>
+auto is_continuous_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
+    auto found = find(source, target);
+    return found.size() > 0;
 }
 
 

@@ -116,7 +116,7 @@ inline constexpr bool bit(const T x, const I p) {
 
 
 template<std::unsigned_integral T, std::integral I = int>
-inline constexpr bool reset_bit(const T x, const I p) {
+inline constexpr auto reset_bit(const T x, const I p) {
     if constexpr(std::signed_integral<I>) assert(0 <= p);
     assert(p < std::numeric_limits<T>::digits);
 
@@ -125,11 +125,11 @@ inline constexpr bool reset_bit(const T x, const I p) {
 
 
 template<std::unsigned_integral T, std::integral I = int>
-inline constexpr bool set_bit(const T x, const I p, const bool bit = true) {
+inline constexpr auto set_bit(const T x, const I p, const bool bit = true) {
     if constexpr(std::signed_integral<I>) assert(0 <= p);
     assert(p < std::numeric_limits<T>::digits);
 
-    if(!bit) return reset(x, p);
+    if(!bit) return reset_bit(x, p);
     return x | (T{1} << p);
 }
 

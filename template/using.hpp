@@ -3,6 +3,9 @@
 #include <bits/stdc++.h>
 #include "include/template.hpp"
 
+
+using namespace std::literals;
+
 using std::cin;
 using std::cout;
 

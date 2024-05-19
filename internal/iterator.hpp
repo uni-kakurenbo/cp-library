@@ -115,11 +115,6 @@ struct container_iterator_interface : random_access_iterator_base<T> {
     }
 };
 
-template<class V, std::input_or_output_iterator I>
-inline auto to_non_const_iterator(V v, I itr) noexcept(NO_EXCEPT) {
-    return std::ranges::next(std::ranges::begin(v), std::ranges::distance(std::ranges::cbegin(v), itr));
-}
-
 
 namespace iterator_impl {
 
