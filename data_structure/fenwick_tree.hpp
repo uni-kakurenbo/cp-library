@@ -65,7 +65,7 @@ struct core {
         if constexpr(std::sized_sentinel_for<S, I>) {
             assert(std::ranges::distance(first, last) == this->size());
         }
-        std::ranges::copy(first, last, std::ranges::begin(this->_data));
+        for(size_type i = 0; first < last; ++i, ++first) this->_data[i] = *first;
         this->_init();
     }
 
@@ -141,8 +141,9 @@ struct fenwick_tree : internal::unconstructible {};
 
 
 template<algebraic::internal::monoid Monoid>
-    requires algebraic::internal::commutative<Monoid>
 struct fenwick_tree<Monoid> : internal::fenwick_tree_impl::core<Monoid> {
+    static_assert(algebraic::internal::commutative<Monoid>);
+
   private:
     using core = typename internal::fenwick_tree_impl::core<Monoid>;
 
