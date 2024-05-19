@@ -86,9 +86,7 @@ struct rolling_hash : base<rolling_hash_impl<T, BASE>>, scalar_multipliable<roll
             (!std::same_as<std::remove_cvref_t<U>, T>) &&
             (!std::constructible_from<rolling_hash_impl<T, BASE>, U>)
         )
-    rolling_hash(U&& v) : base<rolling_hash_impl<T, BASE>>(hash64(std::forward<U>(v))) {
-        debug("a");
-    }
+    rolling_hash(U&& v) : base<rolling_hash_impl<T, BASE>>(hash64(std::forward<U>(v))) {}
 
 
     friend inline auto operator+(const rolling_hash& lhs, const rolling_hash& rhs) noexcept(NO_EXCEPT) {

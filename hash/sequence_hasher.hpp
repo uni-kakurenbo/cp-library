@@ -133,17 +133,20 @@ struct sequence_hasher {
 
         size_type i = 0;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
+            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + *itr;
             if(this->hashed(i + 1) >= sequence_hasher::mod) this->hashed(i + 1) -= sequence_hasher::mod;
         }
     }
+
+    template<std::ranges::input_range Range>
+    sequence_hasher(Range&& ranges) noexcept(NO_EXCEPT) : sequence_hasher(ALL(ranges)) {}
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n - this->_front; }
 
     inline hash get(size_type l, size_type r) const noexcept(NO_EXCEPT) {
         assert(0 <= l and l <= r and r <= this->size());
         l = this->index(l), r = this->index(r);
-        hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r-l));
+        hash_type res = this->hashed(r) + sequence_hasher::mod - sequence_hasher::mul(this->hashed(l), sequence_hasher::power(r - l));
         if(res >= sequence_hasher::mod) res -= sequence_hasher::mod;
 
         return { res, r - l };
@@ -169,7 +172,7 @@ struct sequence_hasher {
     template<class T> inline sequence_hasher& push_back(const T& v) noexcept(NO_EXCEPT) {
         this->_n++;
 
-        this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + hash64(v);
+        this->hashed(this->_n) = sequence_hasher::mul(this->hashed(this->_n-1), sequence_hasher::base) + hash32(v);
         if(this->hashed(this->_n) >= sequence_hasher::mod) this->hashed(this->_n-1) -= sequence_hasher::mod;
 
         return *this;
@@ -195,7 +198,7 @@ struct sequence_hasher {
 
         size_type i = n;
         for(auto itr=first; itr!=last; ++i, ++itr) {
-            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + hash64(*itr);
+            this->hashed(i + 1) = sequence_hasher::mul(this->hashed(i), sequence_hasher::base) + *itr;
             if(this->hashed(i + 1) >= sequence_hasher::mod) this->hashed(i + 1) -= sequence_hasher::mod;
         }
 
