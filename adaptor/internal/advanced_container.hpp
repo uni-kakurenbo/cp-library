@@ -52,6 +52,13 @@
             (std::convertible_to<T, value_type> || std::same_as<T, advanced_container>) \
     friend auto operator op(advanced_container lhs, const T& rhs) noexcept(NO_EXCEPT) { \
         return lhs op_assign rhs; \
+    } \
+    \
+    template<class T = value_type> \
+        requires \
+            concepts<value_type> && std::convertible_to<T, value_type> \
+    friend auto operator op(const T& lhs, advanced_container rhs) noexcept(NO_EXCEPT) { \
+        return advanced_container(rhs.size(), lhs) op_assign rhs; \
     }
 
 
@@ -73,7 +80,7 @@ struct advanced_container : Base {
   public:
     using Base::Base;
 
-    // advanced_container(const Base& base) : Base(base) {}
+    advanced_container(const Base& base) : Base(base) {}
 
     using size_type = decltype(std::ranges::size(std::declval<Base>()));
     using value_type = Base::value_type;
