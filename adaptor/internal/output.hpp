@@ -24,7 +24,7 @@ struct output_adaptor {
   private:
     template<class T>
         requires
-            requires (destination_type& out, T& val) {
+            requires (destination_type& out, T val) {
                 out << val;
             }
     int _put(uni::internal::resolving_rank<5>, T&& val) noexcept(NO_EXCEPT) {
@@ -59,6 +59,7 @@ struct output_adaptor {
         *this << val.second;
         return 0;
     }
+
     template<class T>
         requires
             requires (T&& val) {
@@ -74,6 +75,7 @@ struct output_adaptor {
         (*this)(*std::forward<T>(val));
         return 0;
     }
+
 
   protected:
     template<class T>
@@ -180,6 +182,12 @@ struct output_adaptor {
     inline auto no() noexcept(NO_EXCEPT) {
         *this->out << "No";
         this->put_endline();
+        return *this;
+    }
+
+
+    inline auto flush() noexcept(NO_EXCEPT) {
+        *this->out << std::flush;
         return *this;
     }
 };
