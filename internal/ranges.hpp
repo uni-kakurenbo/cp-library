@@ -94,6 +94,79 @@ template<class Range>
 using iterator_concept = decltype(_iterator_concept<Range>());
 
 
+
+template<std::ranges::range Range> struct cached_position {
+    constexpr bool has_value() const { return false; }
+
+    constexpr std::ranges::iterator_t<Range> get(const Range&) const {
+        __builtin_unreachable();
+    }
+
+    constexpr void set(const Range &, const std::ranges::iterator_t<Range> &) const {}
+};
+
+template<std::ranges::forward_range Range>
+struct cached_position<Range> : protected std::optional<std::ranges::iterator_t<Range>> {
+    using std::optional<std::ranges::iterator_t<Range>>::optioanl;
+    using std::optional<std::ranges::iterator_t<Range>>::has_value;
+
+    constexpr std::ranges::iterator_t<Range> get(const Range&) const {
+        assert(this->has_value());
+        return **this;
+    }
+
+    constexpr void set(const Range&, const std::ranges::iterator_t<Range>& itr) {
+        assert(!this->has_value());
+        this->emplace(*itr);
+    }
+};
+
+
+template<std::ranges::random_access_range Range>
+    requires(sizeof(std::ranges::range_difference_t<Range>) <= sizeof(std::ranges::iterator_t<Range>))
+struct cached_position<Range> {
+  private:
+    std::ranges::range_difference_t<Range> _offset = -1;
+
+  public:
+    cached_position() = default;
+
+    constexpr cached_position(const cached_position &) = default;
+
+    constexpr cached_position(cached_position &&other) noexcept {
+        *this = std::move(other);
+    }
+
+    constexpr cached_position &operator=(const cached_position &) = default;
+
+    constexpr cached_position &operator=(cached_position &&other) noexcept {
+        // Propagate the cached offset, but invalidate the source.
+        this->_offset = other._offset;
+        other._offset = -1;
+        return *this;
+    }
+
+    constexpr bool has_value() const { return this->_offset >= 0; }
+
+    constexpr std::ranges::iterator_t<Range> get(Range& range) const {
+        assert(this->has_value());
+        return std::ranges::begin(range) + this->_offset;
+    }
+
+    constexpr void set(Range &range, const std::ranges::iterator_t<Range> &itr) {
+        assert(!this->has_value());
+        this->_offset = itr - std::ranges::begin(range);
+    }
+};
+
+
+template<typename T, int Disc>
+struct absent { };
+
+template<bool PRESENT, class T, int Disc = 0>
+using maybe_present_t = std::conditional_t<PRESENT, T, absent<T, Disc>>;
+
+
 } // namespace internal
 
 
@@ -113,26 +186,26 @@ template<class Adaptor, class... Args> struct partial;
 template<class, class> struct pipe;
 
 
-template <class Derived> struct range_adaptor_closure {};
+template<class Derived> struct range_adaptor_closure {};
 
 
-template <class T, class U>
+template<class T, class U>
     requires(!std::same_as<T, range_adaptor_closure<U>>)
 void is_range_adaptor_closure_fn(const T &, const range_adaptor_closure<U> &);
 
 
-template <class T>
+template<class T>
 concept is_range_adaptor_closure = requires(T t) { adaptor::is_range_adaptor_closure_fn(t, t); };
 
 
-template <class Self, class Range>
+template<class Self, class Range>
     requires is_range_adaptor_closure<Self> && adaptor_invocable<Self, Range>
 constexpr auto operator|(Range&& range, Self&& self) {
     return std::forward<Self>(self)(std::forward<Range>(range));
 }
 
 
-template <class Lhs, class Rhs>
+template<class Lhs, class Rhs>
     requires is_range_adaptor_closure<Lhs> && is_range_adaptor_closure<Rhs>
 constexpr auto operator|(Lhs&& lhs, Rhs&& rhs) {
     return pipe<std::remove_cvref_t<Lhs>, std::remove_cvref_t<Rhs>>{ std::forward<Lhs>(lhs), std::forward<Rhs>(rhs)};
