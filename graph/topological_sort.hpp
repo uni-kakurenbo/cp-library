@@ -26,7 +26,7 @@ bool uni::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority(u
         sorted->push_back(v);
     }
 
-    return sorted->size() == this->size();
+    return std::ranges::ssize(*sorted) == std::ranges::ssize(*this);
 }
 
 template<class Graph>
@@ -53,7 +53,7 @@ bool uni::internal::graph_impl::mixin<Graph>::sort_topologically(uni::vector<nod
         sorted->push_back(v);
     }
 
-    return sorted->size() == this->size();
+    return std::ranges::ssize(*sorted) == std::ranges::ssize(*this);
 }
 
 template<class Graph>

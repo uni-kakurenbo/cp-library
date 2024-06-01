@@ -260,6 +260,10 @@ struct mixin : Graph {
     // graph/spanning_tree_cost.hpp
     auto maximum_spanning_tree(mixin *const = nullptr) const noexcept(NO_EXCEPT);
 
+    // graph/reachability.hpp
+    template<std::ranges::sized_range R>
+    auto test_reachability(R&&) const noexcept(NO_EXCEPT);
+
     // graph/connected_components.hpp
     disjoint_set components() const noexcept(NO_EXCEPT);
 
