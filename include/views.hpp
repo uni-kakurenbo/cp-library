@@ -1,7 +1,7 @@
 #pragma once
 
-#include "view/concat.hpp"
 #include "view/chunk.hpp"
+#include "view/concat.hpp"
 #include "view/cyclic.hpp"
 #include "view/enumerate.hpp"
 #include "view/repeat.hpp"

@@ -13,6 +13,9 @@
 #include "structure/graph.hpp"
 #include "graph/topological_sort.hpp"
 
+#include "view/chunk.hpp"
+#include "view/enumerate.hpp"
+
 
 namespace uni {
 

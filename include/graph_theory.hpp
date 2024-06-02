@@ -9,6 +9,7 @@
 #include "graph/maximum_bipartite_matching.hpp"
 #include "graph/minimum_paph_cover.hpp"
 #include "graph/parse_grid.hpp"
+#include "graph/reachability_test.hpp"
 #include "graph/shortest_path.hpp"
 #include "graph/spanning_tree.hpp"
 #include "graph/topological_sort.hpp"
