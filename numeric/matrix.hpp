@@ -76,7 +76,7 @@ struct matrix_core : Base {
 
 
     template<class... Ts>
-    constexpr auto operator*(const matrix_core<Ts...>& rhs) noexcept(NO_EXCEPT) {
+    constexpr auto operator*(const matrix_core<Ts...>& rhs) const noexcept(NO_EXCEPT) {
         assert(this->width() == rhs.height());
         matrix_core res(this->height(), rhs.width());
         REP(i, this->height()) REP(j, rhs.width()) REP(k, this->width()) {
@@ -86,7 +86,11 @@ struct matrix_core : Base {
     }
 
     template<std::ranges::input_range Vector>
-    constexpr auto operator*(const Vector& rhs) noexcept(NO_EXCEPT) {
+        requires
+            (!internal::derived_from_template<Vector, matrix_core>) &&
+            internal::weakly_multipliable<value_type, std::ranges::range_value_t<Vector>>
+    constexpr auto operator*(const Vector& rhs) const noexcept(NO_EXCEPT) {
+        debug(*this, rhs);
         assert(this->width() == std::ranges::ssize(rhs));
         Vector res(this->height());
         REP(i, this->height()) REP(j, this->width()) res[i] += this->operator()(i, j) * rhs[j];
@@ -94,7 +98,11 @@ struct matrix_core : Base {
     }
 
     template<std::ranges::input_range Vector>
+        requires
+            (!internal::derived_from_template<Vector, matrix_core>) &&
+            internal::weakly_multipliable<std::ranges::range_value_t<Vector>, value_type>
     friend constexpr auto operator*(const Vector& lhs, const matrix_core& rhs) noexcept(NO_EXCEPT) {
+        debug(lhs, rhs);
         assert(std::ranges::ssize(lhs) == rhs.height());
         Vector res(rhs.width());
         REP(i, rhs.height()) REP(j, rhs.width()) res[j] += lhs[j] * rhs[i][j];
@@ -131,6 +139,15 @@ struct matrix_core : Base {
 
     inline constexpr auto operator%(const value_type& rhs) const noexcept(NO_EXCEPT) {
         return matrix_core(*this) %= rhs;
+    }
+
+
+    template<std::integral K>
+    constexpr auto pow(const K n) const noexcept(NO_EXCEPT) {
+        assert(this->height() == this->width());
+        if constexpr(std::signed_integral<K>) assert(n >= 0);
+
+        return uni::pow(*this, n, {}, matrix_core::identity(this->height()));
     }
 
 

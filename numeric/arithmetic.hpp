@@ -118,7 +118,7 @@ inline constexpr auto comb(const T0& n, const T1& r) noexcept(NO_EXCEPT) {
 
 
 
-template<class T, class U, std::invocable<T, T> F = std::multiplies<T>>
+template<class T, class U, std::invocable<T, T> F = std::multiplies<>>
 constexpr T pow(T x, U n, F mul = F(), T one = static_cast<T>(1)) noexcept(NO_EXCEPT) {
     if(n == 0) return one;
     if(n == 1 || x == one) return x;
@@ -263,16 +263,18 @@ inline constexpr T sqrt_ceil(const T x) noexcept(NO_EXCEPT) {
     return res;
 }
 
-template<class T>
-inline constexpr T kth_root_floor(T x, const i64 k) noexcept(NO_EXCEPT) {
-    assert(x >= 0), assert(k > 0);
+template<class T, std::integral K>
+inline constexpr T kth_root_floor(T x, const K k) noexcept(NO_EXCEPT) {
+    assert(x >= 0);
+    if(std::signed_integral<K>) assert(k > 0);
+
     if(x <= 1 or k == 1) return x;
 
-    constexpr int DIGITS = std::numeric_limits<T>::digits;
+    constexpr auto DIGITS = std::numeric_limits<T>::digits;
     if(k >= DIGITS) return T{1};
     if(k == 2) return sqrt_floor(x);
 
-    constexpr T MAX = std::numeric_limits<T>::max();
+    constexpr auto MAX = std::numeric_limits<T>::max();
     if(x == MAX) --x;
 
     auto pow = [&](T t, i64 p) {
@@ -280,19 +282,15 @@ inline constexpr T kth_root_floor(T x, const i64 k) noexcept(NO_EXCEPT) {
         T res = 1;
         while(p) {
             if(p & 1) {
-                T _res;
-                if(__builtin_mul_overflow(res, t, &_res)) res = MAX;
-                else res = _res;
+                res = mul_overflow(res, t).value_or(MAX);
             }
-            T _x;
-            if(__builtin_mul_overflow(t, t, &_x)) t = MAX;
-            else t = _x;
+            t = mul_overflow(t, t).value_or(MAX);
             p >>= 1;
         }
         return res;
     };
 
-    T res = std::pow(x, std::nextafter(1 / static_cast<double>(k), 0));
+    auto res = std::pow(x, std::nextafter(1 / static_cast<double>(k), 0));
     while(pow(res + 1, k) <= x) ++res;
 
     return res;
