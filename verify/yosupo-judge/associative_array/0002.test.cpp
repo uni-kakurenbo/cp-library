@@ -17,6 +17,7 @@
 #include "adaptor/io.hpp"
 #include "adaptor/gnu/hash_table.hpp"
 #include "numeric/modular/modint.hpp"
+#include "hash/general_hasher.hpp"
 #include "adaptor/vector.hpp"
 #include "action/null.hpp"
 
