@@ -20,8 +20,8 @@ using size_type = internal::size_t;
 
 template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
-auto zeta(R& range) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(range);
+auto zeta(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range) + OFFSET - 1;
     ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) range[k*p - OFFSET] += range[k - OFFSET];
     }
@@ -29,8 +29,8 @@ auto zeta(R& range) noexcept(NO_EXCEPT) {
 
 template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
-auto mobius(R& range) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(range);
+auto mobius(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range) + OFFSET - 1;
     ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) range[k*p - OFFSET] -= range[k - OFFSET];
     }
@@ -38,15 +38,15 @@ auto mobius(R& range) noexcept(NO_EXCEPT) {
 
 
 template<std::ranges::sized_range R>
-auto zeta(R& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
+auto zeta(R&& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
 
 template<std::ranges::sized_range R>
-auto mobius(R& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
+auto mobius(R&& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
 
 
 template<std::ranges::input_range R>
     requires requires { typename R::mapped_type; }
-auto zeta(R& range) noexcept(NO_EXCEPT) {
+auto zeta(R&& range) noexcept(NO_EXCEPT) {
     auto begin = std::ranges::begin(range);
     auto end = std::ranges::end(range);
     for(auto itr1 = end; itr1-- != begin; ) {
@@ -59,7 +59,7 @@ auto zeta(R& range) noexcept(NO_EXCEPT) {
 
 template<std::ranges::input_range R>
     requires requires { typename R::mapped_type; }
-auto mobius(R& range) noexcept(NO_EXCEPT) {
+auto mobius(R&& range) noexcept(NO_EXCEPT) {
     auto begin = std::ranges::begin(range);
     auto end = std::ranges::end(range);
     for(auto itr2 = begin; itr2 != end; ++itr2) {
@@ -82,8 +82,8 @@ using size_type = internal::size_t;
 
 template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
-auto zeta(R& range) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(range);
+auto zeta(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range) + OFFSET - 1;
     ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=n/p; k>0; --k) range[k - OFFSET] += range[k*p - OFFSET];
     }
@@ -91,8 +91,8 @@ auto zeta(R& range) noexcept(NO_EXCEPT) {
 
 template<std::size_t OFFSET, std::ranges::sized_range R>
     requires (!requires { typename R::mapped_type; })
-auto mobius(R& range) noexcept(NO_EXCEPT) {
-    const auto n = std::ranges::ssize(range);
+auto mobius(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::ssize(range) + OFFSET - 1;
     ITR(p, uni::prime_enumerator(n)) {
         for(size_type k=1; k*p <= n; ++k) range[k - OFFSET] -= range[k*p - OFFSET];
     }
@@ -100,15 +100,15 @@ auto mobius(R& range) noexcept(NO_EXCEPT) {
 
 
 template<std::ranges::sized_range R>
-auto zeta(R& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
+auto zeta(R&& range) noexcept(NO_EXCEPT) { return zeta<0>(range); }
 
 template<std::ranges::sized_range R>
-auto mobius(R& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
+auto mobius(R&& range) noexcept(NO_EXCEPT) { return mobius<0>(range); }
 
 
 template<std::ranges::input_range R>
     requires requires { typename R::mapped_type; }
-auto zeta(R& range) noexcept(NO_EXCEPT) {
+auto zeta(R&& range) noexcept(NO_EXCEPT) {
     auto begin = std::ranges::begin(range);
     auto end = std::ranges::end(range);
     for(auto itr2 = begin; itr2 != end; ++itr2) {
@@ -120,7 +120,7 @@ auto zeta(R& range) noexcept(NO_EXCEPT) {
 
 template<std::ranges::input_range R>
     requires requires { typename R::mapped_type; }
-auto mobius(R& range) noexcept(NO_EXCEPT) {
+auto mobius(R&& range) noexcept(NO_EXCEPT) {
     auto begin = std::ranges::begin(range);
     auto end = std::ranges::end(range);
     for(auto itr2 = end; itr2-- != begin; ) {

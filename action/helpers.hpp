@@ -17,7 +17,7 @@ namespace actions {
 template<class S, auto op, auto e, class F, auto _mapping, auto composition, auto id, auto _power = nullptr>
 struct helper {
     static_assert(std::same_as<std::invoke_result_t<decltype(_mapping), F, S>, S>);
-    static_assert(std::same_as<std::invoke_result_t<decltype(_power), F, uni::internal::size_t>, F>);
+    // static_assert(std::same_as<std::invoke_result_t<decltype(_power), F, uni::internal::size_t>, F>);
 
     using operand = algebraic::monoid_helper<S, op, e>;
     using operation = algebraic::monoid_helper<F, composition, id>;
@@ -25,9 +25,10 @@ struct helper {
     static operand mapping(const operation& f, const operand& x) noexcept(NO_EXCEPT) {
         return _mapping(f.val(), x.val());
     }
+
     static operation power(const operation& x, [[maybe_unused]] const uni::internal::size_t length) noexcept(NO_EXCEPT) {
         if constexpr(_power == nullptr) return x;
-        return _power(x.val(), length);
+        else return _power(x.val(), length);
     }
 };
 
