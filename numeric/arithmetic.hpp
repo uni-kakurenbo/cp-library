@@ -273,7 +273,6 @@ inline constexpr T kth_root_floor(T x, const K k) noexcept(NO_EXCEPT) {
     constexpr auto DIGITS = std::numeric_limits<T>::digits;
     if(k >= DIGITS) return T{1};
     if(k == 2) return sqrt_floor(x);
-    if(k == 2) return sqrt_floor(x);
 
     constexpr auto MAX = std::numeric_limits<T>::max();
     if(x == MAX) --x;
@@ -291,7 +290,7 @@ inline constexpr T kth_root_floor(T x, const K k) noexcept(NO_EXCEPT) {
         return res;
     };
 
-    auto res = staitc_cast<T>(std::pow(x, std::nextafter(1 / static_cast<double>(k), 0)));
+    auto res = static_cast<T>(std::pow(x, std::nextafter(1 / static_cast<double>(k), 0)));
     while(pow(res + 1, k) <= x) ++res;
 
     return res;
