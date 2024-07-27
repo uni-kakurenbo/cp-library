@@ -188,11 +188,11 @@ struct advanced_container : Base {
     }
 
 
-    inline auto sum() noexcept(NO_EXCEPT) { return uni::sum(*this); }
+    inline auto sum() const noexcept(NO_EXCEPT) { return uni::sum(*this); }
 
 
-    inline auto max() noexcept(NO_EXCEPT) { return std::ranges::max(*this->_base()); }
-    inline auto min() noexcept(NO_EXCEPT) { return std::ranges::min(*this); }
+    inline auto max() const noexcept(NO_EXCEPT) { return std::ranges::max(*this->_base()); }
+    inline auto min() const noexcept(NO_EXCEPT) { return std::ranges::min(*this); }
 
 
     inline auto begin() noexcept(NO_EXCEPT) { return std::ranges::begin(*this->_base()); }
