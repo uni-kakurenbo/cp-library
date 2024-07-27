@@ -41,7 +41,7 @@ template<class Holder> struct base : Holder {
 } // namespace internal
 
 
-template<class T, unsigned int RANK, template<class...> class Holder = vector, template<class...> class Container = valarray>
+template<class T, unsigned int RANK, template<class...> class Holder = vector, template<class...> class Container = vector>
 struct multi_container : internal::multi_container_impl::base<Holder<multi_container<T, RANK - 1, Holder, Container>>> {
   private:
     using base = internal::multi_container_impl::base<Holder<multi_container<T, RANK - 1, Holder, Container>>>;
