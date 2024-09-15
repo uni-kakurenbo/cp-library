@@ -99,6 +99,7 @@ struct set_wrapper : Set {
 
 
     std::optional<typename Set::value_type> next(const typename Set::key_type& key, size_type count = 0) const noexcept(NO_EXCEPT) {
+        if(this->empty()) return {};
         auto itr = this->lower_bound(key);
         const auto end = this->end();
         if(itr == end) return {};
@@ -107,6 +108,7 @@ struct set_wrapper : Set {
     }
 
     std::optional<typename Set::value_type> prev(const typename Set::key_type& key, size_type count = 0) const noexcept(NO_EXCEPT) {
+        if(this->empty()) return {};
         auto itr = this->upper_bound(key);
         const auto begin = this->begin();
         if(itr-- == begin) return {};
