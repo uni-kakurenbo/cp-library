@@ -216,8 +216,6 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         assert(l <= r);
         if(l == r) return;
 
-        // debug(l, r, val);
-
         node_pointer t0, t1, t2;
 
         this->split(tree, l, r, t0, t1, t2);
@@ -383,7 +381,7 @@ struct dynamic_sequence
 
     template<std::same_as<size_type>... SizeTypes>
     inline void _normalize_index(SizeTypes&... indices) noexcept(NO_EXCEPT) {
-        const size_type min_index = std::min({ indices... });
+        const auto min_index = std::min({ indices... });
         ((indices -= this->_offset), ...);
         if(min_index < this->_offset) this->_offset = min_index;
     }
