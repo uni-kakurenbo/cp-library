@@ -112,7 +112,9 @@ typename Graph::cost_type internal::graph_impl::mixin<Graph>::build_manhattan_ms
 
     cost_type res = 0;
 
-    ITR(u, v, w, (manhattan_mst_edges<I0, I1, S0, S1, cost_type, size_type>(x_first, x_last, y_first, y_last))) {
+    const auto edges = manhattan_mst_edges<I0, I1, S0, S1>(x_first, x_last, y_first, y_last);
+
+    ITR(u, v, w, edges) {
         this->add_edge_bidirectionally(u, v, w);
     }
 
