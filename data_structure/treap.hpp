@@ -171,9 +171,9 @@ struct treap_impl : private uncopyable {
         if(pos <= lower_bound) {
             node_pointer t;
             this->split(tree->left, pos, left, t);
-            // tree->left = node_handler::nil;
-            // this->merge(tree, t, tree);
-            tree->left = t;
+            tree->left = node_handler::nil;
+            this->merge(tree, t, tree);
+            // tree->left = t;
 
             right = std::move(tree);
             this->pull(right);
@@ -181,9 +181,9 @@ struct treap_impl : private uncopyable {
         else if(pos >= upper_bound) {
             node_pointer t;
             this->split(tree->right, pos - upper_bound, t, right);
-            // tree->right = node_handler::nil;
-            // this->merge(tree, tree, t);
-            tree->right = t;
+            tree->right = node_handler::nil;
+            this->merge(tree, tree, t);
+            // tree->right = t;
 
             left = std::move(tree);
             this->pull(left);
@@ -192,7 +192,7 @@ struct treap_impl : private uncopyable {
             tree->length = pos - lower_bound;
 
             auto node = this->create(tree->data, upper_bound - pos);
-            node->priority = tree->priority;
+            // node->priority = tree->priority;
 
             this->merge(tree->right, node, tree->right);
 
