@@ -192,7 +192,7 @@ struct treap_impl : private uncopyable {
             tree->length = pos - lower_bound;
 
             auto node = this->create(tree->data, upper_bound - pos);
-            // node->priority = tree->priority;
+            node->priority = tree->priority;
 
             this->merge(tree->right, node, tree->right);
 
