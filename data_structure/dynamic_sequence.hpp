@@ -47,7 +47,15 @@ namespace dynamic_tree_impl {
 
 
 template<class ActionOrValue, class Context>
-struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionOrValue, Context>, Context> {
+struct sequence_core
+  : internal::basic_core<ActionOrValue, sequence_core<ActionOrValue, Context>, Context>
+//   ,
+    // dumpable_tree<
+    //     sequence_core<ActionOrValue, Context>,
+    //     internal::basic_core<ActionOrValue, sequence_core<ActionOrValue, Context>, Context>,
+    //     Context::LEAF_ONLY
+    // >
+{
   private:
     using base = typename internal::basic_core<ActionOrValue, sequence_core, Context>;
 
@@ -194,10 +202,24 @@ struct sequence_core : internal::basic_core<ActionOrValue, sequence_core<ActionO
         node_pointer t0, t1, t2;
         this->split(tree, l, r, t0, t1, t2);
 
+        // this->split(tree, l, r, t0, t1, t2);
+
+        // this->split(tree, l, t0, t1);
+        // debug(this->dump_rich(t0), this->dump_rich(t1));
+
+        // this->split(t1, r - l, t1, t2);
+        // debug(this->dump_rich(t1), this->dump_rich(t2));
+
         this->dispose(t1);
         t1 = this->create(val, r - l);
 
         this->merge(tree, t0, t1, t2);
+
+        // this->merge(t0, t0, t1);
+        // debug(this->dump_rich(t0));
+
+        // this->merge(tree, t0, t2);
+        // debug(this->dump_rich(tree));
     }
 
     template<std::input_iterator I, std::sized_sentinel_for<I> S>
