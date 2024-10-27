@@ -182,10 +182,17 @@ struct dump_primitive_like {
     template<uni::internal::arithmetic T>
     std::string operator()(const T val) const {
         std::stringstream res;
-        res << COLOR_NUMERIC << std::setprecision(std::numeric_limits<T>::digits10);
-        res << val << COLOR_LITERAL_OPERATOR << uni::internal::literal_operator_v<T>;
-        res << COLOR_INIT;
-        return res.str();
+        res << std::setprecision(std::numeric_limits<T>::digits10) << val;
+
+        auto str = res.str();
+
+        std::string dst = "";
+        while(str.length() > 3) {
+            dst = ',' + str.substr(str.length() - 3, 3) + dst;
+            str = str.substr(0, str.length() - 3);
+        }
+
+        return COLOR_NUMERIC + str + dst + COLOR_LITERAL_OPERATOR + uni::internal::literal_operator_v<T> + COLOR_INIT;
     };
 
     template<class T>

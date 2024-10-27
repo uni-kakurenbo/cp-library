@@ -23,6 +23,7 @@ struct dumpable_tree {
 
     inline auto _push(const node_pointer& tree) {
         return static_cast<Derived*>(this)->_impl.push(tree);
+        // return static_cast<Derived*>(this)->push(tree);
     }
 
   public:
@@ -33,10 +34,16 @@ struct dumpable_tree {
 
         this->_push(tree);
 
+        // debug(tree->priority >= tree->left->priority, tree->priority, tree->left->priority);
+        // debug(tree->priority >= tree->right->priority, tree->priority, tree->right->priority);
+        assert(tree->priority >= tree->left->priority);
+        assert(tree->priority >= tree->right->priority);
+
         const auto left = this->dump_rich(tree->left, prefix + (dir == 1 ? "| " : "  "), -1, index);
         const auto here =
             prefix + "--+ [" +
             debugger::dump(index) + ", " + debugger::dump(index + tree->length) + ") : " +
+            // "<" + debugger::dump(tree->priority) + "> " +
             debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
         index += tree->length;
 
