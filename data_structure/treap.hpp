@@ -96,11 +96,42 @@ struct treap_impl : private uncopyable {
     inline void constexpr clone(Args&&...) const noexcept {}
 
   private:
+    void _rotate_left(node_pointer& tree) noexcept(NO_EXCEPT) {
+        this->push(tree);
+
+        auto t = tree->right;
+        this->push(t);
+
+        tree->right = t->left;
+        this->pull(tree);
+
+        t->left = tree;
+        this->pull(t);
+
+        tree = std::move(t);
+    }
+
+    void _rotate_right(node_pointer& tree) noexcept(NO_EXCEPT) {
+        this->push(tree);
+
+        auto t = tree->left;
+        this->push(t);
+
+        tree->left = t->right;
+        this->pull(tree);
+
+        t->right = tree;
+        this->pull(t);
+
+        tree = std::move(t);
+    }
+
+
     void _rectify(const node_pointer tree) const noexcept(NO_EXCEPT) {
         if(tree->size == 0) return;
 
         std::vector<priority_type> priorities(tree->size);
-        std::ranges::generate(priorities, this->_rand);
+        std::ranges::generate(priorities, treap_impl::_rand);
         std::ranges::make_heap(priorities);
 
         std::queue<node_pointer> queue;
@@ -171,9 +202,9 @@ struct treap_impl : private uncopyable {
         if(pos <= lower_bound) {
             node_pointer t;
             this->split(tree->left, pos, left, t);
-            // tree->left = node_handler::nil;
-            // this->merge(tree, t, tree);
             tree->left = t;
+
+            if(tree->priority < t->priority) this->_rotate_right(tree);
 
             right = std::move(tree);
             this->pull(right);
@@ -181,8 +212,6 @@ struct treap_impl : private uncopyable {
         else if(pos >= upper_bound) {
             node_pointer t;
             this->split(tree->right, pos - upper_bound, t, right);
-            // tree->right = node_handler::nil;
-            // this->merge(tree, tree, t);
             tree->right = t;
 
             left = std::move(tree);
@@ -190,18 +219,10 @@ struct treap_impl : private uncopyable {
         }
         else {
             tree->length = pos - lower_bound;
-
-            auto node = this->create(tree->data, upper_bound - pos);
-            // node->priority = tree->priority;
-
-            this->merge(tree->right, node, tree->right);
+            this->merge(tree->right, this->create(tree->data, upper_bound - pos), tree->right);
 
             this->split(tree->right, 0, tree->right, right), left = std::move(tree);
             this->pull(left);
-
-            // this->merge(tree->left, tree->left, node);
-            // this->split(tree->left, 0, left, tree->left), right = std::move(tree);
-            // this->pull(right);
         }
     }
 
