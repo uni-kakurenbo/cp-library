@@ -43,7 +43,7 @@ struct dumpable_tree {
         const auto here =
             prefix + "--+ [" +
             debugger::dump(index) + ", " + debugger::dump(index + tree->length) + ") : " +
-            // "<" + debugger::dump(tree->priority) + "> " +
+            "<" + debugger::dump(tree->priority) + "> " +
             debugger::dump(tree->data) + " [" + debugger::dump(tree->length) + "]\n";
         index += tree->length;
 
