@@ -52,6 +52,7 @@ signed main() {
             auto itr = st.upper_bound(k);
             print(itr == st.begin() ? -1 : *std::ranges::prev(itr));
         }
-        debug(st);
+        // debug(st);
+        // st.dump_rich();
     }
 }
