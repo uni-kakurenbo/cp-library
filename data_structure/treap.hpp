@@ -243,11 +243,7 @@ struct treap_impl : private uncopyable {
         if constexpr(RETURN_EXISTENCE) *exist |= val == tree->data;
 
         if(val < tree->data || (!STRICT && val == tree->data)) {
-            node_pointer t;
-            this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, t, exist);
-            tree->left = t;
-
-            // if(tree->priority < t->priority) this->_rotate_right(tree);
+            this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, tree->left, exist);
 
             right = std::move(tree);
             this->pull(right);
