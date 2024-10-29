@@ -131,8 +131,6 @@ struct sequence_core
                             tree->right->data.val = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->right->size), tree->right->data.val);
                         }
                     }
-
-                    tree->data.val = ActionOrValue::mapping(tree->data.lazy, tree->data.val);
                 }
                 else {
                     if(tree->left != node_handler::nil) {
@@ -144,10 +142,9 @@ struct sequence_core
                         tree->right->data.lazy = tree->data.lazy + tree->right->data.lazy;
                         tree->right->data.acc = ActionOrValue::mapping(ActionOrValue::power(tree->data.lazy, tree->right->size), tree->right->data.acc);
                     }
-
-                    tree->data.val = ActionOrValue::mapping(tree->data.lazy, tree->data.val);
                 }
 
+                tree->data.val = ActionOrValue::mapping(tree->data.lazy, tree->data.val);
                 tree->data.lazy = operation{};
             }
         }
