@@ -96,9 +96,8 @@ struct treap_impl : private uncopyable {
     inline void constexpr clone(Args&&...) const noexcept {}
 
   private:
-    void _rotate_right(node_pointer& tree) noexcept(NO_EXCEPT) {
+    void _rotate_right(node_pointer& tree) noexcept(NO_EXCEPT) {  // push ommitted
         auto t = tree->left;
-        this->push(t);
 
         tree->left = t->right;
         this->pull(tree);
@@ -177,7 +176,6 @@ struct treap_impl : private uncopyable {
         }
 
         this->push(tree);
-        // debug(this->_derived()->dump_rich(tree));
 
         const size_type lower_bound = tree->left->size;
         const size_type upper_bound = tree->size - tree->right->size;
@@ -193,9 +191,7 @@ struct treap_impl : private uncopyable {
             this->pull(right);
         }
         else if(pos >= upper_bound) {
-            node_pointer t;
-            this->split(tree->right, pos - upper_bound, t, right);
-            tree->right = t;
+            this->split(tree->right, pos - upper_bound, tree->right, right);
 
             left = std::move(tree);
             this->pull(left);
