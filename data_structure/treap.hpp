@@ -100,10 +100,10 @@ struct treap_impl : private uncopyable {
         this->push(tree);
 
         auto t = tree->left;
-        // this->push(t);
+        this->push(t);
 
         tree->left = t->right;
-        this->pull(tree);
+        // this->pull(tree);
 
         t->right = tree;
         this->pull(t);
