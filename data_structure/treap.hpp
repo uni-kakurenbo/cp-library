@@ -103,7 +103,7 @@ struct treap_impl : private uncopyable {
         // this->push(t);
 
         tree->left = t->right;
-        // this->pull(tree);
+        this->pull(tree);
 
         t->right = tree;
         this->pull(t);
