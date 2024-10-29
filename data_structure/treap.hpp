@@ -283,11 +283,11 @@ struct treap_impl : private uncopyable {
         if(left == node_handler::nil || right == node_handler::nil) {
             tree = left == node_handler::nil ? right : left;
         }
-        else if(left->priority < right->priority) {
-            this->merge(right->left, left, right->left), tree = std::move(right);
+        else if(left->priority > right->priority) {
+            this->merge(left->right, left->right, right), tree = std::move(left);
         }
         else {
-            this->merge(left->right, left->right, right), tree = std::move(left);
+            this->merge(right->left, left, right->left), tree = std::move(right);
         }
 
         this->pull(tree);
