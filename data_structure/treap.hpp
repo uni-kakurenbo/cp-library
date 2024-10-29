@@ -247,7 +247,7 @@ struct treap_impl : private uncopyable {
             this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, t, exist);
             tree->left = t;
 
-            if(tree->priority < t->priority) this->_rotate_right(tree);
+            // if(tree->priority < t->priority) this->_rotate_right(tree);
 
             right = std::move(tree);
             this->pull(right);
@@ -283,11 +283,11 @@ struct treap_impl : private uncopyable {
         if(left == node_handler::nil || right == node_handler::nil) {
             tree = left == node_handler::nil ? right : left;
         }
-        else if(left->priority > right->priority) {
-            this->merge(left->right, left->right, right), tree = std::move(left);
+        else if(left->priority < right->priority) {
+            this->merge(right->left, left, right->left), tree = std::move(right);
         }
         else {
-            this->merge(right->left, left, right->left), tree = std::move(right);
+            this->merge(left->right, left->right, right), tree = std::move(left);
         }
 
         this->pull(tree);
