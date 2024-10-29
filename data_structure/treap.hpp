@@ -177,8 +177,8 @@ struct treap_impl : private uncopyable {
 
         this->push(tree);
 
-        const size_type lower_bound = tree->left->size;
-        const size_type upper_bound = tree->size - tree->right->size;
+        const auto lower_bound = tree->left->size;
+        const auto upper_bound = tree->size - tree->right->size;
 
         if(pos <= lower_bound) {
             node_pointer t;
@@ -245,19 +245,15 @@ struct treap_impl : private uncopyable {
         if(val < tree->data || (!STRICT && val == tree->data)) {
             node_pointer t;
             this->template split<STRICT, RETURN_EXISTENCE>(tree->left, val, left, t, exist);
-            // tree->left = node_handler::nil;
-            // this->merge(tree, t, tree);
             tree->left = t;
+
+            if(tree->priority < t->priority) this->_rotate_right(tree);
 
             right = std::move(tree);
             this->pull(right);
         }
         else {
-            node_pointer t;
-            this->template split<STRICT, RETURN_EXISTENCE>(tree->right, val, t, right, exist);
-            // tree->right = node_handler::nil;
-            // this->merge(tree, tree, t);
-            tree->right = t;
+            this->template split<STRICT, RETURN_EXISTENCE>(tree->right, val, tree->right, right, exist);
 
             left = std::move(tree);
             this->pull(left);
@@ -287,11 +283,11 @@ struct treap_impl : private uncopyable {
         if(left == node_handler::nil || right == node_handler::nil) {
             tree = left == node_handler::nil ? right : left;
         }
-        else if(left->priority > right->priority) {
-            this->merge(left->right, left->right, right), tree = std::move(left);
+        else if(left->priority < right->priority) {
+            this->merge(right->left, left, right->left), tree = std::move(right);
         }
         else {
-            this->merge(right->left, left, right->left), tree = std::move(right);
+            this->merge(left->right, left->right, right), tree = std::move(left);
         }
 
         this->pull(tree);
