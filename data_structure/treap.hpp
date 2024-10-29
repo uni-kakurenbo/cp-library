@@ -97,16 +97,16 @@ struct treap_impl : private uncopyable {
 
   private:
     void _rotate_right(node_pointer& tree) noexcept(NO_EXCEPT) {
-        this->push(tree);
+        // this->push(tree);
 
         auto t = tree->left;
         // this->push(t);
 
         tree->left = t->right;
-        this->pull(tree);
+        // this->pull(tree);
 
         t->right = tree;
-        this->pull(t);
+        // this->pull(t);
 
         tree = std::move(t);
     }
