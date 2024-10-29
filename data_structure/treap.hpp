@@ -96,26 +96,11 @@ struct treap_impl : private uncopyable {
     inline void constexpr clone(Args&&...) const noexcept {}
 
   private:
-    void _rotate_left(node_pointer& tree) noexcept(NO_EXCEPT) {
-        this->push(tree);
-
-        auto t = tree->right;
-        this->push(t);
-
-        tree->right = t->left;
-        this->pull(tree);
-
-        t->left = tree;
-        this->pull(t);
-
-        tree = std::move(t);
-    }
-
     void _rotate_right(node_pointer& tree) noexcept(NO_EXCEPT) {
         this->push(tree);
 
         auto t = tree->left;
-        this->push(t);
+        // this->push(t);
 
         tree->left = t->right;
         this->pull(tree);
