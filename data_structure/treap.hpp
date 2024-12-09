@@ -37,7 +37,7 @@ namespace internal {
 
 
 // Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
-template<class Allocator, class Derived, std::integral SizeType, class ValueType, i64 Id>
+template<class Allocator, class Derived, std::integral SizeType, class ValueType, bool COMPRESSING, i64 Id>
 struct treap_impl : private uncopyable {
     using size_type = SizeType;
     using value_type = ValueType;
@@ -68,7 +68,12 @@ struct treap_impl : private uncopyable {
   public:
     void pull(const node_pointer tree) noexcept(NO_EXCEPT) {
         if(tree == node_handler::nil) return;
-        tree->size = tree->left->size + tree->length + tree->right->size;
+        if constexpr(COMPRESSING) {
+            tree->size = tree->left->size + tree->length + tree->right->size;
+        }
+        else {
+            tree->size = tree->left->size + 1 + tree->right->size;
+        }
         this->_derived()->pull(tree);
     }
 
@@ -80,7 +85,16 @@ struct treap_impl : private uncopyable {
 
     node_pointer create(const value_type& val, const size_type size) noexcept(NO_EXCEPT) {
         if(size == 0) return node_handler::nil;
-        return this->_node_handler.create(val, size);
+        if constexpr(COMPRESSING) {
+            return this->_node_handler.create(val, size);
+        }
+        else {;
+            if(size == 1) return this->_node_handler.create(val);
+            else {
+                const auto view = std::views::repeat(val, size);
+                return this->_build(ALL(view));
+            }
+        }
     }
 
     void dispose(node_pointer tree) noexcept(NO_EXCEPT) {
@@ -196,12 +210,15 @@ struct treap_impl : private uncopyable {
             left = std::move(tree);
             this->pull(left);
         }
-        else {
+        else if constexpr(COMPRESSING) {
             tree->length = pos - lower_bound;
             this->merge(tree->right, this->create(tree->data, upper_bound - pos), tree->right);
 
             this->split(tree->right, 0, tree->right, right), left = std::move(tree);
             this->pull(left);
+        }
+        else {
+            assert(false);
         }
     }
 
@@ -220,13 +237,21 @@ struct treap_impl : private uncopyable {
 
         node_pointer left = node_handler::nil, right = node_handler::nil;
 
-        size_type length, size;
+        [[no_unique_address]] std::conditional_t<COMPRESSING, size_type, dummy> length;
+        size_type size;
+
         [[no_unique_address]] value_type data;
 
         node_type() noexcept = default;
 
         node_type(const value_type& _data, const size_type _size) noexcept(NO_EXCEPT)
-            : priority(treap_impl::_rand()), length(_size), size(_size), data(_data)
+            requires (COMPRESSING)
+          : priority(treap_impl::_rand()), length(_size), size(_size), data(_data)
+        {}
+
+        node_type(const value_type& _data) noexcept(NO_EXCEPT)
+            requires (!COMPRESSING)
+          : priority(treap_impl::_rand()), size(1), data(_data)
         {}
     };
 
@@ -259,12 +284,16 @@ struct treap_impl : private uncopyable {
 
     void split(const node_pointer tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
-            left = node_handler::nil;
+            if constexpr(!COMPRESSING) assert(pos == 0);
+
             this->merge(right, this->create(value_type{}, -pos), std::move(tree));
+            left = node_handler::nil;
         }
         else if(tree->size <= pos) {
-            right = node_handler::nil;
+            if constexpr(!COMPRESSING) assert(pos == tree->size);
+
             this->merge(left, std::move(tree), this->create(value_type{}, pos - tree->size));
+            right = node_handler::nil;
         }
         else {
             this->_split(std::move(tree), pos, left, right);
@@ -294,20 +323,21 @@ struct treap_impl : private uncopyable {
 } // namespace internal
 
 
-template<std::integral SizeType = i64, class Allocator = std::allocator<SizeType>, i64 Id = -1>
+template<std::integral SizeType = i64, bool COMPRESSING_ = true, class Allocator = std::allocator<SizeType>, i64 Id = -1>
 struct treap_context {
     static constexpr bool LEAF_ONLY = false;
+    static constexpr bool COMPRESSING = COMPRESSING_;
 
     template<class Derived, class ValueType = internal::dummy>
-    using substance = internal::treap_impl<Allocator, Derived, SizeType, ValueType, Id>;
+    using substance = internal::treap_impl<Allocator, Derived, SizeType, ValueType, COMPRESSING_, Id>;
 };
 
 
 namespace pmr {
 
 
-template<std::integral SizeType = i64, i64 Id = -1>
-using treap_context = uni::treap_context<SizeType, std::pmr::polymorphic_allocator<SizeType>, Id>;
+template<std::integral SizeType = i64, bool COMPRESSING = true, i64 Id = -1>
+using treap_context = uni::treap_context<SizeType, COMPRESSING, std::pmr::polymorphic_allocator<SizeType>, Id>;
 
 
 } // namespace pmr

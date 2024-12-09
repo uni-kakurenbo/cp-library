@@ -37,7 +37,7 @@ namespace internal {
 
 
 // Thanks to: http://blog.mitaki28.info/1447078746296/
-template<class NodeHandler, class Derived, std::integral SizeType, class ValueType>
+template<class NodeHandler, class Derived, std::integral SizeType, class ValueType, bool COMPRESSING>
 struct red_black_tree_impl {
     using size_type = SizeType;
     using rank_type = int;
@@ -67,7 +67,13 @@ struct red_black_tree_impl {
         node_type() noexcept = default;
 
         node_type(const value_type& _data, const size_type _size) noexcept(NO_EXCEPT)
-            : size(_size), data(_data)
+            requires(COMPRESSING)
+          : size(_size), data(_data)
+        {}
+
+        node_type(const value_type& _data) noexcept(NO_EXCEPT)
+            requires(!COMPRESSING)
+          : size(1), data(_data)
         {}
 
         node_type(const node_colors _color, const node_pointer& _left, const node_pointer& _right) noexcept(NO_EXCEPT)
@@ -110,7 +116,16 @@ struct red_black_tree_impl {
 
     node_pointer create(const value_type& val, const size_type size) noexcept(NO_EXCEPT) {
         if(size == 0) return node_handler::nil;
-        return this->_node_handler.create(val, size);
+        if constexpr(COMPRESSING) {
+            return this->_node_handler.create(val, size);
+        }
+        else {
+            if(size == 1) return this->_node_handler.create(val);
+            else {
+                const auto view = std::views::repeat(val, size);
+                return this->build(ALL(view));
+            }
+        }
     }
 
     node_pointer create(const node_colors color, node_pointer left, node_pointer right) noexcept(NO_EXCEPT) {
@@ -221,8 +236,11 @@ struct red_black_tree_impl {
         this->push(tree);
 
         if(tree->is_leaf()) {
+            if constexpr(!COMPRESSING) assert(pos == 0 || pos == tree->size);
+
             left = this->create(tree->data, pos);
             right = this->create(tree->data, tree->size - pos);
+
             return;
         }
 
@@ -287,12 +305,16 @@ struct red_black_tree_impl {
 
     void split(const node_pointer& tree, const size_type pos, node_pointer& left, node_pointer& right) noexcept(NO_EXCEPT) {
         if(pos <= 0) {
-            left = node_handler::nil;
+            if constexpr(!COMPRESSING) assert(pos == 0);
+
             this->merge(right, this->create(value_type{}, -pos), tree);
+            left = node_handler::nil;
         }
         else if(tree->size <= pos) {
-            right = node_handler::nil;
+            if constexpr(!COMPRESSING) assert(pos == tree->size);
+
             this->merge(left, tree, this->create(value_type{}, pos - tree->size));
+            right = node_handler::nil;
         }
         else {
             this->_split(tree, pos, left, right);
@@ -322,32 +344,34 @@ struct red_black_tree_impl {
 } // namespace internal
 
 
-template<std::integral SizeType = i64, class NodeHandler = uni::node_handlers::reusing<std::allocator<SizeType>>>
+template<std::integral SizeType = i64, bool COMPRESSING_ = true, class NodeHandler = uni::node_handlers::reusing<std::allocator<SizeType>>>
 struct red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
+    static constexpr bool COMPRESSING = COMPRESSING_;
 
     template<class Derived, class ValueType = internal::dummy>
-    using substance = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<NodeHandler, Derived, SizeType, ValueType, COMPRESSING>;
 };
 
-template<std::integral SizeType = i64, class Allocator = std::allocator<SizeType>>
+template<std::integral SizeType = i64, bool COMPRESSING_ = true, class Allocator = std::allocator<SizeType>>
 struct persistent_red_black_tree_context {
     static constexpr bool LEAF_ONLY = true;
+    static constexpr bool COMPRESSING = COMPRESSING_;
 
     template<class Derived, class ValueType = internal::dummy>
-    using substance = internal::red_black_tree_impl<uni::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType>;
+    using substance = internal::red_black_tree_impl<uni::node_handlers::cloneable<Allocator>, Derived, SizeType, ValueType, COMPRESSING>;
 };
 
 
 namespace pmr {
 
 
-template<std::integral SizeType = i64>
-using red_black_tree_context = uni::red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
+template<std::integral SizeType = i64, bool COMPRESSING = true>
+using red_black_tree_context = uni::red_black_tree_context<SizeType, COMPRESSING, std::pmr::polymorphic_allocator<SizeType>>;
 
 
-template<std::integral SizeType = i64>
-using persistent_red_black_tree_context = uni::persistent_red_black_tree_context<SizeType, std::pmr::polymorphic_allocator<SizeType>>;
+template<std::integral SizeType = i64, bool COMPRESSING = true>
+using persistent_red_black_tree_context = uni::persistent_red_black_tree_context<SizeType, COMPRESSING, std::pmr::polymorphic_allocator<SizeType>>;
 
 
 } // namespace pmr

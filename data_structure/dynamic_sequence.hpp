@@ -86,7 +86,12 @@ struct sequence_core
                 tree->data.val = this->val(tree->left) + this->val(tree->right);
             }
             else {
-                tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
+                if constexpr(Context::COMPRESSING) {
+                    tree->data.acc = tree->left->data.acc + tree->length * tree->data.val + tree->right->data.acc;
+                }
+                else {
+                    tree->data.acc = tree->left->data.acc + tree->data.val + tree->right->data.acc;
+                }
             }
         }
     }
@@ -306,6 +311,18 @@ struct sequence_core
         this->merge(tree, t0, t2, t3);
     }
 
+    void swap_ranges(node_pointer& tree, size_type l0, size_type r0, size_type l1, size_type r1) noexcept(NO_EXCEPT) {
+        if(l0 > l1) std::swap(l0, l1), std::swap(r0, r1);
+        assert(l0 <= r0 && r0 <= l1 && l1 <= r1);
+
+        node_pointer t0, t1, t2, t3, t4;
+
+        this->split(tree, l0, r0, l1, t0, t1, t2, t3);
+        this->split(t3, r1 - l1, t3, t4);
+
+        this->merge(t0, t0, t3, t2);
+        this->merge(tree, t0, t1, t4);
+    }
 
     template<bool LEFT>
     size_type find(const node_pointer& tree, operand& val, const size_type offset) noexcept(NO_EXCEPT) {
@@ -718,6 +735,16 @@ struct dynamic_sequence
         this->_normalize_index(l, r);
         this->_impl.shift_right(this->_root, l, r, count);
         return *this;
+    }
+
+    inline auto& swap_ranges(size_type l0, size_type r0, size_type l1, size_type r1) noexcept(NO_EXCEPT) {
+        this->_normalize_index(l0, r0, l1, r1);
+        this->_impl.swap_ranges(this->_root, l0, r0, l1, r1);
+        return *this;
+    }
+
+    inline auto& swap_ranges(const spair<size_type>& x, const spair<size_type>& y) noexcept(NO_EXCEPT) {
+        return this->swap_ranges(x.first, x.second, y.first, y.second);
     }
 
     inline auto pop_front(const size_type count = 1) noexcept(NO_EXCEPT) {
