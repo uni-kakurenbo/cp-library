@@ -4,7 +4,7 @@ set -eu
 REF="$(git branch --show-current)"
 
 if [ -n "${REF}" ]; then
-    SOURCE_BRANCH="$(basename "${REF}")"
+    SOURCE_BRANCH="${REF//'refs/heads/'/}"
     TEST_BRANCH="test/${SOURCE_BRANCH}"
 
     (
