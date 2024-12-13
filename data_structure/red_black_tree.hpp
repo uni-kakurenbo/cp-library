@@ -241,6 +241,8 @@ struct red_black_tree_impl {
             left = this->create(tree->data, pos);
             right = this->create(tree->data, tree->size - pos);
 
+            this->_node_handler.dispose(tree);
+
             return;
         }
 
