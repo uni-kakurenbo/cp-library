@@ -24,8 +24,8 @@
 #include "data_structure/internal/node_handler.hpp"
 
 #include "global/constants.hpp"
-
 #include "random/engine.hpp"
+#include "view/repeat.hpp"
 
 
 #include "debugger/debug.hpp"
@@ -122,7 +122,7 @@ struct red_black_tree_impl {
         else {
             if(size == 1) return this->_node_handler.create(val);
             else {
-                const auto view = std::views::repeat(val, size);
+                const auto view = views::repeat(val, size);
                 return this->build(ALL(view));
             }
         }
