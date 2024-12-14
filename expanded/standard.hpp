@@ -349,7 +349,6 @@ namespace uni { template<class Destination = std::ostream> struct output_adaptor
 /* [end]: adaptor/internal/output.hpp*/
 namespace uni { uni::input_adaptor _input; uni::output_adaptor _print; }
 #define input uni::_input
-#define print uni::_print
 /* [end]: adaptor/io.hpp*/
 /* [begin]: adaptor/map.hpp */
 /* [begin]: adaptor/set.hpp */
