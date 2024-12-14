@@ -36,7 +36,6 @@ namespace uni {
 namespace internal {
 
 
-// Thanks to: https://github.com/xuzijian629/library2/blob/master/treap/implicit_treap.cpp
 template<class Allocator, class Derived, std::integral SizeType, class ValueType, bool COMPRESSING, i64 Id>
 struct treap_impl : private uncopyable {
     using size_type = SizeType;
