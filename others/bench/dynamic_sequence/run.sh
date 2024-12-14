@@ -27,7 +27,7 @@ for i in {0..15}; do
 
         echo "${i}"
 
-        ./0000.exe --benchmark_time_unit=ms --benchmark_filter="^${item}" --benchmark_out=res.json --benchmark_repetitions=256 "$@"
+        ./bench.exe --benchmark_time_unit=ms --benchmark_filter="^${item}" --benchmark_out=res.json --benchmark_repetitions=256 "$@"
         cp res.json "${file}"
     done
 done
