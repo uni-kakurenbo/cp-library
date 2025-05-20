@@ -40,6 +40,17 @@ namespace internal {
 } // namespace internal
 
 
+namespace letters {
+
+
+constexpr auto LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+constexpr auto UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+} // namespace letters
+
+
+
 template<class T = ld>
 constexpr auto PI = internal::get_pi<T>();
 
