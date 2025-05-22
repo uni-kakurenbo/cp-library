@@ -187,9 +187,12 @@ struct dump_primitive_like {
         auto str = res.str();
 
         std::string dst = "";
-        while(str.length() > 3) {
-            dst = ',' + str.substr(str.length() - 3, 3) + dst;
-            str = str.substr(0, str.length() - 3);
+
+        if constexpr(std::integral<T>) {
+            while(str.length() > 3) {
+                dst = ',' + str.substr(str.length() - 3, 3) + dst;
+                str = str.substr(0, str.length() - 3);
+            }
         }
 
         return COLOR_NUMERIC + str + dst + COLOR_LITERAL_OPERATOR + uni::internal::literal_operator_v<T> + COLOR_INIT;

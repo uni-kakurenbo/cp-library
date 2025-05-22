@@ -4,9 +4,12 @@
 #include <vector>
 #include <queue>
 
+
 #include "snippet/iterations.hpp"
-#include "internal/dev_env.hpp"
 #include "structure/graph.hpp"
+
+#include "internal/dev_env.hpp"
+#include "graph/internal/concepts.hpp"
 
 
 template<class Graph>
@@ -38,7 +41,8 @@ bool uni::internal::graph_impl::mixin<Graph>::sort_topologically_with_priority()
 
 
 template<class Graph>
-bool uni::internal::graph_impl::mixin<Graph>::sort_topologically(uni::vector<node_type> *const sorted) const noexcept(NO_EXCEPT) {
+template<uni::internal::topological_sortable_with<Graph> Range>
+bool uni::internal::graph_impl::mixin<Graph>::sort_topologically(Range *const sorted) const noexcept(NO_EXCEPT) {
     sorted->clear();
 
     std::vector<size_type> in_degs(this->size());

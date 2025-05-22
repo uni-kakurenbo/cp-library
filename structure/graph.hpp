@@ -13,8 +13,12 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 #include "internal/concepts.hpp"
+#include "internal/auto_holder.hpp"
 
 #include "utility/functional.hpp"
+
+#include "graph/internal/concepts.hpp"
+
 #include "adaptor/valarray.hpp"
 #include "adaptor/vector.hpp"
 #include "adaptor/io.hpp"
@@ -24,7 +28,6 @@
 
 #include "adaptor/virtual_map.hpp"
 
-#include "internal/auto_holder.hpp"
 
 
 namespace uni {
@@ -244,7 +247,8 @@ struct mixin : Graph {
     auto shortest_path_with_cost(Source&&) const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
-    bool sort_topologically(vector<node_type> *const ) const noexcept(NO_EXCEPT);
+    template<internal::topological_sortable_with<Graph> Range>
+    bool sort_topologically(Range *const) const noexcept(NO_EXCEPT);
     bool sort_topologically() const noexcept(NO_EXCEPT);
 
     // graph/topological_sort.hpp
