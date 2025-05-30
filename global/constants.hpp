@@ -43,8 +43,8 @@ namespace internal {
 namespace letters {
 
 
-constexpr auto LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
-constexpr auto UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+constexpr std::string_view LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+constexpr std::string_view UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 
 } // namespace letters
