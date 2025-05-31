@@ -56,12 +56,12 @@ R concat(R&& range, Rs&&... tails) noexcept(NO_EXCEPT) {
 
 template<std::ranges::input_range R>
     requires
-        requires(R r) {
-            r.erase(std::ranges::unique(ALL(r)), std::ranges::end(r));
+        requires(R&& r) {
+            r.erase(ALL(std::ranges::unique(r)));
         }
-inline auto unique(R range) noexcept(NO_EXCEPT) {
-    std::ranges::sort(range);
-    range.erase(std::ranges::unique(ALL(range)), std::ranges::end(range));
+inline auto unique(R&& range) noexcept(NO_EXCEPT) {
+    const auto v = std::ranges::unique(range);
+    range.erase(std::ranges::begin(v), std::ranges::end(v));
     return range;
 }
 
