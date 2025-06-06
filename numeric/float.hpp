@@ -41,12 +41,12 @@ inline std::int32_t compare(const T x, const T y = 0) noexcept(NO_EXCEPT) {
 
 } // namespace internal
 
-template<class T0, std::common_with<T0> T1>
+template<class T0, std::common_with<T0> T1 = T0>
     requires (
         !(std::is_floating_point_v<T0> && std::is_floating_point_v<T1>) ||
         std::is_floating_point_v<std::common_type_t<T0, T1>>
     )
-inline std::int32_t compare(const T0 v0, const T1 v1) noexcept(NO_EXCEPT) {
+inline std::int32_t compare(const T0 v0, const T1 v1 = T0()) noexcept(NO_EXCEPT) {
     return internal::compare<std::common_type_t<T0, T1>>(v0, v1);
 }
 
