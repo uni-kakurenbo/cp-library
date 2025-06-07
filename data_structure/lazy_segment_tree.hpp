@@ -319,7 +319,7 @@ struct lazy_segment_tree<Action> {
     inline auto& assign(R&& range) noexcept(NO_EXCEPT) { return this->assign(ALL(range)); }
 
     inline auto& fill( const value_type& v = value_type()) noexcept(NO_EXCEPT) {
-        this->impl.fill(v);
+        this->_impl.fill(v);
         return *this;
     }
 
