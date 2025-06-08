@@ -56,7 +56,7 @@ struct core {
 
 
     inline size_type size() const noexcept(NO_EXCEPT) { return this->_n; }
-    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_values.size(); }
+    inline size_type allocated() const noexcept(NO_EXCEPT) { return this->_data.size(); }
     inline size_type depth() const noexcept(NO_EXCEPT) { return this->_depth; }
 
 

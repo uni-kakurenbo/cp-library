@@ -142,6 +142,10 @@ struct advanced_container : Base {
         return std::ranges::count(*this, v);
     }
 
+    inline auto contains(const value_type& v) const noexcept(NO_EXCEPT) {
+        return this->count(v) > 0;
+    }
+
     template<class F>
     inline auto count_if(F&& f) const noexcept(NO_EXCEPT) {
         return std::ranges::count_if(*this, std::forward<F>(f));
@@ -151,7 +155,7 @@ struct advanced_container : Base {
         this->Base::resize(k);
         return *this;
     }
-    inline auto& resize(const size_type k, const value_type v) noexcept(NO_EXCEPT) {
+    inline auto& resize(const size_type k, const value_type& v) noexcept(NO_EXCEPT) {
         this->Base::resize(k, v);
         return *this;
     }
@@ -169,21 +173,31 @@ struct advanced_container : Base {
     }
 
     template<class T>
-    inline auto binary_search(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::binary_search(*this, v);
+    inline auto binary_search(T&& v) const noexcept(NO_EXCEPT) {
+        return std::ranges::binary_search(*this, std::forward<T>(v));
     }
 
     template<class T>
-    inline auto lower_bound(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::lower_bound(*this, v);
+    inline auto lower_bound(T&& v) const noexcept(NO_EXCEPT) {
+        return std::ranges::lower_bound(*this, std::forward<T>(v));
     }
 
     template<class T>
-    inline auto upper_bound(const T& v) noexcept(NO_EXCEPT) {
-        return std::ranges::upper_bound(*this, v);
+    inline auto upper_bound(T&& v) const noexcept(NO_EXCEPT) {
+        return std::ranges::upper_bound(*this, std::forward<T>(v));
     }
 
-    inline auto join(const char* sep = "") noexcept(NO_EXCEPT) {
+    template<class T>
+    inline auto find(T&& v) const noexcept(NO_EXCEPT) {
+        return std::ranges::find(*this, std::forward<T>(v));
+    }
+
+    template<class T>
+    inline auto index(T&& v) const noexcept(NO_EXCEPT) {
+        return this->find(std::forward<T>(v)) - this->begin();
+    }
+
+    inline auto join(const char* sep = "") const noexcept(NO_EXCEPT) {
         return uni::join(*this, sep);
     }
 
