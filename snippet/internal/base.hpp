@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <ranges>
+
+
 #define until(...) while(!(__VA_ARGS__))
 
 #define CONTINUE(...) { __VA_ARGS__; continue; }
