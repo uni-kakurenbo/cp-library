@@ -339,8 +339,23 @@ auto is_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
 template<std::ranges::input_range Target, std::ranges::input_range Source>
     requires std::equality_comparable_with<std::ranges::range_value_t<Target>, std::ranges::range_value_t<Source>>
 auto is_continuous_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
-    auto found = find(source, target);
+    const auto found = find(source, target);
     return found.size() > 0;
+}
+
+
+template<std::ranges::bidirectional_range R>
+auto is_palindrome(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::distance(range);
+
+    auto fwd = std::ranges::begin(range);
+    auto rev = std::ranges::rbegin(range);
+
+    REP(n / 2) {
+        if(*(fwd++) != *(rev++)) return false;
+    }
+
+    return true;
 }
 
 
