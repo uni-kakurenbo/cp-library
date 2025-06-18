@@ -118,7 +118,7 @@ inline constexpr auto comb(const T0& n, const T1& r) noexcept(NO_EXCEPT) {
 
 
 
-template<class T, class U, std::invocable<T, T> F = std::multiplies<>>
+template<class T, std::integral U, std::invocable<T, T> F = std::multiplies<>>
 constexpr T pow(T x, U n, F mul = F(), T one = static_cast<T>(1)) noexcept(NO_EXCEPT) {
     if(n == 0) return one;
     if(n == 1 || x == one) return x;
@@ -166,12 +166,12 @@ inline constexpr std::common_type_t<Args...> max(const Args&... args) noexcept(N
 
 template<class T>
 inline constexpr T gcd(const std::initializer_list<T> args) noexcept(NO_EXCEPT) {
-    return gcd(ALL(args));
+    return uni::gcd(ALL(args));
 }
 
 template<class... Args>
 inline constexpr std::common_type_t<Args...> gcd(const Args&... args) noexcept(NO_EXCEPT) {
-    return gcd({ static_cast<std::common_type_t<Args...>>(args)... });
+    return uni::gcd({ static_cast<std::common_type_t<Args...>>(args)... });
 }
 
 

@@ -17,10 +17,8 @@
 namespace uni {
 
 
-template<class Container = grid<internal::size_t>, class PrevContainer = grid<spair<internal::size_t>>>
+template<class Container = grid<internal::size_t>>
 struct lcs_sizes : Container {
-    PrevContainer prev;
-
     lcs_sizes() noexcept = default;
 
     template<std::ranges::input_range R0, std::ranges::input_range R1>
@@ -33,45 +31,53 @@ struct lcs_sizes : Container {
     lcs_sizes(I0 first0, S0 last0, I1 first1, S1 last1) noexcept(NO_EXCEPT)
       : Container(std::ranges::distance(first0, last0) + 1, std::ranges::distance(first1, last1) + 1)
     {
-        this->prev.assign(this->height(), this->width(), { -1, -1 });
-
         internal::size_t pos0 = 0;
         for(auto itr0=first0; itr0!=last0; ++pos0, ++itr0) {
             internal::size_t pos1 = 0;
             for(auto itr1=first1; itr1!=last1; ++pos1, ++itr1) {
                 if(*itr0 == *itr1) {
                     (*this)(pos0 + 1, pos1 + 1) = (*this)(pos0, pos1) + 1;
-                    this->prev(pos0 + 1, pos1 + 1) = { pos0, pos1 };
                 }
                 else {
-                    const auto& v0 = (*this)(pos0 + 1, pos1), v1 = (*this)(pos0, pos1 + 1);
-
-                    if(v0 > v1) {
-                        (*this)(pos0 + 1, pos1 + 1) = v0;
-                        this->prev(pos0 + 1, pos1 + 1) = this->prev(pos0 + 1, pos1);
-                    }
-                    else {
-                        (*this)(pos0 + 1, pos1 + 1) = v1;
-                        this->prev(pos0 + 1, pos1 + 1) = this->prev(pos0, pos1 + 1);
-                    }
+                    (*this)(pos0 + 1, pos1 + 1) = uni::max((*this)(pos0 + 1, pos1), (*this)(pos0, pos1 + 1));
                 }
             }
         }
     }
 
-    template<std::ranges::input_range R0>
+    template<
+        std::ranges::bidirectional_range R0,
+        std::ranges::bidirectional_range R1
+    >
         requires
             requires (std::remove_cvref_t<R0> r, std::remove_cvref_t<R0>::value_type v) {
                 r.push_back(v);
                 std::ranges::reverse(r);
             }
-    auto restore(R0&& r0) {
+    auto restore(R0&& r0, R1&& r1) noexcept(NO_EXCEPT) {
         std::remove_cvref_t<R0> res;
 
-        auto p = this->prev(-1, -1);
-        while(p.first >= 0) {
-            res.push_back(r0[p.first]);
-            p = this->prev(p);
+        auto itr0 = std::ranges::rbegin(r0);
+        auto itr1 = std::ranges::rbegin(r1);
+
+        const auto last0 = std::ranges::rend(r0);
+        const auto last1 = std::ranges::rend(r1);
+
+        auto pos0 = std::ranges::distance(r0) - 1;
+        auto pos1 = std::ranges::distance(r1) - 1;
+
+        while(itr0 != last0 && itr1 != last1) {
+            if(*itr0 == *itr1) {
+                res.push_back(*itr0);
+                --pos0, --pos1;
+                ++itr0, ++itr1;
+            }
+            else if((*this)(pos0, pos1) == (*this)(pos0 + 1, pos1)) {
+                --pos0, ++itr0;
+            }
+            else {
+                --pos1, ++itr1;
+            }
         }
 
         std::ranges::reverse(res);
