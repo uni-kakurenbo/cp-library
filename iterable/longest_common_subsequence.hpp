@@ -11,6 +11,8 @@
 #include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
+#include "numeric/arithmetic.hpp"
+
 #include "structure/grid.hpp"
 
 
