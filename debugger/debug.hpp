@@ -23,7 +23,11 @@
 #include <ranges>
 #include <concepts>
 #include <type_traits>
+#include <typeinfo>
+#include <cxxabi.h>
 
+
+#include "macro/internal/compatibility.hpp"
 
 #include "numeric/int128.hpp"
 
@@ -31,9 +35,6 @@
 #include "internal/concepts.hpp"
 #include "internal/resolving_rank.hpp"
 #include "internal/exception.hpp"
-
-#include <typeinfo>
-#include <cxxabi.h>
 
 
 namespace debugger {
@@ -50,23 +51,23 @@ std::ostream *cdebug = &std::clog;
 
 #ifdef DEBUGGER_COLORED_OUTPUT
 
-constexpr std::string COLOR_LINE = "\033[3;35m";
-constexpr std::string COLOR_IDENTIFIER = "\033[32m";
-constexpr std::string COLOR_INIT = "\033[m";
-constexpr std::string COLOR_STRING = "\033[33m";
-constexpr std::string COLOR_TYPE = "\033[34m";
-constexpr std::string COLOR_NUMERIC = "\033[36m";
-constexpr std::string COLOR_LITERAL_OPERATOR = "\033[31m";
+UNI_CONSTEXPR_STD_STRING COLOR_LINE = "\033[3;35m";
+UNI_CONSTEXPR_STD_STRING COLOR_IDENTIFIER = "\033[32m";
+UNI_CONSTEXPR_STD_STRING COLOR_INIT = "\033[m";
+UNI_CONSTEXPR_STD_STRING COLOR_STRING = "\033[33m";
+UNI_CONSTEXPR_STD_STRING COLOR_TYPE = "\033[34m";
+UNI_CONSTEXPR_STD_STRING COLOR_NUMERIC = "\033[36m";
+UNI_CONSTEXPR_STD_STRING COLOR_LITERAL_OPERATOR = "\033[31m";
 
 #else
 
-constexpr std::string COLOR_LINE = "";
-constexpr std::string COLOR_IDENTIFIER = "";
-constexpr std::string COLOR_INIT = "";
-constexpr std::string COLOR_STRING = "";
-constexpr std::string COLOR_TYPE = "";
-constexpr std::string COLOR_NUMERIC = "";
-constexpr std::string COLOR_LITERAL_OPERATOR = "";
+UNI_CONSTEXPR_STD_STRING COLOR_LINE = "";
+UNI_CONSTEXPR_STD_STRING COLOR_IDENTIFIER = "";
+UNI_CONSTEXPR_STD_STRING COLOR_INIT = "";
+UNI_CONSTEXPR_STD_STRING COLOR_STRING = "";
+UNI_CONSTEXPR_STD_STRING COLOR_TYPE = "";
+UNI_CONSTEXPR_STD_STRING COLOR_NUMERIC = "";
+UNI_CONSTEXPR_STD_STRING COLOR_LITERAL_OPERATOR = "";
 
 #endif
 

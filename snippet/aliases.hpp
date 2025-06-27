@@ -7,6 +7,7 @@
 #include <queue>
 #include <ranges>
 
+#include "macro/internal/compatibility.hpp"
 
 #include "internal/dev_env.hpp"
 
@@ -23,7 +24,7 @@ constexpr char LN = '\n';
 constexpr char SPC = ' ';
 
 
-constexpr string DIRECTIONS = "URDL";
+UNI_CONSTEXPR_STRING DIRECTIONS = "URDL";
 
 constexpr std::pair<int,int> DIRS4[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 constexpr std::pair<int,int> DIRS4P[] = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 }, { 0, 0 } };
