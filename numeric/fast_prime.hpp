@@ -58,24 +58,30 @@ using internal::is_prime;
 using internal::divisors;
 using internal::primitive_root;
 
+inline auto signed_divisors(const i64 n) noexcept(NO_EXCEPT) {
+    auto divs = internal::divisors(std::abs(n));
+    auto res = divs; res.reverse();
+    for(const auto& div: divs) res.emplace_back(-div);
+    return res.reverse();
+}
 
-inline vector<i64> factorize(const i64 n) noexcept(NO_EXCEPT) {
+inline auto factorize(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     auto res = internal::factorize(n);
     std::ranges::sort(res);
     return res;
 }
 
-inline set<i64> prime_factors(const i64 n) noexcept(NO_EXCEPT) {
+inline auto prime_factors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
     const auto factors = factorize(n);
     set<i64> res(ALL(factors));
     return res;
 }
 
-inline map<i64,i64> count_factors(const i64 n) noexcept(NO_EXCEPT) {
+inline auto count_factors(const i64 n) noexcept(NO_EXCEPT) {
     assert(n >= 0);
-    map<i64,i64> mp;
+    map<i64, i64> mp;
     for(auto &x : internal::factorize(n)) mp[x]++;
     return mp;
 }

@@ -34,7 +34,6 @@ struct line {
         this->normalize();
     }
 
-
     inline constexpr auto& p0() noexcept(NO_EXCEPT) { return this->_p0; }
     inline constexpr auto& p1() noexcept(NO_EXCEPT) { return this->_p1; }
 
