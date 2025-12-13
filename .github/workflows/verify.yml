@@ -87,20 +87,19 @@ jobs:
                   echo
 
             - name: Compute hash and filter uncached
-              uses: actions/github-script@v7
+              uses: actions/github-script@v8
               with:
                   script: |
                       const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
                       const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
-                      const fs = require('fs');
-                      const crypto = require('crypto');
+                      import fs from "node:fs"
+                      import crypto from "node:crypto"
 
-                      const { Octokit: _Octokit } = require("@octokit/core");
-                      const { paginateRest } = require("@octokit/plugin-paginate-rest");
+                      import { Octokit as _Octokit } from "@octokit/core"
+                      import { paginateRest } from "@octokit/plugin-paginate-rest"
 
                       const Octokit = _Octokit.plugin(paginateRest);
-
                       const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
 
                       savedCaches = await octokit.paginate(
