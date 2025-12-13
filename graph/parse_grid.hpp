@@ -8,9 +8,6 @@
 template<class Graph>
 template<bool REV, class G, class U>
 void uni::internal::graph_impl::mixin<Graph>::parse_grid(const G &grid, U available) noexcept(NO_EXCEPT) {
-    this->clear();
-    this->resize(grid.height() * grid.width());
-
     REP(i, grid.height()) REP(j, grid.width()) {
         if(REV ^ (grid(i, j) != available)) continue;
         if(i+1 < grid.height() and (REV ^ (grid(i+1, j) == available))) {
