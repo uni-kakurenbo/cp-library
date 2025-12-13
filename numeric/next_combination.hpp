@@ -6,6 +6,7 @@
 #include <concepts>
 
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 
@@ -20,7 +21,7 @@ struct next_combination {
     size_type _size;
 
   public:
-    next_combination(const Size size) : _size(size) {};
+    next_combination(const size_type size) : _size(size) {};
 
     auto size() noexcept(NO_EXCEPT) { return this->_size; }
 

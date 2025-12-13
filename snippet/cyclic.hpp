@@ -14,7 +14,7 @@ namespace uni {
 
 
 template<class Comparator, std::input_iterator I, std::sentinel_for<I> S>
-constexpr std::optional<internal::size_t> cyclically_ordered(I first, S end) noexcept(NO_EXCEPT) {
+constexpr std::optional<internal::size_t> cyclically_ordered(I&& first, S&& end) noexcept(NO_EXCEPT) {
     constexpr auto comparator = Comparator{};
 
     internal::size_t res = -1;
