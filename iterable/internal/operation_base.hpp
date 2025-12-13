@@ -6,6 +6,8 @@
 #include <sstream>
 #include <numeric>
 
+
+#include "internal/dev_env.hpp"
 #include "internal/exception.hpp"
 #include "snippet/internal/base.hpp"
 
