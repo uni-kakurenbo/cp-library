@@ -3,6 +3,7 @@
 
 #include <iterator>
 #include <ranges>
+#include <optional>
 
 
 #include "internal/types.hpp"
