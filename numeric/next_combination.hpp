@@ -4,6 +4,7 @@
 #include <iterator>
 #include <ranges>
 #include <concepts>
+#include <algorithm>
 
 
 #include "internal/dev_env.hpp"
