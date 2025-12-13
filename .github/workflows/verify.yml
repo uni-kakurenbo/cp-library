@@ -8,6 +8,7 @@ on:
                 type: boolean
                 required: true
                 default: false
+                description: ""
     workflow_call:
         inputs:
             force:
@@ -33,17 +34,12 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
                   fetch-depth: 0 # for detect already verified tests  with:
                   token: ${{ secrets.GH_PAT }}
-
-            - name: Install octokit
-              run: |
-                  npm install @octokit/core@5.1.0
-                  npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
 
             - name: Reset timestamps
               if: ${{ github.event.inputs.force == 'true' }}
@@ -86,29 +82,23 @@ jobs:
                   echo
 
             - name: Compute hash and filter uncached
-              uses: actions/github-script@v7
+              uses: actions/github-script@v8
               with:
                   script: |
                       const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
                       const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
-                      const fs = require('fs');
-                      const crypto = require('crypto');
+                      const fs = require("node:fs")
+                      const crypto = require("node:crypto")
 
-                      const { Octokit: _Octokit } = require("@octokit/core");
-                      const { paginateRest } = require("@octokit/plugin-paginate-rest");
-
-                      const Octokit = _Octokit.plugin(paginateRest);
-
-                      const octokit = new Octokit({ auth: '${{ secrets.GH_PAT }}' });
-
-                      savedCaches = await octokit.paginate(
-                        'GET /repos/${{ github.repository }}/actions/caches',
+                      savedCaches = await github.paginate(
+                        github.rest.actions.getActionsCacheList,
                         {
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
                           per_page: 100,
                           key: 'testcase-',
-                          sort: 'last_accessed_at',
-                          headers: { 'X-GitHub-Api-Version': '2022-11-28' }
+                          sort: 'last_accessed_at'
                         });
 
                       cachedKeys =
@@ -231,7 +221,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
@@ -239,7 +229,7 @@ jobs:
                   #token: Never specify GH_PAT to avoid infinite loop
 
             - name: Clone AC-Library
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: atcoder/ac-library
                   path: ac-library
@@ -340,7 +330,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   token: ${{ secrets.GH_PAT }}
@@ -480,7 +470,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
@@ -530,7 +520,7 @@ jobs:
                   wait
 
             - name: Clone AC-Library
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: atcoder/ac-library
                   path: ac-library
@@ -647,7 +637,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   fetch-depth: 0

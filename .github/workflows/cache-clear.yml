@@ -8,6 +8,7 @@ on:
         type: string
         default: ''
         required: false
+        description: ""
 
 jobs:
   clear:
