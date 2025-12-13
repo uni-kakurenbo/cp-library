@@ -4,8 +4,10 @@
 #include <iterator>
 #include <ranges>
 #include <concepts>
+#include <algorithm>
 
 
+#include "internal/dev_env.hpp"
 #include "internal/types.hpp"
 
 
@@ -16,16 +18,20 @@ template<class Size = internal::size_t>
 struct next_combination {
     using size_type = Size;
 
-    size_type size;
+  private:
+    size_type _size;
 
-    next_combination(const Size size) : size(size) {};
+  public:
+    next_combination(const size_type size) : _size(size) {};
+
+    auto size() noexcept(NO_EXCEPT) { return this->_size; }
 
     template<std::ranges::bidirectional_range R>
-    auto operator()(R&& range) { return this->operator()(ALL(range)); }
+    auto operator()(R&& range) const noexcept(NO_EXCEPT) { return this->operator()(ALL(range)); }
 
     template<std::bidirectional_iterator I, std::sentinel_for<I> S>
-    auto operator()(I first, S last) {
-        auto subset = std::ranges::next(first, size);
+    auto operator()(I first, S last) const noexcept(NO_EXCEPT) {
+        auto subset = std::ranges::next(first, this->size());
 
         if(first == last || first == subset || last == subset) return false;
 
