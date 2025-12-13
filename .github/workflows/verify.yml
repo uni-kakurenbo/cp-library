@@ -88,8 +88,8 @@ jobs:
                       const problemList = "${{ github.workspace }}/main/.verify-helper/problems.txt";
                       const testList = "${{ github.workspace }}/main/.verify-helper/tests.txt";
 
-                      import fs from "node:fs"
-                      import crypto from "node:crypto"
+                      const fs = require("node:fs")
+                      const crypto = require("node:crypto")
 
                       savedCaches = await github.paginate(
                         github.rest.actions.getActionsCacheList,
