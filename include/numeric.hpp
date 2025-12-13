@@ -23,6 +23,7 @@
 #include "numeric/leveler.hpp"
 #include "numeric/limits.hpp"
 #include "numeric/matrix.hpp"
+#include "numeric/next_combination.hpp"
 #include "numeric/numerical_sequence.hpp"
 #include "numeric/prime_counter.hpp"
 #include "numeric/prime_enumerator.hpp"
