@@ -8,6 +8,7 @@ on:
                 type: boolean
                 required: true
                 default: false
+                description: ""
     push:
         branches:
             - main
@@ -37,7 +38,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Remove test branches
               env:

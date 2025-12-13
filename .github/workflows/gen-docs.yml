@@ -18,7 +18,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   fetch-depth: 0
@@ -33,7 +33,7 @@ jobs:
               run: pip3 install -U online-judge-verify-helper
 
             - name: Clone AC-Library
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: atcoder/ac-library
                   sparse-checkout: atcoder

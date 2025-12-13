@@ -33,14 +33,14 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: uni
                   fetch-depth: 0
 
             - name: Clone Expander
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: uni-kakurenbo/cp-commands
                   sparse-checkout: ./core/expander.py
