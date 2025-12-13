@@ -151,7 +151,7 @@ struct disjoint_sparse_table<Semigroup> {
 
     inline auto& raw() noexcept(NO_EXCEPT) { return this->_impl.raw(); }
     inline const auto& raw() const noexcept(NO_EXCEPT) { return this->_impl.raw(); }
-    inline const auto& data() const noexcept(NO_EXCEPT) { return this->impl.data(); }
+    inline const auto& data() const noexcept(NO_EXCEPT) { return this->_impl.data(); }
 
     inline auto size() const noexcept(NO_EXCEPT) { return this->_impl.size(); }
 

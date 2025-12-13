@@ -54,6 +54,8 @@ using uni::SINV;
 using uni::LN;
 using uni::SPC;
 
+using uni::DIRECTIONS;
+
 using uni::DIRS4;
 using uni::DIRS8;
 using uni::DIRS4P;

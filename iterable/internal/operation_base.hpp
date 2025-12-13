@@ -6,8 +6,8 @@
 #include <sstream>
 #include <numeric>
 
-
-#include "snippet/aliases.hpp"
+#include "internal/exception.hpp"
+#include "snippet/internal/base.hpp"
 
 
 namespace uni {

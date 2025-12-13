@@ -18,7 +18,7 @@ struct segment : line<Point> {
     using value_type = typename point_type::value_type;
 
     constexpr segment() noexcept = default;
-    constexpr segment(const point_type& p0, const point_type& p1) noexcept(NO_EXCEPT) : line<Point>(p1) { this->_normalize(); }
+    constexpr segment(const point_type& p0, const point_type& p1) noexcept(NO_EXCEPT) : line<Point>(p0, p1) { this->normalize(); }
 
     constexpr segment(const line<point_type>& ln) noexcept(NO_EXCEPT) : segment(ln.p0(), ln.p1()) {}
 

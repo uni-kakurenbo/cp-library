@@ -35,6 +35,7 @@ concept available_with = available<Structure<TemplateParameters...>>;
 
 
 template<class T> concept arithmetic = std::is_arithmetic_v<T>;
+template<class T> concept floating_point = std::is_floating_point_v<T>;
 template<class T> concept pointer = std::is_pointer_v<T>;
 template<class T> concept structural = std::is_class_v<T>;
 

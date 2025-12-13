@@ -29,7 +29,7 @@ template<class Holder> struct base : Holder {
 
   protected:
     template<std::integral T>
-    constexpr auto _positivize_index(const T _x) const noexcept(NO_EXCEPT) {
+    constexpr internal::size_t _positivize_index(const T _x) const noexcept(NO_EXCEPT) {
         auto x = static_cast<internal::size_t>(_x);
         return x < 0 ? this->size() + x : x;
     }
@@ -87,7 +87,7 @@ struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl
 
     template<class Index>
     constexpr T& operator()(Index&& _index) noexcept(NO_EXCEPT) {
-        const auto index = this->_positivize_index(std::forward<T>(_index));
+        const auto index = this->_positivize_index(std::forward<Index>(_index));
         assert(0 <= index && index < std::ranges::ssize(*this));
 
         return (*this)[index];
@@ -95,7 +95,7 @@ struct multi_container<T, 1, Holder, Container> : internal::multi_container_impl
 
     template<class Index>
     constexpr T& operator()(Index&& _index) const noexcept(NO_EXCEPT) {
-        const auto index = this->_positivize_index(std::forward<T>(_index));
+        const auto index = this->_positivize_index(std::forward<Index>(_index));
         assert(0 <= index && index < std::ranges::ssize(*this));
 
         return (*this)[index];

@@ -40,6 +40,17 @@ namespace internal {
 } // namespace internal
 
 
+namespace letters {
+
+
+constexpr std::string_view LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+constexpr std::string_view UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+} // namespace letters
+
+
+
 template<class T = ld>
 constexpr auto PI = internal::get_pi<T>();
 

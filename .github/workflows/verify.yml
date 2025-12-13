@@ -8,6 +8,7 @@ on:
                 type: boolean
                 required: true
                 default: false
+                description: ""
     workflow_call:
         inputs:
             force:
@@ -33,7 +34,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
@@ -42,8 +43,8 @@ jobs:
 
             - name: Install octokit
               run: |
-                  npm install @octokit/core@5.1.0
-                  npm install @octokit/core @octokit/plugin-paginate-rest@9.2.0
+                  npm install @octokit/core@7.0.9
+                  npm install @octokit/core @octokit/plugin-paginate-rest@14.0.0
 
             - name: Reset timestamps
               if: ${{ github.event.inputs.force == 'true' }}
@@ -231,7 +232,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
@@ -239,7 +240,7 @@ jobs:
                   #token: Never specify GH_PAT to avoid infinite loop
 
             - name: Clone AC-Library
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: atcoder/ac-library
                   path: ac-library
@@ -340,7 +341,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   token: ${{ secrets.GH_PAT }}
@@ -480,7 +481,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   path: main
@@ -530,7 +531,7 @@ jobs:
                   wait
 
             - name: Clone AC-Library
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   repository: atcoder/ac-library
                   path: ac-library
@@ -647,7 +648,7 @@ jobs:
 
         steps:
             - name: Git checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref || github.ref_name }}
                   fetch-depth: 0

@@ -20,6 +20,9 @@ struct adjacent_difference : container {
   public:
     explicit adjacent_difference() noexcept(NO_EXCEPT) {}
 
+    template<std::ranges::input_range R>
+    explicit adjacent_difference(R&& r) noexcept(NO_EXCEPT) : adjacent_difference(ALL(r)) {}
+
     template<
         std::input_iterator I, std::sentinel_for<I> S,
         class Operator = std::minus<T>
@@ -33,8 +36,13 @@ struct adjacent_difference : container {
     }
 };
 
+
 template<std::input_iterator I, std::sentinel_for<I> S>
-explicit adjacent_difference(I, S) -> adjacent_difference<typename std::iterator_traits<I>::value_type>;
+explicit adjacent_difference(I, S) -> adjacent_difference<std::iter_value_t<I>>;
+
+
+template<std::ranges::input_range R>
+explicit adjacent_difference(R&&) -> adjacent_difference<std::ranges::range_value_t<R>>;
 
 
 } // namespace uni

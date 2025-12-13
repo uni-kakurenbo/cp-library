@@ -35,11 +35,11 @@ struct leveler {
     }
 
   public:
-    leveler(const std::initializer_list<value_type> bases) noexcept(NO_EXCEPT) : _bases(bases), _dim(std::ranges::size(bases)) {
+    leveler(const std::initializer_list<value_type>& bases) noexcept(NO_EXCEPT) : _bases(bases), _dim(std::ranges::size(bases)) {
         this->_max = this->_compute_max();
     }
 
-    template<class I>
+    template<std::input_iterator I>
     leveler(I first, I last) noexcept(NO_EXCEPT) : _bases(first, last), _dim(std::ranges::distance(first, last)) {
         this->_max = this->_compute_max();
     }
@@ -55,7 +55,7 @@ struct leveler {
 
     inline value_type sup() const noexcept(NO_EXCEPT) { return this->_max; }
 
-    inline value_type convert(const std::initializer_list<value_type> inds) const noexcept(NO_EXCEPT) {
+    inline value_type convert(const std::initializer_list<value_type>& inds) const noexcept(NO_EXCEPT) {
         return this->convert(inds | std::views::all);
     }
 

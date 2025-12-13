@@ -42,7 +42,7 @@ template<std::ranges::input_range R0, std::ranges::input_range R1>
         R0, std::common_type_t<std::ranges::range_size_t<R0>,std::ranges::range_size_t<R1>>
     >
 R0 concat(R0&& r0, R1&& r1) noexcept(NO_EXCEPT) {
-    R0 res(std::ranges::size(r0) + std::ranges::size(r1));
+    std::remove_cvref_t<R0> res(std::ranges::size(r0) + std::ranges::size(r1));
     std::ranges::copy(r0, std::ranges::begin(res));
     std::ranges::copy(r1, std::ranges::next(std::ranges::begin(res), std::ranges::size(r0)));
     return res;
@@ -56,13 +56,15 @@ R concat(R&& range, Rs&&... tails) noexcept(NO_EXCEPT) {
 
 template<std::ranges::input_range R>
     requires
-        requires(R r) {
-            r.erase(std::ranges::unique(ALL(r)), std::ranges::end(r));
+        requires(R&& r) {
+            r.erase(ALL(std::ranges::unique(r)));
         }
-inline auto unique(R range) noexcept(NO_EXCEPT) {
-    std::ranges::sort(range);
-    range.erase(std::ranges::unique(ALL(range)), std::ranges::end(range));
-    return range;
+inline auto unique(R&& range) noexcept(NO_EXCEPT) {
+    std::remove_cvref_t<R> res(std::ranges::size(range));
+    std::ranges::copy(range, std::ranges::begin(res));
+    const auto v = std::ranges::unique(res);
+    res.erase(std::ranges::begin(v), std::ranges::end(v));
+    return res;
 }
 
 
@@ -339,8 +341,23 @@ auto is_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
 template<std::ranges::input_range Target, std::ranges::input_range Source>
     requires std::equality_comparable_with<std::ranges::range_value_t<Target>, std::ranges::range_value_t<Source>>
 auto is_continuous_subsequence_of(Target&& target, Source&& source) noexcept(NO_EXCEPT) {
-    auto found = find(source, target);
+    const auto found = find(source, target);
     return found.size() > 0;
+}
+
+
+template<std::ranges::bidirectional_range R>
+auto is_palindrome(R&& range) noexcept(NO_EXCEPT) {
+    const auto n = std::ranges::distance(range);
+
+    auto fwd = std::ranges::begin(range);
+    auto rev = std::ranges::rbegin(range);
+
+    REP(n / 2) {
+        if(*(fwd++) != *(rev++)) return false;
+    }
+
+    return true;
 }
 
 

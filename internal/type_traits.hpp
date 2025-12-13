@@ -88,18 +88,7 @@ template<class T> inline constexpr auto literal_operator_v = literal_operator<T>
 
 
 template <std::size_t N, typename... Types>
-struct nth_type {};
-
-template <class Head, class... Tail>
-struct nth_type<0, Head, Tail...> {
-	using type = Head;
-};
-
-template <std::size_t N, class Head, class... Tail>
-struct nth_type<N, Head, Tail...> : public nth_type<N - 1, Tail...> {};
-
-template <std::size_t N, typename... Types>
-using nth_type_t = typename nth_type<N, Types...>::type;
+using nth_type_t = std::tuple_element_t<N, std::tuple<Types...>>;
 
 
 template<template <class...> class, class> struct is_template_of : std::false_type {};
