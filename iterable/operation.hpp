@@ -42,7 +42,7 @@ template<std::ranges::input_range R0, std::ranges::input_range R1>
         R0, std::common_type_t<std::ranges::range_size_t<R0>,std::ranges::range_size_t<R1>>
     >
 R0 concat(R0&& r0, R1&& r1) noexcept(NO_EXCEPT) {
-    R0 res(std::ranges::size(r0) + std::ranges::size(r1));
+    std::remove_cvref_t<R0> res(std::ranges::size(r0) + std::ranges::size(r1));
     std::ranges::copy(r0, std::ranges::begin(res));
     std::ranges::copy(r1, std::ranges::next(std::ranges::begin(res), std::ranges::size(r0)));
     return res;
@@ -60,9 +60,11 @@ template<std::ranges::input_range R>
             r.erase(ALL(std::ranges::unique(r)));
         }
 inline auto unique(R&& range) noexcept(NO_EXCEPT) {
-    const auto v = std::ranges::unique(range);
-    range.erase(std::ranges::begin(v), std::ranges::end(v));
-    return range;
+    std::remove_cvref_t<R> res(std::ranges::size(range));
+    std::ranges::copy(range, std::ranges::begin(res));
+    const auto v = std::ranges::unique(res);
+    res.erase(std::ranges::begin(v), std::ranges::end(v));
+    return res;
 }
 
 
