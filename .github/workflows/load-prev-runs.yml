@@ -69,7 +69,7 @@ jobs:
                   echo '::endgroup::'
 
             - name: Load previous source files hash
-              uses: dawidd6/action-download-artifact@v3
+              uses: dawidd6/action-download-artifact@v11
               with:
                   name: ${{ matrix.target }}-files-hash
                   name_is_regexp: false
